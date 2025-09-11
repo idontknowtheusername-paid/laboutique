@@ -72,13 +72,13 @@ export const useCart = () => {
       try {
         const { error } = await supabase
           .from('cart_items')
-          .insert<Database['public']['Tables']['cart_items']['Insert']>([
-              {
-                user_id: user.id,
-                product_id: productId,
-                quantity,
-              },
-            ]);
+          .insert([
+            {
+              user_id: user.id,
+              product_id: productId,
+              quantity,
+            } as Database['public']['Tables']['cart_items']['Insert'],
+          ]);
 
         if (!error) {
           await fetchCartItems();
