@@ -7,30 +7,6 @@ import { Input } from '@/components/ui/input';
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white">
-      {/* Newsletter Section */}
-      <div className="bg-beshop-primary py-12">
-        <div className="container">
-          <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-2xl font-bold mb-4">
-              Restez informé de nos dernières offres
-            </h3>
-            <p className="text-blue-100 mb-6">
-              Abonnez-vous à notre newsletter et recevez des offres exclusives directement dans votre boîte mail
-            </p>
-            <div className="flex flex-col sm:flex-row max-w-md mx-auto space-y-3 sm:space-y-0 sm:space-x-3">
-              <Input
-                type="email"
-                placeholder="Votre adresse email"
-                className="flex-1 bg-white text-gray-900"
-              />
-              <Button className="bg-beshop-secondary hover:bg-orange-600 px-8">
-                S'abonner
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Footer */}
       <div className="py-12">
         <div className="container">
