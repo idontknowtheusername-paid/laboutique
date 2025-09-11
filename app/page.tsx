@@ -301,6 +301,36 @@ const beautyHealthProducts = [
   }
 ];
 
+// Derived subcategory datasets for homepage sections
+const smartphones = electronicsProducts.filter(p => p.category === 'Smartphones');
+const laptops = electronicsProducts.filter(p => p.category === 'Ordinateurs');
+const tablets = electronicsProducts.filter(p => p.category === 'Tablettes');
+const tvAudio = electronicsProducts.filter(p => ['TV & Audio', 'Audio', 'TV'].includes(p.category));
+const gaming = electronicsProducts.filter(p => p.category === 'Gaming');
+const cameras = electronicsProducts.filter(p => p.category === 'Appareils Photo');
+
+const electromenager = homeGardenProducts.filter(p => p.category === 'Électroménager');
+const mobilier = homeGardenProducts.filter(p => p.category === 'Mobilier');
+const jardin = homeGardenProducts.filter(p => p.category === 'Jardin');
+const decoration = homeGardenProducts.filter(p => ['Décoration', 'Decoration'].includes(p.category as string));
+const eclairage = homeGardenProducts.filter(p => ['Éclairage', 'Eclairage'].includes(p.category as string));
+const textileMaison = homeGardenProducts.filter(p => p.category === 'Textile maison');
+
+const parfums = beautyHealthProducts.filter(p => p.category === 'Parfums');
+const maquillage = beautyHealthProducts.filter(p => p.category === 'Maquillage');
+const soinsVisage = beautyHealthProducts.filter(p => p.category === 'Soins visage');
+const soinsCheveux = beautyHealthProducts.filter(p => p.category === 'Soins cheveux');
+const soinsCorps = beautyHealthProducts.filter(p => p.category === 'Soins corps');
+const complements = beautyHealthProducts.filter(p => p.category === 'Compléments');
+const accessoiresBeaute = beautyHealthProducts.filter(p => p.category === 'Accessoires beauté');
+
+const modeFemme = fashionProducts.filter(p => p.category === 'Mode Femme');
+const modeHomme = fashionProducts.filter(p => p.category === 'Mode Homme');
+const chaussures = fashionProducts.filter(p => p.category === 'Chaussures');
+const montres = fashionProducts.filter(p => p.category === 'Montres');
+const sportFitness = fashionProducts.filter(p => p.category === 'Sport');
+const accessoiresMode = fashionProducts.filter(p => p.category === 'Accessoires');
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-beshop-background">
@@ -322,31 +352,14 @@ export default function Home() {
         {/* Categories Overview */}
         <Categories />
 
-        {/* Électronique - Section principale avec grille */}
-        <section className="py-12 bg-white">
-          <div className="container">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                  Électronique & High-Tech
-                </h2>
-                <p className="text-gray-600">
-                  Les dernières technologies et gadgets tendance
-                </p>
-              </div>
-              <a 
-                href="/category/electronique" 
-                className="text-beshop-primary hover:text-blue-700 font-semibold flex items-center group"
-              >
-                Voir tout
-                <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-            <ProductGrid products={electronicsProducts} />
-          </div>
-        </section>
+        {/* Électronique & High-Tech - en carrousel */}
+        <ProductSlider
+          title="Électronique & High-Tech"
+          subtitle="Les dernières technologies et gadgets tendance"
+          products={electronicsProducts}
+          viewAllLink="/category/electronique"
+          backgroundColor="bg-white"
+        />
 
         {/* Mode & Style - Carousel */}
         <ProductSlider
@@ -357,31 +370,14 @@ export default function Home() {
           backgroundColor="bg-gray-50"
         />
 
-        {/* Maison & Jardin - Section avec grille */}
-        <section className="py-12 bg-white">
-          <div className="container">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                  Maison & Jardin
-                </h2>
-                <p className="text-gray-600">
-                  Tout pour embellir et équiper votre maison
-                </p>
-              </div>
-              <a 
-                href="/category/maison-jardin" 
-                className="text-beshop-primary hover:text-blue-700 font-semibold flex items-center group"
-              >
-                Voir tout
-                <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-            <ProductGrid products={homeGardenProducts} columns={4} />
-          </div>
-        </section>
+        {/* Maison & Jardin - en carrousel */}
+        <ProductSlider
+          title="Maison & Jardin"
+          subtitle="Tout pour embellir et équiper votre maison"
+          products={homeGardenProducts}
+          viewAllLink="/category/maison-jardin"
+          backgroundColor="bg-white"
+        />
 
         {/* Beauté & Santé - Carousel */}
         <ProductSlider
@@ -391,11 +387,157 @@ export default function Home() {
           viewAllLink="/category/beaute-sante"
         />
 
-        {/* Marques partenaires */}
-        <FeaturedBrands />
+        {/* Explorer par catégorie - sections détaillées */}
+        <section className="my-12 space-y-12">
+          {/* IMPORTANTES en carrousel (même style que Beauté & Santé) */}
+          {smartphones.length > 0 && (
+            <ProductSlider
+              title="Smartphones"
+              subtitle="Les meilleurs modèles du moment"
+              products={smartphones}
+              viewAllLink="/category/electronique"
+              backgroundColor="bg-white"
+            />
+          )}
 
-        {/* Newsletter */}
-        <NewsletterSection />
+          {laptops.length > 0 && (
+            <ProductSlider
+              title="Ordinateurs"
+              subtitle="Laptops & ultrabooks performants"
+              products={laptops}
+              viewAllLink="/category/electronique"
+              backgroundColor="bg-white"
+            />
+          )}
+
+          {electromenager.length > 0 && (
+            <ProductSlider
+              title="Électroménager"
+              subtitle="Équipez votre maison avec les essentiels"
+              products={electromenager}
+              viewAllLink="/category/maison-jardin"
+              backgroundColor="bg-white"
+            />
+          )}
+
+          {parfums.length > 0 && (
+            <ProductSlider
+              title="Parfums"
+              subtitle="Sélection premium pour lui & elle"
+              products={parfums}
+              viewAllLink="/category/beaute-sante"
+              backgroundColor="bg-white"
+            />
+          )}
+
+          {/* Électronique - autres en carrousel */}
+          {(tvAudio.length > 0 || gaming.length > 0 || tablets.length > 0 || cameras.length > 0) && (
+            <div className="space-y-10">
+              {tvAudio.length > 0 && (
+                <ProductSlider
+                  title="TV & Audio"
+                  subtitle="Image nette, son immersif"
+                  products={tvAudio}
+                  viewAllLink="/category/electronique"
+                  backgroundColor="bg-white"
+                />
+              )}
+              {gaming.length > 0 && (
+                <ProductSlider
+                  title="Gaming"
+                  subtitle="Consoles et accessoires"
+                  products={gaming}
+                  viewAllLink="/category/electronique"
+                />
+              )}
+              {tablets.length > 0 && (
+                <ProductSlider
+                  title="Tablettes"
+                  subtitle="Travail et divertissement"
+                  products={tablets}
+                  viewAllLink="/category/electronique"
+                />
+              )}
+              {cameras.length > 0 && (
+                <ProductSlider
+                  title="Appareils Photo"
+                  subtitle="Capturez l'instant"
+                  products={cameras}
+                  viewAllLink="/category/electronique"
+                />
+              )}
+            </div>
+          )}
+
+          {/* Mode - carrousels */}
+          {(modeFemme.length > 0 || modeHomme.length > 0 || chaussures.length > 0 || montres.length > 0 || sportFitness.length > 0 || accessoiresMode.length > 0) && (
+            <div className="space-y-10">
+              {modeFemme.length > 0 && (
+                <ProductSlider title="Mode Femme" products={modeFemme} viewAllLink="/category/mode" />
+              )}
+              {modeHomme.length > 0 && (
+                <ProductSlider title="Mode Homme" products={modeHomme} viewAllLink="/category/mode" backgroundColor="bg-white" />
+              )}
+              {chaussures.length > 0 && (
+                <ProductSlider title="Chaussures" products={chaussures} viewAllLink="/category/mode" />
+              )}
+              {montres.length > 0 && (
+                <ProductSlider title="Montres" products={montres} viewAllLink="/category/mode" backgroundColor="bg-white" />
+              )}
+              {sportFitness.length > 0 && (
+                <ProductSlider title="Sport & Fitness" products={sportFitness} viewAllLink="/category/mode" />
+              )}
+              {accessoiresMode.length > 0 && (
+                <ProductSlider title="Accessoires" products={accessoiresMode} viewAllLink="/category/mode" backgroundColor="bg-white" />
+              )}
+            </div>
+          )}
+
+          {/* Maison & Jardin - carrousels */}
+          {(mobilier.length > 0 || jardin.length > 0 || decoration.length > 0 || eclairage.length > 0 || textileMaison.length > 0) && (
+            <div className="space-y-10">
+              {mobilier.length > 0 && (
+                <ProductSlider title="Mobilier" products={mobilier} viewAllLink="/category/maison-jardin" />
+              )}
+              {jardin.length > 0 && (
+                <ProductSlider title="Jardin" products={jardin} viewAllLink="/category/maison-jardin" backgroundColor="bg-white" />
+              )}
+              {decoration.length > 0 && (
+                <ProductSlider title="Décoration" products={decoration} viewAllLink="/category/maison-jardin" />
+              )}
+              {eclairage.length > 0 && (
+                <ProductSlider title="Éclairage" products={eclairage} viewAllLink="/category/maison-jardin" backgroundColor="bg-white" />
+              )}
+              {textileMaison.length > 0 && (
+                <ProductSlider title="Textile maison" products={textileMaison} viewAllLink="/category/maison-jardin" />
+              )}
+            </div>
+          )}
+
+          {/* Beauté & Santé - carrousels */}
+          {(maquillage.length > 0 || soinsVisage.length > 0 || soinsCheveux.length > 0 || soinsCorps.length > 0 || complements.length > 0 || accessoiresBeaute.length > 0) && (
+            <div className="space-y-10">
+              {maquillage.length > 0 && (
+                <ProductSlider title="Maquillage" products={maquillage} viewAllLink="/category/beaute-sante" />
+              )}
+              {soinsVisage.length > 0 && (
+                <ProductSlider title="Soins visage" products={soinsVisage} viewAllLink="/category/beaute-sante" backgroundColor="bg-white" />
+              )}
+              {soinsCheveux.length > 0 && (
+                <ProductSlider title="Soins cheveux" products={soinsCheveux} viewAllLink="/category/beaute-sante" />
+              )}
+              {soinsCorps.length > 0 && (
+                <ProductSlider title="Soins corps" products={soinsCorps} viewAllLink="/category/beaute-sante" backgroundColor="bg-white" />
+              )}
+              {complements.length > 0 && (
+                <ProductSlider title="Compléments" products={complements} viewAllLink="/category/beaute-sante" />
+              )}
+              {accessoiresBeaute.length > 0 && (
+                <ProductSlider title="Accessoires beauté" products={accessoiresBeaute} viewAllLink="/category/beaute-sante" backgroundColor="bg-white" />
+              )}
+            </div>
+          )}
+        </section>
 
         {/* Promotional Banner */}
         <section className="container my-12">
@@ -416,6 +558,12 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Marques partenaires */}
+        <FeaturedBrands />
+
+        {/* Newsletter */}
+        <NewsletterSection />
       </div>
 
       <Footer />

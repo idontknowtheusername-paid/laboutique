@@ -97,19 +97,19 @@ const Footer = () => {
                 <Link href="/help" className="block text-gray-300 hover:text-white transition-colors">
                   Centre d'aide
                 </Link>
-                <Link href="/shipping" className="block text-gray-300 hover:text-white transition-colors">
+                <Link href="/shipping-returns" className="block text-gray-300 hover:text-white transition-colors">
                   Livraison & Retours
                 </Link>
                 <Link href="/size-guide" className="block text-gray-300 hover:text-white transition-colors">
                   Guide des tailles
                 </Link>
-                <Link href="/track" className="block text-gray-300 hover:text-white transition-colors">
+                <Link href="/order-tracking" className="block text-gray-300 hover:text-white transition-colors">
                   Suivi de commande
                 </Link>
                 <Link href="/warranty" className="block text-gray-300 hover:text-white transition-colors">
                   Garantie
                 </Link>
-                <Link href="/complaints" className="block text-gray-300 hover:text-white transition-colors">
+                <Link href="/claims" className="block text-gray-300 hover:text-white transition-colors">
                   Réclamations
                 </Link>
               </nav>
@@ -128,7 +128,7 @@ const Footer = () => {
                 <Link href="/cookies" className="block text-gray-300 hover:text-white transition-colors">
                   Politique de cookies
                 </Link>
-                <Link href="/vendor-terms" className="block text-gray-300 hover:text-white transition-colors">
+                <Link href="/vendor/terms" className="block text-gray-300 hover:text-white transition-colors">
                   Conditions vendeurs
                 </Link>
               </nav>

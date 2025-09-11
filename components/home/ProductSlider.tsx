@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Star, Heart, ShoppingCart, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -40,6 +40,67 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsToShow, setItemsToShow] = useState(5);
+  const [isHovering, setIsHovering] = useState(false);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+  const hoverDelayMs = 1500;
+  const autoPlayIntervalMs = 3000;
+  let hoverDelayTimer: any = null;
+  let autoPlayTimer: any = null;
+
+  // Responsive items per view: mobile=3, tablet=4, desktop=5 (we will duplicate items if fewer)
+  useEffect(() => {
+    const computeItemsToShow = () => {
+      const width = typeof window !== 'undefined' ? window.innerWidth : 1024;
+      const base = width < 640 ? 3 : width < 1024 ? 4 : 5;
+      return base;
+    };
+
+    const handleResize = () => {
+      setItemsToShow((prev) => {
+        const next = computeItemsToShow();
+        // Adjust currentIndex to avoid empty space when itemsToShow changes
+        setCurrentIndex((idx) => {
+          const maxStart = Math.max(0, products.length - next);
+          return Math.min(idx, maxStart);
+        });
+        return next;
+      });
+    };
+
+    // Initialize
+    setItemsToShow(computeItemsToShow());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [products.length]);
+
+  // Autoplay on hover with delay
+  useEffect(() => {
+    if (!isHovering) {
+      setIsAutoPlaying(false);
+      return;
+    }
+
+    hoverDelayTimer = setTimeout(() => {
+      setIsAutoPlaying(true);
+    }, hoverDelayMs);
+
+    return () => {
+      if (hoverDelayTimer) clearTimeout(hoverDelayTimer);
+    };
+  }, [isHovering]);
+
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    autoPlayTimer = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const canNext = prev < products.length - itemsToShow;
+        return canNext ? prev + 1 : 0;
+      });
+    }, autoPlayIntervalMs);
+    return () => {
+      if (autoPlayTimer) clearInterval(autoPlayTimer);
+    };
+  }, [isAutoPlaying, products.length, itemsToShow]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-BJ', {
@@ -64,6 +125,22 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
   const canGoNext = currentIndex < products.length - itemsToShow;
   const canGoPrev = currentIndex > 0;
 
+  // Build a displayed array to ensure multiple visible items even if products are few
+  const displayedProducts = React.useMemo(() => {
+    if (!products || products.length === 0) return [] as Product[];
+    if (products.length >= itemsToShow) return products;
+    const min = itemsToShow;
+    const result: Product[] = [];
+    for (let i = 0; i < min; i++) {
+      result.push(products[i % products.length]);
+    }
+    return result;
+  }, [products, itemsToShow]);
+
+  const totalItems = displayedProducts.length;
+  const safeCanGoNext = currentIndex < Math.max(0, totalItems - itemsToShow);
+  const safeCanGoPrev = currentIndex > 0;
+
   return (
     <section className={`py-12 ${backgroundColor}`}>
       <div className="container">
@@ -84,42 +161,24 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
                 </Button>
               </Link>
             )}
-            
-            {/* Navigation */}
-            <div className="flex space-x-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={prevSlide}
-                disabled={!canGoPrev}
-                className="disabled:opacity-40"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={nextSlide}
-                disabled={!canGoNext}
-                className="disabled:opacity-40"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
           </div>
         </div>
 
         {/* Products Slider */}
-        <div className="relative overflow-hidden">
+        <div 
+          className="relative overflow-hidden group"
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
+        >
           <div
             className="flex transition-transform duration-300 ease-in-out"
             style={{
               transform: `translateX(-${currentIndex * (100 / itemsToShow)}%)`,
-              width: `${(products.length / itemsToShow) * 100}%`,
+              width: `${(totalItems / itemsToShow) * 100}%`,
             }}
           >
-            {products.map((product) => (
-              <div key={product.id} className="flex-shrink-0 px-3" style={{ width: `${100 / products.length}%` }}>
+            {displayedProducts.map((product, index) => (
+              <div key={`${product.id}-${index}`} className="flex-shrink-0 px-3" style={{ width: `${100 / itemsToShow}%` }}>
                 <Card className="group hover-lift card-shadow h-full">
                   <div className="relative overflow-hidden">
                     {/* Product Image */}
@@ -210,11 +269,37 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
               </div>
             ))}
           </div>
+
+          {/* Overlay Navigation */}
+          <div className="absolute inset-y-0 left-2 flex items-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={prevSlide}
+              disabled={!safeCanGoPrev}
+              aria-label="Précédent"
+              className="w-10 h-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow transition disabled:opacity-40"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+          </div>
+          <div className="absolute inset-y-0 right-2 flex items-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={nextSlide}
+              disabled={!safeCanGoNext}
+              aria-label="Suivant"
+              className="w-10 h-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow transition disabled:opacity-40"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
 
         {/* Slider Indicators */}
         <div className="flex justify-center mt-6 space-x-2">
-          {Array.from({ length: Math.ceil(products.length / itemsToShow) }).map((_, index) => (
+          {Array.from({ length: Math.max(1, Math.ceil(totalItems / itemsToShow)) }).map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index * itemsToShow)}

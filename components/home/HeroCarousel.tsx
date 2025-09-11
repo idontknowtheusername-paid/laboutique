@@ -121,32 +121,7 @@ const HeroCarousel = () => {
         ))}
       </div>
 
-      {/* Navigation Arrows */}
-      <div className="absolute inset-y-0 left-4 flex items-center">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={prevSlide}
-          onMouseEnter={() => setIsAutoPlaying(false)}
-          onMouseLeave={() => setIsAutoPlaying(true)}
-          className="w-12 h-12 bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm rounded-full"
-        >
-          <ChevronLeft className="w-6 h-6" />
-        </Button>
-      </div>
-      
-      <div className="absolute inset-y-0 right-4 flex items-center">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={nextSlide}
-          onMouseEnter={() => setIsAutoPlaying(false)}
-          onMouseLeave={() => setIsAutoPlaying(true)}
-          className="w-12 h-12 bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm rounded-full"
-        >
-          <ChevronRight className="w-6 h-6" />
-        </Button>
-      </div>
+      {/* Navigation arrows intentionally removed per request */}
 
       {/* Slide Indicators */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">

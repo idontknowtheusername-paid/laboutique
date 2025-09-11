@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 const categoryData = [
   {
@@ -82,87 +83,47 @@ const Categories = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               Catégories Populaires
             </h2>
-            <p className="text-gray-600">
-              Découvrez nos meilleures sélections dans chaque catégorie
-            </p>
           </div>
-          <Link 
-            href="/categories" 
-            className="flex items-center text-beshop-primary hover:text-blue-700 font-semibold group"
-          >
-            Voir toutes les catégories
-            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          
         </div>
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
-          {categoryData.map((category, index) => (
-            <Link key={category.id} href={`/category/${category.slug}`}>
-              <Card className="group hover-lift card-shadow overflow-hidden h-full">
-                <div className="relative h-48 overflow-hidden">
-                  {/* Background Image */}
-                  <div
-                    className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
-                    style={{ backgroundImage: `url(${category.image})` }}
-                  />
-                  
-                  {/* Gradient Overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-t ${category.gradient} opacity-80 group-hover:opacity-90 transition-opacity duration-300`} />
-                  
-                  {/* Content */}
-                  <CardContent className="relative h-full flex flex-col justify-end p-4 text-white">
-                    <div className="space-y-1">
-                      <h3 className="font-bold text-lg group-hover:text-xl transition-all duration-300">
-                        {category.name}
-                      </h3>
-                      <p className="text-sm opacity-90">
-                        {category.productCount.toLocaleString()} produits
-                      </p>
-                    </div>
-                  </CardContent>
-
-                  {/* Hover Arrow */}
-                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                    <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                      <ArrowRight className="w-4 h-4 text-white" />
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </Link>
-          ))}
+        {/* Categories Carousel */}
+        <div className="relative">
+          <Carousel opts={{ align: 'start', loop: true }} className="w-full">
+            <CarouselContent>
+              {categoryData.map((category) => (
+                <CarouselItem key={category.id} className="basis-1/2 md:basis-1/3 lg:basis-1/5">
+                  <Link href={`/category/${category.slug}`}>
+                    <Card className="group hover-lift card-shadow overflow-hidden h-full">
+                      <div className="relative h-48 overflow-hidden">
+                        <div
+                          className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
+                          style={{ backgroundImage: `url(${category.image})` }}
+                        />
+                        <div className={`absolute inset-0 bg-gradient-to-t ${category.gradient} opacity-80 group-hover:opacity-90 transition-opacity duration-300`} />
+                        <CardContent className="relative h-full flex flex-col justify-end p-4 text-white">
+                          <div className="space-y-1">
+                            <h3 className="font-bold text-lg group-hover:text-xl transition-all duration-300">{category.name}</h3>
+                            <p className="text-sm opacity-90">{category.productCount.toLocaleString()} produits</p>
+                          </div>
+                        </CardContent>
+                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                          <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                            <ArrowRight className="w-4 h-4 text-white" />
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  </Link>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="-left-4 md:-left-8 bg-white/80 backdrop-blur hover:bg-white" />
+            <CarouselNext className="-right-4 md:-right-8 bg-white/80 backdrop-blur hover:bg-white" />
+          </Carousel>
         </div>
 
-        {/* Featured Categories Strip */}
-        <div className="mt-12 p-6 bg-gradient-to-r from-beshop-primary to-blue-600 rounded-xl text-white">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="mb-4 md:mb-0">
-              <h3 className="text-2xl font-bold mb-2">
-                Explorez nos catégories premium
-              </h3>
-              <p className="opacity-90">
-                Des produits de qualité sélectionnés par nos experts
-              </p>
-            </div>
-            <div className="flex space-x-4">
-              <div className="text-center">
-                <div className="text-3xl font-bold">1200+</div>
-                <div className="text-sm opacity-90">Marques</div>
-              </div>
-              <div className="w-px bg-white/30 mx-4"></div>
-              <div className="text-center">
-                <div className="text-3xl font-bold">50K+</div>
-                <div className="text-sm opacity-90">Produits</div>
-              </div>
-              <div className="w-px bg-white/30 mx-4"></div>
-              <div className="text-center">
-                <div className="text-3xl font-bold">24h</div>
-                <div className="text-sm opacity-90">Livraison</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </div>
     </section>
   );

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Clock, Star, ShoppingCart, Eye, Heart } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Clock, Star, ShoppingCart, Eye, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -95,6 +95,14 @@ const FlashSales = () => {
     minutes: 45,
     seconds: 30
   });
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [itemsToShow, setItemsToShow] = useState(5);
+  const [isHovering, setIsHovering] = useState(false);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+  const hoverDelayMs = 1500;
+  const autoPlayIntervalMs = 3000;
+  let hoverDelayTimer: any = null;
+  let autoPlayTimer: any = null;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -112,6 +120,77 @@ const FlashSales = () => {
 
     return () => clearInterval(timer);
   }, []);
+
+  // Responsive items per view: mobile=3, tablet=4, desktop=5 (we will duplicate if fewer)
+  useEffect(() => {
+    const computeItemsToShow = () => {
+      const width = typeof window !== 'undefined' ? window.innerWidth : 1024;
+      const base = width < 640 ? 3 : width < 1024 ? 4 : 5;
+      return base;
+    };
+    const handleResize = () => {
+      setItemsToShow((prev) => {
+        const next = computeItemsToShow();
+        setCurrentIndex((idx) => {
+          const maxStart = Math.max(0, flashProducts.length - next);
+          return Math.min(idx, maxStart);
+        });
+        return next;
+      });
+    };
+    setItemsToShow(computeItemsToShow());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Autoplay on hover with delay
+  useEffect(() => {
+    if (!isHovering) {
+      setIsAutoPlaying(false);
+      return;
+    }
+    hoverDelayTimer = setTimeout(() => {
+      setIsAutoPlaying(true);
+    }, hoverDelayMs);
+    return () => {
+      if (hoverDelayTimer) clearTimeout(hoverDelayTimer);
+    };
+  }, [isHovering]);
+
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    autoPlayTimer = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const canNext = prev < flashProducts.length - itemsToShow;
+        return canNext ? prev + 1 : 0;
+      });
+    }, autoPlayIntervalMs);
+    return () => {
+      if (autoPlayTimer) clearInterval(autoPlayTimer);
+    };
+  }, [isAutoPlaying, itemsToShow]);
+
+  // Build displayed list to ensure multiple items visible even with few products
+  const displayedProducts = React.useMemo(() => {
+    if (!flashProducts || flashProducts.length === 0) return [] as FlashProduct[];
+    if (flashProducts.length >= itemsToShow) return flashProducts;
+    const min = itemsToShow;
+    const result: FlashProduct[] = [];
+    for (let i = 0; i < min; i++) {
+      result.push(flashProducts[i % flashProducts.length]);
+    }
+    return result;
+  }, [itemsToShow]);
+
+  const totalItems = displayedProducts.length;
+  const canGoNext = currentIndex < Math.max(0, totalItems - itemsToShow);
+  const canGoPrev = currentIndex > 0;
+  const nextSlide = () => {
+    if (canGoNext) setCurrentIndex((p) => p + 1);
+  };
+  const prevSlide = () => {
+    if (canGoPrev) setCurrentIndex((p) => p - 1);
+  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-BJ', {
@@ -153,13 +232,25 @@ const FlashSales = () => {
         </Link>
       </div>
 
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-        {flashProducts.map((product) => {
+      {/* Products Slider */}
+      <div 
+        className="relative overflow-hidden group"
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+      >
+        <div
+          className="flex transition-transform duration-300 ease-in-out"
+          style={{
+            transform: `translateX(-${currentIndex * (100 / itemsToShow)}%)`,
+            width: `${(totalItems / itemsToShow) * 100}%`,
+          }}
+        >
+        {displayedProducts.map((product, index) => {
           const progressPercentage = (product.sold / (product.sold + product.stock)) * 100;
           
           return (
-            <Card key={product.id} className="group hover-lift card-shadow bg-white text-gray-900 overflow-hidden">
+            <div key={`${product.id}-${index}`} className="flex-shrink-0 px-3" style={{ width: `${100 / itemsToShow}%` }}>
+            <Card className="group hover-lift card-shadow bg-white text-gray-900 overflow-hidden">
               <div className="relative">
                 {/* Product Image */}
                 <div className="aspect-square overflow-hidden">
@@ -244,8 +335,35 @@ const FlashSales = () => {
                 </Button>
               </CardContent>
             </Card>
+            </div>
           );
         })}
+        </div>
+        {/* Overlay Navigation */}
+        <div className="absolute inset-y-0 left-2 flex items-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={prevSlide}
+            disabled={!canGoPrev}
+            aria-label="Précédent"
+            className="w-10 h-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow transition disabled:opacity-40"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </Button>
+        </div>
+        <div className="absolute inset-y-0 right-2 flex items-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={nextSlide}
+            disabled={!canGoNext}
+            aria-label="Suivant"
+            className="w-10 h-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow transition disabled:opacity-40"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </Button>
+        </div>
       </div>
     </div>
   );

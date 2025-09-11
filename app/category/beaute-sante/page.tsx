@@ -6,6 +6,7 @@ import CategoryMenu from '@/components/layout/CategoryMenu';
 import Footer from '@/components/layout/Footer';
 import ProductGrid from '@/components/home/ProductGrid';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
@@ -225,7 +226,7 @@ export default function BeautyHealthPage() {
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-          <a href="/" className="hover:text-beshop-primary">Accueil</a>
+          <Link href="/" className="hover:text-beshop-primary">Accueil</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Beauté & Santé</span>
         </nav>

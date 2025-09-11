@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, User, Heart, ShoppingCart, Menu, X, Phone, MapPin, Globe } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Search, User, Heart, ShoppingCart, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -16,12 +17,48 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   const { cartItems } = useCart();
   const { user, signOut } = useAuth();
+  const pathname = usePathname();
+  const isHome = pathname === '/';
+  const [annApi, setAnnApi] = useState<CarouselApi | null>(null);
+
+  const announcements = [
+    {
+      id: 'a1',
+      title: 'Super Soldes du Week-end',
+      subtitle: 'Jusqu’à -30% sur électronique',
+      href: '/category/electronique',
+      bg: 'from-beshop-primary to-blue-600',
+    },
+    {
+      id: 'a2',
+      title: 'Nouvelles Collections Mode',
+      subtitle: 'Tendances 2025 disponibles',
+      href: '/category/mode',
+      bg: 'from-rose-500 to-pink-600',
+    },
+    {
+      id: 'a3',
+      title: 'Maison & Jardin en promo',
+      subtitle: 'Équipez votre intérieur',
+      href: '/category/maison-jardin',
+      bg: 'from-amber-500 to-orange-600',
+    },
+  ];
+
+  useEffect(() => {
+    if (!annApi) return;
+    const intervalId = setInterval(() => {
+      annApi.scrollNext();
+    }, 6000);
+    return () => clearInterval(intervalId);
+  }, [annApi]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,35 +82,27 @@ const Header = () => {
     <header className={`fixed top-0 left-0 right-0 z-50 bg-white transition-shadow duration-300 ${
       isScrolled ? 'shadow-md' : 'shadow-sm'
     }`}>
-      {/* Top Bar */}
-      <div className="bg-beshop-primary text-white py-2">
-        <div className="container flex items-center justify-between text-sm">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2">
-              <Phone className="w-4 h-4" />
-              <span>+229 XX XX XX XX</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <MapPin className="w-4 h-4" />
-              <span>Livraison gratuite à Cotonou</span>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center space-x-1 hover:opacity-80">
-                <Globe className="w-4 h-4" />
-                <span>Français</span>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>Français</DropdownMenuItem>
-                <DropdownMenuItem>English</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <span className="text-white/80">|</span>
-            <Link href="/help" className="hover:opacity-80">
-              Centre d'aide
-            </Link>
-          </div>
+      {/* Announcement Bar */}
+      <div className="bg-gradient-to-r from-beshop-primary to-blue-600 text-white py-2">
+        <div className="container relative">
+          <Carousel setApi={setAnnApi} opts={{ align: 'start', loop: true }}>
+            <CarouselContent>
+              {announcements.map((a) => (
+                <CarouselItem key={a.id} className="basis-full">
+                  <Link href={a.href} className="block">
+                    <div className="flex items-center justify-center text-center px-4">
+                      <div className="text-sm md:text-base font-medium">
+                        <span className="font-bold">{a.title}</span>
+                        <span className="mx-2">•</span>
+                        <span className="opacity-90">{a.subtitle}</span>
+                        <span className="ml-3 underline">Voir</span>
+                      </div>
+                    </div>
+                  </Link>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
         </div>
       </div>
 

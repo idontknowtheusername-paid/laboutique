@@ -7,6 +7,7 @@ import CategoryMenu from '@/components/layout/CategoryMenu';
 import Footer from '@/components/layout/Footer';
 import ProductSlider from '@/components/home/ProductSlider';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -200,11 +201,11 @@ export default function ProductDetailPage() {
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-          <a href="/" className="hover:text-beshop-primary">Accueil</a>
+          <Link href="/" className="hover:text-beshop-primary">Accueil</Link>
           <span>/</span>
-          <a href="/category/electronique" className="hover:text-beshop-primary">Électronique</a>
+          <Link href="/category/electronique" className="hover:text-beshop-primary">Électronique</Link>
           <span>/</span>
-          <a href="/category/electronique/smartphones" className="hover:text-beshop-primary">Smartphones</a>
+          <Link href="/category/electronique/smartphones" className="hover:text-beshop-primary">Smartphones</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">{productData.name}</span>
         </nav>
