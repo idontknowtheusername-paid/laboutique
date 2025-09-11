@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect, createContext, useContext } from 'react';
-import { CartItem, Database } from '@/types/database';
+import { CartItem, Database, Product } from '@/types/database';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from './useAuth';
 
+type CartItemWithProduct = CartItem & { products: Product };
+
 interface CartContextType {
-  cartItems: CartItem[] | null;
+  cartItems: CartItemWithProduct[] | null;
   loading: boolean;
   addToCart: (productId: string, quantity: number) => Promise<void>;
   updateQuantity: (itemId: string, quantity: number) => Promise<void>;
@@ -21,7 +23,7 @@ export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
     // Return a default implementation for when context is not available
-    const [cartItems, setCartItems] = useState<CartItem[] | null>(null);
+    const [cartItems, setCartItems] = useState<CartItemWithProduct[] | null>(null);
     const [loading, setLoading] = useState(false);
     const { user } = useAuth();
 
@@ -52,7 +54,7 @@ export const useCart = () => {
               slug
             )
           `)
-          .eq('user_id', user.id);
+          .eq('user_id', user.id) as any;
 
         if (!error) {
           setCartItems(data || []);
@@ -70,14 +72,14 @@ export const useCart = () => {
       if (!user || !isSupabaseConfigured()) return;
 
       try {
-        const { error } = await supabase
-          .from('cart_items')
+        const { error } = await (supabase
+          .from('cart_items') as any)
           .insert([
             {
               user_id: user.id,
               product_id: productId,
               quantity,
-            } as Database['public']['Tables']['cart_items']['Insert'],
+            },
           ]);
 
         if (!error) {
@@ -92,9 +94,9 @@ export const useCart = () => {
       if (!isSupabaseConfigured()) return;
 
       try {
-        const { error } = await supabase
-          .from('cart_items')
-          .update({ quantity } as Database['public']['Tables']['cart_items']['Update'])
+        const { error } = await (supabase
+          .from('cart_items') as any)
+          .update({ quantity })
           .eq('id', itemId);
 
         if (!error) {
@@ -109,10 +111,10 @@ export const useCart = () => {
       if (!isSupabaseConfigured()) return;
 
       try {
-        const { error } = await supabase
-          .from('cart_items')
+        const { error } = await (supabase
+          .from('cart_items') as any)
           .delete()
-          .eq('id', itemId) as any;
+          .eq('id', itemId);
 
         if (!error) {
           await fetchCartItems();
@@ -126,10 +128,10 @@ export const useCart = () => {
       if (!user || !isSupabaseConfigured()) return;
 
       try {
-        const { error } = await supabase
-          .from('cart_items')
+        const { error } = await (supabase
+          .from('cart_items') as any)
           .delete()
-          .eq('user_id', user.id) as any;
+          .eq('user_id', user.id);
 
         if (!error) {
           setCartItems([]);
@@ -143,7 +145,7 @@ export const useCart = () => {
       if (!cartItems) return 0;
       
       return cartItems.reduce((total, item) => {
-        const product = item.products as any;
+        const product = item.products;
         return total + (product?.price || 0) * item.quantity;
       }, 0);
     };
