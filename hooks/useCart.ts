@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, createContext, useContext } from 'react';
-import { CartItem, Database, Product } from '@/types/database';
+import { CartItem, Product } from '@/types/database';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from './useAuth';
 
@@ -53,7 +53,7 @@ export const useCart = () => {
               images,
               slug
             )
-          `) as any;
+          `);
 
         if (!error) {
           setCartItems(data || []);
@@ -71,7 +71,8 @@ export const useCart = () => {
       if (!user || !isSupabaseConfigured()) return;
 
       try {
-        const { error } = await (supabase.from('cart_items') as any)
+        const { error } = await supabase
+          .from('cart_items')
           .insert([
             {
               user_id: user.id,
@@ -92,7 +93,8 @@ export const useCart = () => {
       if (!isSupabaseConfigured()) return;
 
       try {
-        const { error } = await (supabase.from('cart_items') as any)
+        const { error } = await supabase
+          .from('cart_items')
           .update({ quantity })
           .eq('id', itemId);
 
@@ -108,7 +110,8 @@ export const useCart = () => {
       if (!isSupabaseConfigured()) return;
 
       try {
-        const { error } = await (supabase.from('cart_items') as any)
+        const { error } = await supabase
+          .from('cart_items')
           .delete()
           .eq('id', itemId);
 
@@ -124,7 +127,8 @@ export const useCart = () => {
       if (!user || !isSupabaseConfigured()) return;
 
       try {
-        const { error } = await (supabase.from('cart_items') as any)
+        const { error } = await supabase
+          .from('cart_items')
           .delete()
           .eq('user_id', user.id);
 
