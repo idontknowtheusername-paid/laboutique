@@ -46,6 +46,36 @@ const slides = [
     image: 'https://images.pexels.com/photos/4393021/pexels-photo-4393021.jpeg?auto=compress&cs=tinysrgb&w=1200',
     gradient: 'from-green-600 to-teal-600',
   },
+  {
+    id: 5,
+    title: 'Paiement Sécurisé',
+    subtitle: 'Vos transactions sont protégées',
+    description: 'Cartes bancaires, Mobile Money, virement. Toutes vos données sont chiffrées et sécurisées.',
+    cta: 'Découvrir',
+    link: '/payment-info',
+    image: 'https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    gradient: 'from-blue-600 to-indigo-600',
+  },
+  {
+    id: 6,
+    title: 'Offres Exclusives',
+    subtitle: 'Promotions réservées aux membres',
+    description: 'Rejoignez notre communauté et bénéficiez de réductions exclusives et d\'offres spéciales.',
+    cta: 'Rejoindre',
+    link: '/register',
+    image: 'https://images.pexels.com/photos/265087/pexels-photo-265087.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    gradient: 'from-purple-600 to-pink-600',
+  },
+  {
+    id: 7,
+    title: 'Support 24/7',
+    subtitle: 'Assistance client disponible',
+    description: 'Notre équipe est là pour vous aider 24h/24, 7j/7. Chat, email ou téléphone.',
+    cta: 'Nous contacter',
+    link: '/contact',
+    image: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    gradient: 'from-orange-600 to-red-600',
+  },
 ];
 
 const HeroCarousel = () => {

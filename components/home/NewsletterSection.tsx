@@ -1,10 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mail, Gift, Truck, Shield, Headphones } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 
 const NewsletterSection = () => {
   const [email, setEmail] = useState('');
@@ -16,28 +15,6 @@ const NewsletterSection = () => {
     setEmail('');
   };
 
-  const features = [
-    {
-      icon: Truck,
-      title: 'Livraison Gratuite',
-      description: 'À Cotonou et environs dès 25,000 FCFA'
-    },
-    {
-      icon: Shield,
-      title: 'Paiement Sécurisé',
-      description: 'Vos transactions sont protégées'
-    },
-    {
-      icon: Gift,
-      title: 'Offres Exclusives',
-      description: 'Promotions réservées aux membres'
-    },
-    {
-      icon: Headphones,
-      title: 'Support 24/7',
-      description: 'Assistance client disponible'
-    }
-  ];
 
   return (
     <section className="py-12 bg-white">
@@ -76,25 +53,6 @@ const NewsletterSection = () => {
           </div>
         </div>
 
-        {/* Features */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {features.map((feature, index) => {
-            const IconComponent = feature.icon;
-            return (
-              <Card key={index} className="text-center p-6 hover-lift">
-                <CardContent className="space-y-4">
-                  <div className="w-16 h-16 bg-beshop-primary/10 rounded-full flex items-center justify-center mx-auto">
-                    <IconComponent className="w-8 h-8 text-beshop-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900 mb-2">{feature.title}</h3>
-                    <p className="text-sm text-gray-600">{feature.description}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
       </div>
     </section>
   );
