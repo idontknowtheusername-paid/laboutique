@@ -53,8 +53,7 @@ export const useCart = () => {
               images,
               slug
             )
-          `)
-          .eq('user_id', user.id) as any;
+          `) as any;
 
         if (!error) {
           setCartItems(data || []);
@@ -72,15 +71,14 @@ export const useCart = () => {
       if (!user || !isSupabaseConfigured()) return;
 
       try {
-        const { error } = await (supabase
-          .from('cart_items') as any)
+        const { error } = await (supabase.from('cart_items') as any)
           .insert([
             {
               user_id: user.id,
               product_id: productId,
               quantity,
             },
-          ]) as any;
+          ]);
 
         if (!error) {
           await fetchCartItems();
@@ -94,8 +92,7 @@ export const useCart = () => {
       if (!isSupabaseConfigured()) return;
 
       try {
-        const { error } = await (supabase
-          .from('cart_items') as any)
+        const { error } = await (supabase.from('cart_items') as any)
           .update({ quantity })
           .eq('id', itemId);
 
@@ -111,8 +108,7 @@ export const useCart = () => {
       if (!isSupabaseConfigured()) return;
 
       try {
-        const { error } = await (supabase
-          .from('cart_items') as any)
+        const { error } = await (supabase.from('cart_items') as any)
           .delete()
           .eq('id', itemId);
 
@@ -128,8 +124,7 @@ export const useCart = () => {
       if (!user || !isSupabaseConfigured()) return;
 
       try {
-        const { error } = await (supabase
-          .from('cart_items') as any)
+        const { error } = await (supabase.from('cart_items') as any)
           .delete()
           .eq('user_id', user.id);
 
