@@ -80,7 +80,7 @@ export const useCart = () => {
               product_id: productId,
               quantity,
             },
-          ]);
+          ]) as any;
 
         if (!error) {
           await fetchCartItems();
