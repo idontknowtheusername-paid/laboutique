@@ -3,10 +3,12 @@ import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
 import HeroCarousel from '@/components/home/HeroCarousel';
 import FlashSales from '@/components/home/FlashSales';
+import TrendingProducts from '@/components/home/TrendingProducts';
 import Categories from '@/components/home/Categories';
 import ProductGrid from '@/components/home/ProductGrid';
 import ProductSlider from '@/components/home/ProductSlider';
 import FeaturedBrands from '@/components/home/FeaturedBrands';
+import PersonalizedOffers from '@/components/home/PersonalizedOffers';
 import Footer from '@/components/layout/Footer';
 
 // Mock data pour les produits par catégorie
@@ -348,6 +350,9 @@ export default function Home() {
           <FlashSales />
         </section>
 
+        {/* Trending Products */}
+        <TrendingProducts />
+
         {/* Categories Overview */}
         <Categories />
 
@@ -575,6 +580,9 @@ export default function Home() {
 
         {/* Marques partenaires */}
         <FeaturedBrands />
+
+        {/* Personalized Offers */}
+        <PersonalizedOffers />
       </div>
 
       <Footer />

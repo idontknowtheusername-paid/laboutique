@@ -5,6 +5,7 @@ import { Star, Heart, ShoppingCart, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import QuickAddToCart from './QuickAddToCart';
 import Link from 'next/link';
 
 interface Product {
@@ -158,10 +159,15 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
                 {/* Add to Cart - Toujours en bas */}
                 <div className="mt-auto pt-2">
-                  <Button className="w-full bg-beshop-primary hover:bg-blue-700 text-xs md:text-sm py-2 h-8 md:h-10">
-                    <ShoppingCart className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                    Ajouter
-                  </Button>
+                  <QuickAddToCart
+                    productId={product.id}
+                    productName={product.name}
+                    price={product.price}
+                    onAddToCart={(productId, quantity) => {
+                      console.log(`Added ${quantity} of product ${productId} to cart`);
+                      // TODO: Implement actual cart functionality
+                    }}
+                  />
                 </div>
               </CardContent>
             </Card>
