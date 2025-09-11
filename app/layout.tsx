@@ -1,0 +1,57 @@
+import './globals.css';
+import type { Metadata } from 'next';
+import { Inter, Poppins } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const poppins = Poppins({ 
+  subsets: ['latin'], 
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-poppins'
+});
+
+export const metadata: Metadata = {
+  title: 'Be Shop - Benin Elite Shopping Experience',
+  description: 'Be Shop est la première plateforme e-commerce du Bénin offrant une expérience d\'achat premium avec des produits authentiques, une livraison rapide et un service client exceptionnel.',
+  keywords: 'e-commerce Bénin, shopping en ligne, électronique, mode, maison, beauté, Be Shop',
+  authors: [{ name: 'Be Shop Team' }],
+  viewport: 'width=device-width, initial-scale=1',
+  robots: 'index, follow',
+  openGraph: {
+    type: 'website',
+    locale: 'fr_BJ',
+    url: 'https://beshop.bj',
+    siteName: 'Be Shop',
+    title: 'Be Shop - Benin Elite Shopping Experience',
+    description: 'La première plateforme e-commerce premium du Bénin',
+    images: ['/images/og-image.jpg'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@BeShopBenin',
+    title: 'Be Shop - Benin Elite Shopping Experience',
+    description: 'La première plateforme e-commerce premium du Bénin',
+    images: ['/images/twitter-image.jpg'],
+  },
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="fr" className={`${inter.variable} ${poppins.variable}`}>
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="canonical" href="https://beshop.bj" />
+        <meta name="theme-color" content="#1E40AF" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Be Shop" />
+      </head>
+      <body className={`${poppins.className} antialiased`}>
+        {children}
+      </body>
+    </html>
+  );
+}

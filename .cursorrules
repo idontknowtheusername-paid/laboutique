@@ -1,0 +1,27 @@
+# Règles de développement pour La Boutique B
+
+## Design et Interface
+- Pour tous les designs demandés, créez des interfaces belles et uniques, pas des templates génériques
+- Développez des pages web complètes et prêtes pour la production
+- Utilisez des designs modernes et attrayants avec de bonnes pratiques UX
+
+## Next.js et React
+- Lorsque vous utilisez des hooks côté client (useState, useEffect) dans un composant traité comme Server Component par Next.js, ajoutez toujours la directive "use client" en haut du fichier
+- Évitez d'écrire du code qui déclenche l'erreur : "Warning: Extra attributes from the server: %s%s""class,style"
+
+## Stack Technique
+- Ce template supporte par défaut la syntaxe JSX avec les classes Tailwind CSS
+- Utilisez la bibliothèque shadcn/ui pour les composants UI
+- Utilisez les hooks React standards
+- Utilisez Lucide React pour les icônes
+- N'installez pas d'autres packages pour les thèmes UI, icônes, etc. sauf si absolument nécessaire ou demandé explicitement
+
+## Icônes et Logos
+- Utilisez les icônes de lucide-react pour les logos
+- Privilégiez la cohérence visuelle dans le choix des icônes
+
+## Bonnes Pratiques
+- Codez de manière propre et maintenable
+- Suivez les conventions de nommage React/Next.js
+- Optimisez les performances des composants
+- Assurez-vous que le code est accessible et responsive
