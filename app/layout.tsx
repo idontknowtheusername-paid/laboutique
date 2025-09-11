@@ -1,13 +1,5 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter, Poppins } from 'next/font/google';
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const poppins = Poppins({ 
-  subsets: ['latin'], 
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-poppins'
-});
 
 export const metadata: Metadata = {
   title: 'Be Shop - Benin Elite Shopping Experience',
@@ -40,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" className={`${inter.variable} ${poppins.variable}`}>
+    <html lang="fr">
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="canonical" href="https://beshop.bj" />
@@ -49,7 +41,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Be Shop" />
       </head>
-      <body className={`${poppins.className} antialiased`}>
+      <body className="font-sans antialiased">
         {children}
       </body>
     </html>
