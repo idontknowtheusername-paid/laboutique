@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, createContext, useContext } from 'react';
-import { CartItem } from '@/types/database';
+import { CartItem, Database } from '@/types/database';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from './useAuth';
 
@@ -72,7 +72,7 @@ export const useCart = () => {
       try {
         const { error } = await supabase
           .from('cart_items')
-          .insert([
+          .insert<Database['public']['Tables']['cart_items']['Insert']>([
             {
               user_id: user.id,
               product_id: productId,
