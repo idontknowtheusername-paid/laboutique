@@ -169,6 +169,140 @@ const similarProducts = [
   }
 ];
 
+const frequentlyBoughtTogether = [
+  {
+    id: '6',
+    name: 'Étui iPhone 15 Pro Max - Cuir Premium',
+    slug: 'etui-iphone-15-pro-max-cuir',
+    image: 'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=400',
+    price: 45000,
+    rating: 4.8,
+    reviews: 1247,
+    vendor: 'Apple Store',
+    category: 'Accessoires',
+    badge: 'Populaire',
+    badgeColor: 'bg-green-500'
+  },
+  {
+    id: '7',
+    name: 'Écran protecteur iPhone 15 Pro Max',
+    slug: 'ecran-protecteur-iphone-15-pro-max',
+    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400',
+    price: 25000,
+    rating: 4.6,
+    reviews: 892,
+    vendor: 'Tech Accessories',
+    category: 'Accessoires'
+  },
+  {
+    id: '8',
+    name: 'Chargeur sans fil MagSafe',
+    slug: 'chargeur-sans-fil-magsafe',
+    image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=400',
+    price: 85000,
+    comparePrice: 120000,
+    rating: 4.7,
+    reviews: 634,
+    discount: 29,
+    vendor: 'Apple Store',
+    category: 'Accessoires'
+  },
+  {
+    id: '9',
+    name: 'AirPods Pro 2ème génération',
+    slug: 'airpods-pro-2',
+    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400',
+    price: 140000,
+    comparePrice: 180000,
+    rating: 4.8,
+    reviews: 2156,
+    discount: 22,
+    vendor: 'Apple Store',
+    category: 'Audio'
+  },
+  {
+    id: '10',
+    name: 'Câble USB-C vers Lightning',
+    slug: 'cable-usb-c-lightning',
+    image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=400',
+    price: 15000,
+    rating: 4.4,
+    reviews: 456,
+    vendor: 'Tech Accessories',
+    category: 'Accessoires'
+  }
+];
+
+const otherCustomersViewed = [
+  {
+    id: '11',
+    name: 'MacBook Air M3 13"',
+    slug: 'macbook-air-m3-13',
+    image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=400',
+    price: 720000,
+    comparePrice: 850000,
+    rating: 4.9,
+    reviews: 189,
+    discount: 15,
+    vendor: 'Apple Store',
+    category: 'Ordinateurs',
+    badge: 'Nouveau',
+    badgeColor: 'bg-blue-500'
+  },
+  {
+    id: '12',
+    name: 'iPad Pro 12.9" M2',
+    slug: 'ipad-pro-12-9-m2',
+    image: 'https://images.pexels.com/photos/1334597/pexels-photo-1334597.jpeg?auto=compress&cs=tinysrgb&w=400',
+    price: 650000,
+    comparePrice: 750000,
+    rating: 4.8,
+    reviews: 167,
+    discount: 13,
+    vendor: 'Apple Store',
+    category: 'Tablettes'
+  },
+  {
+    id: '13',
+    name: 'Apple Watch Series 9',
+    slug: 'apple-watch-series-9',
+    image: 'https://images.pexels.com/photos/393047/pexels-photo-393047.jpeg?auto=compress&cs=tinysrgb&w=400',
+    price: 320000,
+    comparePrice: 380000,
+    rating: 4.7,
+    reviews: 892,
+    discount: 16,
+    vendor: 'Apple Store',
+    category: 'Montres'
+  },
+  {
+    id: '14',
+    name: 'Sony WH-1000XM5 Casque',
+    slug: 'sony-wh-1000xm5',
+    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400',
+    price: 180000,
+    comparePrice: 220000,
+    rating: 4.7,
+    reviews: 445,
+    discount: 18,
+    vendor: 'Sony Official',
+    category: 'Audio'
+  },
+  {
+    id: '15',
+    name: 'Dell XPS 13 Plus',
+    slug: 'dell-xps-13-plus',
+    image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=400',
+    price: 580000,
+    comparePrice: 680000,
+    rating: 4.5,
+    reviews: 98,
+    discount: 15,
+    vendor: 'Dell Official',
+    category: 'Ordinateurs'
+  }
+];
+
 export default function ProductDetailPage() {
   const params = useParams();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -603,6 +737,22 @@ export default function ProductDetailPage() {
           title="Produits similaires"
           subtitle="Découvrez d'autres smartphones qui pourraient vous intéresser"
           products={similarProducts}
+          backgroundColor="bg-white"
+        />
+
+        {/* Frequently Bought Together */}
+        <ProductSlider
+          title="Produits fréquemment achetés ensemble"
+          subtitle="Les clients qui ont acheté ce produit ont aussi choisi"
+          products={frequentlyBoughtTogether}
+          backgroundColor="bg-gray-50"
+        />
+
+        {/* Other Customers Also Viewed */}
+        <ProductSlider
+          title="Autres clients ont regardé"
+          subtitle="Basé sur l'historique de navigation des clients"
+          products={otherCustomersViewed}
           backgroundColor="bg-white"
         />
       </div>

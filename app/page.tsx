@@ -351,188 +351,203 @@ export default function Home() {
         {/* Categories Overview */}
         <Categories />
 
-        {/* Électronique & High-Tech - en carrousel */}
-        <ProductSlider
+        {/* Électronique & High-Tech - en grille */}
+        <ProductGrid
           title="Électronique & High-Tech"
           subtitle="Les dernières technologies et gadgets tendance"
           products={electronicsProducts}
           viewAllLink="/category/electronique"
           backgroundColor="bg-white"
+          maxItems={20}
         />
 
-        {/* Mode & Style - Carousel */}
-        <ProductSlider
+        {/* Mode & Style - Grille */}
+        <ProductGrid
           title="Mode & Style"
           subtitle="Exprimez votre style unique avec nos collections tendance"
           products={fashionProducts}
           viewAllLink="/category/mode"
           backgroundColor="bg-gray-50"
+          maxItems={20}
         />
 
-        {/* Maison & Jardin - en carrousel */}
-        <ProductSlider
+        {/* Maison & Jardin - en grille */}
+        <ProductGrid
           title="Maison & Jardin"
           subtitle="Tout pour embellir et équiper votre maison"
           products={homeGardenProducts}
           viewAllLink="/category/maison-jardin"
           backgroundColor="bg-white"
+          maxItems={20}
         />
 
-        {/* Beauté & Santé - Carousel */}
-        <ProductSlider
+        {/* Beauté & Santé - Grille */}
+        <ProductGrid
           title="Beauté & Santé"
           subtitle="Prenez soin de vous avec nos produits de qualité"
           products={beautyHealthProducts}
           viewAllLink="/category/beaute-sante"
+          maxItems={20}
         />
 
-        {/* Explorer par catégorie - sections détaillées */}
+        {/* Explorer par catégorie - sections détaillées en grilles */}
         <section className="my-12 space-y-12">
-          {/* IMPORTANTES en carrousel (même style que Beauté & Santé) */}
+          {/* Sections importantes en grilles */}
           {smartphones.length > 0 && (
-            <ProductSlider
+            <ProductGrid
               title="Smartphones"
               subtitle="Les meilleurs modèles du moment"
               products={smartphones}
               viewAllLink="/category/electronique"
               backgroundColor="bg-white"
+              maxItems={15}
             />
           )}
 
           {laptops.length > 0 && (
-            <ProductSlider
+            <ProductGrid
               title="Ordinateurs"
               subtitle="Laptops & ultrabooks performants"
               products={laptops}
               viewAllLink="/category/electronique"
-              backgroundColor="bg-white"
+              backgroundColor="bg-gray-50"
+              maxItems={15}
             />
           )}
 
           {electromenager.length > 0 && (
-            <ProductSlider
+            <ProductGrid
               title="Électroménager"
               subtitle="Équipez votre maison avec les essentiels"
               products={electromenager}
               viewAllLink="/category/maison-jardin"
               backgroundColor="bg-white"
+              maxItems={15}
             />
           )}
 
           {parfums.length > 0 && (
-            <ProductSlider
+            <ProductGrid
               title="Parfums"
               subtitle="Sélection premium pour lui & elle"
               products={parfums}
               viewAllLink="/category/beaute-sante"
-              backgroundColor="bg-white"
+              backgroundColor="bg-gray-50"
+              maxItems={15}
             />
           )}
 
-          {/* Électronique - autres en carrousel */}
+          {/* Électronique - autres en grilles */}
           {(tvAudio.length > 0 || gaming.length > 0 || tablets.length > 0 || cameras.length > 0) && (
             <div className="space-y-10">
               {tvAudio.length > 0 && (
-                <ProductSlider
+                <ProductGrid
                   title="TV & Audio"
                   subtitle="Image nette, son immersif"
                   products={tvAudio}
                   viewAllLink="/category/electronique"
                   backgroundColor="bg-white"
+                  maxItems={15}
                 />
               )}
               {gaming.length > 0 && (
-                <ProductSlider
+                <ProductGrid
                   title="Gaming"
                   subtitle="Consoles et accessoires"
                   products={gaming}
                   viewAllLink="/category/electronique"
+                  backgroundColor="bg-gray-50"
+                  maxItems={15}
                 />
               )}
               {tablets.length > 0 && (
-                <ProductSlider
+                <ProductGrid
                   title="Tablettes"
                   subtitle="Travail et divertissement"
                   products={tablets}
                   viewAllLink="/category/electronique"
+                  backgroundColor="bg-white"
+                  maxItems={15}
                 />
               )}
               {cameras.length > 0 && (
-                <ProductSlider
+                <ProductGrid
                   title="Appareils Photo"
                   subtitle="Capturez l'instant"
                   products={cameras}
                   viewAllLink="/category/electronique"
+                  backgroundColor="bg-gray-50"
+                  maxItems={15}
                 />
               )}
             </div>
           )}
 
-          {/* Mode - carrousels */}
+          {/* Mode - grilles */}
           {(modeFemme.length > 0 || modeHomme.length > 0 || chaussures.length > 0 || montres.length > 0 || sportFitness.length > 0 || accessoiresMode.length > 0) && (
             <div className="space-y-10">
               {modeFemme.length > 0 && (
-                <ProductSlider title="Mode Femme" products={modeFemme} viewAllLink="/category/mode" />
+                <ProductGrid title="Mode Femme" products={modeFemme} viewAllLink="/category/mode" backgroundColor="bg-white" maxItems={15} />
               )}
               {modeHomme.length > 0 && (
-                <ProductSlider title="Mode Homme" products={modeHomme} viewAllLink="/category/mode" backgroundColor="bg-white" />
+                <ProductGrid title="Mode Homme" products={modeHomme} viewAllLink="/category/mode" backgroundColor="bg-gray-50" maxItems={15} />
               )}
               {chaussures.length > 0 && (
-                <ProductSlider title="Chaussures" products={chaussures} viewAllLink="/category/mode" />
+                <ProductGrid title="Chaussures" products={chaussures} viewAllLink="/category/mode" backgroundColor="bg-white" maxItems={15} />
               )}
               {montres.length > 0 && (
-                <ProductSlider title="Montres" products={montres} viewAllLink="/category/mode" backgroundColor="bg-white" />
+                <ProductGrid title="Montres" products={montres} viewAllLink="/category/mode" backgroundColor="bg-gray-50" maxItems={15} />
               )}
               {sportFitness.length > 0 && (
-                <ProductSlider title="Sport & Fitness" products={sportFitness} viewAllLink="/category/mode" />
+                <ProductGrid title="Sport & Fitness" products={sportFitness} viewAllLink="/category/mode" backgroundColor="bg-white" maxItems={15} />
               )}
               {accessoiresMode.length > 0 && (
-                <ProductSlider title="Accessoires" products={accessoiresMode} viewAllLink="/category/mode" backgroundColor="bg-white" />
+                <ProductGrid title="Accessoires" products={accessoiresMode} viewAllLink="/category/mode" backgroundColor="bg-gray-50" maxItems={15} />
               )}
             </div>
           )}
 
-          {/* Maison & Jardin - carrousels */}
+          {/* Maison & Jardin - grilles */}
           {(mobilier.length > 0 || jardin.length > 0 || decoration.length > 0 || eclairage.length > 0 || textileMaison.length > 0) && (
             <div className="space-y-10">
               {mobilier.length > 0 && (
-                <ProductSlider title="Mobilier" products={mobilier} viewAllLink="/category/maison-jardin" />
+                <ProductGrid title="Mobilier" products={mobilier} viewAllLink="/category/maison-jardin" backgroundColor="bg-white" maxItems={15} />
               )}
               {jardin.length > 0 && (
-                <ProductSlider title="Jardin" products={jardin} viewAllLink="/category/maison-jardin" backgroundColor="bg-white" />
+                <ProductGrid title="Jardin" products={jardin} viewAllLink="/category/maison-jardin" backgroundColor="bg-gray-50" maxItems={15} />
               )}
               {decoration.length > 0 && (
-                <ProductSlider title="Décoration" products={decoration} viewAllLink="/category/maison-jardin" />
+                <ProductGrid title="Décoration" products={decoration} viewAllLink="/category/maison-jardin" backgroundColor="bg-white" maxItems={15} />
               )}
               {eclairage.length > 0 && (
-                <ProductSlider title="Éclairage" products={eclairage} viewAllLink="/category/maison-jardin" backgroundColor="bg-white" />
+                <ProductGrid title="Éclairage" products={eclairage} viewAllLink="/category/maison-jardin" backgroundColor="bg-gray-50" maxItems={15} />
               )}
               {textileMaison.length > 0 && (
-                <ProductSlider title="Textile maison" products={textileMaison} viewAllLink="/category/maison-jardin" />
+                <ProductGrid title="Textile maison" products={textileMaison} viewAllLink="/category/maison-jardin" backgroundColor="bg-white" maxItems={15} />
               )}
             </div>
           )}
 
-          {/* Beauté & Santé - carrousels */}
+          {/* Beauté & Santé - grilles */}
           {(maquillage.length > 0 || soinsVisage.length > 0 || soinsCheveux.length > 0 || soinsCorps.length > 0 || complements.length > 0 || accessoiresBeaute.length > 0) && (
             <div className="space-y-10">
               {maquillage.length > 0 && (
-                <ProductSlider title="Maquillage" products={maquillage} viewAllLink="/category/beaute-sante" />
+                <ProductGrid title="Maquillage" products={maquillage} viewAllLink="/category/beaute-sante" backgroundColor="bg-white" maxItems={15} />
               )}
               {soinsVisage.length > 0 && (
-                <ProductSlider title="Soins visage" products={soinsVisage} viewAllLink="/category/beaute-sante" backgroundColor="bg-white" />
+                <ProductGrid title="Soins visage" products={soinsVisage} viewAllLink="/category/beaute-sante" backgroundColor="bg-gray-50" maxItems={15} />
               )}
               {soinsCheveux.length > 0 && (
-                <ProductSlider title="Soins cheveux" products={soinsCheveux} viewAllLink="/category/beaute-sante" />
+                <ProductGrid title="Soins cheveux" products={soinsCheveux} viewAllLink="/category/beaute-sante" backgroundColor="bg-white" maxItems={15} />
               )}
               {soinsCorps.length > 0 && (
-                <ProductSlider title="Soins corps" products={soinsCorps} viewAllLink="/category/beaute-sante" backgroundColor="bg-white" />
+                <ProductGrid title="Soins corps" products={soinsCorps} viewAllLink="/category/beaute-sante" backgroundColor="bg-gray-50" maxItems={15} />
               )}
               {complements.length > 0 && (
-                <ProductSlider title="Compléments" products={complements} viewAllLink="/category/beaute-sante" />
+                <ProductGrid title="Compléments" products={complements} viewAllLink="/category/beaute-sante" backgroundColor="bg-white" maxItems={15} />
               )}
               {accessoiresBeaute.length > 0 && (
-                <ProductSlider title="Accessoires beauté" products={accessoiresBeaute} viewAllLink="/category/beaute-sante" backgroundColor="bg-white" />
+                <ProductGrid title="Accessoires beauté" products={accessoiresBeaute} viewAllLink="/category/beaute-sante" backgroundColor="bg-gray-50" maxItems={15} />
               )}
             </div>
           )}

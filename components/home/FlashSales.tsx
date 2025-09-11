@@ -204,21 +204,21 @@ const FlashSales = () => {
     <div className="bg-gradient-to-r from-beshop-secondary to-orange-600 rounded-xl p-6 text-white">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-4">
-          <h2 className="text-3xl font-bold">Flash Sales</h2>
-          <div className="flex items-center space-x-2 bg-white/20 px-4 py-2 rounded-full">
-            <Clock className="w-5 h-5" />
-            <span className="font-semibold">Se termine dans:</span>
-            <div className="flex space-x-1">
-              <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center">
+        <div className="flex items-center space-x-1">
+          <h2 className="text-sm md:text-lg font-bold">Flash Sales</h2>
+          <div className="flex items-center space-x-0.5 bg-white/20 px-0.75 py-0.25 rounded-full">
+            <Clock className="w-2.5 h-2.5" />
+            <span className="font-medium text-[5px]">Se termine dans:</span>
+            <div className="flex space-x-0.25">
+              <span className="bg-white text-beshop-secondary px-0.25 py-0.25 rounded font-bold min-w-[0.5rem] text-center text-[5px]">
                 {String(timeLeft.hours).padStart(2, '0')}
               </span>
-              <span>:</span>
-              <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center">
+              <span className="text-[5px]">:</span>
+              <span className="bg-white text-beshop-secondary px-0.25 py-0.25 rounded font-bold min-w-[0.5rem] text-center text-[5px]">
                 {String(timeLeft.minutes).padStart(2, '0')}
               </span>
-              <span>:</span>
-              <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center">
+              <span className="text-[5px]">:</span>
+              <span className="bg-white text-beshop-secondary px-0.25 py-0.25 rounded font-bold min-w-[0.5rem] text-center text-[5px]">
                 {String(timeLeft.seconds).padStart(2, '0')}
               </span>
             </div>
@@ -246,11 +246,9 @@ const FlashSales = () => {
           }}
         >
         {displayedProducts.map((product, index) => {
-          const progressPercentage = (product.sold / (product.sold + product.stock)) * 100;
-          
           return (
             <div key={`${product.id}-${index}`} className="flex-shrink-0 px-3" style={{ width: `${100 / itemsToShow}%` }}>
-            <Card className="group hover-lift card-shadow bg-white text-gray-900 overflow-hidden">
+            <Card className="group hover-lift card-shadow bg-white text-gray-900 overflow-hidden h-full flex flex-col">
               <div className="relative">
                 {/* Product Image */}
                 <div className="aspect-square overflow-hidden">
@@ -262,77 +260,67 @@ const FlashSales = () => {
                 </div>
                 
                 {/* Discount Badge */}
-                <Badge className="absolute top-2 left-2 bg-red-500 text-white">
+                <Badge className="absolute top-2 left-2 bg-red-500 text-white text-xs">
                   -{product.discount}%
                 </Badge>
                 
                 {/* Quick Actions */}
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2">
-                  <Button size="icon" variant="secondary" className="w-8 h-8 bg-white/90 hover:bg-white">
-                    <Heart className="w-4 h-4" />
+                  <Button size="icon" variant="secondary" className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white">
+                    <Heart className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
-                  <Button size="icon" variant="secondary" className="w-8 h-8 bg-white/90 hover:bg-white">
-                    <Eye className="w-4 h-4" />
+                  <Button size="icon" variant="secondary" className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white">
+                    <Eye className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </div>
               </div>
 
-              <CardContent className="p-4 space-y-3">
-                {/* Product Name */}
-                <Link href={`/product/${product.slug}`}>
-                  <h3 className="font-medium text-sm line-clamp-2 hover:text-beshop-primary transition-colors">
-                    {product.name}
-                  </h3>
-                </Link>
+              <CardContent className="p-2 md:p-4 flex flex-col flex-grow">
+                <div className="space-y-2 md:space-y-3 flex-grow">
+                  {/* Product Name */}
+                  <Link href={`/product/${product.slug}`}>
+                    <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-beshop-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
+                      {product.name}
+                    </h3>
+                  </Link>
 
-                {/* Rating */}
-                <div className="flex items-center space-x-2 text-sm">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-3 h-3 ${
-                          i < Math.floor(product.rating)
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'fill-gray-200 text-gray-200'
-                        }`}
-                      />
-                    ))}
+                  {/* Rating */}
+                  <div className="flex items-center space-x-2 text-xs md:text-sm">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-2.5 h-2.5 md:w-3 md:h-3 ${
+                            i < Math.floor(product.rating)
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'fill-gray-200 text-gray-200'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-gray-500 truncate">({product.reviews})</span>
                   </div>
-                  <span className="text-gray-500">({product.reviews})</span>
-                </div>
 
-                {/* Prices */}
-                <div className="space-y-1">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-bold text-beshop-primary text-lg">
-                      {formatPrice(product.salePrice)}
-                    </span>
-                    <span className="text-sm text-gray-500 line-through">
-                      {formatPrice(product.originalPrice)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Stock Progress */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>Vendu: {product.sold}</span>
-                    <span>Stock: {product.stock}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-beshop-secondary h-2 rounded-full transition-all duration-500"
-                      style={{ width: `${Math.min(progressPercentage, 100)}%` }}
-                    />
+                  {/* Prices */}
+                  <div className="space-y-1">
+                    <div className="flex flex-col md:flex-row items-start md:items-center space-y-1 md:space-y-0 md:space-x-2">
+                      <span className="font-bold text-beshop-primary text-sm md:text-lg">
+                        {formatPrice(product.salePrice)}
+                      </span>
+                      <span className="text-xs md:text-sm text-gray-500 line-through">
+                        {formatPrice(product.originalPrice)}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Add to Cart Button */}
-                <Button className="w-full bg-beshop-primary hover:bg-blue-700">
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Ajouter au panier
-                </Button>
+                <div className="mt-3 md:mt-4">
+                  <Button className="w-full bg-beshop-primary hover:bg-blue-700 text-xs md:text-sm h-8 md:h-10">
+                    <ShoppingCart className="w-3 h-3 md:w-4 md:h-4 mr-2" />
+                    Ajouter au panier
+                  </Button>
+                </div>
               </CardContent>
             </Card>
             </div>
