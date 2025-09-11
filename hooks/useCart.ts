@@ -71,14 +71,14 @@ export const useCart = () => {
 
       try {
         const { error } = await supabase
-          .from<'cart_items'>('cart_items')
-          .insert([
-            {
-              user_id: user.id,
-              product_id: productId,
-              quantity,
-            },
-          ]);
+          .from('cart_items')
+          .insert<Database['public']['Tables']['cart_items']['Insert']>([
+              {
+                user_id: user.id,
+                product_id: productId,
+                quantity,
+              },
+            ]);
 
         if (!error) {
           await fetchCartItems();
@@ -94,7 +94,7 @@ export const useCart = () => {
       try {
         const { error } = await supabase
           .from('cart_items')
-          .update({ quantity })
+          .update({ quantity } as Database['public']['Tables']['cart_items']['Update'])
           .eq('id', itemId);
 
         if (!error) {
@@ -112,7 +112,7 @@ export const useCart = () => {
         const { error } = await supabase
           .from('cart_items')
           .delete()
-          .eq('id', itemId);
+          .eq('id', itemId) as any;
 
         if (!error) {
           await fetchCartItems();
@@ -129,7 +129,7 @@ export const useCart = () => {
         const { error } = await supabase
           .from('cart_items')
           .delete()
-          .eq('user_id', user.id);
+          .eq('user_id', user.id) as any;
 
         if (!error) {
           setCartItems([]);
