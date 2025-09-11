@@ -21,6 +21,8 @@ const baseProducts = [
     price: 45000,
     rating: 4.6,
     reviews: 120,
+    vendor: 'Be Shop',
+    category: 'Électronique',
   },
   {
     id: 'p2',
@@ -30,6 +32,8 @@ const baseProducts = [
     price: 65000,
     rating: 4.4,
     reviews: 86,
+    vendor: 'Be Shop',
+    category: 'Mode',
   },
   {
     id: 'p3',
@@ -39,6 +43,8 @@ const baseProducts = [
     price: 85000,
     rating: 4.7,
     reviews: 203,
+    vendor: 'Be Shop',
+    category: 'Maison',
   },
   {
     id: 'p4',
@@ -48,6 +54,8 @@ const baseProducts = [
     price: 120000,
     rating: 4.5,
     reviews: 65,
+    vendor: 'Be Shop',
+    category: 'Beauté',
   },
   {
     id: 'p5',
@@ -57,6 +65,8 @@ const baseProducts = [
     price: 38000,
     rating: 4.2,
     reviews: 54,
+    vendor: 'Be Shop',
+    category: 'Sport',
   },
   {
     id: 'p6',
@@ -66,6 +76,8 @@ const baseProducts = [
     price: 99000,
     rating: 4.8,
     reviews: 312,
+    vendor: 'Be Shop',
+    category: 'Électronique',
   },
 ];
 

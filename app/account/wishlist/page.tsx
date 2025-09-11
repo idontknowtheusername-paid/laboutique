@@ -14,8 +14,6 @@ const wishlistProducts = [
     price: 85000,
     rating: 4.6,
     reviews: 124,
-    vendor: 'Be Shop',
-    category: 'Électronique',
   },
 ];
 
