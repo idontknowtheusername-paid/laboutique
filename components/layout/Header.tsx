@@ -15,14 +15,15 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useCart } from '@/hooks/useCart';
+import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/hooks/useAuth';
+import { ClientOnly } from '@/components/ui/ClientOnly';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
-  const { cartItems } = useCart();
+  const { getCartItemsCount } = useCart();
   const { user, signOut } = useAuth();
   const pathname = usePathname();
   const isHome = pathname === '/';
@@ -76,7 +77,7 @@ const Header = () => {
     }
   };
 
-  const cartItemsCount = cartItems?.length || 0;
+  const cartItemsCount = getCartItemsCount();
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 bg-white transition-shadow duration-300 ${
@@ -198,11 +199,13 @@ const Header = () => {
             <Link href="/cart" className="relative">
               <Button variant="ghost" size="icon" className="text-gray-700 hover:text-beshop-primary">
                 <ShoppingCart className="w-6 h-6" />
-                {cartItemsCount > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-beshop-secondary text-white text-xs px-2 py-1">
-                    {cartItemsCount}
-                  </Badge>
-                )}
+                <ClientOnly>
+                  {cartItemsCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 bg-beshop-secondary text-white text-xs px-2 py-1">
+                      {cartItemsCount}
+                    </Badge>
+                  )}
+                </ClientOnly>
               </Button>
             </Link>
 

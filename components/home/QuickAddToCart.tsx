@@ -4,12 +4,13 @@ import React, { useState } from 'react';
 import { ShoppingCart, Plus, Minus, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useCart } from '@/contexts/CartContext';
 
 interface QuickAddToCartProps {
   productId: string;
   productName: string;
   price: number;
-  onAddToCart: (productId: string, quantity: number) => void;
+  onAddToCart?: (productId: string, quantity: number) => void;
   className?: string;
 }
 
@@ -23,10 +24,19 @@ const QuickAddToCart: React.FC<QuickAddToCartProps> = ({
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const { addToCart } = useCart();
 
   const handleAddToCart = () => {
     setIsAnimating(true);
-    onAddToCart(productId, quantity);
+    
+    // Use the cart context
+    addToCart(productId, productName, price, quantity);
+    
+    // Call the optional callback for backward compatibility
+    if (onAddToCart) {
+      onAddToCart(productId, quantity);
+    }
+    
     setIsAdded(true);
     
     // Reset animation after 2 seconds
@@ -110,11 +120,7 @@ const QuickAddToCart: React.FC<QuickAddToCartProps> = ({
       )}
 
       {/* Mobile Quantity Swipe Hint */}
-      <div className="md:hidden mt-1 text-center">
-        <p className="text-xs text-gray-500">
-          Tap pour ajouter • Swipe pour quantité
-        </p>
-      </div>
+
     </div>
   );
 };

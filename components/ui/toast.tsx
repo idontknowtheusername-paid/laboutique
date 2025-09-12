@@ -1,8 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
-import { Button } from './button';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Check, X, AlertCircle, Info } from 'lucide-react';
 
 interface Toast {
   id: string;
@@ -30,33 +29,40 @@ export const useToast = () => {
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
 
-  const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
-    const id = Math.random().toString(36).substr(2, 9);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const addToast = (toast: Omit<Toast, 'id'>) => {
+    if (!isMounted) return;
+
+    const id = `toast-${Date.now()}-${Math.random()}`;
     const newToast = { ...toast, id };
-    
     setToasts(prev => [...prev, newToast]);
 
     // Auto remove after duration
-    const duration = toast.duration || 5000;
     setTimeout(() => {
       removeToast(id);
-    }, duration);
-  }, []);
+    }, toast.duration || 3000);
+  };
 
-  const removeToast = useCallback((id: string) => {
+  const removeToast = (id: string) => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
-  }, []);
+  };
 
   return (
     <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
       {children}
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
+      {isMounted && <ToastContainer toasts={toasts} onRemove={removeToast} />}
     </ToastContext.Provider>
   );
 };
 
 const ToastContainer: React.FC<{ toasts: Toast[]; onRemove: (id: string) => void }> = ({ toasts, onRemove }) => {
+  if (toasts.length === 0) return null;
+
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2">
       {toasts.map((toast) => (
@@ -70,17 +76,17 @@ const ToastItem: React.FC<{ toast: Toast; onRemove: (id: string) => void }> = ({
   const getIcon = () => {
     switch (toast.type) {
       case 'success':
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
+        return <Check className="w-5 h-5 text-green-600" />;
       case 'error':
-        return <AlertCircle className="w-5 h-5 text-red-500" />;
+        return <X className="w-5 h-5 text-red-600" />;
       case 'warning':
-        return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+        return <AlertCircle className="w-5 h-5 text-yellow-600" />;
       case 'info':
-        return <Info className="w-5 h-5 text-blue-500" />;
+        return <Info className="w-5 h-5 text-blue-600" />;
     }
   };
 
-  const getBackgroundColor = () => {
+  const getBgColor = () => {
     switch (toast.type) {
       case 'success':
         return 'bg-green-50 border-green-200';
@@ -94,23 +100,21 @@ const ToastItem: React.FC<{ toast: Toast; onRemove: (id: string) => void }> = ({
   };
 
   return (
-    <div className={`max-w-sm w-full border rounded-lg shadow-lg p-4 ${getBackgroundColor()} animate-in slide-in-from-right-full`}>
+    <div className={`${getBgColor()} border rounded-lg p-4 shadow-lg max-w-sm animate-in slide-in-from-right`}>
       <div className="flex items-start space-x-3">
         {getIcon()}
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-gray-900">{toast.title}</p>
+        <div className="flex-1">
+          <h4 className="font-medium text-gray-900">{toast.title}</h4>
           {toast.description && (
             <p className="text-sm text-gray-600 mt-1">{toast.description}</p>
           )}
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-6 w-6 p-0 hover:bg-gray-200"
+        <button
           onClick={() => onRemove(toast.id)}
+          className="text-gray-400 hover:text-gray-600"
         >
           <X className="w-4 h-4" />
-        </Button>
+        </button>
       </div>
     </div>
   );

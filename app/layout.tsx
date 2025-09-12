@@ -1,5 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import { CartProvider } from '@/contexts/CartContext';
+import { ToastProvider } from '@/components/ui/toast';
 
 export const metadata: Metadata = {
   title: 'Be Shop - Benin Elite Shopping Experience',
@@ -42,7 +44,11 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Be Shop" />
       </head>
       <body className="font-sans antialiased">
-        {children}
+        <ToastProvider>
+          <CartProvider>
+            {children}
+          </CartProvider>
+        </ToastProvider>
       </body>
     </html>
   );

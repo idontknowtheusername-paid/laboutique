@@ -5,6 +5,7 @@ import { Clock, Star, ShoppingCart, Eye, Heart, ChevronLeft, ChevronRight } from
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import QuickAddToCart from './QuickAddToCart';
 import Link from 'next/link';
 
 interface FlashProduct {
@@ -316,10 +317,15 @@ const FlashSales = () => {
 
                 {/* Add to Cart Button */}
                 <div className="mt-3 md:mt-4">
-                  <Button className="w-full bg-beshop-primary hover:bg-blue-700 text-xs md:text-sm h-8 md:h-10">
-                    <ShoppingCart className="w-3 h-3 md:w-4 md:h-4 mr-2" />
-                    Ajouter au panier
-                  </Button>
+                  <QuickAddToCart
+                    productId={product.id}
+                    productName={product.name}
+                    price={product.salePrice}
+                    onAddToCart={(productId, quantity) => {
+                      // TODO: Implement actual cart functionality with useCart hook
+                      console.log(`Added ${quantity} of product ${productId} to cart`);
+                    }}
+                  />
                 </div>
               </CardContent>
             </Card>

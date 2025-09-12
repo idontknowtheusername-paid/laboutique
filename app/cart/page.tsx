@@ -11,46 +11,10 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, Tag, Truck, Shield } from 'lucide-react';
 import Link from 'next/link';
-
-// Mock cart data
-const cartItems = [
-  {
-    id: '1',
-    name: 'iPhone 15 Pro Max 256GB',
-    image: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=200',
-    price: 850000,
-    originalPrice: 950000,
-    quantity: 1,
-    vendor: 'Apple Store',
-    inStock: true,
-    discount: 11
-  },
-  {
-    id: '2',
-    name: 'AirPods Pro 2ème génération',
-    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=200',
-    price: 140000,
-    originalPrice: 180000,
-    quantity: 2,
-    vendor: 'Apple Store',
-    inStock: true,
-    discount: 22
-  },
-  {
-    id: '3',
-    name: 'MacBook Air M3 13"',
-    image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=200',
-    price: 720000,
-    originalPrice: 850000,
-    quantity: 1,
-    vendor: 'Apple Store',
-    inStock: false,
-    discount: 15
-  }
-];
+import { useCart } from '@/contexts/CartContext';
 
 export default function CartPage() {
-  const [items, setItems] = useState(cartItems);
+  const { cartItems, updateQuantity, removeFromCart } = useCart();
   const [promoCode, setPromoCode] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
 
@@ -62,19 +26,8 @@ export default function CartPage() {
     }).format(price);
   };
 
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    setItems(items.map(item => 
-      item.id === id ? { ...item, quantity: newQuantity } : item
-    ));
-  };
-
-  const removeItem = (id: string) => {
-    setItems(items.filter(item => item.id !== id));
-  };
-
-  const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const savings = items.reduce((sum, item) => sum + ((item.originalPrice - item.price) * item.quantity), 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const savings = 0; // TODO: Calculate savings when we have originalPrice in cart items
   const shipping = subtotal > 50000 ? 0 : 2000;
   const promoDiscount = promoApplied ? subtotal * 0.05 : 0;
   const total = subtotal + shipping - promoDiscount;
@@ -98,7 +51,7 @@ export default function CartPage() {
           <span className="text-gray-900 font-medium">Panier</span>
         </nav>
 
-        {items.length === 0 ? (
+        {cartItems.length === 0 ? (
           /* Empty Cart */
           <div className="text-center py-12">
             <ShoppingBag className="w-24 h-24 text-gray-300 mx-auto mb-6" />
@@ -120,7 +73,7 @@ export default function CartPage() {
             <div className="lg:col-span-2 space-y-4">
               <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-                  Mon Panier ({items.length} articles)
+                  Mon Panier ({cartItems.length} articles)
                 </h1>
                 <Link href="/">
                   <Button variant="outline" className="flex items-center">
@@ -130,7 +83,7 @@ export default function CartPage() {
                 </Link>
               </div>
 
-              {items.map((item) => (
+              {cartItems.map((item) => (
                 <Card key={item.id} className="overflow-hidden">
                   <CardContent className="p-4 md:p-6">
                     <div className="flex flex-col sm:flex-row gap-4">
@@ -148,22 +101,17 @@ export default function CartPage() {
                         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                           <div className="flex-1">
                             <h3 className="font-semibold text-gray-900 line-clamp-2">
-                              {item.name}
+                              {item.productName}
                             </h3>
                             <p className="text-sm text-gray-500">
-                              Vendu par {item.vendor}
+                              Vendu par {item.vendor || 'Be Shop'}
                             </p>
-                            {!item.inStock && (
-                              <Badge variant="destructive" className="mt-1">
-                                Rupture de stock
-                              </Badge>
-                            )}
                           </div>
                           
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeFromCart(item.id)}
                             className="text-red-600 hover:text-red-700 hover:bg-red-50 self-start"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -177,22 +125,7 @@ export default function CartPage() {
                               <span className="font-bold text-lg text-beshop-primary">
                                 {formatPrice(item.price)}
                               </span>
-                              {item.originalPrice > item.price && (
-                                <span className="text-sm text-gray-500 line-through">
-                                  {formatPrice(item.originalPrice)}
-                                </span>
-                              )}
-                              {item.discount && (
-                                <Badge className="bg-red-500 text-white text-xs">
-                                  -{item.discount}%
-                                </Badge>
-                              )}
                             </div>
-                            {item.originalPrice > item.price && (
-                              <p className="text-xs text-green-600">
-                                Vous économisez {formatPrice(item.originalPrice - item.price)}
-                              </p>
-                            )}
                           </div>
 
                           {/* Quantity Controls */}
@@ -202,7 +135,7 @@ export default function CartPage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                disabled={item.quantity <= 1 || !item.inStock}
+                                disabled={item.quantity <= 1}
                                 className="h-8 w-8 p-0"
                               >
                                 <Minus className="w-3 h-3" />
@@ -214,7 +147,6 @@ export default function CartPage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                disabled={!item.inStock}
                                 className="h-8 w-8 p-0"
                               >
                                 <Plus className="w-3 h-3" />

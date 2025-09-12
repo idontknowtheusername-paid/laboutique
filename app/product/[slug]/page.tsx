@@ -27,6 +27,7 @@ import {
   MessageCircle,
   ThumbsUp
 } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
 
 // Mock product data
 const productData = {
@@ -310,6 +311,11 @@ export default function ProductDetailPage() {
   const [selectedColor, setSelectedColor] = useState('Titanium Natural');
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    addToCart(productData.id, productData.name, productData.price, quantity);
+  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-BJ', {
@@ -539,7 +545,10 @@ export default function ProductDetailPage() {
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              <Button className="w-full bg-beshop-primary hover:bg-blue-700 h-12 text-lg">
+              <Button 
+                onClick={handleAddToCart}
+                className="w-full bg-beshop-primary hover:bg-blue-700 h-12 text-lg"
+              >
                 <ShoppingCart className="w-5 h-5 mr-2" />
                 Ajouter au panier
               </Button>
