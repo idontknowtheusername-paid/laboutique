@@ -136,7 +136,11 @@ export default function DynamicCategoryPage() {
           </CardContent>
         </Card>
 
-        <ProductGrid products={products} columns={3} />
+        <ProductGrid
+          title=""
+          products={products}
+          backgroundColor="bg-transparent"
+        />
 
         <div className="flex items-center justify-center mt-10 space-x-2">
           <Button variant="outline" disabled>Précédent</Button>

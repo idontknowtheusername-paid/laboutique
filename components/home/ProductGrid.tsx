@@ -78,26 +78,26 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         {isLoading ? (
           <HeaderSkeleton />
         ) : (
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{title}</h2>
-                {subtitle && (
-                  <p className="text-gray-600 text-sm md:text-base">{subtitle}</p>
-                )}
-              </div>
-
-              {viewAllLink && (
-                <Link href={viewAllLink}>
-                  <Button
-                    variant="outline"
-                    className="border-beshop-primary text-beshop-primary hover:bg-beshop-primary hover:text-white text-sm md:text-base"
-                  >
-                    <span className="md:hidden">Tout voir</span>
-                    <span className="hidden md:inline">Voir tout</span>
-                  </Button>
-                </Link>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{title}</h2>
+              {subtitle && (
+                <p className="text-gray-600 text-sm md:text-base">{subtitle}</p>
               )}
             </div>
+
+            {viewAllLink && (
+              <Link href={viewAllLink}>
+                <Button
+                  variant="outline"
+                  className="border-beshop-primary text-beshop-primary hover:bg-beshop-primary hover:text-white text-sm md:text-base"
+                >
+                  <span className="md:hidden">Tout voir</span>
+                  <span className="hidden md:inline">Voir tout</span>
+                </Button>
+              </Link>
+            )}
+          </div>
         )}
 
         {/* Loading State */}
