@@ -28,7 +28,7 @@ export default function WishlistPage() {
     try {
       const response = await WishlistService.getByUser(user.id);
       if (response.success && response.data) {
-        setWishlistItems(response.data.data); // response.data est PaginatedResponse
+        setWishlistItems(response.data || []);
       } else {
         console.error('Error fetching wishlist:', response.error);
       }

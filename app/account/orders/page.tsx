@@ -39,7 +39,8 @@ export default function OrdersPage() {
     try {
       const response = await OrdersService.getByUser(user.id);
       if (response.success && response.data) {
-        setOrders(response.data.data); // response.data est PaginatedResponse
+        // OrdersService.getByUser retourne un PaginatedResponse<Order> => { data: Order[] }
+        setOrders(response.data || []);
       } else {
         console.error('Erreur lors du chargement des commandes:', response.error);
       }
@@ -117,9 +118,13 @@ export default function OrdersPage() {
       <div className="container max-w-6xl mx-auto px-4">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-primary">Accueil</Link>
+          <Link href="/" className="hover:text-primary">
+            Accueil
+          </Link>
           <span>/</span>
-          <Link href="/account" className="hover:text-primary">Mon compte</Link>
+          <Link href="/account" className="hover:text-primary">
+            Mon compte
+          </Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Mes commandes</span>
         </nav>
@@ -135,15 +140,24 @@ export default function OrdersPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <Link href="/account" className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50">
+                <Link
+                  href="/account"
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50"
+                >
                   <User className="w-4 h-4" />
                   <span>Mon profil</span>
                 </Link>
-                <Link href="/account/orders" className="flex items-center space-x-3 p-2 rounded-lg bg-primary/5 text-primary">
+                <Link
+                  href="/account/orders"
+                  className="flex items-center space-x-3 p-2 rounded-lg bg-primary/5 text-primary"
+                >
                   <Package className="w-4 h-4" />
                   <span>Mes commandes</span>
                 </Link>
-                <Link href="/account/wishlist" className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50">
+                <Link
+                  href="/account/wishlist"
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50"
+                >
                   <ShoppingBag className="w-4 h-4" />
                   <span>Ma wishlist</span>
                 </Link>
@@ -177,11 +191,16 @@ export default function OrdersPage() {
                 ) : (
                   <div className="space-y-6">
                     {orders.map((order) => (
-                      <Card key={order.id} className="border-l-4 border-l-primary">
+                      <Card
+                        key={order.id}
+                        className="border-l-4 border-l-primary"
+                      >
                         <CardHeader>
                           <div className="flex items-center justify-between">
                             <div className="space-y-1">
-                              <h3 className="font-semibold">Commande #{order.order_number}</h3>
+                              <h3 className="font-semibold">
+                                Commande #{order.order_number}
+                              </h3>
                               <p className="text-sm text-gray-600">
                                 Passée le {formatDate(order.created_at)}
                               </p>
@@ -196,19 +215,31 @@ export default function OrdersPage() {
                           <div className="space-y-4">
                             {/* Order Items */}
                             <div className="space-y-3">
-                              {order.order_items.map((item, index) => (
-                                <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                              {(order.order_items || []).map((item, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg"
+                                >
                                   <img
-                                    src={item.products.images[0] || '/placeholder.jpg'}
-                                    alt={item.products.name}
+                                    src={
+                                      item.product?.images?.[0] ||
+                                      "/placeholder.jpg"
+                                    }
+                                    alt={item.product?.name || "Produit"}
                                     className="w-16 h-16 object-cover rounded-lg"
                                   />
                                   <div className="flex-1">
-                                    <h4 className="font-medium">{item.products.name}</h4>
-                                    <p className="text-sm text-gray-600">Quantité: {item.quantity}</p>
+                                    <h4 className="font-medium">
+                                      {item.product?.name}
+                                    </h4>
+                                    <p className="text-sm text-gray-600">
+                                      Quantité: {item.quantity}
+                                    </p>
                                   </div>
                                   <div className="text-right">
-                                    <div className="font-semibold">{formatPrice(item.price * item.quantity)}</div>
+                                    <div className="font-semibold">
+                                      {formatPrice(item.price * item.quantity)}
+                                    </div>
                                   </div>
                                 </div>
                               ))}
@@ -217,7 +248,9 @@ export default function OrdersPage() {
                             {/* Order Total */}
                             <div className="flex justify-between items-center pt-4 border-t">
                               <span className="font-semibold">Total:</span>
-                              <span className="text-lg font-bold">{formatPrice(order.total_amount)}</span>
+                              <span className="text-lg font-bold">
+                                {formatPrice(order.total_amount)}
+                              </span>
                             </div>
 
                             {/* Order Actions */}
@@ -227,7 +260,7 @@ export default function OrdersPage() {
                                   <Eye className="w-4 h-4 mr-2" />
                                   Voir les détails
                                 </Button>
-                                {order.status === 'delivered' && (
+                                {order.status === "delivered" && (
                                   <>
                                     <Button variant="outline" size="sm">
                                       <Star className="w-4 h-4 mr-2" />
@@ -239,7 +272,7 @@ export default function OrdersPage() {
                                     </Button>
                                   </>
                                 )}
-                                {order.status === 'shipped' && (
+                                {order.status === "shipped" && (
                                   <Button variant="outline" size="sm">
                                     <Truck className="w-4 h-4 mr-2" />
                                     Suivre
@@ -274,7 +307,9 @@ export default function OrdersPage() {
                   <TabsContent value="all">
                     <div className="text-center py-8">
                       <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                      <p className="text-gray-600">Toutes vos commandes sont affichées ci-dessus</p>
+                      <p className="text-gray-600">
+                        Toutes vos commandes sont affichées ci-dessus
+                      </p>
                     </div>
                   </TabsContent>
 
@@ -285,7 +320,11 @@ export default function OrdersPage() {
                         Commandes livrées
                       </h3>
                       <p className="text-gray-600">
-                        {orders.filter(order => order.status === 'delivered').length} commande(s) livrée(s)
+                        {
+                          orders.filter((order) => order.status === "delivered")
+                            .length
+                        }{" "}
+                        commande(s) livrée(s)
                       </p>
                     </div>
                   </TabsContent>
@@ -297,7 +336,11 @@ export default function OrdersPage() {
                         Commandes expédiées
                       </h3>
                       <p className="text-gray-600">
-                        {orders.filter(order => order.status === 'shipped').length} commande(s) en cours de livraison
+                        {
+                          orders.filter((order) => order.status === "shipped")
+                            .length
+                        }{" "}
+                        commande(s) en cours de livraison
                       </p>
                     </div>
                   </TabsContent>
@@ -309,7 +352,12 @@ export default function OrdersPage() {
                         Commandes en cours
                       </h3>
                       <p className="text-gray-600">
-                        {orders.filter(order => order.status === 'processing').length} commande(s) en préparation
+                        {
+                          orders.filter(
+                            (order) => order.status === "processing"
+                          ).length
+                        }{" "}
+                        commande(s) en préparation
                       </p>
                     </div>
                   </TabsContent>
@@ -321,7 +369,11 @@ export default function OrdersPage() {
                         Commandes annulées
                       </h3>
                       <p className="text-gray-600">
-                        {orders.filter(order => order.status === 'cancelled').length} commande(s) annulée(s)
+                        {
+                          orders.filter((order) => order.status === "cancelled")
+                            .length
+                        }{" "}
+                        commande(s) annulée(s)
                       </p>
                     </div>
                   </TabsContent>

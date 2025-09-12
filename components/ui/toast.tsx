@@ -1,15 +1,23 @@
-import { useState, useCallback, createContext, useContext } from 'react';
+"use client";
+
+import {
+  useState,
+  useCallback,
+  createContext,
+  useContext,
+  type ReactNode,
+} from "react";
 
 interface Toast {
   id: string;
-  type: 'success' | 'error' | 'warning' | 'info';
+  type: "success" | "error" | "warning" | "info";
   title: string;
   description?: string;
 }
 
 interface ToastContextType {
   toasts: Toast[];
-  addToast: (toast: Omit<Toast, 'id'>) => void;
+  addToast: (toast: Omit<Toast, "id">) => void;
   removeToast: (id: string) => void;
 }
 
@@ -20,22 +28,22 @@ export const useToast = () => {
   if (!context) {
     // Fallback silencieux si le contexte n'est pas disponible
     return {
-      addToast: () => { },
-      removeToast: () => { },
-      toasts: []
+      addToast: () => {},
+      removeToast: () => {},
+      toasts: [],
     };
   }
   return context;
 };
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
+  const addToast = useCallback((toast: Omit<Toast, "id">) => {
     const id = Math.random().toString(36).substring(2, 9);
     const newToast = { ...toast, id };
 
-    setToasts(prev => [...prev, newToast]);
+    setToasts((prev) => [...prev, newToast]);
 
     // Auto-remove after 5 seconds
     setTimeout(() => {
@@ -44,7 +52,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
   return (
@@ -52,14 +60,18 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       {children}
       {/* Toast container - vous pouvez styliser selon vos besoins */}
       <div className="fixed top-4 right-4 z-50 space-y-2">
-        {toasts.map(toast => (
+        {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`p-4 rounded-lg shadow-lg max-w-sm ${toast.type === 'success' ? 'bg-green-500 text-white' :
-                toast.type === 'error' ? 'bg-red-500 text-white' :
-                  toast.type === 'warning' ? 'bg-yellow-500 text-white' :
-                    'bg-blue-500 text-white'
-              }`}
+            className={`p-4 rounded-lg shadow-lg max-w-sm ${
+              toast.type === "success"
+                ? "bg-green-500 text-white"
+                : toast.type === "error"
+                ? "bg-red-500 text-white"
+                : toast.type === "warning"
+                ? "bg-yellow-500 text-white"
+                : "bg-blue-500 text-white"
+            }`}
           >
             <div className="font-semibold">{toast.title}</div>
             {toast.description && (
@@ -70,4 +82,4 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       </div>
     </ToastContext.Provider>
   );
-};
+}

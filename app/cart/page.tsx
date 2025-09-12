@@ -26,14 +26,17 @@ export default function CartPage() {
     }).format(price);
   };
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + (item.product?.price || 0) * item.quantity,
+    0
+  );
   const savings = 0; // TODO: Calculate savings when we have originalPrice in cart items
   const shipping = subtotal > 50000 ? 0 : 2000;
   const promoDiscount = promoApplied ? subtotal * 0.05 : 0;
   const total = subtotal + shipping - promoDiscount;
 
   const applyPromoCode = () => {
-    if (promoCode.toLowerCase() === 'beshop5') {
+    if (promoCode.toLowerCase() === "beshop5") {
       setPromoApplied(true);
     }
   };
@@ -42,11 +45,13 @@ export default function CartPage() {
     <div className="min-h-screen bg-beshop-background">
       <Header />
       <CategoryMenu />
-      
+
       <div className="container py-4 md:py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-          <Link href="/" className="hover:text-beshop-primary">Accueil</Link>
+          <Link href="/" className="hover:text-beshop-primary">
+            Accueil
+          </Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Panier</span>
         </nav>
@@ -90,8 +95,8 @@ export default function CartPage() {
                       {/* Product Image */}
                       <div className="w-full sm:w-24 h-48 sm:h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                         <img
-                          src={item.image}
-                          alt={item.productName}
+                          src={item.product?.images?.[0] || "/placeholder.jpg"}
+                          alt={item.product?.name || "Produit"}
                           className="w-full h-full object-cover"
                         />
                       </div>
@@ -101,13 +106,14 @@ export default function CartPage() {
                         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                           <div className="flex-1">
                             <h3 className="font-semibold text-gray-900 line-clamp-2">
-                              {item.productName}
+                              {item.product?.name}
                             </h3>
                             <p className="text-sm text-gray-500">
-                              Vendu par {item.vendor || 'Be Shop'}
+                              Vendu par{" "}
+                              {item.product?.vendor?.name || "Be Shop"}
                             </p>
                           </div>
-                          
+
                           <Button
                             variant="ghost"
                             size="sm"
@@ -123,7 +129,7 @@ export default function CartPage() {
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
                               <span className="font-bold text-lg text-beshop-primary">
-                                {formatPrice(item.price)}
+                                {formatPrice(item.product?.price || 0)}
                               </span>
                             </div>
                           </div>
@@ -134,7 +140,9 @@ export default function CartPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity - 1)
+                                }
                                 disabled={item.quantity <= 1}
                                 className="h-8 w-8 p-0"
                               >
@@ -146,14 +154,18 @@ export default function CartPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity + 1)
+                                }
                                 className="h-8 w-8 p-0"
                               >
                                 <Plus className="w-3 h-3" />
                               </Button>
                             </div>
                             <span className="text-sm font-medium">
-                              {formatPrice(item.price * item.quantity)}
+                              {formatPrice(
+                                (item.product?.price || 0) * item.quantity
+                              )}
                             </span>
                           </div>
                         </div>
@@ -182,7 +194,7 @@ export default function CartPage() {
                       onChange={(e) => setPromoCode(e.target.value)}
                       disabled={promoApplied}
                     />
-                    <Button 
+                    <Button
                       onClick={applyPromoCode}
                       disabled={promoApplied || !promoCode}
                       variant="outline"
@@ -202,7 +214,9 @@ export default function CartPage() {
               {/* Order Summary */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Résumé de la commande</CardTitle>
+                  <CardTitle className="text-lg">
+                    Résumé de la commande
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
@@ -218,8 +232,8 @@ export default function CartPage() {
                     )}
                     <div className="flex justify-between">
                       <span>Livraison</span>
-                      <span className={shipping === 0 ? 'text-green-600' : ''}>
-                        {shipping === 0 ? 'Gratuite' : formatPrice(shipping)}
+                      <span className={shipping === 0 ? "text-green-600" : ""}>
+                        {shipping === 0 ? "Gratuite" : formatPrice(shipping)}
                       </span>
                     </div>
                     {promoApplied && (
@@ -229,12 +243,14 @@ export default function CartPage() {
                       </div>
                     )}
                   </div>
-                  
+
                   <Separator />
-                  
+
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
-                    <span className="text-beshop-primary">{formatPrice(total)}</span>
+                    <span className="text-beshop-primary">
+                      {formatPrice(total)}
+                    </span>
                   </div>
 
                   <Link href="/checkout">

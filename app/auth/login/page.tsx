@@ -21,13 +21,18 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
 
-    const { error } = await signIn(email, password);
+    const result = await signIn(email, password);
 
-    if (error) {
-      setError(error.message);
+    if (result.error) {
+      // result.error peut être une string
+      setError(
+        typeof result.error === "string"
+          ? result.error
+          : "Erreur lors de la connexion"
+      );
       setLoading(false);
     } else {
-      router.push('/');
+      router.push("/");
     }
   };
 

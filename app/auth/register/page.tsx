@@ -24,10 +24,14 @@ export default function RegisterPage() {
     setLoading(true);
     setError('');
 
-    const { error } = await signUp(email, password);
+    const result = await signUp(email, password);
 
-    if (error) {
-      setError(error.message);
+    if (result.error) {
+      setError(
+        typeof result.error === "string"
+          ? result.error
+          : "Erreur lors de l'inscription"
+      );
       setLoading(false);
     } else {
       setSuccess(true);
