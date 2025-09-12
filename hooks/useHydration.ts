@@ -1,8 +1,10 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 
-export const useHydration = () => {
+/**
+ * Hook pour détecter si le composant est hydraté côté client
+ * Utile pour éviter les erreurs de hydratation avec localStorage, etc.
+ */
+export function useHydration() {
     const [isHydrated, setIsHydrated] = useState(false);
 
     useEffect(() => {
@@ -10,4 +12,4 @@ export const useHydration = () => {
     }, []);
 
     return isHydrated;
-};
+}

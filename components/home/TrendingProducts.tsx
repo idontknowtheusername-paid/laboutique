@@ -1,233 +1,182 @@
 'use client';
 
-import React from 'react';
-import { Star, Eye, Heart } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Star, ShoppingCart, Heart } from 'lucide-react';
 import Link from 'next/link';
-import QuickAddToCart from './QuickAddToCart';
+import Image from 'next/image';
+import { ProductsService, Product } from '@/lib/services';
 import { useCart } from '@/contexts/CartContext';
 
-interface TrendingProduct {
-  id: string;
-  name: string;
-  slug: string;
-  image: string;
-  price: number;
-  comparePrice?: number;
-  rating: number;
-  reviews: number;
-  discount?: number;
-  vendor: string;
-  category: string;
-  trendScore: number;
-  hashtags: string[];
-  views: number;
-  sales: number;
-}
-
-const trendingProducts: TrendingProduct[] = [
-  {
-    id: '1',
-    name: 'iPhone 15 Pro Max 256GB',
-    slug: 'iphone-15-pro-max-256gb',
-    image: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 850000,
-    comparePrice: 950000,
-    rating: 4.8,
-    reviews: 324,
-    discount: 11,
-    vendor: 'Apple Store',
-    category: 'Smartphones',
-    trendScore: 95,
-    hashtags: ['#iPhone15', '#ProMax', '#Tendance'],
-    views: 12500,
-    sales: 89
-  },
-  {
-    id: '2',
-    name: 'AirPods Pro 2ème génération',
-    slug: 'airpods-pro-2',
-    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 140000,
-    comparePrice: 180000,
-    rating: 4.7,
-    reviews: 891,
-    discount: 22,
-    vendor: 'Apple Store',
-    category: 'Audio',
-    trendScore: 88,
-    hashtags: ['#AirPods', '#Audio', '#Apple'],
-    views: 8900,
-    sales: 156
-  },
-  {
-    id: '3',
-    name: 'MacBook Air M3 13"',
-    slug: 'macbook-air-m3-13',
-    image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 720000,
-    comparePrice: 850000,
-    rating: 4.9,
-    reviews: 189,
-    discount: 15,
-    vendor: 'Apple Store',
-    category: 'Ordinateurs',
-    trendScore: 92,
-    hashtags: ['#MacBook', '#M3', '#Productivité'],
-    views: 11200,
-    sales: 42
-  },
-  {
-    id: '4',
-    name: 'Samsung Galaxy S24 Ultra',
-    slug: 'samsung-galaxy-s24-ultra',
-    image: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 780000,
-    comparePrice: 890000,
-    rating: 4.6,
-    reviews: 256,
-    discount: 12,
-    vendor: 'Samsung Official',
-    category: 'Smartphones',
-    trendScore: 85,
-    hashtags: ['#GalaxyS24', '#Samsung', '#Ultra'],
-    views: 9800,
-    sales: 67
-  },
-  {
-    id: '5',
-    name: 'Sony WH-1000XM5 Casque',
-    slug: 'sony-wh-1000xm5',
-    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 180000,
-    comparePrice: 220000,
-    rating: 4.7,
-    reviews: 445,
-    discount: 18,
-    vendor: 'Sony Official',
-    category: 'Audio',
-    trendScore: 78,
-    hashtags: ['#Sony', '#NoiseCancelling', '#Audio'],
-    views: 7200,
-    sales: 34
-  }
-];
-
-const TrendingProducts = () => {
+export default function TrendingProducts() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
 
-  return (
-    <section className="py-12 bg-gradient-to-br from-purple-50 to-pink-50">
-      <div className="container">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-3">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-              🔥 Tendances du Moment
-            </h2>
-            <span className="bg-red-500 text-white px-2 py-1 rounded text-sm animate-pulse">
-              HOT
-            </span>
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const loadProducts = async () => {
+    try {
+      const response = await ProductsService.getPopular(8);
+      if (response.success && response.data) {
+        setProducts(response.data);
+      } else {
+        console.error('Erreur lors du chargement des produits:', response.error);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des produits:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'XOF',
+      minimumFractionDigits: 0
+    }).format(price);
+  };
+
+  const handleAddToCart = async (product: Product) => {
+    await addToCart(product.id, product.name, product.price, 1);
+  };
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Produits Tendance</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Découvrez les produits les plus populaires du moment
+            </p>
           </div>
 
-          <Link href="/trending" className="border border-purple-200 text-purple-700 hover:bg-purple-50 px-4 py-2 rounded-lg transition-colors">
-            Voir toutes les tendances
-          </Link>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, index) => (
+              <Card key={index} className="animate-pulse">
+                <CardContent className="p-4">
+                  <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-8 bg-gray-200 rounded"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="py-16 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Produits Tendance</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Découvrez les produits les plus populaires du moment
+          </p>
         </div>
 
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-4 md:gap-6">
-          {trendingProducts.map((product) => (
-            <Link key={product.id} href={`/product/${product.slug}`} className="group hover-lift card-shadow h-full flex flex-col bg-white border border-gray-200 rounded-lg overflow-hidden cursor-pointer">
-              <div className="relative overflow-hidden">
-                <div className="aspect-square bg-gray-100">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-
-                <div className="absolute top-2 left-2">
-                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded flex items-center">
-                    🔥 {product.trendScore}%
-                  </span>
-                </div>
-
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2">
-                  <button
-                    onClick={(e) => e.preventDefault()}
-                    className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm rounded flex items-center justify-center"
-                  >
-                    <Heart className="w-3 h-3 md:w-4 md:h-4" />
-                  </button>
-                  <button
-                    onClick={(e) => e.preventDefault()}
-                    className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm rounded flex items-center justify-center"
-                  >
-                    <Eye className="w-3 h-3 md:w-4 md:h-4" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="p-2 md:p-4 flex flex-col flex-grow">
-                <div className="space-y-1.5 md:space-y-2 flex-grow">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide truncate">
-                    {product.vendor}
-                  </p>
-
-                  <h3 className="font-medium text-xs md:text-sm hover:text-beshop-primary transition-colors min-h-[2.5rem] md:min-h-[3rem] overflow-hidden">
-                    {product.name}
-                  </h3>
-
-                  <div className="flex items-center space-x-1 text-xs">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-2.5 h-2.5 ${i < Math.floor(product.rating)
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'fill-gray-200 text-gray-200'
-                            }`}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <Card key={product.id} className="group hover:shadow-lg transition-shadow duration-300">
+              <CardContent className="p-4">
+                <div className="relative mb-4">
+                  <Link href={`/product/${product.slug}`}>
+                    <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
+                      {product.images?.[0] ? (
+                        <Image
+                          src={product.images[0]}
+                          alt={product.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
-                      ))}
-                    </div>
-                    <span className="text-gray-500 text-xs truncate">({product.reviews})</span>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="flex flex-col md:flex-row md:items-center space-y-1 md:space-y-0 md:space-x-1 lg:space-x-2">
-                      <span className="font-bold text-beshop-primary text-xs md:text-sm lg:text-lg truncate">
-                        {new Intl.NumberFormat('fr-BJ', {
-                          style: 'currency',
-                          currency: 'XOF',
-                          minimumFractionDigits: 0,
-                        }).format(product.price)}
-                      </span>
-                      {product.comparePrice && (
-                        <span className="text-xs text-gray-500 line-through truncate">
-                          {new Intl.NumberFormat('fr-BJ', {
-                            style: 'currency',
-                            currency: 'XOF',
-                            minimumFractionDigits: 0,
-                          }).format(product.comparePrice)}
-                        </span>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <ShoppingCart className="w-12 h-12" />
+                          </div>
                       )}
                     </div>
-                  </div>
+                  </Link>
+
+                  {product.compare_price && product.compare_price > product.price && (
+                    <Badge className="absolute top-2 left-2 bg-red-500 text-white">
+                      -{Math.round(((product.compare_price - product.price) / product.compare_price) * 100)}%
+                    </Badge>
+                  )}
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2 bg-white/80 hover:bg-white"
+                  >
+                    <Heart className="w-4 h-4" />
+                  </Button>
                 </div>
 
-                <div className="mt-auto pt-2">
-                  <QuickAddToCart
-                    productId={product.id}
-                    productName={product.name}
-                    price={product.price}
-                  />
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-3 h-3 ${i < Math.floor(product.average_rating || 0)
+                            ? 'fill-yellow-400 text-yellow-400'
+                            : 'fill-gray-200 text-gray-200'
+                          }`}
+                      />
+                    ))}
+                    <span className="text-sm text-gray-600">({product.reviews_count || 0})</span>
+                  </div>
+
+                  <Link href={`/product/${product.slug}`}>
+                    <h3 className="font-medium text-sm line-clamp-2 hover:text-primary">
+                      {product.name}
+                    </h3>
+                  </Link>
+
+                  <div className="flex items-center space-x-2">
+                    <span className="font-bold text-primary">
+                      {formatPrice(product.price)}
+                    </span>
+                    {product.compare_price && (
+                      <span className="text-sm text-gray-500 line-through">
+                        {formatPrice(product.compare_price)}
+                      </span>
+                    )}
+                  </div>
+
+                  <Button
+                    className="w-full"
+                    size="sm"
+                    onClick={() => handleAddToCart(product)}
+                    disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
+                  >
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Ajouter au panier
+                  </Button>
                 </div>
-              </div>
-            </Link>
+              </CardContent>
+            </Card>
           ))}
+        </div>
+
+        <div className="text-center mt-12">
+          <Link href="/products">
+            <Button variant="outline" size="lg">
+              Voir tous les produits
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
   );
-};
-
-export default TrendingProducts;
+}
