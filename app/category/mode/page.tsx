@@ -418,7 +418,11 @@ export default function FashionPage() {
             </div>
 
             {/* Products */}
-            <ProductGrid products={fashionProducts} columns={viewMode === 'grid' ? 3 : 1} />
+            <ProductGrid
+              title=""
+              products={fashionProducts}
+              backgroundColor="bg-transparent"
+            />
 
             {/* Pagination */}
             <div className="flex items-center justify-center mt-12 space-x-2">

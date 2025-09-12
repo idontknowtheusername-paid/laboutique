@@ -224,7 +224,11 @@ export default function SearchPage() {
             {/* Search Results */}
             {searchResults.length > 0 ? (
               <>
-                <ProductGrid products={searchResults} columns={viewMode === 'grid' ? 3 : 1} />
+                <ProductGrid
+                  title=""
+                  products={searchResults}
+                  backgroundColor="bg-transparent"
+                />
                 
                 {/* Pagination */}
                 <div className="flex items-center justify-center mt-12 space-x-2">

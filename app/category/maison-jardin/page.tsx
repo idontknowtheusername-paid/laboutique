@@ -393,7 +393,11 @@ export default function HomeGardenPage() {
             </div>
 
             {/* Products */}
-            <ProductGrid products={homeGardenProducts} columns={viewMode === 'grid' ? 3 : 1} />
+            <ProductGrid
+              title=""
+              products={homeGardenProducts}
+              backgroundColor="bg-transparent"
+            />
 
             {/* Pagination */}
             <div className="flex items-center justify-center mt-12 space-x-2">

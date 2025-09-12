@@ -424,7 +424,11 @@ export default function BeautyHealthPage() {
             </div>
 
             {/* Products */}
-            <ProductGrid products={beautyHealthProducts} columns={viewMode === 'grid' ? 3 : 1} />
+            <ProductGrid
+              title=""
+              products={beautyHealthProducts}
+              backgroundColor="bg-transparent"
+            />
 
             {/* Pagination */}
             <div className="flex items-center justify-center mt-12 space-x-2">

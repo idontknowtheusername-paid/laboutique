@@ -389,7 +389,11 @@ export default function ElectronicsPage() {
             </div>
 
             {/* Products */}
-            <ProductGrid products={electronicsProducts} columns={viewMode === 'grid' ? 3 : 1} />
+            <ProductGrid
+              title=""
+              products={electronicsProducts}
+              backgroundColor="bg-transparent"
+            />
 
             {/* Pagination */}
             <div className="flex items-center justify-center mt-12 space-x-2">
