@@ -18,11 +18,13 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/hooks/useAuth';
 import { ClientOnly } from '@/components/ui/ClientOnly';
+
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { getCartItemsCount } = useCart();
   const { user, signOut } = useAuth();
   const pathname = usePathname();
@@ -84,15 +86,15 @@ const Header = () => {
       isScrolled ? 'shadow-md' : 'shadow-sm'
     }`}>
       {/* Announcement Bar */}
-      <div className="bg-gradient-to-r from-beshop-primary to-blue-600 text-white py-2">
+      <div className="bg-gradient-to-r from-beshop-primary to-blue-600 text-white py-4">
         <div className="container relative">
           <Carousel setApi={setAnnApi} opts={{ align: 'start', loop: true }}>
             <CarouselContent>
               {announcements.map((a) => (
                 <CarouselItem key={a.id} className="basis-full">
                   <Link href={a.href} className="block">
-                    <div className="flex items-center justify-center text-center px-4">
-                      <div className="text-sm md:text-base font-medium">
+                    <div className="flex items-center justify-center text-center px-4 py-2">
+                      <div className="text-base md:text-lg font-medium">
                         <span className="font-bold">{a.title}</span>
                         <span className="mx-2">•</span>
                         <span className="opacity-90">{a.subtitle}</span>

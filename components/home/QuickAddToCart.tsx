@@ -5,6 +5,7 @@ import { ShoppingCart, Plus, Minus, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/contexts/CartContext';
+import { showCartToast } from '@/components/ui/enhanced-toast';
 
 interface QuickAddToCartProps {
   productId: string;
@@ -32,6 +33,9 @@ const QuickAddToCart: React.FC<QuickAddToCartProps> = ({
     // Use the cart context
     addToCart(productId, productName, price, quantity);
     
+    // Show success toast
+    showCartToast(productName, quantity);
+
     // Call the optional callback for backward compatibility
     if (onAddToCart) {
       onAddToCart(productId, quantity);

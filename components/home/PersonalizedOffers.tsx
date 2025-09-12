@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Gift, Crown, Star, ShoppingCart, Heart, Eye, Zap } from 'lucide-react';
+import { Sparkles, Gift, Crown, Star, Heart, Eye, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import QuickAddToCart from './QuickAddToCart';
 import Link from 'next/link';
+import { useCart } from '@/contexts/CartContext';
 
 interface PersonalizedProduct {
   id: string;
@@ -113,6 +114,7 @@ const personalizedProducts: PersonalizedProduct[] = [
 ];
 
 const PersonalizedOffers = () => {
+  const { addToCart } = useCart();
   const [userLoyaltyPoints, setUserLoyaltyPoints] = useState(2450);
   const [userLevel, setUserLevel] = useState('Gold');
   const [timeLeft, setTimeLeft] = useState(3600);
@@ -316,10 +318,6 @@ const PersonalizedOffers = () => {
                     productId={product.id}
                     productName={product.name}
                     price={product.price}
-                    onAddToCart={(productId, quantity) => {
-                      // TODO: Implement actual cart functionality with useCart hook
-                      console.log(`Added ${quantity} of product ${productId} to cart`);
-                    }}
                   />
                 </div>
               </CardContent>

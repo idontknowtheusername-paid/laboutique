@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
-import { TrendingUp, Star, Eye, ShoppingCart, Heart } from 'lucide-react';
+import { Star, Eye, Heart } from 'lucide-react';
 import Link from 'next/link';
 import QuickAddToCart from './QuickAddToCart';
+import { useCart } from '@/contexts/CartContext';
 
 interface TrendingProduct {
   id: string;
@@ -112,6 +113,8 @@ const trendingProducts: TrendingProduct[] = [
 ];
 
 const TrendingProducts = () => {
+  const { addToCart } = useCart();
+
   return (
     <section className="py-12 bg-gradient-to-br from-purple-50 to-pink-50">
       <div className="container">
@@ -216,10 +219,6 @@ const TrendingProducts = () => {
                     productId={product.id}
                     productName={product.name}
                     price={product.price}
-                    onAddToCart={(productId, quantity) => {
-                      // TODO: Implement actual cart functionality with useCart hook
-                      console.log(`Added ${quantity} of product ${productId} to cart`);
-                    }}
                   />
                 </div>
               </div>

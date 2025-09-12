@@ -1,12 +1,16 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Star, Heart, ShoppingCart, Eye } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, Heart, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import QuickAddToCart from './QuickAddToCart';
 import Link from 'next/link';
+import { useCart } from '@/contexts/CartContext';
+import { SliderSkeleton, HeaderSkeleton } from '@/components/ui/loading-skeleton';
+import { ErrorState } from '@/components/ui/error-state';
+
 
 interface Product {
   id: string;
@@ -30,6 +34,9 @@ interface ProductSliderProps {
   products: Product[];
   viewAllLink?: string;
   backgroundColor?: string;
+  isLoading?: boolean;
+  error?: string;
+  onRetry?: () => void;
 }
 
 const ProductSlider: React.FC<ProductSliderProps> = ({
@@ -37,8 +44,12 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
   subtitle,
   products,
   viewAllLink,
-  backgroundColor = 'bg-white'
+  backgroundColor = 'bg-white',
+  isLoading = false,
+  error,
+  onRetry
 }) => {
+  const { addToCart } = useCart();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsToShow, setItemsToShow] = useState(5);
   const [isHovering, setIsHovering] = useState(false);
@@ -268,10 +279,6 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
                         productId={product.id}
                         productName={product.name}
                         price={product.price}
-                        onAddToCart={(productId, quantity) => {
-                          console.log(`Added ${quantity} of product ${productId} to cart`);
-                          // TODO: Implement actual cart functionality
-                        }}
                       />
                     </div>
                   </CardContent>

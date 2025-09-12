@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Clock, Star, ShoppingCart, Eye, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Clock, Star, Eye, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import QuickAddToCart from './QuickAddToCart';
 import Link from 'next/link';
+import { useCart } from '@/contexts/CartContext';
 
 interface FlashProduct {
   id: string;
@@ -91,6 +92,7 @@ const flashProducts: FlashProduct[] = [
 ];
 
 const FlashSales = () => {
+  const { addToCart } = useCart();
   const [timeLeft, setTimeLeft] = useState({
     hours: 23,
     minutes: 45,
@@ -205,21 +207,21 @@ const FlashSales = () => {
     <div className="bg-gradient-to-r from-beshop-secondary to-orange-600 rounded-xl p-6 text-white">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-1">
-          <h2 className="text-sm md:text-lg font-bold">Flash Sales</h2>
-          <div className="flex items-center space-x-0.5 bg-white/20 px-0.75 py-0.25 rounded-full">
-            <Clock className="w-2.5 h-2.5" />
-            <span className="font-medium text-[5px]">Se termine dans:</span>
-            <div className="flex space-x-0.25">
-              <span className="bg-white text-beshop-secondary px-0.25 py-0.25 rounded font-bold min-w-[0.5rem] text-center text-[5px]">
+        <div className="flex items-center space-x-3">
+          <h2 className="text-lg md:text-xl font-bold">Flash Sales</h2>
+          <div className="flex items-center space-x-2 bg-white/20 px-3 py-2 rounded-full">
+            <Clock className="w-4 h-4" />
+            <span className="font-medium text-sm">Se termine dans:</span>
+            <div className="flex space-x-1">
+              <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
                 {String(timeLeft.hours).padStart(2, '0')}
               </span>
-              <span className="text-[5px]">:</span>
-              <span className="bg-white text-beshop-secondary px-0.25 py-0.25 rounded font-bold min-w-[0.5rem] text-center text-[5px]">
+              <span className="text-sm">:</span>
+              <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
                 {String(timeLeft.minutes).padStart(2, '0')}
               </span>
-              <span className="text-[5px]">:</span>
-              <span className="bg-white text-beshop-secondary px-0.25 py-0.25 rounded font-bold min-w-[0.5rem] text-center text-[5px]">
+              <span className="text-sm">:</span>
+              <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
                 {String(timeLeft.seconds).padStart(2, '0')}
               </span>
             </div>
@@ -227,7 +229,7 @@ const FlashSales = () => {
         </div>
         
         <Link href="/flash-sales">
-          <Button variant="secondary" className="bg-white text-beshop-secondary hover:bg-gray-100">
+          <Button variant="secondary" className="bg-white text-beshop-secondary hover:bg-gray-100 text-sm">
             Voir tout
           </Button>
         </Link>
@@ -320,11 +322,7 @@ const FlashSales = () => {
                   <QuickAddToCart
                     productId={product.id}
                     productName={product.name}
-                    price={product.salePrice}
-                    onAddToCart={(productId, quantity) => {
-                      // TODO: Implement actual cart functionality with useCart hook
-                      console.log(`Added ${quantity} of product ${productId} to cart`);
-                    }}
+                      price={product.salePrice}
                   />
                 </div>
               </CardContent>
