@@ -8,7 +8,7 @@
 2. **Se connecter à ton projet** (gfhuotmjoiyhtllsmnwy)
 3. **Aller dans "SQL Editor"** (dans la sidebar)
 4. **Créer une nouvelle query**
-5. **Copier tout le contenu** de `docs/supabase-setup.sql`
+5. **Copier tout le contenu** de `docs//supabase-setup.sql`
 6. **Coller et exécuter** le script
 7. **Vérifier qu'il n'y a pas d'erreurs**
 8. **Optionnel : Ajouter des données de test**
