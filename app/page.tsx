@@ -40,66 +40,63 @@ const electronicsProducts = [
     meta_description: null,
     created_at: "",
     updated_at: "",
-    vendor: { id: "mock-vendor", name: "Apple Store", slug: "apple-store" },
-    category: { id: "mock-cat", name: "Smartphones", slug: "smartphones" },
-    reviews_count: 324,
-    average_rating: 4.8,
-    badge: "Populaire",
-    badgeColor: "bg-green-500",
   },
   {
-    id: "2",
-    name: "Samsung Galaxy S24 Ultra",
-    slug: "samsung-galaxy-s24-ultra",
-    image:
-      "https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=400",
-    price: 780000,
-    comparePrice: 890000,
-    rating: 4.6,
-    reviews: 256,
-    discount: 12,
-    vendor: "Samsung Official",
-    category: "Smartphones",
-    status: "active",
-    track_quantity: false,
-    quantity: 99,
-  },
-  {
-    id: "3",
-    name: 'MacBook Air M3 13"',
-    slug: "macbook-air-m3-13",
-    image:
-      "https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=400",
-    price: 720000,
-    comparePrice: 850000,
-    rating: 4.9,
-    reviews: 189,
-    discount: 15,
-    vendor: "Apple Store",
-    category: "Ordinateurs",
-    badge: "Nouveau",
-    badgeColor: "bg-blue-500",
-    status: "active",
-    track_quantity: false,
-    quantity: 99,
-  },
-  {
-    id: "4",
-    status: "active",
-    track_quantity: false,
-    quantity: 99,
-    name: "Sony WH-1000XM5 Casque",
-    slug: "sony-wh-1000xm5",
-    image:
-      "https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400",
-    price: 180000,
-    comparePrice: 220000,
-    rating: 4.7,
-    reviews: 445,
-    discount: 18,
-    vendor: "Sony Official",
-    category: "Audio",
-  },
+        id: "2",
+        name: "Samsung Galaxy S24 Ultra",
+        slug: "samsung-galaxy-s24-ultra",
+        description: "",
+        short_description: "",
+        sku: "MOCK-2",
+        price: 780000,
+        compare_price: 890000,
+        cost_price: 700000,
+        track_quantity: false,
+        quantity: 99,
+        weight: 1,
+        dimensions: null,
+        category_id: "mock-cat",
+        vendor_id: "mock-vendor",
+        brand: "Samsung",
+        tags: [],
+        images: [
+          "https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=400",
+        ],
+        status: "active",
+        featured: false,
+        meta_title: null,
+        meta_description: null,
+        created_at: "",
+        updated_at: "",
+      },
+      {
+        id: "3",
+        name: 'MacBook Air M3 13"',
+        slug: "macbook-air-m3-13",
+        description: "",
+        short_description: "",
+        sku: "MOCK-3",
+        price: 720000,
+        compare_price: 850000,
+        cost_price: 650000,
+        track_quantity: false,
+        quantity: 99,
+        weight: 1,
+        dimensions: null,
+        category_id: "mock-cat",
+        vendor_id: "mock-vendor",
+        brand: "Apple",
+        tags: [],
+        images: [
+          "https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=400",
+        ],
+        status: "active",
+        featured: false,
+        meta_title: null,
+        meta_description: null,
+        created_at: "",
+        updated_at: "",
+    },
   {
     id: "5",
     status: "active",
@@ -455,8 +452,14 @@ export default function Home() {
           <FlashSales />
         </section>
 
-        {/* Trending Products */}
-        <TrendingProducts />
+        {/* Produits Tendance - Carrousel intelligent */}
+        <ProductSlider
+          title="Produits Tendance"
+          subtitle="Découvrez les produits les plus populaires du moment"
+          products={electronicsProducts}
+          viewAllLink="/products"
+          backgroundColor="bg-white"
+        />
 
         {/* Categories Overview */}
         <Categories />

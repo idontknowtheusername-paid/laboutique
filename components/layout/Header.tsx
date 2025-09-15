@@ -82,13 +82,15 @@ const Header = () => {
   const cartItemsCount = getCartItemsCount();
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-white transition-shadow duration-300 ${
-      isScrolled ? 'shadow-md' : 'shadow-sm'
-    }`}>
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 bg-white transition-shadow duration-300 ${
+        isScrolled ? "shadow-md" : "shadow-sm"
+      }`}
+    >
       {/* Announcement Bar */}
-      <div className="bg-gradient-to-r from-beshop-primary to-blue-600 text-white py-4">
+      <div className="bg-gradient-to-r from-beshop-primary to-blue-600 text-white py-2">
         <div className="container relative">
-          <Carousel setApi={setAnnApi} opts={{ align: 'start', loop: true }}>
+          <Carousel setApi={setAnnApi} opts={{ align: "start", loop: true }}>
             <CarouselContent>
               {announcements.map((a) => (
                 <CarouselItem key={a.id} className="basis-full">
@@ -118,13 +120,20 @@ const Header = () => {
               <span className="text-white font-bold text-lg">B</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-beshop-primary">Be Shop</h1>
-              <p className="text-xs text-gray-500 -mt-1">Elite Shopping Experience</p>
+              <h1 className="text-2xl font-bold text-beshop-primary">
+                Be Shop
+              </h1>
+              <p className="text-xs text-gray-500 -mt-1">
+                Elite Shopping Experience
+              </p>
             </div>
           </Link>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-2xl mx-8">
+          <form
+            onSubmit={handleSearch}
+            className="hidden md:flex flex-1 max-w-2xl mx-8"
+          >
             <div className="relative w-full">
               <Input
                 type="text"
@@ -148,14 +157,19 @@ const Header = () => {
             {/* Account */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 text-gray-700 hover:text-beshop-primary">
+                <Button
+                  variant="ghost"
+                  className="flex items-center space-x-2 text-gray-700 hover:text-beshop-primary"
+                >
                   <User className="w-5 h-5" />
                   <div className="hidden lg:block text-left">
                     <div className="text-xs text-gray-500">
-                      {user ? 'Bonjour' : 'Se connecter'}
+                      {user ? "Bonjour" : "Se connecter"}
                     </div>
                     <div className="text-sm font-medium">
-                      {user ? user.user_metadata?.first_name || 'Mon compte' : 'Mon compte'}
+                      {user
+                        ? user.user_metadata?.first_name || "Mon compte"
+                        : "Mon compte"}
                     </div>
                   </div>
                 </Button>
@@ -192,14 +206,22 @@ const Header = () => {
 
             {/* Wishlist */}
             <Link href="/wishlist" className="relative">
-              <Button variant="ghost" size="icon" className="text-gray-700 hover:text-beshop-primary">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-gray-700 hover:text-beshop-primary"
+              >
                 <Heart className="w-6 h-6" />
               </Button>
             </Link>
 
             {/* Cart */}
             <Link href="/cart" className="relative">
-              <Button variant="ghost" size="icon" className="text-gray-700 hover:text-beshop-primary">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-gray-700 hover:text-beshop-primary"
+              >
                 <ShoppingCart className="w-6 h-6" />
                 <ClientOnly>
                   {cartItemsCount > 0 && (

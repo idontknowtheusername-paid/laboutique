@@ -60,11 +60,11 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
   let hoverDelayTimer: any = null;
   let autoPlayTimer: any = null;
 
-  // Responsive items per view: mobile=3, tablet=4, desktop=5 (we will duplicate items if fewer)
+  // Responsive items per view: mobile=2, tablet=4, desktop=5 (we will duplicate items if fewer)
   useEffect(() => {
     const computeItemsToShow = () => {
       const width = typeof window !== "undefined" ? window.innerWidth : 1024;
-      const base = width < 640 ? 3 : width < 1024 ? 4 : 5;
+      const base = width < 640 ? 2 : width < 1024 ? 4 : 5;
       return base;
     };
     setItemsToShow(computeItemsToShow());
