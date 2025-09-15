@@ -43,7 +43,7 @@ const FeaturedBrands = () => {
 
   // Configuration du carousel responsive
   const getItemsPerSlide = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       if (window.innerWidth < 768) return 2; // mobile
       if (window.innerWidth < 1024) return 4; // tablet
       return 6; // desktop
@@ -51,17 +51,18 @@ const FeaturedBrands = () => {
     return 6; // default
   };
 
-  const [itemsPerSlide, setItemsPerSlide] = useState(getItemsPerSlide());
+  // SSR-safe initial value, update after mount
+  const [itemsPerSlide, setItemsPerSlide] = useState(6);
   const totalSlides = Math.ceil(brands.length / itemsPerSlide);
 
   // Handle window resize
   useEffect(() => {
+    setItemsPerSlide(getItemsPerSlide());
     const handleResize = () => {
       setItemsPerSlide(getItemsPerSlide());
     };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Auto-play functionality
@@ -104,7 +105,7 @@ const FeaturedBrands = () => {
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
@@ -133,7 +134,7 @@ const FeaturedBrands = () => {
       setIsDragging(false);
       return;
     }
-    
+
     const distance = mouseStart - mouseEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
@@ -143,7 +144,7 @@ const FeaturedBrands = () => {
     } else if (isRightSwipe) {
       prevSlide();
     }
-    
+
     setIsDragging(false);
   };
 
@@ -155,12 +156,13 @@ const FeaturedBrands = () => {
             Marques Partenaires
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Nous travaillons avec les meilleures marques mondiales pour vous offrir des produits authentiques et de qualité supérieure
+            Nous travaillons avec les meilleures marques mondiales pour vous
+            offrir des produits authentiques et de qualité supérieure
           </p>
         </div>
-        
+
         {/* Carousel Container */}
-        <div 
+        <div
           className="relative select-none"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => {
@@ -174,10 +176,9 @@ const FeaturedBrands = () => {
           onMouseMove={onMouseMove}
           onMouseUp={onMouseUp}
         >
-
           {/* Brands Grid */}
           <div className="overflow-hidden">
-            <div 
+            <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
@@ -185,9 +186,15 @@ const FeaturedBrands = () => {
                 <div key={slideIndex} className="w-full flex-shrink-0">
                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 px-4">
                     {brands
-                      .slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
+                      .slice(
+                        slideIndex * itemsPerSlide,
+                        (slideIndex + 1) * itemsPerSlide
+                      )
                       .map((brand, index) => (
-                        <Card key={`${slideIndex}-${index}`} className="group hover-lift card-shadow p-6 text-center bg-white">
+                        <Card
+                          key={`${slideIndex}-${index}`}
+                          className="group hover-lift card-shadow p-6 text-center bg-white"
+                        >
                           <div className="space-y-4">
                             <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full overflow-hidden">
                               <img
@@ -200,7 +207,9 @@ const FeaturedBrands = () => {
                               <h3 className="font-bold text-gray-900 group-hover:text-beshop-primary transition-colors">
                                 {brand.name}
                               </h3>
-                              <p className="text-sm text-gray-500">{brand.products} produits</p>
+                              <p className="text-sm text-gray-500">
+                                {brand.products} produits
+                              </p>
                             </div>
                           </div>
                         </Card>
@@ -211,7 +220,6 @@ const FeaturedBrands = () => {
             </div>
           </div>
 
-
           {/* Pagination Dots */}
           <div className="flex justify-center mt-8 space-x-2">
             {Array.from({ length: totalSlides }).map((_, index) => (
@@ -219,8 +227,8 @@ const FeaturedBrands = () => {
                 key={index}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
                   index === currentSlide
-                    ? 'bg-beshop-primary scale-125'
-                    : 'bg-gray-300 hover:bg-gray-400'
+                    ? "bg-beshop-primary scale-125"
+                    : "bg-gray-300 hover:bg-gray-400"
                 }`}
                 onClick={() => goToSlide(index)}
                 aria-label={`Aller à la slide ${index + 1}`}
@@ -231,14 +239,21 @@ const FeaturedBrands = () => {
           {/* Auto-play indicator */}
           <div className="flex justify-center mt-4">
             <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <div className={`w-2 h-2 rounded-full ${isAutoPlaying && !isHovered ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-              <span>{isAutoPlaying && !isHovered ? 'Lecture automatique' : 'En pause'}</span>
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  isAutoPlaying && !isHovered ? "bg-green-500" : "bg-gray-300"
+                }`}
+              ></div>
+              <span>
+                {isAutoPlaying && !isHovered
+                  ? "Lecture automatique"
+                  : "En pause"}
+              </span>
               <span className="text-gray-400">•</span>
               <span className="text-gray-400">Glissez pour naviguer</span>
             </div>
           </div>
         </div>
-
       </div>
     </section>
   );

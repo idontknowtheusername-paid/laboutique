@@ -28,6 +28,7 @@ import {
   ThumbsUp
 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { WishlistButton } from '@/components/ui/wishlist-button';
 
 // Mock product data
 const productData = {
@@ -310,7 +311,7 @@ export default function ProductDetailPage() {
   const [selectedStorage, setSelectedStorage] = useState('256GB');
   const [selectedColor, setSelectedColor] = useState('Titanium Natural');
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+
   const { addToCart } = useCart();
 
   const handleAddToCart = () => {
@@ -556,14 +557,15 @@ export default function ProductDetailPage() {
                 <Button variant="outline" className="h-12">
                   Acheter maintenant
                 </Button>
-                <Button
-                  variant="outline"
+                <WishlistButton
+                  productId={productData.id}
+                  productName={productData.name}
+                  price={productData.price}
+                  productSlug={productData.slug}
+                  variant="button"
+                  showText={true}
                   className="h-12"
-                  onClick={() => setIsWishlisted(!isWishlisted)}
-                >
-                  <Heart className={`w-5 h-5 mr-2 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
-                  {isWishlisted ? 'Ajouté' : 'Favoris'}
-                </Button>
+                />
               </div>
             </div>
 

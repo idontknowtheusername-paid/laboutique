@@ -51,6 +51,7 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
 }) => {
   const { addToCart } = useCart();
   const [currentIndex, setCurrentIndex] = useState(0);
+  // SSR-safe initial value, update after mount
   const [itemsToShow, setItemsToShow] = useState(5);
   const [isHovering, setIsHovering] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
@@ -62,15 +63,14 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
   // Responsive items per view: mobile=3, tablet=4, desktop=5 (we will duplicate items if fewer)
   useEffect(() => {
     const computeItemsToShow = () => {
-      const width = typeof window !== 'undefined' ? window.innerWidth : 1024;
+      const width = typeof window !== "undefined" ? window.innerWidth : 1024;
       const base = width < 640 ? 3 : width < 1024 ? 4 : 5;
       return base;
     };
-
+    setItemsToShow(computeItemsToShow());
     const handleResize = () => {
       setItemsToShow((prev) => {
         const next = computeItemsToShow();
-        // Adjust currentIndex to avoid empty space when itemsToShow changes
         setCurrentIndex((idx) => {
           const maxStart = Math.max(0, products.length - next);
           return Math.min(idx, maxStart);
@@ -78,11 +78,8 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
         return next;
       });
     };
-
-    // Initialize
-    setItemsToShow(computeItemsToShow());
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [products.length]);
 
   // Autoplay on hover with delay
@@ -115,22 +112,22 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
   }, [isAutoPlaying, products.length, itemsToShow]);
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('fr-BJ', {
-      style: 'currency',
-      currency: 'XOF',
+    return new Intl.NumberFormat("fr-BJ", {
+      style: "currency",
+      currency: "XOF",
       minimumFractionDigits: 0,
     }).format(price);
   };
 
   const nextSlide = () => {
     if (currentIndex < products.length - itemsToShow) {
-      setCurrentIndex(prev => prev + 1);
+      setCurrentIndex((prev) => prev + 1);
     }
   };
 
   const prevSlide = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
+      setCurrentIndex((prev) => prev - 1);
     }
   };
 
@@ -160,15 +157,16 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-3xl font-bold text-gray-900 mb-2">{title}</h2>
-            {subtitle && (
-              <p className="text-gray-600">{subtitle}</p>
-            )}
+            {subtitle && <p className="text-gray-600">{subtitle}</p>}
           </div>
-          
+
           <div className="flex items-center space-x-4">
             {viewAllLink && (
               <Link href={viewAllLink}>
-                <Button variant="outline" className="border-beshop-primary text-beshop-primary hover:bg-beshop-primary hover:text-white">
+                <Button
+                  variant="outline"
+                  className="border-beshop-primary text-beshop-primary hover:bg-beshop-primary hover:text-white"
+                >
                   Voir tout
                 </Button>
               </Link>
@@ -177,7 +175,7 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
         </div>
 
         {/* Products Slider */}
-        <div 
+        <div
           className="relative overflow-hidden group"
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
@@ -190,7 +188,11 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
             }}
           >
             {displayedProducts.map((product, index) => (
-              <div key={`${product.id}-${index}`} className="flex-shrink-0 px-3" style={{ width: `${100 / itemsToShow}%` }}>
+              <div
+                key={`${product.id}-${index}`}
+                className="flex-shrink-0 px-3"
+                style={{ width: `${100 / itemsToShow}%` }}
+              >
                 <Card className="group hover-lift card-shadow h-full flex flex-col">
                   <div className="relative overflow-hidden">
                     {/* Product Image */}
@@ -201,7 +203,7 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
-                    
+
                     {/* Badges */}
                     <div className="absolute top-2 left-2 space-y-1">
                       {product.discount && (
@@ -210,18 +212,30 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
                         </Badge>
                       )}
                       {product.badge && (
-                        <Badge className={`${product.badgeColor || 'bg-green-500'} text-white text-xs`}>
+                        <Badge
+                          className={`${
+                            product.badgeColor || "bg-green-500"
+                          } text-white text-xs`}
+                        >
                           {product.badge}
                         </Badge>
                       )}
                     </div>
-                    
+
                     {/* Quick Actions */}
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2">
-                      <Button size="icon" variant="secondary" className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm">
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm"
+                      >
                         <Heart className="w-3 h-3 md:w-4 md:h-4" />
                       </Button>
-                      <Button size="icon" variant="secondary" className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm">
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm"
+                      >
                         <Eye className="w-3 h-3 md:w-4 md:h-4" />
                       </Button>
                     </div>
@@ -249,13 +263,15 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
                               key={i}
                               className={`w-2.5 h-2.5 md:w-3 md:h-3 ${
                                 i < Math.floor(product.rating)
-                                  ? 'fill-yellow-400 text-yellow-400'
-                                  : 'fill-gray-200 text-gray-200'
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "fill-gray-200 text-gray-200"
                               }`}
                             />
                           ))}
                         </div>
-                        <span className="text-gray-500 truncate">({product.reviews})</span>
+                        <span className="text-gray-500 truncate">
+                          ({product.reviews})
+                        </span>
                       </div>
 
                       {/* Price */}
@@ -316,14 +332,16 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
 
         {/* Slider Indicators */}
         <div className="flex justify-center mt-6 space-x-2">
-          {Array.from({ length: Math.max(1, Math.ceil(totalItems / itemsToShow)) }).map((_, index) => (
+          {Array.from({
+            length: Math.max(1, Math.ceil(totalItems / itemsToShow)),
+          }).map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index * itemsToShow)}
               className={`w-2 h-2 rounded-full transition-colors duration-200 ${
                 Math.floor(currentIndex / itemsToShow) === index
-                  ? 'bg-beshop-primary'
-                  : 'bg-gray-300'
+                  ? "bg-beshop-primary"
+                  : "bg-gray-300"
               }`}
             />
           ))}

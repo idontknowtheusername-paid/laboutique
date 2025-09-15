@@ -1,4 +1,5 @@
 import { BaseService, ServiceResponse, PaginatedResponse, PaginationParams } from './base.service';
+import { Database } from '@/types/database';
 
 export interface CategoryReference {
     id: string;
@@ -6,17 +7,9 @@ export interface CategoryReference {
     slug: string;
 }
 
-export interface Category {
-    id: string;
-    name: string;
-    slug: string;
-    description?: string;
-    image_url?: string;
-    parent_id?: string;
-    sort_order: number;
-    status: 'active' | 'inactive';
-    created_at: string;
-    updated_at: string;
+type DatabaseCategory = Database['public']['Tables']['categories']['Row'];
+
+export interface Category extends DatabaseCategory {
     product_count?: number;
     children?: Category[];
     parent?: CategoryReference;
@@ -28,17 +21,9 @@ export interface CategoryFilters {
     search?: string;
 }
 
-export interface CreateCategoryData {
-    name: string;
-    slug: string;
-    description?: string;
-    image_url?: string;
-    parent_id?: string;
-    sort_order?: number;
-    status?: 'active' | 'inactive';
-}
+export interface CreateCategoryData extends Omit<Database['public']['Tables']['categories']['Insert'], 'id' | 'created_at' | 'updated_at'> { }
 
-export interface UpdateCategoryData extends Partial<CreateCategoryData> {
+export interface UpdateCategoryData extends Partial<Omit<Database['public']['Tables']['categories']['Update'], 'id'>> {
     id: string;
 }
 
@@ -94,6 +79,30 @@ export class CategoriesService extends BaseService {
     }
 
     /**
+     * Récupérer une catégorie par son ID
+     */
+    static async getById(id: string): Promise<ServiceResponse<Category | null>> {
+        try {
+            const { data, error } = await this.getSupabaseClient()
+                .from('categories')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (error) {
+                if (error.code === 'PGRST116') { // No rows returned
+                    return this.createResponse(null, 'Catégorie non trouvée');
+                }
+                throw error;
+            }
+
+            return this.createResponse(data as Category);
+        } catch (error) {
+            return this.createResponse(null, this.handleError(error));
+        }
+    }
+
+    /**
      * Récupérer une catégorie par son slug
      */
     static async getBySlug(slug: string): Promise<ServiceResponse<Category | null>> {
@@ -122,14 +131,14 @@ export class CategoriesService extends BaseService {
                 .order('sort_order', { ascending: true });
 
             // Récupérer le parent séparément si nécessaire
-            let parent: CategoryReference | null = null;
+            let parent: CategoryReference | undefined = undefined;
             if (categoryData.parent_id) {
                 const { data: parentData } = await this.getSupabaseClient()
                     .from('categories')
                     .select('id, name, slug')
                     .eq('id', categoryData.parent_id)
                     .single();
-                parent = parentData as CategoryReference;
+                parent = parentData ? (parentData as CategoryReference) : undefined;
             }
 
             const result: Category = {
@@ -299,10 +308,41 @@ export class CategoriesService extends BaseService {
     }
 
     /**
+     * Vérifier si un slug existe déjà
+     */
+    static async slugExists(slug: string, excludeId?: string): Promise<boolean> {
+        try {
+            let query = this.getSupabaseClient()
+                .from('categories')
+                .select('id')
+                .eq('slug', slug);
+
+            if (excludeId) {
+                query = query.neq('id', excludeId);
+            }
+
+            const { data, error } = await query.single();
+
+            if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+                throw error;
+            }
+
+            return !!data;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
      * Créer une nouvelle catégorie
      */
     static async create(categoryData: CreateCategoryData): Promise<ServiceResponse<Category | null>> {
         try {
+            // Vérifier si le slug existe déjà
+            const slugExists = await this.slugExists(categoryData.slug);
+            if (slugExists) {
+                return this.createResponse(null, 'Ce slug existe déjà');
+            }
             const insertData = {
                 name: categoryData.name,
                 slug: categoryData.slug,
@@ -313,15 +353,17 @@ export class CategoriesService extends BaseService {
                 status: categoryData.status || 'active'
             };
 
-            // Utiliser une approche différente pour contourner les problèmes de typage
-            const supabaseClient = this.getSupabaseClient() as any;
-            const { data, error } = await supabaseClient
+            const { data, error } = await this.getSupabaseClient()
                 .from('categories')
-                .insert(insertData)
+                .insert([insertData])
                 .select()
                 .single();
 
             if (error) throw error;
+
+            if (!data) {
+                return this.createResponse(null, 'Aucune catégorie créée');
+            }
 
             return this.createResponse(data as Category);
         } catch (error) {
@@ -336,6 +378,14 @@ export class CategoriesService extends BaseService {
         try {
             const { id, ...dataToUpdate } = updateData;
 
+            // Vérifier si le slug existe déjà (si on met à jour le slug)
+            if (dataToUpdate.slug) {
+                const slugExists = await this.slugExists(dataToUpdate.slug, id);
+                if (slugExists) {
+                    return this.createResponse(null, 'Ce slug existe déjà');
+                }
+            }
+
             const updatePayload: Record<string, any> = {
                 updated_at: new Date().toISOString()
             };
@@ -349,16 +399,18 @@ export class CategoriesService extends BaseService {
             if (dataToUpdate.sort_order !== undefined) updatePayload.sort_order = dataToUpdate.sort_order;
             if (dataToUpdate.status !== undefined) updatePayload.status = dataToUpdate.status;
 
-            // Utiliser une approche différente pour contourner les problèmes de typage
-            const supabaseClient = this.getSupabaseClient() as any;
-            const { data, error } = await supabaseClient
+            const { data, error } = await this.getSupabaseClient()
                 .from('categories')
-                .update(updatePayload)
+                .update(updatePayload as Partial<Database['public']['Tables']['categories']['Update']>)
                 .eq('id', id)
                 .select()
                 .single();
 
             if (error) throw error;
+
+            if (!data) {
+                return this.createResponse(null, 'Aucune catégorie mise à jour');
+            }
 
             return this.createResponse(data as Category);
         } catch (error) {
@@ -371,8 +423,26 @@ export class CategoriesService extends BaseService {
      */
     static async delete(id: string): Promise<ServiceResponse<boolean>> {
         try {
-            const supabaseClient = this.getSupabaseClient() as any;
-            const { error } = await supabaseClient
+            // Vérifier s'il y a des produits associés
+            const { count: productCount } = await this.getSupabaseClient()
+                .from('products')
+                .select('*', { count: 'exact', head: true })
+                .eq('category_id', id);
+
+            if (productCount && productCount > 0) {
+                return this.createResponse(false, 'Impossible de supprimer une catégorie qui contient des produits');
+            }
+
+            // Vérifier s'il y a des sous-catégories
+            const { count: childCount } = await this.getSupabaseClient()
+                .from('categories')
+                .select('*', { count: 'exact', head: true })
+                .eq('parent_id', id);
+
+            if (childCount && childCount > 0) {
+                return this.createResponse(false, 'Impossible de supprimer une catégorie qui a des sous-catégories');
+            }
+            const { error } = await this.getSupabaseClient()
                 .from('categories')
                 .delete()
                 .eq('id', id);

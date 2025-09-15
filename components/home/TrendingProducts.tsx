@@ -1,38 +1,123 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, ShoppingCart, Heart } from 'lucide-react';
+import { Star, ShoppingCart, Heart, RefreshCw, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ProductsService, Product } from '@/lib/services';
 import { useCart } from '@/contexts/CartContext';
+import { WishlistButton } from '@/components/ui/wishlist-button';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { ErrorState } from '@/components/ui/error-state';
 
-export default function TrendingProducts() {
+// Cache for trending products with TTL
+const CACHE_KEY = 'trending_products';
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+interface CachedData {
+  data: Product[];
+  timestamp: number;
+}
+
+function TrendingProductsContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
   const { addToCart } = useCart();
 
-  useEffect(() => {
-    loadProducts();
+  // Check cache first
+  const getCachedData = useCallback((): Product[] | null => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const parsedCache: CachedData = JSON.parse(cached);
+        const isExpired = Date.now() - parsedCache.timestamp > CACHE_TTL;
+        if (!isExpired) {
+          return parsedCache.data;
+        }
+      }
+    } catch (error) {
+      console.warn('Error reading cache:', error);
+    }
+    return null;
   }, []);
 
-  const loadProducts = async () => {
+  // Save to cache
+  const setCachedData = useCallback((data: Product[]) => {
     try {
+      const cacheData: CachedData = {
+        data,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+    } catch (error) {
+      console.warn('Error saving to cache:', error);
+    }
+  }, []);
+
+  const loadProducts = useCallback(async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+      setError(null);
+
+      // Check cache first if not refreshing
+      if (!isRefresh) {
+        const cachedProducts = getCachedData();
+        if (cachedProducts) {
+          setProducts(cachedProducts);
+          setLoading(false);
+          return;
+        }
+      }
+
       const response = await ProductsService.getPopular(8);
       if (response.success && response.data) {
         setProducts(response.data);
+        setCachedData(response.data);
+        setRetryCount(0); // Reset retry count on success
       } else {
-        console.error('Erreur lors du chargement des produits:', response.error);
+        throw new Error(response.error || 'Erreur lors du chargement des produits');
       }
     } catch (error) {
       console.error('Erreur lors du chargement des produits:', error);
+      setError(error instanceof Error ? error.message : 'Erreur inconnue');
+
+      // If we have cached data and this is a refresh, keep showing cached data
+      if (isRefresh && products.length > 0) {
+        setError('Impossible de rafraîchir. Données en cache affichées.');
+      }
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  };
+  }, [getCachedData, setCachedData, products.length]);
+
+  // Retry with exponential backoff
+  const handleRetry = useCallback(() => {
+    setRetryCount(prev => prev + 1);
+    const delay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Max 10 seconds
+    setTimeout(() => {
+      loadProducts();
+    }, delay);
+  }, [loadProducts, retryCount]);
+
+  // Manual refresh
+  const handleRefresh = useCallback(() => {
+    loadProducts(true);
+  }, [loadProducts]);
+
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -43,10 +128,15 @@ export default function TrendingProducts() {
   };
 
   const handleAddToCart = async (product: Product) => {
-    await addToCart(product.id, product.name, product.price, 1);
+    try {
+      await addToCart(product.id, product.name, product.price, 1);
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout au panier:', error);
+    }
   };
 
-  if (loading) {
+  // Loading state
+  if (loading && products.length === 0) {
     return (
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
@@ -76,14 +166,78 @@ export default function TrendingProducts() {
     );
   }
 
+  // Error state with no cached data
+  if (error && products.length === 0) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Produits Tendance</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Découvrez les produits les plus populaires du moment
+            </p>
+          </div>
+
+          <ErrorState
+            type="generic"
+            title="Erreur de chargement"
+            message={error}
+            onRetry={handleRetry}
+            retryCount={retryCount}
+          />
+        </div>
+      </section>
+    );
+  }
+
+  // Empty state
+  if (!loading && products.length === 0) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Produits Tendance</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Découvrez les produits les plus populaires du moment
+            </p>
+          </div>
+
+          <ErrorState
+            type="empty"
+            title="Aucun produit tendance"
+            message="Aucun produit tendance n'est disponible pour le moment."
+            onRetry={handleRetry}
+          />
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Produits Tendance</h2>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <h2 className="text-3xl font-bold text-gray-900">Produits Tendance</h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Découvrez les produits les plus populaires du moment
           </p>
+          {error && products.length > 0 && (
+            <div className="flex items-center justify-center gap-2 mt-2 text-amber-600">
+              <AlertCircle className="w-4 h-4" />
+              <span className="text-sm">{error}</span>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -114,13 +268,15 @@ export default function TrendingProducts() {
                     </Badge>
                   )}
 
-                  <Button
-                    variant="ghost"
-                    size="icon"
+                  <WishlistButton
+                    productId={product.id}
+                    productName={product.name}
+                    price={product.price}
+                    productSlug={product.slug}
+                    size="sm"
+                    variant="icon"
                     className="absolute top-2 right-2 bg-white/80 hover:bg-white"
-                  >
-                    <Heart className="w-4 h-4" />
-                  </Button>
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -161,7 +317,10 @@ export default function TrendingProducts() {
                     disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
                   >
                     <ShoppingCart className="w-4 h-4 mr-2" />
-                    Ajouter au panier
+                    {product.status !== 'active' || (product.track_quantity && product.quantity <= 0)
+                      ? 'Indisponible'
+                      : 'Ajouter au panier'
+                    }
                   </Button>
                 </div>
               </CardContent>
@@ -178,5 +337,33 @@ export default function TrendingProducts() {
         </div>
       </div>
     </section>
+  );
+}
+
+// Export with Error Boundary
+export default function TrendingProducts() {
+  return (
+    <ErrorBoundary
+      fallback={
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Produits Tendance</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Découvrez les produits les plus populaires du moment
+              </p>
+            </div>
+            <ErrorState
+              type="generic"
+              title="Erreur inattendue"
+              message="Une erreur inattendue s'est produite lors du chargement des produits tendance."
+              onRetry={() => window.location.reload()}
+            />
+          </div>
+        </section>
+      }
+    >
+      <TrendingProductsContent />
+    </ErrorBoundary>
   );
 }

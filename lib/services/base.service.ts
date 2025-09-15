@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { PostgrestError } from '@supabase/supabase-js';
+import { Database } from '@/types/database';
 
 export interface ServiceResponse<T> {
   data: T | null;
@@ -79,5 +80,9 @@ export abstract class BaseService {
 
   protected static getSupabaseClient() {
     return supabase;
+  }
+
+  protected static getTypedSupabaseClient() {
+    return supabase as typeof supabase;
   }
 }

@@ -96,9 +96,10 @@ const FlashSales = () => {
   const [timeLeft, setTimeLeft] = useState({
     hours: 23,
     minutes: 45,
-    seconds: 30
+    seconds: 30,
   });
   const [currentIndex, setCurrentIndex] = useState(0);
+  // SSR-safe initial value, update after mount
   const [itemsToShow, setItemsToShow] = useState(5);
   const [isHovering, setIsHovering] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
@@ -109,7 +110,7 @@ const FlashSales = () => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
+      setTimeLeft((prev) => {
         if (prev.seconds > 0) {
           return { ...prev, seconds: prev.seconds - 1 };
         } else if (prev.minutes > 0) {
@@ -127,10 +128,11 @@ const FlashSales = () => {
   // Responsive items per view: mobile=3, tablet=4, desktop=5 (we will duplicate if fewer)
   useEffect(() => {
     const computeItemsToShow = () => {
-      const width = typeof window !== 'undefined' ? window.innerWidth : 1024;
+      const width = typeof window !== "undefined" ? window.innerWidth : 1024;
       const base = width < 640 ? 3 : width < 1024 ? 4 : 5;
       return base;
     };
+    setItemsToShow(computeItemsToShow());
     const handleResize = () => {
       setItemsToShow((prev) => {
         const next = computeItemsToShow();
@@ -141,9 +143,8 @@ const FlashSales = () => {
         return next;
       });
     };
-    setItemsToShow(computeItemsToShow());
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Autoplay on hover with delay
@@ -175,7 +176,8 @@ const FlashSales = () => {
 
   // Build displayed list to ensure multiple items visible even with few products
   const displayedProducts = React.useMemo(() => {
-    if (!flashProducts || flashProducts.length === 0) return [] as FlashProduct[];
+    if (!flashProducts || flashProducts.length === 0)
+      return [] as FlashProduct[];
     if (flashProducts.length >= itemsToShow) return flashProducts;
     const min = itemsToShow;
     const result: FlashProduct[] = [];
@@ -196,9 +198,9 @@ const FlashSales = () => {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('fr-BJ', {
-      style: 'currency',
-      currency: 'XOF',
+    return new Intl.NumberFormat("fr-BJ", {
+      style: "currency",
+      currency: "XOF",
       minimumFractionDigits: 0,
     }).format(price);
   };
@@ -214,29 +216,32 @@ const FlashSales = () => {
             <span className="font-medium text-sm">Se termine dans:</span>
             <div className="flex space-x-1">
               <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
-                {String(timeLeft.hours).padStart(2, '0')}
+                {String(timeLeft.hours).padStart(2, "0")}
               </span>
               <span className="text-sm">:</span>
               <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
-                {String(timeLeft.minutes).padStart(2, '0')}
+                {String(timeLeft.minutes).padStart(2, "0")}
               </span>
               <span className="text-sm">:</span>
               <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
-                {String(timeLeft.seconds).padStart(2, '0')}
+                {String(timeLeft.seconds).padStart(2, "0")}
               </span>
             </div>
           </div>
         </div>
-        
+
         <Link href="/flash-sales">
-          <Button variant="secondary" className="bg-white text-beshop-secondary hover:bg-gray-100 text-sm">
+          <Button
+            variant="secondary"
+            className="bg-white text-beshop-secondary hover:bg-gray-100 text-sm"
+          >
             Voir tout
           </Button>
         </Link>
       </div>
 
       {/* Products Slider */}
-      <div 
+      <div
         className="relative overflow-hidden group"
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
@@ -248,88 +253,102 @@ const FlashSales = () => {
             width: `${(totalItems / itemsToShow) * 100}%`,
           }}
         >
-        {displayedProducts.map((product, index) => {
-          return (
-            <div key={`${product.id}-${index}`} className="flex-shrink-0 px-3" style={{ width: `${100 / itemsToShow}%` }}>
-            <Card className="group hover-lift card-shadow bg-white text-gray-900 overflow-hidden h-full flex flex-col">
-              <div className="relative">
-                {/* Product Image */}
-                <div className="aspect-square overflow-hidden">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                
-                {/* Discount Badge */}
-                <Badge className="absolute top-2 left-2 bg-red-500 text-white text-xs">
-                  -{product.discount}%
-                </Badge>
-                
-                {/* Quick Actions */}
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2">
-                  <Button size="icon" variant="secondary" className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white">
-                    <Heart className="w-3 h-3 md:w-4 md:h-4" />
-                  </Button>
-                  <Button size="icon" variant="secondary" className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white">
-                    <Eye className="w-3 h-3 md:w-4 md:h-4" />
-                  </Button>
-                </div>
+          {displayedProducts.map((product, index) => {
+            return (
+              <div
+                key={`${product.id}-${index}`}
+                className="flex-shrink-0 px-3"
+                style={{ width: `${100 / itemsToShow}%` }}
+              >
+                <Card className="group hover-lift card-shadow bg-white text-gray-900 overflow-hidden h-full flex flex-col">
+                  <div className="relative">
+                    {/* Product Image */}
+                    <div className="aspect-square overflow-hidden">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+
+                    {/* Discount Badge */}
+                    <Badge className="absolute top-2 left-2 bg-red-500 text-white text-xs">
+                      -{product.discount}%
+                    </Badge>
+
+                    {/* Quick Actions */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2">
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white"
+                      >
+                        <Heart className="w-3 h-3 md:w-4 md:h-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white"
+                      >
+                        <Eye className="w-3 h-3 md:w-4 md:h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <CardContent className="p-2 md:p-4 flex flex-col flex-grow">
+                    <div className="space-y-2 md:space-y-3 flex-grow">
+                      {/* Product Name */}
+                      <Link href={`/product/${product.slug}`}>
+                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-beshop-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
+                          {product.name}
+                        </h3>
+                      </Link>
+
+                      {/* Rating */}
+                      <div className="flex items-center space-x-2 text-xs md:text-sm">
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-2.5 h-2.5 md:w-3 md:h-3 ${
+                                i < Math.floor(product.rating)
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "fill-gray-200 text-gray-200"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-gray-500 truncate">
+                          ({product.reviews})
+                        </span>
+                      </div>
+
+                      {/* Prices */}
+                      <div className="space-y-1">
+                        <div className="flex flex-col md:flex-row items-start md:items-center space-y-1 md:space-y-0 md:space-x-2">
+                          <span className="font-bold text-beshop-primary text-sm md:text-lg">
+                            {formatPrice(product.salePrice)}
+                          </span>
+                          <span className="text-xs md:text-sm text-gray-500 line-through">
+                            {formatPrice(product.originalPrice)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Add to Cart Button */}
+                    <div className="mt-3 md:mt-4">
+                      <QuickAddToCart
+                        productId={product.id}
+                        productName={product.name}
+                        price={product.salePrice}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-
-              <CardContent className="p-2 md:p-4 flex flex-col flex-grow">
-                <div className="space-y-2 md:space-y-3 flex-grow">
-                  {/* Product Name */}
-                  <Link href={`/product/${product.slug}`}>
-                    <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-beshop-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
-                      {product.name}
-                    </h3>
-                  </Link>
-
-                  {/* Rating */}
-                  <div className="flex items-center space-x-2 text-xs md:text-sm">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-2.5 h-2.5 md:w-3 md:h-3 ${
-                            i < Math.floor(product.rating)
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'fill-gray-200 text-gray-200'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-gray-500 truncate">({product.reviews})</span>
-                  </div>
-
-                  {/* Prices */}
-                  <div className="space-y-1">
-                    <div className="flex flex-col md:flex-row items-start md:items-center space-y-1 md:space-y-0 md:space-x-2">
-                      <span className="font-bold text-beshop-primary text-sm md:text-lg">
-                        {formatPrice(product.salePrice)}
-                      </span>
-                      <span className="text-xs md:text-sm text-gray-500 line-through">
-                        {formatPrice(product.originalPrice)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Add to Cart Button */}
-                <div className="mt-3 md:mt-4">
-                  <QuickAddToCart
-                    productId={product.id}
-                    productName={product.name}
-                      price={product.salePrice}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-            </div>
-          );
-        })}
+            );
+          })}
         </div>
         {/* Overlay Navigation */}
         <div className="absolute inset-y-0 left-2 flex items-center">

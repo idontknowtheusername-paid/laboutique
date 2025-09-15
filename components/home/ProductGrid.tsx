@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Star, Heart, Eye } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import { Star, Heart, Eye, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,24 +10,10 @@ import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
 import { ProductSkeleton, HeaderSkeleton } from '@/components/ui/loading-skeleton';
 import { ErrorState } from '@/components/ui/error-state';
+import { WishlistButton } from '@/components/ui/wishlist-button';
 import { useHydration } from '@/hooks/useHydration';
-
-
-interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  image: string;
-  price: number;
-  comparePrice?: number;
-  rating: number;
-  reviews: number;
-  discount?: number;
-  vendor: string;
-  category: string;
-  badge?: string;
-  badgeColor?: string;
-}
+import { Product } from '@/lib/services/products.service';
+import Image from 'next/image';
 
 interface ProductGridProps {
   title: string;
@@ -39,6 +25,10 @@ interface ProductGridProps {
   isLoading?: boolean;
   error?: string;
   onRetry?: () => void;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
+  loadingMore?: boolean;
+  totalCount?: number;
 }
 
 const ProductGrid: React.FC<ProductGridProps> = ({
@@ -50,10 +40,15 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   maxItems = 8,
   isLoading = false,
   error,
-  onRetry
+  onRetry,
+  hasMore = false,
+  onLoadMore,
+  loadingMore = false,
+  totalCount
 }) => {
   const { addToCart } = useCart();
   const isHydrated = useHydration();
+  const [retryCount, setRetryCount] = useState(0);
 
   // Responsive grid columns - safe for SSR
   const getGridCols = () => {
@@ -70,6 +65,34 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   };
 
   const displayedProducts = products.slice(0, maxItems);
+
+  // Enhanced retry function with exponential backoff
+  const handleRetry = useCallback(() => {
+    if (onRetry) {
+      setRetryCount(prev => prev + 1);
+      onRetry();
+    }
+  }, [onRetry]);
+
+  // Transform backend product data to UI format
+  const transformProduct = (product: Product) => {
+    const discountPercentage = product.compare_price && product.compare_price > product.price
+      ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
+      : undefined;
+
+    return {
+      ...product,
+      image: product.images?.[0] || '/placeholder-product.jpg',
+      comparePrice: product.compare_price,
+      rating: product.average_rating || 0,
+      reviews: product.reviews_count || 0,
+      discount: discountPercentage,
+      vendor: product.vendor?.name || 'Vendeur inconnu',
+      category: product.category?.name || 'Catégorie inconnue',
+      badge: product.featured ? 'Vedette' : undefined,
+      badgeColor: product.featured ? 'bg-yellow-500' : undefined
+    };
+  };
 
   return (
     <section className={`py-12 ${backgroundColor}`}>
@@ -111,7 +134,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
             type="generic"
             title="Erreur de chargement"
             message={error}
-            onRetry={onRetry}
+            onRetry={handleRetry}
+            retryCount={retryCount}
           />
         )}
 
@@ -127,104 +151,157 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         {/* Products Grid */}
         {!isLoading && !error && displayedProducts.length > 0 && (
           <div className={`grid ${getGridCols()} gap-3 md:gap-4 lg:gap-6`}>
-            {displayedProducts.map((product) => (
-              <Card key={product.id} className="group hover-lift card-shadow h-full flex flex-col">
-                <div className="relative overflow-hidden">
-                  {/* Product Image */}
-                  <div className="aspect-square bg-gray-100">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
+            {displayedProducts.map((product) => {
+              const transformedProduct = transformProduct(product);
+              return (
+                <Card key={product.id} className="group hover-lift card-shadow h-full flex flex-col">
+                  <div className="relative overflow-hidden">
+                    {/* Product Image */}
+                    <div className="aspect-square bg-gray-100 relative">
+                      <Image
+                        src={transformedProduct.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/placeholder-product.jpg';
+                        }}
+                      />
+                    </div>
 
-                  {/* Badges */}
-                  <div className="absolute top-2 left-2 space-y-1">
-                    {product.discount && (
-                      <Badge className="bg-red-500 text-white text-xs">
-                        -{product.discount}%
-                      </Badge>
-                    )}
-                    {product.badge && (
-                      <Badge className={`${product.badgeColor || 'bg-green-500'} text-white text-xs`}>
-                        {product.badge}
-                      </Badge>
-                    )}
-                  </div>
+                    {/* Badges */}
+                    <div className="absolute top-2 left-2 space-y-1">
+                      {transformedProduct.discount && (
+                        <Badge className="bg-red-500 text-white text-xs">
+                          -{transformedProduct.discount}%
+                        </Badge>
+                      )}
+                      {transformedProduct.badge && (
+                        <Badge className={`${transformedProduct.badgeColor || 'bg-green-500'} text-white text-xs`}>
+                          {transformedProduct.badge}
+                        </Badge>
+                      )}
+                      {product.status !== 'active' && (
+                        <Badge className="bg-gray-500 text-white text-xs">
+                          Indisponible
+                        </Badge>
+                      )}
+                    </div>
 
                   {/* Quick Actions */}
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2">
-                    <Button size="icon" variant="secondary" className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm">
-                      <Heart className="w-3 h-3 md:w-4 md:h-4" />
-                    </Button>
+                      <WishlistButton
+                        productId={product.id}
+                        productName={product.name}
+                        price={product.price}
+                        productSlug={product.slug}
+                        size="sm"
+                        variant="icon"
+                        className="w-7 h-7 md:w-8 md:h-8"
+                      />
                     <Button size="icon" variant="secondary" className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm">
                       <Eye className="w-3 h-3 md:w-4 md:h-4" />
                     </Button>
                   </div>
                 </div>
 
-                <CardContent className="p-2 md:p-4 flex flex-col flex-grow">
-                  <div className="space-y-1.5 md:space-y-2 flex-grow">
-                    {/* Vendor */}
-                    <p className="text-xs text-gray-500 uppercase tracking-wide truncate">
-                      {product.vendor}
-                    </p>
+                  <CardContent className="p-2 md:p-4 flex flex-col flex-grow">
+                    <div className="space-y-1.5 md:space-y-2 flex-grow">
+                      {/* Vendor */}
+                      <p className="text-xs text-gray-500 uppercase tracking-wide truncate">
+                        {transformedProduct.vendor}
+                      </p>
 
-                    {/* Product Name */}
-                    <Link href={`/product/${product.slug}`}>
-                      <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-beshop-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
-                        {product.name}
-                      </h3>
-                    </Link>
+                      {/* Product Name */}
+                      <Link href={`/product/${product.slug}`}>
+                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-beshop-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
+                          {product.name}
+                        </h3>
+                      </Link>
 
-                    {/* Rating */}
-                    <div className="flex items-center space-x-1 text-xs">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-2.5 h-2.5 ${i < Math.floor(product.rating)
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'fill-gray-200 text-gray-200'
-                              }`}
-                          />
-                        ))}
+                      {/* Rating */}
+                      <div className="flex items-center space-x-1 text-xs">
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-2.5 h-2.5 ${i < Math.floor(transformedProduct.rating)
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'fill-gray-200 text-gray-200'
+                                }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-gray-500 text-xs truncate">({transformedProduct.reviews})</span>
                       </div>
-                      <span className="text-gray-500 text-xs truncate">({product.reviews})</span>
-                    </div>
 
-                    {/* Price */}
-                    <div className="space-y-1">
-                      <div className="flex flex-col md:flex-row md:items-center space-y-1 md:space-y-0 md:space-x-1 lg:space-x-2">
-                        <span className="font-bold text-beshop-primary text-xs md:text-sm lg:text-lg truncate">
-                          {formatPrice(product.price)}
-                        </span>
-                        {product.comparePrice && (
-                          <span className="text-xs text-gray-500 line-through truncate">
-                            {formatPrice(product.comparePrice)}
+                      {/* Stock Status */}
+                      {product.track_quantity && (
+                        <div className="text-xs">
+                          {product.quantity > 0 ? (
+                            <span className="text-green-600">En stock ({product.quantity})</span>
+                          ) : (
+                            <span className="text-red-600">Rupture de stock</span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Price */}
+                      <div className="space-y-1">
+                        <div className="flex flex-col md:flex-row md:items-center space-y-1 md:space-y-0 md:space-x-1 lg:space-x-2">
+                          <span className="font-bold text-beshop-primary text-xs md:text-sm lg:text-lg truncate">
+                            {formatPrice(product.price)}
                           </span>
-                        )}
+                          {transformedProduct.comparePrice && (
+                            <span className="text-xs text-gray-500 line-through truncate">
+                              {formatPrice(transformedProduct.comparePrice)}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Add to Cart - Toujours en bas */}
-                  <div className="mt-auto pt-2">
-                    <QuickAddToCart
-                      productId={product.id}
-                      productName={product.name}
-                      price={product.price}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    {/* Add to Cart - Toujours en bas */}
+                    <div className="mt-auto pt-2">
+                      <QuickAddToCart
+                        productId={product.id}
+                        productName={product.name}
+                        price={product.price}
+                        disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Load More Button */}
+        {!isLoading && !error && hasMore && onLoadMore && (
+          <div className="text-center mt-8">
+            <Button
+              onClick={onLoadMore}
+              disabled={loadingMore}
+              variant="outline"
+              className="border-beshop-primary text-beshop-primary hover:bg-beshop-primary hover:text-white text-sm md:text-base"
+            >
+              {loadingMore ? (
+                <>
+                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                  Chargement...
+                </>
+              ) : (
+                `Charger plus de produits${totalCount ? ` (${totalCount - displayedProducts.length} restants)` : ''}`
+              )}
+            </Button>
           </div>
         )}
 
         {/* Show More Button if there are more products */}
-        {!isLoading && !error && products.length > maxItems && viewAllLink && (
+        {!isLoading && !error && !hasMore && products.length > maxItems && viewAllLink && (
           <div className="text-center mt-8">
             <Link href={viewAllLink}>
               <Button

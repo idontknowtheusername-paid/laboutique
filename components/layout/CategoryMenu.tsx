@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Grid3X3, Smartphone, Shirt, Home, Sparkles, Dumbbell, ShoppingBag } from 'lucide-react';
+import { ChevronDown, Grid3X3, Smartphone, Shirt, Home, Sparkles, Dumbbell, ShoppingBag, RefreshCw, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   NavigationMenu,
@@ -11,84 +11,98 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
+import { CategoriesService, Category } from '@/lib/services/categories.service';
+import { ProductSkeleton } from '@/components/ui/loading-skeleton';
 
-const categories = [
-  {
-    id: '1',
-    name: 'Électronique',
-    slug: 'electronique',
-    icon: Smartphone,
-    subcategories: [
-      { name: 'Smartphones & Tablettes', slug: 'smartphones-tablettes', items: ['iPhone', 'Samsung', 'Xiaomi', 'Huawei'] },
-      { name: 'Ordinateurs', slug: 'ordinateurs', items: ['Laptops', 'PC Bureau', 'Accessoires'] },
-      { name: 'TV & Audio', slug: 'tv-audio', items: ['Smart TV', 'Casques', 'Enceintes'] },
-      { name: 'Appareils Photo', slug: 'appareils-photo', items: ['DSLR', 'Mirrorless', 'Action Cam'] },
-    ]
-  },
-  {
-    id: '2',
-    name: 'Mode',
-    slug: 'mode',
-    icon: Shirt,
-    subcategories: [
-      { name: 'Hommes', slug: 'hommes', items: ['Vêtements', 'Chaussures', 'Accessoires'] },
-      { name: 'Femmes', slug: 'femmes', items: ['Robes', 'Chaussures', 'Sacs', 'Bijoux'] },
-      { name: 'Enfants', slug: 'enfants', items: ['Garçons', 'Filles', 'Bébé'] },
-      { name: 'Sport', slug: 'sport', items: ['Fitness', 'Football', 'Running'] },
-    ]
-  },
-  {
-    id: '3',
-    name: 'Maison & Jardin',
-    slug: 'maison-jardin',
-    icon: Home,
-    subcategories: [
-      { name: 'Meubles', slug: 'meubles', items: ['Salon', 'Chambre', 'Cuisine', 'Bureau'] },
-      { name: 'Électroménager', slug: 'electromenager', items: ['Réfrigérateurs', 'Machines à laver', 'Micro-ondes'] },
-      { name: 'Décoration', slug: 'decoration', items: ['Éclairage', 'Textiles', 'Art mural'] },
-      { name: 'Jardin', slug: 'jardin', items: ['Outils', 'Plantes', 'Mobilier extérieur'] },
-    ]
-  },
-  {
-    id: '4',
-    name: 'Beauté & Santé',
-    slug: 'beaute-sante',
-    icon: Sparkles,
-    subcategories: [
-      { name: 'Cosmétiques', slug: 'cosmetiques', items: ['Maquillage', 'Soins visage', 'Parfums'] },
-      { name: 'Cheveux', slug: 'cheveux', items: ['Shampooings', 'Colorations', 'Accessoires'] },
-      { name: 'Santé', slug: 'sante', items: ['Vitamines', 'Premiers secours', 'Bien-être'] },
-      { name: 'Hygiène', slug: 'hygiene', items: ['Dentaire', 'Corporel', 'Intime'] },
-    ]
-  },
-  {
-    id: '5',
-    name: 'Sport & Loisirs',
-    slug: 'sport-loisirs',
-    icon: Dumbbell,
-    subcategories: [
-      { name: 'Fitness', slug: 'fitness', items: ['Équipements', 'Vêtements', 'Nutrition'] },
-      { name: 'Sports collectifs', slug: 'sports-collectifs', items: ['Football', 'Basketball', 'Volleyball'] },
-      { name: 'Outdoor', slug: 'outdoor', items: ['Camping', 'Randonnée', 'Vélo'] },
-      { name: 'Jeux', slug: 'jeux', items: ['Jouets', 'Puzzles', 'Cartes'] },
-    ]
-  },
-  {
-    id: '6',
-    name: 'Alimentation',
-    slug: 'alimentation',
-    icon: ShoppingBag,
-    subcategories: [
-      { name: 'Épicerie', slug: 'epicerie', items: ['Conserves', 'Céréales', 'Condiments'] },
-      { name: 'Boissons', slug: 'boissons', items: ['Eaux', 'Jus', 'Sodas', 'Alcools'] },
-      { name: 'Produits frais', slug: 'produits-frais', items: ['Fruits', 'Légumes', 'Viandes'] },
-      { name: 'Bio', slug: 'bio', items: ['Produits biologiques', 'Sans gluten', 'Végétarien'] },
-    ]
-  },
-];
+// Icon mapping for categories
+const categoryIcons: Record<string, React.ComponentType<any>> = {
+  'electronique': Smartphone,
+  'mode': Shirt,
+  'maison-jardin': Home,
+  'beaute-sante': Sparkles,
+  'sport-loisirs': Dumbbell,
+  'alimentation': ShoppingBag,
+  // Default fallback
+  'default': Grid3X3
+};
+
+// Cache for categories
+const CACHE_KEY = 'categories_menu';
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
+interface CachedCategories {
+  data: Category[];
+  timestamp: number;
+}
 
 const CategoryMenu = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Get icon for category
+  const getCategoryIcon = (slug: string) => {
+    return categoryIcons[slug] || categoryIcons['default'];
+  };
+
+  // Cache functions
+  const getCachedCategories = useCallback((): Category[] | null => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const parsedCache: CachedCategories = JSON.parse(cached);
+        const isExpired = Date.now() - parsedCache.timestamp > CACHE_TTL;
+        if (!isExpired) {
+          return parsedCache.data;
+        }
+      }
+    } catch (error) {
+      console.warn('Error reading categories cache:', error);
+    }
+    return null;
+  }, []);
+
+  const setCachedCategories = useCallback((data: Category[]) => {
+    try {
+      const cacheData: CachedCategories = {
+        data,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+    } catch (error) {
+      console.warn('Error saving categories to cache:', error);
+    }
+  }, []);
+
+  // Load categories from backend
+  const loadCategories = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Check cache first
+      const cachedCategories = getCachedCategories();
+      if (cachedCategories) {
+        setCategories(cachedCategories);
+        setLoading(false);
+        return;
+      }
+
+      const response = await CategoriesService.getCategoryTree();
+      if (response.success && response.data) {
+        setCategories(response.data);
+        setCachedCategories(response.data);
+      } else {
+        throw new Error(response.error || 'Erreur lors du chargement des catégories');
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des catégories:', error);
+      setError(error instanceof Error ? error.message : 'Erreur inconnue');
+    } finally {
+      setLoading(false);
+    }
+  }, [getCachedCategories, setCachedCategories]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -98,6 +112,53 @@ const CategoryMenu = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className={`bg-white border-b transition-all duration-300 ${isScrolled ? 'py-2' : 'py-3'
+        }`} style={{ marginTop: '110px' }}>
+        <div className="container">
+          <div className="flex items-center space-x-4">
+            <div className="bg-gray-200 animate-pulse rounded px-6 py-2 h-10 w-48"></div>
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="bg-gray-100 animate-pulse rounded px-4 py-2 h-10 w-32"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className={`bg-white border-b transition-all duration-300 ${isScrolled ? 'py-2' : 'py-3'
+        }`} style={{ marginTop: '110px' }}>
+        <div className="container">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 text-red-600">
+              <AlertCircle className="w-4 h-4" />
+              <span className="text-sm">Erreur de chargement des catégories</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={loadCategories}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Réessayer
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`bg-white border-b transition-all duration-300 ${
@@ -115,7 +176,7 @@ const CategoryMenu = () => {
               <NavigationMenuContent>
                 <div className="grid grid-cols-3 gap-6 p-6 w-[800px]">
                   {categories.map((category) => {
-                    const IconComponent = category.icon;
+                    const IconComponent = getCategoryIcon(category.slug);
                     return (
                       <div key={category.id} className="space-y-3">
                         <Link
@@ -126,26 +187,28 @@ const CategoryMenu = () => {
                           <span>{category.name}</span>
                         </Link>
                         <div className="space-y-2">
-                          {category.subcategories.map((sub) => (
-                            <div key={sub.slug}>
+                          {category.children?.map((child) => (
+                            <div key={child.slug}>
                               <Link
-                                href={`/category/${category.slug}/${sub.slug}`}
+                                href={`/category/${child.slug}`}
                                 className="block font-medium text-gray-700 hover:text-beshop-primary transition-colors"
                               >
-                                {sub.name}
+                                {child.name}
                               </Link>
-                              <ul className="ml-2 mt-1 space-y-1">
-                                {sub.items.map((item, idx) => (
-                                  <li key={idx}>
-                                    <Link
-                                      href={`/category/${category.slug}/${sub.slug}?filter=${item.toLowerCase()}`}
-                                      className="text-sm text-gray-500 hover:text-beshop-secondary transition-colors"
-                                    >
-                                      {item}
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
+                              {child.children && child.children.length > 0 && (
+                                <ul className="ml-2 mt-1 space-y-1">
+                                  {child.children.slice(0, 4).map((grandchild) => (
+                                    <li key={grandchild.id}>
+                                      <Link
+                                        href={`/category/${grandchild.slug}`}
+                                        className="text-sm text-gray-500 hover:text-beshop-secondary transition-colors"
+                                      >
+                                        {grandchild.name}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -158,7 +221,7 @@ const CategoryMenu = () => {
 
             {/* Individual Category Links */}
             {categories.slice(0, 6).map((category) => {
-              const IconComponent = category.icon;
+              const IconComponent = getCategoryIcon(category.slug);
               return (
                 <NavigationMenuItem key={category.id}>
                   <NavigationMenuTrigger className="text-gray-700 hover:text-beshop-primary px-4 py-2 h-auto bg-transparent">
@@ -167,26 +230,28 @@ const CategoryMenu = () => {
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="grid grid-cols-2 gap-6 p-6 w-[500px]">
-                      {category.subcategories.map((sub) => (
-                        <div key={sub.slug} className="space-y-2">
+                      {category.children?.map((child) => (
+                        <div key={child.slug} className="space-y-2">
                           <Link
-                            href={`/category/${category.slug}/${sub.slug}`}
+                            href={`/category/${child.slug}`}
                             className="block font-semibold text-beshop-primary hover:text-blue-700"
                           >
-                            {sub.name}
+                            {child.name}
                           </Link>
-                          <ul className="space-y-1">
-                            {sub.items.map((item, idx) => (
-                              <li key={idx}>
-                                <Link
-                                  href={`/category/${category.slug}/${sub.slug}?filter=${item.toLowerCase()}`}
-                                  className="text-sm text-gray-600 hover:text-beshop-secondary transition-colors"
-                                >
-                                  {item}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
+                          {child.children && child.children.length > 0 && (
+                            <ul className="space-y-1">
+                              {child.children.slice(0, 5).map((grandchild) => (
+                                <li key={grandchild.id}>
+                                  <Link
+                                    href={`/category/${grandchild.slug}`}
+                                    className="text-sm text-gray-600 hover:text-beshop-secondary transition-colors"
+                                  >
+                                    {grandchild.name}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </div>
                       ))}
                     </div>

@@ -64,6 +64,30 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          description?: string | null;
+          image_url?: string | null;
+          parent_id?: string | null;
+          sort_order?: number;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          slug?: string;
+          description?: string | null;
+          image_url?: string | null;
+          parent_id?: string | null;
+          sort_order?: number;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
       };
       products: {
         Row: {
