@@ -348,3 +348,4 @@ const PersonalizedOffers = () => {
 };
 
 export default PersonalizedOffers;
+

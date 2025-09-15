@@ -252,3 +252,4 @@ const QuickAddToCart: React.FC<QuickAddToCartProps> = ({
 };
 
 export default QuickAddToCart;
+
