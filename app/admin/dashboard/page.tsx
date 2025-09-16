@@ -47,7 +47,8 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { VendorsService, Vendor } from '@/lib/services/vendors.service';
-import { ProductsService, Product } from '@/lib/services/products.service';
+import { ProductsService } from '@/lib/services/products.service';
+import { OrdersService, Order } from '@/lib/services/orders.service';
 
 // Backend data state (no mocks)
 const initialSalesData: Array<{ month: string; revenue: number; orders: number; users: number; }> = [];
@@ -58,7 +59,7 @@ export default function AdminDashboard() {
   const [salesData, setSalesData] = useState(initialSalesData);
   const [categoryData, setCategoryData] = useState(initialCategoryData);
   const [topVendors, setTopVendors] = useState<Vendor[]>([]);
-  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [recentUsers, setRecentUsers] = useState<any[]>([]);
 
   useEffect(() => {
@@ -66,6 +67,10 @@ export default function AdminDashboard() {
       const vendorsRes = await VendorsService.getPopular(5);
       if (vendorsRes.success && vendorsRes.data) {
         setTopVendors(vendorsRes.data);
+      }
+      const ordersRes = await OrdersService.getRecent(10);
+      if (ordersRes.success && ordersRes.data) {
+        setRecentOrders(ordersRes.data);
       }
       // Optionally derive categoryData from products
       const productsRes = await ProductsService.getNew(50);
@@ -266,15 +271,13 @@ export default function AdminDashboard() {
                     {recentOrders.map((order) => (
                       <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="space-y-1">
-                          <p className="font-medium">{order.id}</p>
-                          <p className="text-sm text-gray-600">{order.customer}</p>
-                          <p className="text-xs text-gray-500">{order.vendor}</p>
+                          <p className="font-medium">{order.order_number}</p>
+                          <p className="text-sm text-gray-600">{order.user?.first_name} {order.user?.last_name}</p>
+                          <p className="text-xs text-gray-500">{order.order_items?.[0]?.vendor?.name || '—'}</p>
                         </div>
                         <div className="text-right space-y-1">
-                          <p className="font-bold">{formatPrice(order.amount)}</p>
-                          <Badge className={getStatusColor(order.status)}>
-                            {order.status}
-                          </Badge>
+                          <p className="font-bold">{formatPrice(order.total_amount)}</p>
+                          <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
                         </div>
                       </div>
                     ))}
