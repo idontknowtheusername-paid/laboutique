@@ -404,7 +404,14 @@ export class KYCService extends BaseService {
         highRisk: 0
       });
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        total: 0,
+        pending: 0,
+        approved: 0,
+        rejected: 0,
+        incomplete: 0,
+        highRisk: 0
+      }, this.handleError(error));
     }
   }
 }
