@@ -333,7 +333,7 @@ export class OrdersService extends BaseService {
         .update({
           ...dataToUpdate,
           updated_at: new Date().toISOString()
-        })
+        } as any)
         .eq('id', id)
         .select()
         .single();
@@ -377,7 +377,7 @@ export class OrdersService extends BaseService {
           status: 'cancelled',
           notes: reason ? `Annulée: ${reason}` : 'Commande annulée',
           updated_at: new Date().toISOString()
-        })
+        } as any)
         .eq('id', id)
         .select()
         .single();
