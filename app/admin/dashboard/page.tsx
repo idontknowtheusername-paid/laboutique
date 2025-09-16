@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   BarChart, 
   Bar, 
@@ -57,11 +58,35 @@ const initialCategoryData: Array<{ name: string; value: number; color: string; }
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+  const router = useRouter();
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
   const [salesData, setSalesData] = useState(initialSalesData);
   const [categoryData, setCategoryData] = useState(initialCategoryData);
   const [topVendors, setTopVendors] = useState<Vendor[]>([]);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [recentUsers, setRecentUsers] = useState<UserProfile[]>([]);
+
+  useEffect(() => {
+    // RBAC guard: only admin role
+    (async () => {
+      try {
+        const res = await AuthService.getCurrentUser();
+        const role = res?.data?.profile?.role;
+        if (!res.success || !res.data?.user) {
+          router.replace('/auth/login');
+          return;
+        }
+        if (role !== 'admin') {
+          router.replace('/');
+          return;
+        }
+        setAuthorized(true);
+      } finally {
+        setAuthLoading(false);
+      }
+    })();
+  }, [router]);
 
   useEffect(() => {
     (async () => {
@@ -94,6 +119,26 @@ export default function AdminDashboard() {
       }
     })();
   }, []);
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-beshop-background">
+        <header className="bg-white shadow-sm border-b h-16" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="animate-pulse space-y-4">
+            <div className="h-6 bg-gray-200 rounded w-64"></div>
+            <div className="h-6 bg-gray-200 rounded w-96"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-28 bg-gray-200 rounded" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!authorized) return null;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-BJ', {
