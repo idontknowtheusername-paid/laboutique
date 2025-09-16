@@ -214,7 +214,7 @@ export class TicketsService extends BaseService {
     resolved: number;
     by_type: Record<string, number>;
     by_priority: Record<string, number>;
-  }>> {
+  } | null>> {
     try {
       const { data: tickets } = await this.getSupabaseClient()
         .from('tickets')

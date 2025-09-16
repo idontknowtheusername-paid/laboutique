@@ -177,7 +177,7 @@ export class ReviewsService extends BaseService {
   /**
    * Récupérer un avis par son ID
    */
-  static async getById(id: string): Promise<ServiceResponse<ProductReview>> {
+  static async getById(id: string): Promise<ServiceResponse<ProductReview | null>> {
     try {
       const { data, error } = await this.getSupabaseClient()
         .from('product_reviews')
@@ -200,7 +200,7 @@ export class ReviewsService extends BaseService {
   /**
    * Créer un nouvel avis
    */
-  static async create(reviewData: CreateReviewData): Promise<ServiceResponse<ProductReview>> {
+  static async create(reviewData: CreateReviewData): Promise<ServiceResponse<ProductReview | null>> {
     try {
       // Vérifier si l'utilisateur a déjà laissé un avis pour ce produit
       const { data: existingReview } = await this.getSupabaseClient()
@@ -258,7 +258,7 @@ export class ReviewsService extends BaseService {
   /**
    * Mettre à jour un avis
    */
-  static async update(updateData: UpdateReviewData): Promise<ServiceResponse<ProductReview>> {
+  static async update(updateData: UpdateReviewData): Promise<ServiceResponse<ProductReview | null>> {
     try {
       const { id, ...dataToUpdate } = updateData;
       
@@ -322,21 +322,21 @@ export class ReviewsService extends BaseService {
   /**
    * Approuver un avis
    */
-  static async approve(id: string): Promise<ServiceResponse<ProductReview>> {
+  static async approve(id: string): Promise<ServiceResponse<ProductReview | null>> {
     return this.update({ id, status: 'approved' });
   }
 
   /**
    * Rejeter un avis
    */
-  static async reject(id: string): Promise<ServiceResponse<ProductReview>> {
+  static async reject(id: string): Promise<ServiceResponse<ProductReview | null>> {
     return this.update({ id, status: 'rejected' });
   }
 
   /**
    * Marquer un avis comme utile
    */
-  static async markHelpful(id: string): Promise<ServiceResponse<ProductReview>> {
+  static async markHelpful(id: string): Promise<ServiceResponse<ProductReview | null>> {
     try {
       const { data, error } = await this.getSupabaseClient()
         .rpc('increment_review_helpful', { review_id: id });
@@ -352,7 +352,7 @@ export class ReviewsService extends BaseService {
   /**
    * Récupérer les statistiques des avis d'un produit
    */
-  static async getProductStats(productId: string): Promise<ServiceResponse<ReviewStats>> {
+  static async getProductStats(productId: string): Promise<ServiceResponse<ReviewStats | null>> {
     try {
       const { data, error } = await this.getSupabaseClient()
         .rpc('get_product_review_stats', { product_id: productId });
@@ -385,7 +385,7 @@ export class ReviewsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -420,7 +420,7 @@ export class ReviewsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 

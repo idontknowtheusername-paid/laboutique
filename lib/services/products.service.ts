@@ -248,7 +248,7 @@ export class ProductsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -258,7 +258,7 @@ export class ProductsService extends BaseService {
   static async getPopular(limit: number = 10): Promise<ServiceResponse<Product[]>> {
     try {
       // Récupérer les produits avec leurs ventes
-      const { data: products, error } = await this.getSupabaseClient()
+      const { data: products, error } = await (this.getSupabaseClient() as any)
         .from('products')
         .select(`
           *,
@@ -276,8 +276,8 @@ export class ProductsService extends BaseService {
 
       // Récupérer le nombre de ventes pour chaque produit
       const productsWithSales = await Promise.all(
-        products.map(async (product) => {
-          const { count } = await this.getSupabaseClient()
+        products.map(async (product: any) => {
+          const { count } = await (this.getSupabaseClient() as any)
             .from('order_items')
             .select('*', { count: 'exact', head: true })
             .eq('product_id', product.id);
@@ -320,7 +320,7 @@ export class ProductsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -349,7 +349,7 @@ export class ProductsService extends BaseService {
   ): Promise<ServiceResponse<Product[]>> {
     try {
       // D'abord récupérer le produit pour connaître sa catégorie
-      const { data: product, error: productError } = await this.getSupabaseClient()
+      const { data: product, error: productError } = await (this.getSupabaseClient() as any)
         .from('products')
         .select('category_id, tags')
         .eq('id', productId)
@@ -357,7 +357,7 @@ export class ProductsService extends BaseService {
 
       if (productError) throw productError;
 
-      let query = this.getSupabaseClient()
+      let query = (this.getSupabaseClient() as any)
         .from('products')
         .select(`
           *,
@@ -380,14 +380,14 @@ export class ProductsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
   /**
    * Créer un nouveau produit
    */
-  static async create(productData: CreateProductData): Promise<ServiceResponse<Product>> {
+  static async create(productData: CreateProductData): Promise<ServiceResponse<Product | null>> {
     try {
       const { data, error } = await this.getSupabaseClient()
         .from('products')
@@ -416,7 +416,7 @@ export class ProductsService extends BaseService {
   /**
    * Mettre à jour un produit
    */
-  static async update(updateData: UpdateProductData): Promise<ServiceResponse<Product>> {
+  static async update(updateData: UpdateProductData): Promise<ServiceResponse<Product | null>> {
     try {
       const { id, ...dataToUpdate } = updateData;
       
@@ -463,7 +463,7 @@ export class ProductsService extends BaseService {
   /**
    * Mettre à jour le stock d'un produit
    */
-  static async updateStock(id: string, quantity: number): Promise<ServiceResponse<Product>> {
+  static async updateStock(id: string, quantity: number): Promise<ServiceResponse<Product | null>> {
     try {
       const { data, error } = await this.getSupabaseClient()
         .from('products')

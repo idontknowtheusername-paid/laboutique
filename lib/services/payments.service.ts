@@ -191,7 +191,7 @@ export class PaymentsService extends BaseService {
   } | null>> {
     try {
       // Récupérer le paiement
-      const { data: payment } = await this.getSupabaseClient()
+      const { data: payment } = await (this.getSupabaseClient() as any)
         .from('payments')
         .select('*')
         .eq('provider_transaction_id', reference)
@@ -444,12 +444,12 @@ export class PaymentsService extends BaseService {
     failed_transactions: number;
     by_method: Record<string, { count: number; amount: number }>;
     by_provider: Record<string, { count: number; amount: number }>;
-  }>> {
+  } | null>> {
     try {
       const fromDate = dateFrom || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const toDate = dateTo || new Date().toISOString();
 
-      const { data: payments } = await this.getSupabaseClient()
+      const { data: payments } = await (this.getSupabaseClient() as any)
         .from('payments')
         .select('*')
         .gte('created_at', fromDate)

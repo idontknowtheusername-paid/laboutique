@@ -122,7 +122,7 @@ export class VendorsService extends BaseService {
   /**
    * Récupérer un vendeur par son slug
    */
-  static async getBySlug(slug: string): Promise<ServiceResponse<Vendor>> {
+  static async getBySlug(slug: string): Promise<ServiceResponse<Vendor | null>> {
     try {
       const { data, error } = await this.getSupabaseClient()
         .from('vendors')
@@ -157,7 +157,7 @@ export class VendorsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -177,7 +177,7 @@ export class VendorsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -235,7 +235,7 @@ export class VendorsService extends BaseService {
   /**
    * Créer un nouveau vendeur
    */
-  static async create(vendorData: CreateVendorData): Promise<ServiceResponse<Vendor>> {
+  static async create(vendorData: CreateVendorData): Promise<ServiceResponse<Vendor | null>> {
     try {
       const { data, error } = await this.getSupabaseClient()
         .from('vendors')
@@ -263,7 +263,7 @@ export class VendorsService extends BaseService {
   /**
    * Mettre à jour un vendeur
    */
-  static async update(updateData: UpdateVendorData): Promise<ServiceResponse<Vendor>> {
+  static async update(updateData: UpdateVendorData): Promise<ServiceResponse<Vendor | null>> {
     try {
       const { id, ...dataToUpdate } = updateData;
       
@@ -309,7 +309,7 @@ export class VendorsService extends BaseService {
   static async updateStatus(
     id: string, 
     status: 'active' | 'inactive' | 'pending'
-  ): Promise<ServiceResponse<Vendor>> {
+  ): Promise<ServiceResponse<Vendor | null>> {
     try {
       const { data, error } = await this.getSupabaseClient()
         .from('vendors')
@@ -332,7 +332,7 @@ export class VendorsService extends BaseService {
   /**
    * Mettre à jour la note d'un vendeur
    */
-  static async updateRating(id: string): Promise<ServiceResponse<Vendor>> {
+  static async updateRating(id: string): Promise<ServiceResponse<Vendor | null>> {
     try {
       // Calculer la moyenne des notes des produits du vendeur
       const { data: products } = await this.getSupabaseClient()

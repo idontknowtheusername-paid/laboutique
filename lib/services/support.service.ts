@@ -447,7 +447,7 @@ export class SupportService extends BaseService {
   static async getSupportStats(
     dateFrom?: string,
     dateTo?: string
-  ): Promise<ServiceResponse<SupportStats>> {
+  ): Promise<ServiceResponse<SupportStats | null>> {
     try {
       const fromDate = dateFrom || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const toDate = dateTo || new Date().toISOString();

@@ -291,7 +291,7 @@ export class SessionsService extends BaseService {
   static async getSessionStats(
     dateFrom?: string,
     dateTo?: string
-  ): Promise<ServiceResponse<SessionStats>> {
+  ): Promise<ServiceResponse<SessionStats | null>> {
     try {
       const fromDate = dateFrom || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const toDate = dateTo || new Date().toISOString();
@@ -402,7 +402,7 @@ export class SessionsService extends BaseService {
     is_suspicious: boolean;
     reasons: string[];
     risk_score: number;
-  }>> {
+  } | null>> {
     try {
       const { data: session } = await this.getSupabaseClient()
         .from('user_sessions')
@@ -425,7 +425,7 @@ export class SessionsService extends BaseService {
         .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
         .neq('id', sessionId);
 
-      const knownIPs = recentSessions?.map(s => s.ip_address) || [];
+      const knownIPs = recentSessions?.map((s: any) => s.ip_address) || [];
       if (!knownIPs.includes(session.ip_address)) {
         reasons.push('Nouvelle adresse IP');
         riskScore += 30;
@@ -439,7 +439,7 @@ export class SessionsService extends BaseService {
         .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
         .neq('id', sessionId);
 
-      const knownDevices = recentDevices?.map(s => 
+      const knownDevices = recentDevices?.map((s: any) => 
         `${s.device_info.browser}-${s.device_info.os}-${s.device_info.device}`
       ) || [];
       
@@ -458,7 +458,7 @@ export class SessionsService extends BaseService {
           .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
           .neq('id', sessionId);
 
-        const knownLocations = recentLocations?.map(s => s.location) || [];
+        const knownLocations = recentLocations?.map((s: any) => s.location) || [];
         if (!knownLocations.includes(session.location)) {
           reasons.push('Nouvelle localisation');
           riskScore += 25;

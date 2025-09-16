@@ -134,7 +134,7 @@ export class ShippingService extends BaseService {
     available: boolean;
     zones: ShippingZone[];
     restrictions?: string[];
-  }>> {
+  } | null>> {
     try {
       const { data: zones } = await this.getSupabaseClient()
         .from('shipping_zones')
