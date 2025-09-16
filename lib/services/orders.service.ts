@@ -209,7 +209,7 @@ export class OrdersService extends BaseService {
   /**
    * Récupérer une commande par son numéro
    */
-  static async getByOrderNumber(orderNumber: string): Promise<ServiceResponse<Order>> {
+  static async getByOrderNumber(orderNumber: string): Promise<ServiceResponse<Order | null>> {
     try {
       const { data, error } = await this.getSupabaseClient()
         .from('orders')
