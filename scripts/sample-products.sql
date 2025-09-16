@@ -1,6 +1,15 @@
 -- Script SQL pour ajouter des produits temporaires
 -- À exécuter directement dans l'éditeur SQL de Supabase
 
+-- 0. Préparer les contraintes nécessaires aux UPSERTS
+-- Crée des index uniques si absents pour permettre ON CONFLICT (...)
+CREATE UNIQUE INDEX IF NOT EXISTS categories_slug_idx ON categories (slug);
+CREATE UNIQUE INDEX IF NOT EXISTS vendors_slug_idx ON vendors (slug);
+CREATE UNIQUE INDEX IF NOT EXISTS products_slug_idx ON products (slug);
+-- Optionnel, utile si vous souhaitez aussi garantir l'unicité des SKU
+-- CREATE UNIQUE INDEX IF NOT EXISTS products_sku_idx ON products (sku);
+CREATE UNIQUE INDEX IF NOT EXISTS banners_title_idx ON banners (title);
+
 -- 1. Nettoyer les données existantes (optionnel)
 -- DELETE FROM products;
 -- DELETE FROM vendors;

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   BarChart, 
   Bar, 
@@ -40,86 +41,84 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ProductsService, Product } from '@/lib/services/products.service';
+import { VendorsService, Vendor } from '@/lib/services/vendors.service';
+import { AuthService } from '@/lib/services/auth.service';
 
-// Mock data
-const salesData = [
-  { month: 'Jan', sales: 4000, orders: 24 },
-  { month: 'Fév', sales: 3000, orders: 18 },
-  { month: 'Mar', sales: 5000, orders: 32 },
-  { month: 'Avr', sales: 4500, orders: 28 },
-  { month: 'Mai', sales: 6000, orders: 38 },
-  { month: 'Jun', sales: 5500, orders: 35 },
-];
-
-const categoryData = [
-  { name: 'Smartphones', value: 45, color: '#1E40AF' },
-  { name: 'Accessoires', value: 30, color: '#EA580C' },
-  { name: 'Audio', value: 15, color: '#7C2D12' },
-  { name: 'Autres', value: 10, color: '#6B7280' },
-];
-
-const recentOrders = [
-  {
-    id: '#12345',
-    customer: 'Jean Baptiste K.',
-    product: 'iPhone 15 Pro Max',
-    amount: 850000,
-    status: 'En cours',
-    date: '2024-01-15'
-  },
-  {
-    id: '#12344',
-    customer: 'Marie Dupont',
-    product: 'AirPods Pro 2',
-    amount: 140000,
-    status: 'Expédié',
-    date: '2024-01-14'
-  },
-  {
-    id: '#12343',
-    customer: 'Koffi Asante',
-    product: 'MacBook Air M3',
-    amount: 720000,
-    status: 'Livré',
-    date: '2024-01-13'
-  },
-];
-
-const products = [
-  {
-    id: '1',
-    name: 'iPhone 15 Pro Max 256GB',
-    image: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=100',
-    price: 850000,
-    stock: 15,
-    sales: 24,
-    rating: 4.8,
-    status: 'Actif'
-  },
-  {
-    id: '2',
-    name: 'Samsung Galaxy S24 Ultra',
-    image: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=100',
-    price: 780000,
-    stock: 8,
-    sales: 18,
-    rating: 4.6,
-    status: 'Actif'
-  },
-  {
-    id: '3',
-    name: 'AirPods Pro 2ème génération',
-    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=100',
-    price: 140000,
-    stock: 32,
-    sales: 45,
-    rating: 4.7,
-    status: 'Actif'
-  },
-];
+// Backend state
+const initialSalesData: Array<{ month: string; sales: number; orders: number; }> = [];
+const initialCategoryData: Array<{ name: string; value: number; color: string; }> = [];
 
 export default function VendorDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [salesData, setSalesData] = useState(initialSalesData);
+  const [categoryData, setCategoryData] = useState(initialCategoryData);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [vendor, setVendor] = useState<Vendor | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    // RBAC: must be logged in and vendor role
+    (async () => {
+      try {
+        const res = await AuthService.getCurrentUser();
+        const role = res?.data?.profile?.role;
+        if (!res.success || !res.data?.user) {
+          router.replace('/auth/login');
+          return;
+        }
+        if (role !== 'vendor' && role !== 'admin') {
+          router.replace('/');
+          return;
+        }
+        setAuthorized(true);
+      } finally {
+        setAuthLoading(false);
+      }
+    })();
+  }, [router]);
+
+  useEffect(() => {
+    (async () => {
+      // For demo, load recent products for any vendor
+      const res = await ProductsService.getNew(20);
+      if (res.success && res.data) {
+        setProducts(res.data);
+        const counts: Record<string, number> = {};
+        res.data.forEach(p => {
+          const key = p.category?.name || 'Autres';
+          counts[key] = (counts[key] || 0) + 1;
+        });
+        const palette = ['#1E40AF','#EA580C','#7C2D12','#059669','#6B7280'];
+        const derived = Object.entries(counts).map(([name, value], i) => ({ name, value, color: palette[i % palette.length]}));
+        setCategoryData(derived);
+      }
+    })();
+  }, []);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-beshop-background">
+        <header className="bg-white shadow-sm border-b h-16" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="animate-pulse space-y-4">
+            <div className="h-6 bg-gray-200 rounded w-64"></div>
+            <div className="h-6 bg-gray-200 rounded w-96"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-28 bg-gray-200 rounded" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!authorized) return null;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-BJ', {

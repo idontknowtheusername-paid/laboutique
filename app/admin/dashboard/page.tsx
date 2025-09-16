@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   BarChart, 
   Bar, 
@@ -46,117 +47,98 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { VendorsService, Vendor } from '@/lib/services/vendors.service';
+import { ProductsService } from '@/lib/services/products.service';
+import { OrdersService, Order } from '@/lib/services/orders.service';
+import { AuthService, UserProfile } from '@/lib/services/auth.service';
 
-// Mock data
-const salesData = [
-  { month: 'Jan', revenue: 45000000, orders: 1240, users: 890 },
-  { month: 'Fév', revenue: 38000000, orders: 1100, users: 750 },
-  { month: 'Mar', revenue: 52000000, orders: 1450, users: 1200 },
-  { month: 'Avr', revenue: 48000000, orders: 1320, users: 980 },
-  { month: 'Mai', revenue: 61000000, orders: 1680, users: 1450 },
-  { month: 'Jun', revenue: 58000000, orders: 1590, users: 1320 },
-];
-
-const categoryData = [
-  { name: 'Électronique', value: 35, color: '#1E40AF' },
-  { name: 'Mode', value: 25, color: '#EA580C' },
-  { name: 'Maison', value: 20, color: '#7C2D12' },
-  { name: 'Beauté', value: 12, color: '#059669' },
-  { name: 'Sport', value: 8, color: '#DC2626' },
-];
-
-const recentOrders = [
-  {
-    id: '#ORD-12345',
-    customer: 'Jean Baptiste K.',
-    vendor: 'Apple Store',
-    amount: 850000,
-    status: 'En cours',
-    date: '2024-01-15',
-    items: 1
-  },
-  {
-    id: '#ORD-12344',
-    customer: 'Marie Dupont',
-    vendor: 'Fashion House',
-    amount: 45000,
-    status: 'Expédié',
-    date: '2024-01-14',
-    items: 2
-  },
-  {
-    id: '#ORD-12343',
-    customer: 'Koffi Asante',
-    vendor: 'Tech Store',
-    amount: 720000,
-    status: 'Livré',
-    date: '2024-01-13',
-    items: 1
-  },
-];
-
-const topVendors = [
-  {
-    id: '1',
-    name: 'Apple Store Official',
-    revenue: 12500000,
-    orders: 245,
-    rating: 4.9,
-    status: 'Actif',
-    commission: 8.5
-  },
-  {
-    id: '2',
-    name: 'Samsung Electronics',
-    revenue: 8900000,
-    orders: 189,
-    rating: 4.7,
-    status: 'Actif',
-    commission: 7.2
-  },
-  {
-    id: '3',
-    name: 'Fashion House',
-    revenue: 6700000,
-    orders: 456,
-    rating: 4.6,
-    status: 'Actif',
-    commission: 12.3
-  },
-];
-
-const recentUsers = [
-  {
-    id: '1',
-    name: 'Jean Baptiste Kouassi',
-    email: 'jean.kouassi@email.com',
-    joinDate: '2024-01-15',
-    orders: 3,
-    spent: 1250000,
-    status: 'Actif'
-  },
-  {
-    id: '2',
-    name: 'Marie Dupont',
-    email: 'marie.dupont@email.com',
-    joinDate: '2024-01-14',
-    orders: 1,
-    spent: 45000,
-    status: 'Actif'
-  },
-  {
-    id: '3',
-    name: 'Koffi Asante',
-    email: 'koffi.asante@email.com',
-    joinDate: '2024-01-13',
-    orders: 5,
-    spent: 2100000,
-    status: 'Actif'
-  },
-];
+// Backend data state (no mocks)
+const initialSalesData: Array<{ month: string; revenue: number; orders: number; users: number; }> = [];
+const initialCategoryData: Array<{ name: string; value: number; color: string; }> = [];
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+  const router = useRouter();
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
+  const [salesData, setSalesData] = useState(initialSalesData);
+  const [categoryData, setCategoryData] = useState(initialCategoryData);
+  const [topVendors, setTopVendors] = useState<Vendor[]>([]);
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [recentUsers, setRecentUsers] = useState<UserProfile[]>([]);
+
+  useEffect(() => {
+    // RBAC guard: only admin role
+    (async () => {
+      try {
+        const res = await AuthService.getCurrentUser();
+        const role = res?.data?.profile?.role;
+        if (!res.success || !res.data?.user) {
+          router.replace('/auth/login');
+          return;
+        }
+        if (role !== 'admin') {
+          router.replace('/');
+          return;
+        }
+        setAuthorized(true);
+      } finally {
+        setAuthLoading(false);
+      }
+    })();
+  }, [router]);
+
+  useEffect(() => {
+    (async () => {
+      const vendorsRes = await VendorsService.getPopular(5);
+      if (vendorsRes.success && vendorsRes.data) {
+        setTopVendors(vendorsRes.data);
+      }
+      const ordersRes = await OrdersService.getRecent(10);
+      if (ordersRes.success && ordersRes.data) {
+        setRecentOrders(ordersRes.data);
+      }
+      // Recent users (profiles)
+      const { data: profiles, error } = await (AuthService as any).getSupabaseClient()
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (!error && profiles) setRecentUsers(profiles);
+      // Optionally derive categoryData from products
+      const productsRes = await ProductsService.getNew(50);
+      if (productsRes.success && productsRes.data) {
+        const counts: Record<string, number> = {};
+        productsRes.data.forEach(p => {
+          const key = p.category?.name || 'Autres';
+          counts[key] = (counts[key] || 0) + 1;
+        });
+        const palette = ['#1E40AF','#EA580C','#7C2D12','#059669','#DC2626','#0EA5E9'];
+        const derived = Object.entries(counts).map(([name, value], i) => ({ name, value, color: palette[i % palette.length]}));
+        setCategoryData(derived);
+      }
+    })();
+  }, []);
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-beshop-background">
+        <header className="bg-white shadow-sm border-b h-16" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="animate-pulse space-y-4">
+            <div className="h-6 bg-gray-200 rounded w-64"></div>
+            <div className="h-6 bg-gray-200 rounded w-96"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-28 bg-gray-200 rounded" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!authorized) return null;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-BJ', {
@@ -342,15 +324,13 @@ export default function AdminDashboard() {
                     {recentOrders.map((order) => (
                       <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="space-y-1">
-                          <p className="font-medium">{order.id}</p>
-                          <p className="text-sm text-gray-600">{order.customer}</p>
-                          <p className="text-xs text-gray-500">{order.vendor}</p>
+                          <p className="font-medium">{order.order_number}</p>
+                          <p className="text-sm text-gray-600">{order.user?.first_name} {order.user?.last_name}</p>
+                          <p className="text-xs text-gray-500">{order.order_items?.[0]?.vendor?.name || '—'}</p>
                         </div>
                         <div className="text-right space-y-1">
-                          <p className="font-bold">{formatPrice(order.amount)}</p>
-                          <Badge className={getStatusColor(order.status)}>
-                            {order.status}
-                          </Badge>
+                          <p className="font-bold">{formatPrice(order.total_amount)}</p>
+                          <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
                         </div>
                       </div>
                     ))}
@@ -540,12 +520,12 @@ export default function AdminDashboard() {
                             <div className="flex items-center">
                               <div className="w-8 h-8 bg-beshop-primary rounded-full flex items-center justify-center">
                                 <span className="text-white font-medium text-sm">
-                                  {user.name.charAt(0)}
+                                  {(user.first_name || user.email || '?')[0]}
                                 </span>
                               </div>
                               <div className="ml-3">
                                 <div className="text-sm font-medium text-gray-900">
-                                  {user.name}
+                                  {user.first_name} {user.last_name}
                                 </div>
                               </div>
                             </div>
@@ -554,18 +534,16 @@ export default function AdminDashboard() {
                             {user.email}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                            {user.joinDate}
+                            {new Date(user.created_at).toLocaleDateString('fr-FR')}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {user.orders}
+                            —
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {formatPrice(user.spent)}
+                            —
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <Badge className={getStatusColor(user.status)}>
-                              {user.status}
-                            </Badge>
+                            <Badge className="bg-green-500">Actif</Badge>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex items-center space-x-2">
