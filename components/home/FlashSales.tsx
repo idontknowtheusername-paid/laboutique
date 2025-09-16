@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import QuickAddToCart from './QuickAddToCart';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
+import { ProductsService, Product } from '@/lib/services';
 
 interface FlashProduct {
   id: string;

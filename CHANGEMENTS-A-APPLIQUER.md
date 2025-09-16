@@ -1,3 +1,9 @@
+# 🔧 CHANGEMENTS À APPLIQUER POUR CONNECTER LE FRONTEND
+
+## 📁 **FICHIERS À MODIFIER**
+
+### 1. **`app/page.tsx`** - Remplacer complètement
+```typescript
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -192,28 +198,6 @@ export default function Home() {
           />
         )}
 
-        {homeProducts.length > 0 && (
-          <ProductGrid
-            title="Maison & Jardin"
-            subtitle="Tout pour votre intérieur"
-            products={homeProducts}
-            viewAllLink="/category/maison-jardin"
-            backgroundColor="bg-white"
-            maxItems={8}
-          />
-        )}
-
-        {sportsProducts.length > 0 && (
-          <ProductGrid
-            title="Sport & Loisirs"
-            subtitle="Équipements sportifs"
-            products={sportsProducts}
-            viewAllLink="/category/sport-loisirs"
-            backgroundColor="bg-gray-50"
-            maxItems={8}
-          />
-        )}
-
         <section className="container my-12">
           <div className="bg-gradient-to-r from-beshop-accent to-amber-700 rounded-xl p-8 md:p-12 text-white text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -236,3 +220,30 @@ export default function Home() {
     </main>
   );
 }
+```
+
+## 📋 **FICHIERS À CRÉER**
+
+Les nouveaux fichiers sont disponibles dans cette session :
+- `components/home/FlashSalesConnected.tsx`
+- `components/home/CategoriesConnected.tsx`
+- `scripts/sample-products.sql`
+- `scripts/add-products-manual.js`
+- `scripts/verify-connection.js`
+
+## 🚀 **POUR APPLIQUER LES CHANGEMENTS**
+
+### Option A : Copier manuellement
+1. Modifier `app/page.tsx` avec le code ci-dessus
+2. Créer les nouveaux composants
+3. Ajouter les scripts
+
+### Option B : Merger la branche
+```bash
+git checkout main
+git merge cursor/v-rifier-la-connexion-frontend-backend-3abd
+git push origin main
+```
+
+## ✅ **RÉSULTAT**
+Une fois appliqué, votre frontend sera 100% connecté au backend sans données mock !
