@@ -275,7 +275,7 @@ export class OrdersService extends BaseService {
       const totalAmount = subtotal + taxAmount + shippingAmount - discountAmount;
 
       // Créer la commande
-      const { data: order, error: orderError } = await this.getSupabaseClient()
+      const { data: order, error: orderError } = await (this.getSupabaseClient()
         .from('orders')
         .insert([{
           order_number: orderNumber,
@@ -294,7 +294,7 @@ export class OrdersService extends BaseService {
           notes: orderData.notes
         }])
         .select()
-        .single();
+        .single()) as any;
 
       if (orderError) throw orderError;
 
