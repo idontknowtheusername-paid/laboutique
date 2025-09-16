@@ -262,7 +262,7 @@ export class OrdersService extends BaseService {
   /**
    * Créer une nouvelle commande
    */
-  static async create(orderData: CreateOrderData): Promise<ServiceResponse<Order>> {
+  static async create(orderData: CreateOrderData): Promise<ServiceResponse<Order | null>> {
     try {
       // Générer un numéro de commande unique
       const orderNumber = await this.generateOrderNumber();
@@ -324,7 +324,7 @@ export class OrdersService extends BaseService {
   /**
    * Mettre à jour une commande
    */
-  static async update(updateData: UpdateOrderData): Promise<ServiceResponse<Order>> {
+  static async update(updateData: UpdateOrderData): Promise<ServiceResponse<Order | null>> {
     try {
       const { id, ...dataToUpdate } = updateData;
       
@@ -369,7 +369,7 @@ export class OrdersService extends BaseService {
   /**
    * Annuler une commande
    */
-  static async cancel(id: string, reason?: string): Promise<ServiceResponse<Order>> {
+  static async cancel(id: string, reason?: string): Promise<ServiceResponse<Order | null>> {
     try {
       const { data, error } = await this.getSupabaseClient()
         .from('orders')
