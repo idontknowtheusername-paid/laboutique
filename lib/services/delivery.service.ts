@@ -160,7 +160,7 @@ export class DeliveryService extends BaseService {
       const { data: updates } = await this.getSupabaseClient()
         .from('delivery_updates')
         .select('*')
-        .eq('delivery_id', delivery.id)
+        .eq('delivery_id', (delivery as any).id)
         .order('timestamp', { ascending: true });
 
       return this.createResponse({
@@ -262,7 +262,15 @@ export class DeliveryService extends BaseService {
 
       return this.createResponse(stats);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        total_deliveries: 0,
+        pending: 0,
+        in_transit: 0,
+        delivered: 0,
+        failed: 0,
+        average_delivery_time: 0,
+        on_time_rate: 0
+      }, this.handleError(error));
     }
   }
 }

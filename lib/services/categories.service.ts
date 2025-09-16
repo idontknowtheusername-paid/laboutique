@@ -353,9 +353,9 @@ export class CategoriesService extends BaseService {
                 status: categoryData.status || 'active'
             };
 
-            const { data, error } = await this.getSupabaseClient()
+            const { data, error } = await (this.getSupabaseClient() as any)
                 .from('categories')
-                .insert([insertData])
+                .insert([insertData] as any)
                 .select()
                 .single();
 
@@ -399,9 +399,9 @@ export class CategoriesService extends BaseService {
             if (dataToUpdate.sort_order !== undefined) updatePayload.sort_order = dataToUpdate.sort_order;
             if (dataToUpdate.status !== undefined) updatePayload.status = dataToUpdate.status;
 
-            const { data, error } = await this.getSupabaseClient()
+            const { data, error } = await (this.getSupabaseClient() as any)
                 .from('categories')
-                .update(updatePayload as Partial<Database['public']['Tables']['categories']['Update']>)
+                .update(updatePayload as any)
                 .eq('id', id)
                 .select()
                 .single();

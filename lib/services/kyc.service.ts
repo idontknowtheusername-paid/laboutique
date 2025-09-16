@@ -98,7 +98,7 @@ export class KYCService extends BaseService {
 
       return this.createResponse(profile as KYCProfile);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({ personal: undefined, business: undefined, documents: [] }, this.handleError(error));
     }
   }
 
@@ -152,12 +152,12 @@ export class KYCService extends BaseService {
       const { data: documents } = await this.getSupabaseClient()
         .from('kyc_documents')
         .select('*')
-        .eq('kyc_profile_id', personal?.id || business?.id)
+        .eq('kyc_profile_id', (personal as any)?.id || (business as any)?.id)
         .order('created_at', { ascending: false });
 
       return this.createResponse({
-        personal: personal as KYCProfile,
-        business: business as BusinessKYC,
+        personal: (personal ? (personal as KYCProfile) : undefined),
+        business: (business ? (business as BusinessKYC) : undefined),
         documents: (documents as KYCDocument[]) || []
       });
     } catch (error) {
