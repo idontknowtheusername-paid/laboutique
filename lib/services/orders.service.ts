@@ -310,7 +310,7 @@ export class OrdersService extends BaseService {
 
       const { error: itemsError } = await this.getSupabaseClient()
         .from('order_items')
-        .insert(orderItems);
+        .insert(orderItems as any);
 
       if (itemsError) throw itemsError;
 
