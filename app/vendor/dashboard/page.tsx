@@ -407,7 +407,7 @@ export default function VendorDashboard() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                              <span className="ml-1 text-sm text-gray-900">{product.rating}</span>
+                              <span className="ml-1 text-sm text-gray-900">{product.average_rating || 0}</span>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
