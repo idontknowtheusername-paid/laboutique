@@ -248,7 +248,7 @@ export class ProductsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -280,10 +280,10 @@ export class ProductsService extends BaseService {
           const { count } = await this.getSupabaseClient()
             .from('order_items')
             .select('*', { count: 'exact', head: true })
-            .eq('product_id', product.id);
+            .eq('product_id', (product as any).id);
 
           return {
-            ...product,
+            ...(product as any),
             sales_count: count || 0
           };
         })
@@ -320,7 +320,7 @@ export class ProductsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -368,8 +368,8 @@ export class ProductsService extends BaseService {
         .neq('id', productId);
 
       // Filtrer par catégorie si disponible
-      if (product.category_id) {
-        query = query.eq('category_id', product.category_id);
+      if ((product as any).category_id) {
+        query = query.eq('category_id', (product as any).category_id);
       }
 
       const { data, error } = await query
@@ -380,16 +380,16 @@ export class ProductsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
   /**
    * Créer un nouveau produit
    */
-  static async create(productData: CreateProductData): Promise<ServiceResponse<Product>> {
+  static async create(productData: CreateProductData): Promise<ServiceResponse<Product | null>> {
     try {
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('products')
         .insert([{
           ...productData,
@@ -416,11 +416,11 @@ export class ProductsService extends BaseService {
   /**
    * Mettre à jour un produit
    */
-  static async update(updateData: UpdateProductData): Promise<ServiceResponse<Product>> {
+  static async update(updateData: UpdateProductData): Promise<ServiceResponse<Product | null>> {
     try {
       const { id, ...dataToUpdate } = updateData;
       
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('products')
         .update({
           ...dataToUpdate,
@@ -463,9 +463,9 @@ export class ProductsService extends BaseService {
   /**
    * Mettre à jour le stock d'un produit
    */
-  static async updateStock(id: string, quantity: number): Promise<ServiceResponse<Product>> {
+  static async updateStock(id: string, quantity: number): Promise<ServiceResponse<Product | null>> {
     try {
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('products')
         .update({ 
           quantity,
@@ -496,8 +496,8 @@ export class ProductsService extends BaseService {
 
       if (error) throw error;
 
-      const isAvailable = data.status === 'active' && 
-        (!data.track_quantity || data.quantity >= requestedQuantity);
+      const isAvailable = (data as any).status === 'active' && 
+        (!(data as any).track_quantity || (data as any).quantity >= requestedQuantity);
 
       return this.createResponse(isAvailable);
     } catch (error) {

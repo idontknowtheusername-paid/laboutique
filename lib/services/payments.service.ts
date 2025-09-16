@@ -221,9 +221,9 @@ export class PaymentsService extends BaseService {
 
       // Mettre à jour le statut du paiement
       if (verificationResult.success) {
-        await this.updatePaymentStatus(payment.id, 'completed', verificationResult.data);
+        await this.updatePaymentStatus((payment as any).id, 'completed', verificationResult.data);
       } else {
-        await this.updatePaymentStatus(payment.id, 'failed', null, verificationResult.error);
+        await this.updatePaymentStatus((payment as any).id, 'failed', null, verificationResult.error);
       }
 
       return this.createResponse({
@@ -478,7 +478,14 @@ export class PaymentsService extends BaseService {
 
       return this.createResponse(stats);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        total_amount: 0,
+        total_transactions: 0,
+        successful_transactions: 0,
+        failed_transactions: 0,
+        by_method: {},
+        by_provider: {}
+      }, this.handleError(error));
     }
   }
 }
