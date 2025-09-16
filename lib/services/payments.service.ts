@@ -204,7 +204,7 @@ export class PaymentsService extends BaseService {
       let verificationResult;
 
       // Vérifier selon le provider
-      switch (payment.provider) {
+      switch ((payment as any).provider) {
         case 'paystack':
           verificationResult = await this.verifyPaystack(reference);
           break;
@@ -213,7 +213,7 @@ export class PaymentsService extends BaseService {
           break;
         case 'mtn_momo':
         case 'orange_money':
-          verificationResult = await this.verifyMobileMoney(reference, payment.provider);
+          verificationResult = await this.verifyMobileMoney(reference, (payment as any).provider);
           break;
         default:
           return this.createResponse(null, 'Provider non supporté');

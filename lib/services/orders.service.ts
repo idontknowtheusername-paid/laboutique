@@ -275,7 +275,7 @@ export class OrdersService extends BaseService {
       const totalAmount = subtotal + taxAmount + shippingAmount - discountAmount;
 
       // Créer la commande
-      const { data: order, error: orderError } = await (this.getSupabaseClient()
+      const { data: order, error: orderError } = await (this.getSupabaseClient() as any)
         .from('orders')
         .insert([{
           order_number: orderNumber,
@@ -292,9 +292,9 @@ export class OrdersService extends BaseService {
           shipping_address: orderData.shipping_address,
           billing_address: orderData.billing_address || orderData.shipping_address,
           notes: orderData.notes
-        }] as any)
+        }])
         .select()
-        .single()) as { data: any; error: any };
+        .single();
 
       if (orderError) throw orderError;
 
@@ -308,9 +308,9 @@ export class OrdersService extends BaseService {
         total: item.price * item.quantity
       }));
 
-      const { error: itemsError } = await this.getSupabaseClient()
+      const { error: itemsError } = await (this.getSupabaseClient() as any)
         .from('order_items')
-        .insert(orderItems as any);
+        .insert(orderItems);
 
       if (itemsError) throw itemsError;
 
@@ -328,15 +328,15 @@ export class OrdersService extends BaseService {
     try {
       const { id, ...dataToUpdate } = updateData;
       
-      const { data, error } = await (this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('orders')
         .update({
           ...dataToUpdate,
           updated_at: new Date().toISOString()
-        } as any)
+        })
         .eq('id', id)
         .select()
-        .single()) as { data: any; error: any };
+        .single();
 
       if (error) throw error;
 
@@ -352,7 +352,7 @@ export class OrdersService extends BaseService {
   static async updateStatus(
     id: string,
     status: Order['status']
-  ): Promise<ServiceResponse<Order>> {
+  ): Promise<ServiceResponse<Order | null>> {
     return this.update({ id, status });
   }
 
@@ -362,7 +362,7 @@ export class OrdersService extends BaseService {
   static async updatePaymentStatus(
     id: string,
     paymentStatus: Order['payment_status']
-  ): Promise<ServiceResponse<Order>> {
+  ): Promise<ServiceResponse<Order | null>> {
     return this.update({ id, payment_status: paymentStatus });
   }
 
@@ -371,16 +371,16 @@ export class OrdersService extends BaseService {
    */
   static async cancel(id: string, reason?: string): Promise<ServiceResponse<Order | null>> {
     try {
-      const { data, error } = await (this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('orders')
         .update({
           status: 'cancelled',
           notes: reason ? `Annulée: ${reason}` : 'Commande annulée',
           updated_at: new Date().toISOString()
-        } as any)
+        })
         .eq('id', id)
         .select()
-        .single()) as { data: any; error: any };
+        .single();
 
       if (error) throw error;
 
@@ -409,7 +409,7 @@ export class OrdersService extends BaseService {
         query = query.lte('created_at', filters.date_to);
       }
 
-      const { data: orders, error } = await query;
+      const { data: orders, error } = await query as { data: any[]; error: any };
 
       if (error) throw error;
 
@@ -432,7 +432,15 @@ export class OrdersService extends BaseService {
 
       return this.createResponse(stats);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        total_orders: 0,
+        total_revenue: 0,
+        pending_orders: 0,
+        completed_orders: 0,
+        cancelled_orders: 0,
+        average_order_value: 0,
+        monthly_stats: []
+      }, this.handleError(error));
     }
   }
 
@@ -483,7 +491,7 @@ export class OrdersService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 }
