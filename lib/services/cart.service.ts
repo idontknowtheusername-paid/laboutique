@@ -78,7 +78,7 @@ export class CartService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
