@@ -112,7 +112,7 @@ export const ErrorHandlingExample: React.FC = () => {
     const toastId = showLoadingToast('Chargement en cours...');
     
     setTimeout(() => {
-      dismissToast(toastId);
+      dismissToast(String(toastId));
       showSuccessToast('Chargement terminé!');
     }, 3000);
   };

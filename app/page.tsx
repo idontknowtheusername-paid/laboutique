@@ -10,6 +10,7 @@ import ProductSlider from '@/components/home/ProductSlider';
 import FeaturedBrands from '@/components/home/FeaturedBrands';
 import PersonalizedOffers from '@/components/home/PersonalizedOffers';
 import Footer from '@/components/layout/Footer';
+import type { Product } from '@/lib/services/products.service';
 
 // Mock data pour les produits par catégorie
 const electronicsProducts = [
@@ -402,35 +403,139 @@ const beautyHealthProducts = [
   },
 ];
 
-// Derived subcategory datasets for homepage sections
-const smartphones = electronicsProducts.filter(p => p.category === 'Smartphones');
-const laptops = electronicsProducts.filter(p => p.category === 'Ordinateurs');
-const tablets = electronicsProducts.filter(p => p.category === 'Tablettes');
-const tvAudio = electronicsProducts.filter(p => ['TV & Audio', 'Audio', 'TV'].includes(p.category));
-const gaming = electronicsProducts.filter(p => p.category === 'Gaming');
-const cameras = electronicsProducts.filter(p => p.category === 'Appareils Photo');
+// Helper to normalize mock items to strict Product type expected by ProductGrid
+const toProduct = (p: any): Product => ({
+  id: p.id,
+  name: p.name,
+  slug: p.slug,
+  description: p.description ?? undefined,
+  short_description: p.short_description ?? undefined,
+  sku: p.sku ?? `DEMO-${p.id}`,
+  price: p.price,
+  compare_price: p.compare_price ?? p.comparePrice,
+  cost_price: p.cost_price ?? undefined,
+  track_quantity: p.track_quantity ?? false,
+  quantity: p.quantity ?? 0,
+  weight: p.weight ?? undefined,
+  dimensions: p.dimensions ?? undefined,
+  category_id: p.category_id ?? undefined,
+  vendor_id: p.vendor_id ?? 'demo',
+  brand: p.brand ?? undefined,
+  tags: p.tags ?? undefined,
+  images: p.images ?? (p.image ? [p.image] : ['/placeholder-product.jpg']),
+  status: (p.status === 'inactive' || p.status === 'draft') ? p.status : 'active',
+  featured: p.featured ?? false,
+  meta_title: p.meta_title ?? undefined,
+  meta_description: p.meta_description ?? undefined,
+  created_at: p.created_at || new Date(0).toISOString(),
+  updated_at: p.updated_at || new Date(0).toISOString(),
+  category: p.category ? { id: 'demo-cat', name: p.category, slug: String(p.category).toLowerCase().replace(/\s+/g, '-') } : undefined,
+  vendor: p.vendor ? { id: 'demo-vendor', name: p.vendor, slug: 'demo-vendor' } : undefined,
+  reviews_count: p.reviews ?? 0,
+  average_rating: p.rating ?? 0,
+});
 
-const electromenager = homeGardenProducts.filter(p => p.category === 'Électroménager');
-const mobilier = homeGardenProducts.filter(p => p.category === 'Mobilier');
-const jardin = homeGardenProducts.filter(p => p.category === 'Jardin');
-const decoration = homeGardenProducts.filter(p => ['Décoration', 'Decoration'].includes(p.category as string));
-const eclairage = homeGardenProducts.filter(p => ['Éclairage', 'Eclairage'].includes(p.category as string));
-const textileMaison = homeGardenProducts.filter(p => p.category === 'Textile maison');
+const electronicsAsProducts: Product[] = electronicsProducts.map(toProduct);
+const fashionAsProducts: Product[] = fashionProducts.map(toProduct);
+const homeGardenAsProducts: Product[] = homeGardenProducts.map(toProduct);
+const beautyAsProducts: Product[] = beautyHealthProducts.map(toProduct);
 
-const parfums = beautyHealthProducts.filter(p => p.category === 'Parfums');
-const maquillage = beautyHealthProducts.filter(p => p.category === 'Maquillage');
-const soinsVisage = beautyHealthProducts.filter(p => p.category === 'Soins visage');
-const soinsCheveux = beautyHealthProducts.filter(p => p.category === 'Soins cheveux');
-const soinsCorps = beautyHealthProducts.filter(p => p.category === 'Soins corps');
-const complements = beautyHealthProducts.filter(p => p.category === 'Compléments');
-const accessoiresBeaute = beautyHealthProducts.filter(p => p.category === 'Accessoires beauté');
+// Normalize electronics for ProductSlider component requirements
+const electronicsForSlider = electronicsProducts.map((p: any) => ({
+  id: p.id,
+  name: p.name,
+  slug: p.slug,
+  image: p.image ?? p.images?.[0] ?? '/placeholder-product.jpg',
+  price: p.price,
+  comparePrice: p.comparePrice ?? p.compare_price,
+  rating: p.rating ?? 0,
+  reviews: p.reviews ?? 0,
+  discount: p.discount,
+  vendor: p.vendor ?? p.brand ?? 'Vendeur',
+  category: p.category ?? 'Autres',
+  badge: p.badge,
+  badgeColor: p.badgeColor,
+}));
 
-const modeFemme = fashionProducts.filter(p => p.category === 'Mode Femme');
-const modeHomme = fashionProducts.filter(p => p.category === 'Mode Homme');
-const chaussures = fashionProducts.filter(p => p.category === 'Chaussures');
-const montres = fashionProducts.filter(p => p.category === 'Montres');
-const sportFitness = fashionProducts.filter(p => p.category === 'Sport');
-const accessoiresMode = fashionProducts.filter(p => p.category === 'Accessoires');
+// Derived subcategory datasets for homepage sections (normalized to Product[])
+const smartphones: Product[] = electronicsProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Smartphones')
+  .map(toProduct);
+const laptops: Product[] = electronicsProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Ordinateurs')
+  .map(toProduct);
+const tablets: Product[] = electronicsProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Tablettes')
+  .map(toProduct);
+const tvAudio: Product[] = electronicsProducts
+  .filter((p: any) => ['TV & Audio', 'Audio', 'TV'].includes((p.category ?? p.category?.name) || ''))
+  .map(toProduct);
+const gaming: Product[] = electronicsProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Gaming')
+  .map(toProduct);
+const cameras: Product[] = electronicsProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Appareils Photo')
+  .map(toProduct);
+
+const electromenager: Product[] = homeGardenProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Électroménager')
+  .map(toProduct);
+const mobilier: Product[] = homeGardenProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Mobilier')
+  .map(toProduct);
+const jardin: Product[] = homeGardenProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Jardin')
+  .map(toProduct);
+const decoration: Product[] = homeGardenProducts
+  .filter((p: any) => ['Décoration', 'Decoration'].includes((p.category ?? p.category?.name) || ''))
+  .map(toProduct);
+const eclairage: Product[] = homeGardenProducts
+  .filter((p: any) => ['Éclairage', 'Eclairage'].includes((p.category ?? p.category?.name) || ''))
+  .map(toProduct);
+const textileMaison: Product[] = homeGardenProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Textile maison')
+  .map(toProduct);
+
+const parfums: Product[] = beautyHealthProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Parfums')
+  .map(toProduct);
+const maquillage: Product[] = beautyHealthProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Maquillage')
+  .map(toProduct);
+const soinsVisage: Product[] = beautyHealthProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Soins visage')
+  .map(toProduct);
+const soinsCheveux: Product[] = beautyHealthProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Soins cheveux')
+  .map(toProduct);
+const soinsCorps: Product[] = beautyHealthProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Soins corps')
+  .map(toProduct);
+const complements: Product[] = beautyHealthProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Compléments')
+  .map(toProduct);
+const accessoiresBeaute: Product[] = beautyHealthProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Accessoires beauté')
+  .map(toProduct);
+
+const modeFemme: Product[] = fashionProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Mode Femme')
+  .map(toProduct);
+const modeHomme: Product[] = fashionProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Mode Homme')
+  .map(toProduct);
+const chaussures: Product[] = fashionProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Chaussures')
+  .map(toProduct);
+const montres: Product[] = fashionProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Montres')
+  .map(toProduct);
+const sportFitness: Product[] = fashionProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Sport')
+  .map(toProduct);
+const accessoiresMode: Product[] = fashionProducts
+  .filter((p: any) => (p.category ?? p.category?.name) === 'Accessoires')
+  .map(toProduct);
 
 // Ensure all variable declarations are closed before the component
 
@@ -456,7 +561,7 @@ export default function Home() {
         <ProductSlider
           title="Produits Tendance"
           subtitle="Découvrez les produits les plus populaires du moment"
-          products={electronicsProducts}
+          products={electronicsForSlider}
           viewAllLink="/products"
           backgroundColor="bg-white"
         />
@@ -468,7 +573,7 @@ export default function Home() {
         <ProductGrid
           title="Électronique & High-Tech"
           subtitle="Les dernières technologies et gadgets tendance"
-          products={electronicsProducts}
+          products={electronicsAsProducts}
           viewAllLink="/category/electronique"
           backgroundColor="bg-white"
           maxItems={20}
@@ -478,7 +583,7 @@ export default function Home() {
         <ProductGrid
           title="Mode & Style"
           subtitle="Exprimez votre style unique avec nos collections tendance"
-          products={fashionProducts}
+          products={fashionAsProducts}
           viewAllLink="/category/mode"
           backgroundColor="bg-gray-50"
           maxItems={20}
@@ -488,7 +593,7 @@ export default function Home() {
         <ProductGrid
           title="Maison & Jardin"
           subtitle="Tout pour embellir et équiper votre maison"
-          products={homeGardenProducts}
+          products={homeGardenAsProducts}
           viewAllLink="/category/maison-jardin"
           backgroundColor="bg-white"
           maxItems={20}
@@ -498,7 +603,7 @@ export default function Home() {
         <ProductGrid
           title="Beauté & Santé"
           subtitle="Prenez soin de vous avec nos produits de qualité"
-          products={beautyHealthProducts}
+          products={beautyAsProducts}
           viewAllLink="/category/beaute-sante"
           maxItems={20}
         />
@@ -560,7 +665,7 @@ export default function Home() {
                 <ProductGrid
                   title="TV & Audio"
                   subtitle="Image nette, son immersif"
-                  products={tvAudio}
+                  products={tvAudio.map(toProduct)}
                   viewAllLink="/category/electronique"
                   backgroundColor="bg-white"
                   maxItems={15}
@@ -570,7 +675,7 @@ export default function Home() {
                 <ProductGrid
                   title="Gaming"
                   subtitle="Consoles et accessoires"
-                  products={gaming}
+                  products={gaming.map(toProduct)}
                   viewAllLink="/category/electronique"
                   backgroundColor="bg-gray-50"
                   maxItems={15}
@@ -580,7 +685,7 @@ export default function Home() {
                 <ProductGrid
                   title="Tablettes"
                   subtitle="Travail et divertissement"
-                  products={tablets}
+                  products={tablets.map(toProduct)}
                   viewAllLink="/category/electronique"
                   backgroundColor="bg-white"
                   maxItems={15}
@@ -590,7 +695,7 @@ export default function Home() {
                 <ProductGrid
                   title="Appareils Photo"
                   subtitle="Capturez l'instant"
-                  products={cameras}
+                  products={cameras.map(toProduct)}
                   viewAllLink="/category/electronique"
                   backgroundColor="bg-gray-50"
                   maxItems={15}
@@ -610,7 +715,7 @@ export default function Home() {
               {modeFemme.length > 0 && (
                 <ProductGrid
                   title="Mode Femme"
-                  products={modeFemme}
+                  products={modeFemme.map(toProduct)}
                   viewAllLink="/category/mode"
                   backgroundColor="bg-white"
                   maxItems={15}
@@ -619,7 +724,7 @@ export default function Home() {
               {modeHomme.length > 0 && (
                 <ProductGrid
                   title="Mode Homme"
-                  products={modeHomme}
+                  products={modeHomme.map(toProduct)}
                   viewAllLink="/category/mode"
                   backgroundColor="bg-gray-50"
                   maxItems={15}
@@ -628,7 +733,7 @@ export default function Home() {
               {chaussures.length > 0 && (
                 <ProductGrid
                   title="Chaussures"
-                  products={chaussures}
+                  products={chaussures.map(toProduct)}
                   viewAllLink="/category/mode"
                   backgroundColor="bg-white"
                   maxItems={15}
@@ -637,7 +742,7 @@ export default function Home() {
               {montres.length > 0 && (
                 <ProductGrid
                   title="Montres"
-                  products={montres}
+                  products={montres.map(toProduct)}
                   viewAllLink="/category/mode"
                   backgroundColor="bg-gray-50"
                   maxItems={15}
@@ -646,7 +751,7 @@ export default function Home() {
               {sportFitness.length > 0 && (
                 <ProductGrid
                   title="Sport & Fitness"
-                  products={sportFitness}
+                  products={sportFitness.map(toProduct)}
                   viewAllLink="/category/mode"
                   backgroundColor="bg-white"
                   maxItems={15}
@@ -655,7 +760,7 @@ export default function Home() {
               {accessoiresMode.length > 0 && (
                 <ProductGrid
                   title="Accessoires"
-                  products={accessoiresMode}
+                  products={accessoiresMode.map(toProduct)}
                   viewAllLink="/category/mode"
                   backgroundColor="bg-gray-50"
                   maxItems={15}
@@ -730,7 +835,7 @@ export default function Home() {
               {maquillage.length > 0 && (
                 <ProductGrid
                   title="Maquillage"
-                  products={maquillage}
+                  products={maquillage.map(toProduct)}
                   viewAllLink="/category/beaute-sante"
                   backgroundColor="bg-white"
                   maxItems={15}
@@ -739,7 +844,7 @@ export default function Home() {
               {soinsVisage.length > 0 && (
                 <ProductGrid
                   title="Soins visage"
-                  products={soinsVisage}
+                  products={soinsVisage.map(toProduct)}
                   viewAllLink="/category/beaute-sante"
                   backgroundColor="bg-gray-50"
                   maxItems={15}
@@ -748,7 +853,7 @@ export default function Home() {
               {soinsCheveux.length > 0 && (
                 <ProductGrid
                   title="Soins cheveux"
-                  products={soinsCheveux}
+                  products={soinsCheveux.map(toProduct)}
                   viewAllLink="/category/beaute-sante"
                   backgroundColor="bg-white"
                   maxItems={15}
@@ -757,7 +862,7 @@ export default function Home() {
               {soinsCorps.length > 0 && (
                 <ProductGrid
                   title="Soins corps"
-                  products={soinsCorps}
+                  products={soinsCorps.map(toProduct)}
                   viewAllLink="/category/beaute-sante"
                   backgroundColor="bg-gray-50"
                   maxItems={15}
@@ -766,7 +871,7 @@ export default function Home() {
               {complements.length > 0 && (
                 <ProductGrid
                   title="Compléments"
-                  products={complements}
+                  products={complements.map(toProduct)}
                   viewAllLink="/category/beaute-sante"
                   backgroundColor="bg-white"
                   maxItems={15}
@@ -775,7 +880,7 @@ export default function Home() {
               {accessoiresBeaute.length > 0 && (
                 <ProductGrid
                   title="Accessoires beauté"
-                  products={accessoiresBeaute}
+                  products={accessoiresBeaute.map(toProduct)}
                   viewAllLink="/category/beaute-sante"
                   backgroundColor="bg-gray-50"
                   maxItems={15}

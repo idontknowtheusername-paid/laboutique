@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
 import Footer from '@/components/layout/Footer';
 import ProductGrid from '@/components/home/ProductGrid';
+import type { Product } from '@/lib/services/products.service';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
@@ -162,6 +163,38 @@ const fashionProducts = [
     category: 'Accessoires'
   }
 ];
+
+// Adapt demo items to strict Product type expected by ProductGrid
+const demoProducts: Product[] = fashionProducts.map((p) => ({
+  id: p.id,
+  name: p.name,
+  slug: p.slug,
+  description: undefined,
+  short_description: undefined,
+  sku: `DEMO-${p.id}`,
+  price: p.price,
+  compare_price: (p as any).comparePrice,
+  cost_price: undefined,
+  track_quantity: false,
+  quantity: 0,
+  weight: undefined,
+  dimensions: undefined,
+  category_id: undefined,
+  vendor_id: 'demo',
+  brand: undefined,
+  tags: undefined,
+  images: p.image ? [p.image] : ['/placeholder-product.jpg'],
+  status: 'active',
+  featured: false,
+  meta_title: undefined,
+  meta_description: undefined,
+  created_at: new Date(0).toISOString(),
+  updated_at: new Date(0).toISOString(),
+  category: p.category ? { id: 'demo-cat', name: p.category, slug: p.category.toLowerCase().replace(/\s+/g, '-') } : undefined,
+  vendor: p.vendor ? { id: 'demo-vendor', name: p.vendor, slug: 'demo-vendor' } : undefined,
+  reviews_count: p.reviews,
+  average_rating: p.rating,
+}));
 
 const categories = [
   { name: 'Mode Femme', count: 2800, slug: 'mode-femme' },
@@ -420,7 +453,7 @@ export default function FashionPage() {
             {/* Products */}
             <ProductGrid
               title=""
-              products={fashionProducts}
+              products={demoProducts}
               backgroundColor="bg-transparent"
             />
 
