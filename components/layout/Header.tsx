@@ -17,7 +17,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { ClientOnly } from '@/components/ui/ClientOnly';
+import ClientSafe from '@/components/ui/client-safe';
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 
@@ -223,13 +223,13 @@ const Header = () => {
                 className="text-gray-700 hover:text-beshop-primary"
               >
                 <ShoppingCart className="w-6 h-6" />
-                <ClientOnly>
+                <ClientSafe>
                   {cartItemsCount > 0 && (
                     <Badge className="absolute -top-2 -right-2 bg-beshop-secondary text-white text-xs px-2 py-1">
                       {cartItemsCount}
                     </Badge>
                   )}
-                </ClientOnly>
+                </ClientSafe>
               </Button>
             </Link>
 
