@@ -399,10 +399,10 @@ export default function VendorDashboard() {
                             {formatPrice(product.price)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {product.stock}
+                            {product.quantity}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {product.sales}
+                            {product.reviews_count || 0}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
