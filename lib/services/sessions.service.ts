@@ -103,7 +103,7 @@ export class SessionsService extends BaseService {
 
       // Mettre à jour la dernière activité
       if (data) {
-        await this.updateLastActivity(data.id);
+        await this.updateLastActivity((data as any).id);
       }
 
       return this.createResponse(data as UserSession);
@@ -144,7 +144,7 @@ export class SessionsService extends BaseService {
           expires_at: newExpiresAt.toISOString(),
           last_activity: new Date().toISOString()
         })
-        .eq('id', session.id);
+        .eq('id', (session as any).id);
 
       return this.createResponse({
         session_token: newSessionToken,
@@ -182,7 +182,7 @@ export class SessionsService extends BaseService {
    */
   static async endAllUserSessions(userId: string, exceptSessionId?: string): Promise<ServiceResponse<number>> {
     try {
-      let query = this.getSupabaseClient()
+      let query = (this.getSupabaseClient() as any)
         .from('user_sessions')
         .update({
           is_active: false,
@@ -360,7 +360,16 @@ export class SessionsService extends BaseService {
 
       return this.createResponse(stats);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        total_sessions: 0,
+        active_sessions: 0,
+        expired_sessions: 0,
+        unique_users: 0,
+        average_duration: 0,
+        concurrent_users: 0,
+        top_devices: [],
+        top_locations: []
+      }, this.handleError(error));
     }
   }
 
@@ -411,7 +420,11 @@ export class SessionsService extends BaseService {
         .single();
 
       if (!session) {
-        return this.createResponse(null, 'Session non trouvée');
+        return this.createResponse({
+          is_suspicious: false,
+          reasons: [],
+          risk_score: 0
+        }, 'Session non trouvée');
       }
 
       const reasons: string[] = [];
@@ -421,12 +434,12 @@ export class SessionsService extends BaseService {
       const { data: recentSessions } = await this.getSupabaseClient()
         .from('user_sessions')
         .select('ip_address')
-        .eq('user_id', session.user_id)
+        .eq('user_id', (session as any).user_id)
         .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
         .neq('id', sessionId);
 
-      const knownIPs = recentSessions?.map(s => s.ip_address) || [];
-      if (!knownIPs.includes(session.ip_address)) {
+      const knownIPs = recentSessions?.map((s: any) => s.ip_address) || [];
+      if (!knownIPs.includes((session as any).ip_address)) {
         reasons.push('Nouvelle adresse IP');
         riskScore += 30;
       }
@@ -435,31 +448,31 @@ export class SessionsService extends BaseService {
       const { data: recentDevices } = await this.getSupabaseClient()
         .from('user_sessions')
         .select('device_info')
-        .eq('user_id', session.user_id)
+        .eq('user_id', (session as any).user_id)
         .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
         .neq('id', sessionId);
 
-      const knownDevices = recentDevices?.map(s => 
+      const knownDevices = recentDevices?.map((s: any) => 
         `${s.device_info.browser}-${s.device_info.os}-${s.device_info.device}`
       ) || [];
       
-      const currentDevice = `${session.device_info.browser}-${session.device_info.os}-${session.device_info.device}`;
+      const currentDevice = `${(session as any).device_info.browser}-${(session as any).device_info.os}-${(session as any).device_info.device}`;
       if (!knownDevices.includes(currentDevice)) {
         reasons.push('Nouvel appareil');
         riskScore += 20;
       }
 
       // Vérifier la localisation
-      if (session.location && session.location !== 'Unknown') {
+      if ((session as any).location && (session as any).location !== 'Unknown') {
         const { data: recentLocations } = await this.getSupabaseClient()
           .from('user_sessions')
           .select('location')
-          .eq('user_id', session.user_id)
+          .eq('user_id', (session as any).user_id)
           .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
           .neq('id', sessionId);
 
-        const knownLocations = recentLocations?.map(s => s.location) || [];
-        if (!knownLocations.includes(session.location)) {
+        const knownLocations = recentLocations?.map((s: any) => s.location) || [];
+        if (!knownLocations.includes((session as any).location)) {
           reasons.push('Nouvelle localisation');
           riskScore += 25;
         }
@@ -473,7 +486,11 @@ export class SessionsService extends BaseService {
         risk_score: riskScore
       });
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        is_suspicious: false,
+        reasons: [],
+        risk_score: 0
+      }, this.handleError(error));
     }
   }
 

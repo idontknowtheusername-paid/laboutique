@@ -122,7 +122,7 @@ export class VendorsService extends BaseService {
   /**
    * Récupérer un vendeur par son slug
    */
-  static async getBySlug(slug: string): Promise<ServiceResponse<Vendor>> {
+  static async getBySlug(slug: string): Promise<ServiceResponse<Vendor | null>> {
     try {
       const { data, error } = await this.getSupabaseClient()
         .from('vendors')
@@ -157,7 +157,7 @@ export class VendorsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -177,7 +177,7 @@ export class VendorsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -215,29 +215,36 @@ export class VendorsService extends BaseService {
         .select('total')
         .eq('vendor_id', vendorId);
 
-      const totalRevenue = orderItems?.reduce((sum, item) => sum + item.total, 0) || 0;
+      const totalRevenue = orderItems?.reduce((sum, item) => sum + (item as any).total, 0) || 0;
 
       const stats: VendorStats = {
-        total_products: vendor.total_products,
-        total_orders: vendor.total_orders,
+        total_products: (vendor as any).total_products,
+        total_orders: (vendor as any).total_orders,
         total_revenue: totalRevenue,
-        average_rating: vendor.rating,
-        total_reviews: vendor.total_reviews,
+        average_rating: (vendor as any).rating,
+        total_reviews: (vendor as any).total_reviews,
         monthly_sales: [] // À implémenter avec une requête plus complexe
       };
 
       return this.createResponse(stats);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        total_products: 0,
+        total_orders: 0,
+        total_revenue: 0,
+        average_rating: 0,
+        total_reviews: 0,
+        monthly_sales: []
+      }, this.handleError(error));
     }
   }
 
   /**
    * Créer un nouveau vendeur
    */
-  static async create(vendorData: CreateVendorData): Promise<ServiceResponse<Vendor>> {
+  static async create(vendorData: CreateVendorData): Promise<ServiceResponse<Vendor | null>> {
     try {
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('vendors')
         .insert([{
           ...vendorData,
@@ -263,11 +270,11 @@ export class VendorsService extends BaseService {
   /**
    * Mettre à jour un vendeur
    */
-  static async update(updateData: UpdateVendorData): Promise<ServiceResponse<Vendor>> {
+  static async update(updateData: UpdateVendorData): Promise<ServiceResponse<Vendor | null>> {
     try {
       const { id, ...dataToUpdate } = updateData;
       
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('vendors')
         .update({
           ...dataToUpdate,
@@ -309,9 +316,9 @@ export class VendorsService extends BaseService {
   static async updateStatus(
     id: string, 
     status: 'active' | 'inactive' | 'pending'
-  ): Promise<ServiceResponse<Vendor>> {
+  ): Promise<ServiceResponse<Vendor | null>> {
     try {
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('vendors')
         .update({ 
           status,
@@ -332,7 +339,7 @@ export class VendorsService extends BaseService {
   /**
    * Mettre à jour la note d'un vendeur
    */
-  static async updateRating(id: string): Promise<ServiceResponse<Vendor>> {
+  static async updateRating(id: string): Promise<ServiceResponse<Vendor | null>> {
     try {
       // Calculer la moyenne des notes des produits du vendeur
       const { data: products } = await this.getSupabaseClient()
@@ -346,7 +353,7 @@ export class VendorsService extends BaseService {
       let totalRating = 0;
       let reviewCount = 0;
 
-      products?.forEach(product => {
+      products?.forEach((product: any) => {
         if (product.product_reviews) {
           product.product_reviews.forEach((review: any) => {
             totalRating += review.rating;
@@ -357,7 +364,7 @@ export class VendorsService extends BaseService {
 
       const averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
 
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('vendors')
         .update({
           rating: Math.round(averageRating * 10) / 10, // Arrondir à 1 décimale

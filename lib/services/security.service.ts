@@ -302,7 +302,7 @@ export class SecurityService extends BaseService {
   static async unlockAccount(userId: string, adminId?: string): Promise<ServiceResponse<boolean>> {
     try {
       await this.updateSecuritySettings(userId, {
-        account_locked_until: null
+        account_locked_until: undefined
       });
 
       await this.logSecurityEvent(userId, 'account_locked', '', '', { 
@@ -395,7 +395,7 @@ export class SecurityService extends BaseService {
       .eq('user_id', userId)
       .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
-    const knownIPs = recentEvents?.map(e => e.ip_address) || [];
+    const knownIPs = recentEvents?.map((e: any) => e.ip_address) || [];
     if (!knownIPs.includes(ipAddress)) {
       score += 25; // Nouvelle IP
     }
@@ -417,7 +417,7 @@ export class SecurityService extends BaseService {
       .eq('ip_address', ipAddress)
       .gte('created_at', new Date(Date.now() - 60 * 60 * 1000).toISOString());
 
-    const failedCount = recentAttempts?.filter(a => !a.success).length || 0;
+    const failedCount = recentAttempts?.filter((a: any) => !a.success).length || 0;
     score += failedCount * 10;
 
     return Math.min(score, 100);

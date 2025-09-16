@@ -112,7 +112,7 @@ export class WishlistService extends BaseService {
   /**
    * Ajouter un produit à la wishlist
    */
-  static async addItem(userId: string, productId: string): Promise<ServiceResponse<WishlistItem>> {
+  static async addItem(userId: string, productId: string): Promise<ServiceResponse<WishlistItem | null>> {
     try {
       // Vérifier si le produit existe et est actif
       const { data: product, error: productError } = await this.getSupabaseClient()
@@ -139,7 +139,7 @@ export class WishlistService extends BaseService {
       }
 
       // Ajouter l'item
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('wishlist')
         .insert([{
           user_id: userId,
@@ -294,24 +294,24 @@ export class WishlistService extends BaseService {
           }
 
           // Vérifier la disponibilité du produit
-          if (wishlistItem.product.status !== 'active' || wishlistItem.product.quantity <= 0) {
-            results.errors.push(`Produit ${wishlistItem.product.name} non disponible`);
+          if ((wishlistItem as any).product.status !== 'active' || (wishlistItem as any).product.quantity <= 0) {
+            results.errors.push(`Produit ${(wishlistItem as any).product.name} non disponible`);
             continue;
           }
 
           // Ajouter au panier (ou mettre à jour la quantité)
-          const { error: cartError } = await this.getSupabaseClient()
+          const { error: cartError } = await (this.getSupabaseClient() as any)
             .from('cart_items')
             .upsert({
               user_id: userId,
-              product_id: wishlistItem.product_id,
+              product_id: (wishlistItem as any).product_id,
               quantity: 1
             }, {
               onConflict: 'user_id,product_id'
             });
 
           if (cartError) {
-            results.errors.push(`Erreur ajout panier: ${wishlistItem.product.name}`);
+            results.errors.push(`Erreur ajout panier: ${(wishlistItem as any).product.name}`);
             continue;
           }
 
@@ -341,7 +341,7 @@ export class WishlistService extends BaseService {
     limit: number = 10
   ): Promise<ServiceResponse<any[]>> {
     try {
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .rpc('get_wishlist_recommendations', {
           user_id: userId,
           limit_count: limit
@@ -351,7 +351,7 @@ export class WishlistService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -375,7 +375,10 @@ export class WishlistService extends BaseService {
         expiresAt: expiresAt.toISOString()
       });
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        shareUrl: '',
+        expiresAt: new Date().toISOString()
+      }, this.handleError(error));
     }
   }
 
@@ -391,14 +394,21 @@ export class WishlistService extends BaseService {
     unavailableItems: number;
   }>> {
     try {
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .rpc('get_wishlist_stats', { user_id: userId });
 
       if (error) throw error;
 
       return this.createResponse(data);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        totalItems: 0,
+        totalValue: 0,
+        categoriesCount: 0,
+        vendorsCount: 0,
+        availableItems: 0,
+        unavailableItems: 0
+      }, this.handleError(error));
     }
   }
 }

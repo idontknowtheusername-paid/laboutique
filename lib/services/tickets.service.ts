@@ -239,7 +239,14 @@ export class TicketsService extends BaseService {
 
       return this.createResponse(stats);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        total: 0,
+        open: 0,
+        in_progress: 0,
+        resolved: 0,
+        by_type: {},
+        by_priority: {}
+      }, this.handleError(error));
     }
   }
 }

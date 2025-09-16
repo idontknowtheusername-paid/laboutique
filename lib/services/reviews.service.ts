@@ -310,7 +310,7 @@ export class ReviewsService extends BaseService {
 
       // Mettre à jour la note moyenne du produit
       if (review) {
-        await this.updateProductRating(review.product_id);
+        await this.updateProductRating((review as any).product_id);
       }
 
       return this.createResponse(true);
@@ -322,23 +322,23 @@ export class ReviewsService extends BaseService {
   /**
    * Approuver un avis
    */
-  static async approve(id: string): Promise<ServiceResponse<ProductReview>> {
+  static async approve(id: string): Promise<ServiceResponse<ProductReview | null>> {
     return this.update({ id, status: 'approved' });
   }
 
   /**
    * Rejeter un avis
    */
-  static async reject(id: string): Promise<ServiceResponse<ProductReview>> {
+  static async reject(id: string): Promise<ServiceResponse<ProductReview | null>> {
     return this.update({ id, status: 'rejected' });
   }
 
   /**
    * Marquer un avis comme utile
    */
-  static async markHelpful(id: string): Promise<ServiceResponse<ProductReview>> {
+  static async markHelpful(id: string): Promise<ServiceResponse<ProductReview | null>> {
     try {
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .rpc('increment_review_helpful', { review_id: id });
 
       if (error) throw error;
@@ -354,14 +354,20 @@ export class ReviewsService extends BaseService {
    */
   static async getProductStats(productId: string): Promise<ServiceResponse<ReviewStats>> {
     try {
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .rpc('get_product_review_stats', { product_id: productId });
 
       if (error) throw error;
 
       return this.createResponse(data);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        total_reviews: 0,
+        average_rating: 0,
+        rating_distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+        verified_purchases_count: 0,
+        pending_reviews: 0
+      }, this.handleError(error));
     }
   }
 
@@ -385,7 +391,7 @@ export class ReviewsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -420,7 +426,7 @@ export class ReviewsService extends BaseService {
 
       return this.createResponse(data || []);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -490,7 +496,7 @@ export class ReviewsService extends BaseService {
    */
   private static async updateProductRating(productId: string): Promise<void> {
     try {
-      await this.getSupabaseClient()
+      await (this.getSupabaseClient() as any)
         .rpc('update_product_rating', { product_id: productId });
     } catch (error) {
       console.error('Erreur lors de la mise à jour de la note du produit:', error);

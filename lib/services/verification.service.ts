@@ -78,7 +78,7 @@ export class VerificationService extends BaseService {
 
       if (error && error.code !== 'PGRST116') throw error;
 
-      return this.createResponse(data as UserVerification);
+      return this.createResponse(data as UserVerification | null);
     } catch (error) {
       return this.createResponse(null, this.handleError(error));
     }
@@ -252,10 +252,10 @@ export class VerificationService extends BaseService {
       const { data: approvedDocs } = await this.getSupabaseClient()
         .from('verification_documents')
         .select('document_type')
-        .eq('user_id', document.user_id)
+        .eq('user_id', (document as any).user_id)
         .eq('status', 'approved');
 
-      const docTypes = approvedDocs?.map(doc => doc.document_type) || [];
+      const docTypes = approvedDocs?.map((doc: any) => doc.document_type) || [];
       
       let verificationLevel: 'basic' | 'standard' | 'premium' = 'basic';
       let identityVerified = false;
@@ -280,7 +280,7 @@ export class VerificationService extends BaseService {
       await supabaseClient
         .from('user_verifications')
         .upsert({
-          user_id: document.user_id,
+          user_id: (document as any).user_id,
           identity_verified: identityVerified,
           address_verified: addressVerified,
           verification_level: verificationLevel,

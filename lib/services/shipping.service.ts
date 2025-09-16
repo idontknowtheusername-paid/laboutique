@@ -150,7 +150,11 @@ export class ShippingService extends BaseService {
         restrictions: [] // TODO: Implémenter les restrictions
       });
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        available: false,
+        zones: [],
+        restrictions: []
+      }, this.handleError(error));
     }
   }
 }

@@ -434,7 +434,7 @@ export class SupportService extends BaseService {
         .limit(1);
 
       if (agents && agents.length > 0) {
-        await this.assignTicket(ticketId, agents[0].id, 'system');
+        await this.assignTicket(ticketId, (agents[0] as any).id, 'system');
       }
     } catch (error) {
       console.error('Erreur lors de l\'auto-assignation:', error);
@@ -504,7 +504,20 @@ export class SupportService extends BaseService {
 
       return this.createResponse(stats);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        total_tickets: 0,
+        open_tickets: 0,
+        closed_tickets: 0,
+        pending_tickets: 0,
+        resolved_tickets: 0,
+        average_resolution_time: 0,
+        customer_satisfaction: 0,
+        response_time: 0,
+        escalation_rate: 0,
+        tickets_by_category: {},
+        tickets_by_priority: {},
+        agent_performance: []
+      }, this.handleError(error));
     }
   }
 
