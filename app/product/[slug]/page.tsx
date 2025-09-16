@@ -33,280 +33,21 @@ import { WishlistButton } from '@/components/ui/wishlist-button';
 import { ProductsService, Product as ProductType } from '@/lib/services/products.service';
 import { ErrorState } from '@/components/ui/error-state';
 
-// Mock product data
-const productData = {
-  id: '1',
-  name: 'iPhone 15 Pro Max 256GB - Titanium Natural',
-  slug: 'iphone-15-pro-max-256gb',
-  images: [
-    'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=800',
-    'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=800',
-    'https://images.pexels.com/photos/1334597/pexels-photo-1334597.jpeg?auto=compress&cs=tinysrgb&w=800',
-    'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=800'
-  ],
-  price: 850000,
-  comparePrice: 950000,
-  discount: 11,
-  rating: 4.8,
-  reviews: 324,
-  inStock: true,
-  stockCount: 15,
-  vendor: {
-    name: 'Apple Store Official',
-    rating: 4.9,
-    reviews: 12450,
-    verified: true
-  },
-  category: 'Smartphones',
-  brand: 'Apple',
-  sku: 'APL-IP15PM-256-TN',
-  description: 'Le iPhone 15 Pro Max redéfinit ce qu\'un smartphone peut faire. Avec son design en titane de qualité aérospatiale, son système de caméra Pro avancé et la puce A17 Pro révolutionnaire, il offre des performances inégalées.',
-  specifications: {
-    'Écran': '6.7" Super Retina XDR OLED',
-    'Processeur': 'Apple A17 Pro',
-    'Stockage': '256GB',
-    'RAM': '8GB',
-    'Caméra': 'Triple 48MP + 12MP + 12MP',
-    'Batterie': '4441 mAh',
-    'OS': 'iOS 17',
-    'Couleur': 'Titanium Natural',
-    'Poids': '221g',
-    'Résistance': 'IP68'
-  },
-  variants: {
-    storage: ['128GB', '256GB', '512GB', '1TB'],
-    color: ['Titanium Natural', 'Titanium Blue', 'Titanium White', 'Titanium Black']
-  },
-  features: [
-    'Design en titane de qualité aérospatiale',
-    'Système de caméra Pro avec zoom optique 5x',
-    'Puce A17 Pro avec GPU 6 cœurs',
-    'Écran Super Retina XDR de 6,7 pouces',
-    'Bouton Action personnalisable',
-    'USB-C avec USB 3 pour des transferts ultra-rapides'
-  ]
+// Slider product type for mapping
+type SliderProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  image: string;
+  price: number;
+  comparePrice?: number;
+  rating: number;
+  reviews: number;
+  vendor: string;
+  category: string;
+  badge?: string;
+  badgeColor?: string;
 };
-
-const reviews = [
-  {
-    id: '1',
-    user: 'Jean-Baptiste K.',
-    rating: 5,
-    date: '2024-01-15',
-    title: 'Excellent smartphone !',
-    content: 'Très satisfait de mon achat. La qualité photo est exceptionnelle et la batterie tient toute la journée. Livraison rapide et produit authentique.',
-    verified: true,
-    helpful: 12,
-    images: ['https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=200']
-  },
-  {
-    id: '2',
-    user: 'Marie S.',
-    rating: 4,
-    date: '2024-01-10',
-    title: 'Bon produit mais cher',
-    content: 'Le téléphone est vraiment bien, performances au top. Juste le prix qui pique un peu mais ça vaut le coup pour la qualité Apple.',
-    verified: true,
-    helpful: 8
-  },
-  {
-    id: '3',
-    user: 'Koffi A.',
-    rating: 5,
-    date: '2024-01-08',
-    title: 'Parfait pour la photo',
-    content: 'En tant que photographe, je suis impressionné par la qualité des photos. Le zoom 5x est vraiment pratique. Recommandé !',
-    verified: true,
-    helpful: 15
-  }
-];
-
-const similarProducts = [
-  {
-    id: '2',
-    name: 'Samsung Galaxy S24 Ultra',
-    slug: 'samsung-galaxy-s24-ultra',
-    image: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 780000,
-    comparePrice: 890000,
-    rating: 4.6,
-    reviews: 256,
-    discount: 12,
-    vendor: 'Samsung Official',
-    category: 'Smartphones'
-  },
-  {
-    id: '3',
-    name: 'iPhone 14 Pro Max',
-    slug: 'iphone-14-pro-max',
-    image: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 720000,
-    comparePrice: 850000,
-    rating: 4.7,
-    reviews: 189,
-    discount: 15,
-    vendor: 'Apple Store',
-    category: 'Smartphones'
-  },
-  {
-    id: '4',
-    name: 'Google Pixel 8 Pro',
-    slug: 'google-pixel-8-pro',
-    image: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 650000,
-    rating: 4.5,
-    reviews: 145,
-    vendor: 'Google Store',
-    category: 'Smartphones'
-  },
-  {
-    id: '5',
-    name: 'OnePlus 12',
-    slug: 'oneplus-12',
-    image: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 580000,
-    comparePrice: 680000,
-    rating: 4.4,
-    reviews: 98,
-    discount: 15,
-    vendor: 'OnePlus Official',
-    category: 'Smartphones'
-  }
-];
-
-const frequentlyBoughtTogether = [
-  {
-    id: '6',
-    name: 'Étui iPhone 15 Pro Max - Cuir Premium',
-    slug: 'etui-iphone-15-pro-max-cuir',
-    image: 'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 45000,
-    rating: 4.8,
-    reviews: 1247,
-    vendor: 'Apple Store',
-    category: 'Accessoires',
-    badge: 'Populaire',
-    badgeColor: 'bg-green-500'
-  },
-  {
-    id: '7',
-    name: 'Écran protecteur iPhone 15 Pro Max',
-    slug: 'ecran-protecteur-iphone-15-pro-max',
-    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 25000,
-    rating: 4.6,
-    reviews: 892,
-    vendor: 'Tech Accessories',
-    category: 'Accessoires'
-  },
-  {
-    id: '8',
-    name: 'Chargeur sans fil MagSafe',
-    slug: 'chargeur-sans-fil-magsafe',
-    image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 85000,
-    comparePrice: 120000,
-    rating: 4.7,
-    reviews: 634,
-    discount: 29,
-    vendor: 'Apple Store',
-    category: 'Accessoires'
-  },
-  {
-    id: '9',
-    name: 'AirPods Pro 2ème génération',
-    slug: 'airpods-pro-2',
-    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 140000,
-    comparePrice: 180000,
-    rating: 4.8,
-    reviews: 2156,
-    discount: 22,
-    vendor: 'Apple Store',
-    category: 'Audio'
-  },
-  {
-    id: '10',
-    name: 'Câble USB-C vers Lightning',
-    slug: 'cable-usb-c-lightning',
-    image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 15000,
-    rating: 4.4,
-    reviews: 456,
-    vendor: 'Tech Accessories',
-    category: 'Accessoires'
-  }
-];
-
-const otherCustomersViewed = [
-  {
-    id: '11',
-    name: 'MacBook Air M3 13"',
-    slug: 'macbook-air-m3-13',
-    image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 720000,
-    comparePrice: 850000,
-    rating: 4.9,
-    reviews: 189,
-    discount: 15,
-    vendor: 'Apple Store',
-    category: 'Ordinateurs',
-    badge: 'Nouveau',
-    badgeColor: 'bg-blue-500'
-  },
-  {
-    id: '12',
-    name: 'iPad Pro 12.9" M2',
-    slug: 'ipad-pro-12-9-m2',
-    image: 'https://images.pexels.com/photos/1334597/pexels-photo-1334597.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 650000,
-    comparePrice: 750000,
-    rating: 4.8,
-    reviews: 167,
-    discount: 13,
-    vendor: 'Apple Store',
-    category: 'Tablettes'
-  },
-  {
-    id: '13',
-    name: 'Apple Watch Series 9',
-    slug: 'apple-watch-series-9',
-    image: 'https://images.pexels.com/photos/393047/pexels-photo-393047.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 320000,
-    comparePrice: 380000,
-    rating: 4.7,
-    reviews: 892,
-    discount: 16,
-    vendor: 'Apple Store',
-    category: 'Montres'
-  },
-  {
-    id: '14',
-    name: 'Sony WH-1000XM5 Casque',
-    slug: 'sony-wh-1000xm5',
-    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 180000,
-    comparePrice: 220000,
-    rating: 4.7,
-    reviews: 445,
-    discount: 18,
-    vendor: 'Sony Official',
-    category: 'Audio'
-  },
-  {
-    id: '15',
-    name: 'Dell XPS 13 Plus',
-    slug: 'dell-xps-13-plus',
-    image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 580000,
-    comparePrice: 680000,
-    rating: 4.5,
-    reviews: 98,
-    discount: 15,
-    vendor: 'Dell Official',
-    category: 'Ordinateurs'
-  }
-];
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -315,6 +56,8 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<ProductType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [similarProducts, setSimilarProducts] = useState<SliderProduct[]>([]);
+  const [newProducts, setNewProducts] = useState<SliderProduct[]>([]);
 
   const { addToCart } = useCart();
 
@@ -344,6 +87,43 @@ export default function ProductDetailPage() {
         if (!isMounted) return;
         if (res.success && res.data) {
           setProduct(res.data);
+          // Load similar and new products for sliders
+          const [similarRes, newRes] = await Promise.all([
+            ProductsService.getSimilar(res.data.id, 10),
+            ProductsService.getNew(10),
+          ]);
+          if (similarRes.success && similarRes.data) {
+            setSimilarProducts(
+              similarRes.data.map((p) => ({
+                id: p.id,
+                name: p.name,
+                slug: p.slug,
+                image: p.images?.[0] || '/placeholder-product.jpg',
+                price: p.price,
+                comparePrice: p.compare_price,
+                rating: p.average_rating || 0,
+                reviews: p.reviews_count || 0,
+                vendor: p.vendor?.name || '',
+                category: p.category?.name || '',
+              }))
+            );
+          }
+          if (newRes.success && newRes.data) {
+            setNewProducts(
+              newRes.data.map((p) => ({
+                id: p.id,
+                name: p.name,
+                slug: p.slug,
+                image: p.images?.[0] || '/placeholder-product.jpg',
+                price: p.price,
+                comparePrice: p.compare_price,
+                rating: p.average_rating || 0,
+                reviews: p.reviews_count || 0,
+                vendor: p.vendor?.name || '',
+                category: p.category?.name || '',
+              }))
+            );
+          }
         } else {
           setError(res.error || 'Produit introuvable');
         }
@@ -531,42 +311,7 @@ export default function ProductDetailPage() {
               </div>
             </Card>
 
-            {/* Variants */}
-            <div className="space-y-4">
-              {/* Storage */}
-              <div>
-                <h3 className="font-medium mb-2">Stockage:</h3>
-                <div className="flex space-x-2">
-                  {productData.variants.storage.map((storage) => (
-                    <Button
-                      key={storage}
-                      variant={selectedStorage === storage ? 'default' : 'outline'}
-                      onClick={() => setSelectedStorage(storage)}
-                      className="min-w-[80px]"
-                    >
-                      {storage}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Color */}
-              <div>
-                <h3 className="font-medium mb-2">Couleur:</h3>
-                <div className="flex space-x-2">
-                  {productData.variants.color.map((color) => (
-                    <Button
-                      key={color}
-                      variant={selectedColor === color ? 'default' : 'outline'}
-                      onClick={() => setSelectedColor(color)}
-                      className="min-w-[120px]"
-                    >
-                      {color}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
+            {/* Variants (non disponible pour le moment) */}
 
             {/* Quantity */}
             <div>
@@ -752,26 +497,20 @@ export default function ProductDetailPage() {
         {/* Similar Products */}
         <ProductSlider
           title="Produits similaires"
-          subtitle="Découvrez d'autres smartphones qui pourraient vous intéresser"
+          subtitle="Découvrez d'autres produits qui pourraient vous intéresser"
           products={similarProducts}
           backgroundColor="bg-white"
         />
 
-        {/* Frequently Bought Together */}
+        {/* Nouveautés */}
         <ProductSlider
-          title="Produits fréquemment achetés ensemble"
-          subtitle="Les clients qui ont acheté ce produit ont aussi choisi"
-          products={frequentlyBoughtTogether}
+          title="Nouveautés"
+          subtitle="Les derniers produits ajoutés"
+          products={newProducts}
           backgroundColor="bg-gray-50"
         />
 
-        {/* Other Customers Also Viewed */}
-        <ProductSlider
-          title="Autres clients ont regardé"
-          subtitle="Basé sur l'historique de navigation des clients"
-          products={otherCustomersViewed}
-          backgroundColor="bg-white"
-        />
+        {/* Removed 'also viewed' mock slider */}
       </div>
 
       <Footer />
