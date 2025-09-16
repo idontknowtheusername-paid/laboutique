@@ -88,26 +88,26 @@ export class CartService extends BaseService {
   static async addItem(userId: string, itemData: AddToCartData): Promise<ServiceResponse<CartItem>> {
     try {
       // Vérifier si le produit existe et est disponible
-      const { data: product, error: productError } = await this.getSupabaseClient()
+      const { data: product, error: productError } = await (this.getSupabaseClient() as any)
         .from('products')
         .select('id, status, quantity, track_quantity, price')
         .eq('id', itemData.product_id)
         .single();
 
       if (productError || !product) {
-        return this.createResponse(null, 'Produit non trouvé');
+        return this.createResponse<CartItem>(null, 'Produit non trouvé');
       }
 
       if (product.status !== 'active') {
-        return this.createResponse(null, 'Produit non disponible');
+        return this.createResponse<CartItem>(null, 'Produit non disponible');
       }
 
       if (product.track_quantity && product.quantity < itemData.quantity) {
-        return this.createResponse(null, `Stock insuffisant. Disponible: ${product.quantity}`);
+        return this.createResponse<CartItem>(null, `Stock insuffisant. Disponible: ${product.quantity}`);
       }
 
       // Vérifier si l'item existe déjà dans le panier
-      const { data: existingItem } = await this.getSupabaseClient()
+      const { data: existingItem } = await (this.getSupabaseClient() as any)
         .from('cart_items')
         .select('id, quantity')
         .eq('user_id', userId)
@@ -116,23 +116,24 @@ export class CartService extends BaseService {
 
       if (existingItem) {
         // Mettre à jour la quantité
-        const newQuantity = existingItem.quantity + itemData.quantity;
+        const currentQty = (existingItem as any).quantity as number;
+        const newQuantity = currentQty + itemData.quantity;
         
         if (product.track_quantity && product.quantity < newQuantity) {
-          return this.createResponse(null, `Stock insuffisant. Disponible: ${product.quantity}, dans le panier: ${existingItem.quantity}`);
+          return this.createResponse<CartItem>(null, `Stock insuffisant. Disponible: ${product.quantity}, dans le panier: ${currentQty}`);
         }
 
-        return this.updateItem(userId, { id: existingItem.id, quantity: newQuantity });
+        return this.updateItem(userId, { id: (existingItem as any).id, quantity: newQuantity });
       }
 
       // Ajouter un nouvel item
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('cart_items')
         .insert([{
           user_id: userId,
           product_id: itemData.product_id,
           quantity: itemData.quantity
-        }])
+        } as any])
         .select(`
           *,
           product:products (
@@ -154,7 +155,7 @@ export class CartService extends BaseService {
 
       return this.createResponse(data);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse<CartItem>(null, this.handleError(error));
     }
   }
 
@@ -164,11 +165,15 @@ export class CartService extends BaseService {
   static async updateItem(userId: string, updateData: UpdateCartItemData): Promise<ServiceResponse<CartItem>> {
     try {
       if (updateData.quantity <= 0) {
-        return this.removeItem(userId, updateData.id);
+        const removed = await this.removeItem(userId, updateData.id);
+        if (!removed.success) {
+          return this.createResponse<CartItem>(null, removed.error);
+        }
+        return this.createResponse<CartItem>(null, null);
       }
 
       // Récupérer l'item actuel pour vérifier le stock
-      const { data: cartItem, error: cartError } = await this.getSupabaseClient()
+      const { data: cartItem, error: cartError } = await (this.getSupabaseClient() as any)
         .from('cart_items')
         .select(`
           *,
@@ -179,24 +184,24 @@ export class CartService extends BaseService {
         .single();
 
       if (cartError || !cartItem) {
-        return this.createResponse(null, 'Item du panier non trouvé');
+        return this.createResponse<CartItem>(null, 'Item du panier non trouvé');
       }
 
-      if (cartItem.product.status !== 'active') {
-        return this.createResponse(null, 'Produit non disponible');
+      if ((cartItem as any).product.status !== 'active') {
+        return this.createResponse<CartItem>(null, 'Produit non disponible');
       }
 
-      if (cartItem.product.track_quantity && cartItem.product.quantity < updateData.quantity) {
-        return this.createResponse(null, `Stock insuffisant. Disponible: ${cartItem.product.quantity}`);
+      if ((cartItem as any).product.track_quantity && (cartItem as any).product.quantity < updateData.quantity) {
+        return this.createResponse<CartItem>(null, `Stock insuffisant. Disponible: ${cartItem.product.quantity}`);
       }
 
       // Mettre à jour la quantité
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('cart_items')
         .update({
           quantity: updateData.quantity,
           updated_at: new Date().toISOString()
-        })
+        } as any)
         .eq('id', updateData.id)
         .eq('user_id', userId)
         .select(`
@@ -220,7 +225,7 @@ export class CartService extends BaseService {
 
       return this.createResponse(data);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse<CartItem>(null, this.handleError(error));
     }
   }
 
@@ -269,7 +274,7 @@ export class CartService extends BaseService {
       const cartResponse = await this.getByUser(userId);
       
       if (!cartResponse.success || !cartResponse.data) {
-        return this.createResponse(null, cartResponse.error);
+        return this.createResponse<CartSummary>(null, cartResponse.error);
       }
 
       const items = cartResponse.data;
@@ -301,7 +306,7 @@ export class CartService extends BaseService {
 
       return this.createResponse(summary);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse<CartSummary>(null, this.handleError(error));
     }
   }
 
@@ -310,14 +315,14 @@ export class CartService extends BaseService {
    */
   static async getItemsCount(userId: string): Promise<ServiceResponse<number>> {
     try {
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('cart_items')
         .select('quantity')
         .eq('user_id', userId);
 
       if (error) throw error;
 
-      const count = data?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+      const count = (data as Array<{ quantity: number }> | null)?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
       return this.createResponse(count);
     } catch (error) {
       return this.createResponse(0, this.handleError(error));
@@ -417,12 +422,12 @@ export class CartService extends BaseService {
           }
 
           // Ajouter à la wishlist
-          const { error: wishlistError } = await this.getSupabaseClient()
+          const { error: wishlistError } = await (this.getSupabaseClient() as any)
             .from('wishlist')
             .upsert({
               user_id: userId,
-              product_id: cartItem.product_id
-            }, {
+              product_id: (cartItem as any).product_id
+            } as any, {
               onConflict: 'user_id,product_id'
             });
 
@@ -466,47 +471,48 @@ export class CartService extends BaseService {
         .single();
 
       if (couponError || !coupon) {
-        return this.createResponse(null, 'Coupon invalide ou expiré');
+        return this.createResponse<{ discountAmount: number; couponId: string }>(null, 'Coupon invalide ou expiré');
       }
 
       // Vérifier la validité du coupon
+      const c = coupon as any;
       const now = new Date();
-      if (coupon.starts_at && new Date(coupon.starts_at) > now) {
-        return this.createResponse(null, 'Ce coupon n\'est pas encore valide');
+      if (c.starts_at && new Date(c.starts_at) > now) {
+        return this.createResponse<{ discountAmount: number; couponId: string }>(null, 'Ce coupon n\'est pas encore valide');
       }
 
-      if (coupon.expires_at && new Date(coupon.expires_at) < now) {
-        return this.createResponse(null, 'Ce coupon a expiré');
+      if (c.expires_at && new Date(c.expires_at) < now) {
+        return this.createResponse<{ discountAmount: number; couponId: string }>(null, 'Ce coupon a expiré');
       }
 
-      if (coupon.usage_limit && coupon.used_count >= coupon.usage_limit) {
-        return this.createResponse(null, 'Ce coupon a atteint sa limite d\'utilisation');
+      if (c.usage_limit && c.used_count >= c.usage_limit) {
+        return this.createResponse<{ discountAmount: number; couponId: string }>(null, 'Ce coupon a atteint sa limite d\'utilisation');
       }
 
       // Récupérer le résumé du panier
       const summaryResponse = await this.getCartSummary(userId);
       if (!summaryResponse.success || !summaryResponse.data) {
-        return this.createResponse(null, 'Erreur lors du calcul du panier');
+        return this.createResponse<{ discountAmount: number; couponId: string }>(null, 'Erreur lors du calcul du panier');
       }
 
       const { subtotal } = summaryResponse.data;
 
       // Vérifier le montant minimum
-      if (coupon.minimum_amount && subtotal < coupon.minimum_amount) {
-        return this.createResponse(null, `Montant minimum requis: ${coupon.minimum_amount} FCFA`);
+      if (c.minimum_amount && subtotal < c.minimum_amount) {
+        return this.createResponse<{ discountAmount: number; couponId: string }>(null, `Montant minimum requis: ${c.minimum_amount} FCFA`);
       }
 
       // Calculer la réduction
       let discountAmount = 0;
-      if (coupon.type === 'percentage') {
-        discountAmount = (subtotal * coupon.value) / 100;
-      } else if (coupon.type === 'fixed') {
-        discountAmount = coupon.value;
+      if (c.type === 'percentage') {
+        discountAmount = (subtotal * c.value) / 100;
+      } else if (c.type === 'fixed') {
+        discountAmount = c.value;
       }
 
       // Appliquer le montant maximum si défini
-      if (coupon.maximum_amount && discountAmount > coupon.maximum_amount) {
-        discountAmount = coupon.maximum_amount;
+      if (c.maximum_amount && discountAmount > c.maximum_amount) {
+        discountAmount = c.maximum_amount;
       }
 
       // S'assurer que la réduction ne dépasse pas le sous-total
@@ -516,10 +522,10 @@ export class CartService extends BaseService {
 
       return this.createResponse({
         discountAmount,
-        couponId: coupon.id
+        couponId: c.id
       });
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse<{ discountAmount: number; couponId: string }>(null, this.handleError(error));
     }
   }
 }
