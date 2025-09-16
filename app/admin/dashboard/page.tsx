@@ -356,13 +356,13 @@ export default function AdminDashboard() {
                               <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                               <span>{vendor.rating}</span>
                               <span>•</span>
-                              <span>{vendor.orders} commandes</span>
+                              <span>{vendor.total_orders} commandes</span>
                             </div>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold">{formatPrice(vendor.revenue)}</p>
-                          <p className="text-sm text-gray-600">{vendor.commission}% commission</p>
+                          <p className="font-bold">{formatPrice(0)}</p>
+                          <p className="text-sm text-gray-600">{vendor.commission_rate}% commission</p>
                         </div>
                       </div>
                     ))}
@@ -630,10 +630,10 @@ export default function AdminDashboard() {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {formatPrice(vendor.revenue)}
+                            {formatPrice(0)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {vendor.orders}
+                            {vendor.total_orders}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
@@ -642,7 +642,7 @@ export default function AdminDashboard() {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {vendor.commission}%
+                            {vendor.commission_rate}%
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <Badge className={getStatusColor(vendor.status)}>

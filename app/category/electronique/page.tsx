@@ -1,6 +1,6 @@
-import { Header } from "@/components/layout/Header";
-import { CategoryMenu } from "@/components/layout/CategoryMenu";
-import { Footer } from "@/components/layout/Footer";
+import Header from "@/components/layout/Header";
+import CategoryMenu from "@/components/layout/CategoryMenu";
+import Footer from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
