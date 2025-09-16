@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
 import Footer from '@/components/layout/Footer';
@@ -246,11 +247,13 @@ export default function AboutPage() {
             {team.map((member, index) => (
               <Card key={index} className="text-center p-6 hover-lift">
                 <CardContent className="space-y-4">
-                  <div className="w-24 h-24 mx-auto rounded-full overflow-hidden">
-                    <img
+                  <div className="w-24 h-24 mx-auto rounded-full overflow-hidden relative">
+                    <Image
                       src={member.image}
-                      alt={member.name}
-                      className="w-full h-full object-cover"
+                      alt={`Photo de ${member.name}`}
+                      fill
+                      className="object-cover"
+                      sizes="96px"
                     />
                   </div>
                   <div>

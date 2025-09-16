@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import NextImage from 'next/image';
 import { Clock, Star, Eye, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -105,8 +106,8 @@ const FlashSales = () => {
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const hoverDelayMs = 1500;
   const autoPlayIntervalMs = 3000;
-  let hoverDelayTimer: any = null;
-  let autoPlayTimer: any = null;
+  const hoverDelayTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autoPlayTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -153,24 +154,24 @@ const FlashSales = () => {
       setIsAutoPlaying(false);
       return;
     }
-    hoverDelayTimer = setTimeout(() => {
+    hoverDelayTimerRef.current = setTimeout(() => {
       setIsAutoPlaying(true);
     }, hoverDelayMs);
     return () => {
-      if (hoverDelayTimer) clearTimeout(hoverDelayTimer);
+      if (hoverDelayTimerRef.current) clearTimeout(hoverDelayTimerRef.current);
     };
   }, [isHovering]);
 
   useEffect(() => {
     if (!isAutoPlaying) return;
-    autoPlayTimer = setInterval(() => {
+    autoPlayTimerRef.current = setInterval(() => {
       setCurrentIndex((prev) => {
         const canNext = prev < flashProducts.length - itemsToShow;
         return canNext ? prev + 1 : 0;
       });
     }, autoPlayIntervalMs);
     return () => {
-      if (autoPlayTimer) clearInterval(autoPlayTimer);
+      if (autoPlayTimerRef.current) clearInterval(autoPlayTimerRef.current);
     };
   }, [isAutoPlaying, itemsToShow]);
 
@@ -263,11 +264,13 @@ const FlashSales = () => {
                 <Card className="group hover-lift card-shadow bg-white text-gray-900 overflow-hidden h-full flex flex-col">
                   <div className="relative">
                     {/* Product Image */}
-                    <div className="aspect-square overflow-hidden">
-                      <img
+                    <div className="aspect-square overflow-hidden relative">
+                      <NextImage
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
                       />
                     </div>
 

@@ -296,7 +296,7 @@ export default function SearchPage() {
     ) {
       searchProducts(searchQuery, 1, false);
     }
-  }, [searchQuery, filters, sortBy]);
+  }, [searchQuery, filters, sortBy, searchProducts]);
 
   // Update search query from URL params
   useEffect(() => {

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import NextImage from 'next/image';
 import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
 import Footer from '@/components/layout/Footer';
@@ -363,11 +364,15 @@ export default function PressPage() {
               {teamMembers.map((member, index) => (
                 <Card key={index} className="text-center">
                   <CardContent className="p-6">
-                    <img
-                      src={member.photo}
-                      alt={member.name}
-                      className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-                    />
+                    <div className="w-24 h-24 rounded-full mx-auto mb-4 relative overflow-hidden">
+                      <NextImage
+                        src={member.photo}
+                        alt={`Photo de ${member.name}`}
+                        fill
+                        className="object-cover"
+                        sizes="96px"
+                      />
+                    </div>
                     <h3 className="font-bold text-gray-900 mb-1">{member.name}</h3>
                     <p className="text-sm text-beshop-primary mb-3">{member.role}</p>
                     <p className="text-sm text-gray-700 mb-4">{member.bio}</p>

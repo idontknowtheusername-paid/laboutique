@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, Star, Heart, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -58,8 +58,8 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const hoverDelayMs = 1500;
   const autoPlayIntervalMs = 3000;
-  let hoverDelayTimer: any = null;
-  let autoPlayTimer: any = null;
+  const hoverDelayTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autoPlayTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Responsive items per view: mobile=2, tablet=4, desktop=5 (we will duplicate items if fewer)
   useEffect(() => {
@@ -90,25 +90,25 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
       return;
     }
 
-    hoverDelayTimer = setTimeout(() => {
+    hoverDelayTimerRef.current = setTimeout(() => {
       setIsAutoPlaying(true);
     }, hoverDelayMs);
 
     return () => {
-      if (hoverDelayTimer) clearTimeout(hoverDelayTimer);
+      if (hoverDelayTimerRef.current) clearTimeout(hoverDelayTimerRef.current);
     };
   }, [isHovering]);
 
   useEffect(() => {
     if (!isAutoPlaying) return;
-    autoPlayTimer = setInterval(() => {
+    autoPlayTimerRef.current = setInterval(() => {
       setCurrentIndex((prev) => {
         const canNext = prev < products.length - itemsToShow;
         return canNext ? prev + 1 : 0;
       });
     }, autoPlayIntervalMs);
     return () => {
-      if (autoPlayTimer) clearInterval(autoPlayTimer);
+      if (autoPlayTimerRef.current) clearInterval(autoPlayTimerRef.current);
     };
   }, [isAutoPlaying, products.length, itemsToShow]);
 

@@ -254,7 +254,7 @@ export default function DynamicCategoryPage() {
       });
       setCurrentPage(1);
     },
-    [router, slug, searchParams]
+    [router, slug, searchParams, updateUrlWithFilters]
   );
 
   // Update active filters display
