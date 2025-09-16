@@ -49,6 +49,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { VendorsService, Vendor } from '@/lib/services/vendors.service';
 import { ProductsService } from '@/lib/services/products.service';
 import { OrdersService, Order } from '@/lib/services/orders.service';
+import { AuthService, UserProfile } from '@/lib/services/auth.service';
 
 // Backend data state (no mocks)
 const initialSalesData: Array<{ month: string; revenue: number; orders: number; users: number; }> = [];
@@ -60,7 +61,7 @@ export default function AdminDashboard() {
   const [categoryData, setCategoryData] = useState(initialCategoryData);
   const [topVendors, setTopVendors] = useState<Vendor[]>([]);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
-  const [recentUsers, setRecentUsers] = useState<any[]>([]);
+  const [recentUsers, setRecentUsers] = useState<UserProfile[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -72,6 +73,13 @@ export default function AdminDashboard() {
       if (ordersRes.success && ordersRes.data) {
         setRecentOrders(ordersRes.data);
       }
+      // Recent users (profiles)
+      const { data: profiles, error } = await (AuthService as any).getSupabaseClient()
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (!error && profiles) setRecentUsers(profiles);
       // Optionally derive categoryData from products
       const productsRes = await ProductsService.getNew(50);
       if (productsRes.success && productsRes.data) {
@@ -467,12 +475,12 @@ export default function AdminDashboard() {
                             <div className="flex items-center">
                               <div className="w-8 h-8 bg-beshop-primary rounded-full flex items-center justify-center">
                                 <span className="text-white font-medium text-sm">
-                                  {user.name.charAt(0)}
+                                  {(user.first_name || user.email || '?')[0]}
                                 </span>
                               </div>
                               <div className="ml-3">
                                 <div className="text-sm font-medium text-gray-900">
-                                  {user.name}
+                                  {user.first_name} {user.last_name}
                                 </div>
                               </div>
                             </div>
@@ -481,18 +489,16 @@ export default function AdminDashboard() {
                             {user.email}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                            {user.joinDate}
+                            {new Date(user.created_at).toLocaleDateString('fr-FR')}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {user.orders}
+                            —
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {formatPrice(user.spent)}
+                            —
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <Badge className={getStatusColor(user.status)}>
-                              {user.status}
-                            </Badge>
+                            <Badge className="bg-green-500">Actif</Badge>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex items-center space-x-2">
