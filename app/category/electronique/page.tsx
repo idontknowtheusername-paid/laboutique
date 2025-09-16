@@ -1,3 +1,10 @@
+import { Header } from "@/components/layout/Header";
+import { CategoryMenu } from "@/components/layout/CategoryMenu";
+import { Footer } from "@/components/layout/Footer";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
 export default function ElectronicsPage() {
   return (
     <div className="min-h-screen bg-beshop-background">
