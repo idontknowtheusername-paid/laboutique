@@ -140,13 +140,15 @@ export default function ProductDetailPage() {
   }, [params]);
 
   const nextImage = () => {
-    if (!product?.images || product.images.length === 0) return;
-    setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
+    const imagesLength = product?.images?.length ?? 0;
+    if (imagesLength === 0) return;
+    setCurrentImageIndex((prev) => (prev + 1) % imagesLength);
   };
 
   const prevImage = () => {
-    if (!product?.images || product.images.length === 0) return;
-    setCurrentImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
+    const imagesLength = product?.images?.length ?? 0;
+    if (imagesLength === 0) return;
+    setCurrentImageIndex((prev) => (prev - 1 + imagesLength) % imagesLength);
   };
 
   return (
