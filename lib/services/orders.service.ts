@@ -328,7 +328,7 @@ export class OrdersService extends BaseService {
     try {
       const { id, ...dataToUpdate } = updateData;
       
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient()
         .from('orders')
         .update({
           ...dataToUpdate,
@@ -336,7 +336,7 @@ export class OrdersService extends BaseService {
         } as any)
         .eq('id', id)
         .select()
-        .single();
+        .single()) as { data: any; error: any };
 
       if (error) throw error;
 
@@ -371,7 +371,7 @@ export class OrdersService extends BaseService {
    */
   static async cancel(id: string, reason?: string): Promise<ServiceResponse<Order | null>> {
     try {
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient()
         .from('orders')
         .update({
           status: 'cancelled',
@@ -380,7 +380,7 @@ export class OrdersService extends BaseService {
         } as any)
         .eq('id', id)
         .select()
-        .single();
+        .single()) as { data: any; error: any };
 
       if (error) throw error;
 
