@@ -182,7 +182,7 @@ export class OrdersService extends BaseService {
   /**
    * Récupérer une commande par son ID
    */
-  static async getById(id: string): Promise<ServiceResponse<Order>> {
+  static async getById(id: string): Promise<ServiceResponse<Order | null>> {
     try {
       const { data, error } = await this.getSupabaseClient()
         .from('orders')
