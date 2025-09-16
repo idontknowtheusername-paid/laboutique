@@ -433,13 +433,13 @@ export default function AdminDashboard() {
                             {order.id}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {order.customer}
+                            {order.user?.first_name} {order.user?.last_name}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {order.vendor}
+                            {order.order_items?.[0]?.vendor?.name || '—'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap font-bold">
-                            {formatPrice(order.amount)}
+                            {formatPrice(order.total_amount)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <Badge className={getStatusColor(order.status)}>
@@ -447,7 +447,7 @@ export default function AdminDashboard() {
                             </Badge>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                            {order.date}
+                            {new Date(order.created_at).toLocaleDateString('fr-FR')}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex items-center space-x-2">
