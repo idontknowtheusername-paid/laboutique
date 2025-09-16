@@ -1,4 +1,4 @@
-'use client';
+// server component
 
 import React from 'react';
 import Image from 'next/image';
