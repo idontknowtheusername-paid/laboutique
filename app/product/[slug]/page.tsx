@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import Header from '@/components/layout/Header';
@@ -30,6 +30,8 @@ import {
 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { WishlistButton } from '@/components/ui/wishlist-button';
+import { ProductsService, Product as ProductType } from '@/lib/services/products.service';
+import { ErrorState } from '@/components/ui/error-state';
 
 // Mock product data
 const productData = {
@@ -309,14 +311,16 @@ const otherCustomersViewed = [
 export default function ProductDetailPage() {
   const params = useParams();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [selectedStorage, setSelectedStorage] = useState('256GB');
-  const [selectedColor, setSelectedColor] = useState('Titanium Natural');
   const [quantity, setQuantity] = useState(1);
+  const [product, setProduct] = useState<ProductType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const { addToCart } = useCart();
 
   const handleAddToCart = () => {
-    addToCart(productData.id, productData.name, productData.price, quantity);
+    if (!product) return;
+    addToCart(product.id, product.name, product.price, quantity);
   };
 
   const formatPrice = (price: number) => {
@@ -327,12 +331,42 @@ export default function ProductDetailPage() {
     }).format(price);
   };
 
+  // Load product by slug
+  useEffect(() => {
+    const slug = (params as any)?.slug as string;
+    if (!slug) return;
+    let isMounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await ProductsService.getBySlug(slug);
+        if (!isMounted) return;
+        if (res.success && res.data) {
+          setProduct(res.data);
+        } else {
+          setError(res.error || 'Produit introuvable');
+        }
+      } catch (e: any) {
+        if (!isMounted) return;
+        setError(e?.message || 'Erreur de chargement du produit');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    })();
+    return () => {
+      isMounted = false;
+    };
+  }, [params]);
+
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % productData.images.length);
+    if (!product?.images || product.images.length === 0) return;
+    setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + productData.images.length) % productData.images.length);
+    if (!product?.images || product.images.length === 0) return;
+    setCurrentImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
   };
 
   return (
@@ -341,6 +375,18 @@ export default function ProductDetailPage() {
       <CategoryMenu />
       
       <div className="container py-8">
+        {error && (
+          <div className="mb-6">
+            <ErrorState type="generic" title="Erreur" message={error} onRetry={() => window.location.reload()} />
+          </div>
+        )}
+
+        {!error && loading && (
+          <div className="mb-6 animate-pulse space-y-4">
+            <div className="h-6 bg-gray-200 rounded w-64"></div>
+            <div className="h-8 bg-gray-200 rounded w-96"></div>
+          </div>
+        )}
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
           <Link href="/" className="hover:text-beshop-primary">Accueil</Link>
@@ -349,7 +395,7 @@ export default function ProductDetailPage() {
           <span>/</span>
           <Link href="/category/electronique/smartphones" className="hover:text-beshop-primary">Smartphones</Link>
           <span>/</span>
-          <span className="text-gray-900 font-medium">{productData.name}</span>
+          <span className="text-gray-900 font-medium">{product?.name || '...'}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
@@ -358,8 +404,8 @@ export default function ProductDetailPage() {
             {/* Main Image */}
             <div className="relative aspect-square bg-white rounded-lg overflow-hidden shadow-lg">
               <Image
-                src={productData.images[currentImageIndex]}
-                alt={productData.name}
+                src={(product?.images && product.images[currentImageIndex]) || '/placeholder-product.jpg'}
+                alt={product?.name || ''}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
@@ -380,16 +426,16 @@ export default function ProductDetailPage() {
               </button>
 
               {/* Discount Badge */}
-              {productData.discount && (
+              {product?.compare_price && product?.price && product.compare_price > product.price && (
                 <Badge className="absolute top-4 left-4 bg-red-500 text-white text-lg px-3 py-1">
-                  -{productData.discount}%
+                  -{Math.round(((product.compare_price - product.price) / product.compare_price) * 100)}%
                 </Badge>
               )}
             </div>
 
             {/* Thumbnail Images */}
             <div className="grid grid-cols-4 gap-2">
-              {productData.images.map((image, index) => (
+              {(product?.images && product.images.length > 0 ? product.images : ['/placeholder-product.jpg']).map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
@@ -400,7 +446,7 @@ export default function ProductDetailPage() {
                   <div className="relative w-full h-full">
                     <Image
                       src={image}
-                      alt={`${productData.name} ${index + 1}`}
+                      alt={`${product?.name || ''} ${index + 1}`}
                       fill
                       sizes="96px"
                       className="object-cover"
@@ -416,7 +462,7 @@ export default function ProductDetailPage() {
             {/* Title and Rating */}
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {productData.name}
+                {product?.name || ''}
               </h1>
               <div className="flex items-center space-x-4 mb-4">
                 <div className="flex items-center space-x-1">
@@ -424,17 +470,17 @@ export default function ProductDetailPage() {
                     <Star
                       key={i}
                       className={`w-5 h-5 ${
-                        i < Math.floor(productData.rating)
+                        i < Math.floor(product?.average_rating || 0)
                           ? 'fill-yellow-400 text-yellow-400'
                           : 'fill-gray-200 text-gray-200'
                       }`}
                     />
                   ))}
-                  <span className="text-lg font-medium ml-2">{productData.rating}</span>
+                  <span className="text-lg font-medium ml-2">{(product?.average_rating || 0).toFixed(1)}</span>
                 </div>
-                <span className="text-gray-500">({productData.reviews} avis)</span>
+                <span className="text-gray-500">({product?.reviews_count || 0} avis)</span>
                 <Badge variant="outline" className="text-green-600 border-green-600">
-                  {productData.inStock ? 'En stock' : 'Rupture de stock'}
+                  {product && (!product.track_quantity || product.quantity > 0) ? 'En stock' : 'Rupture de stock'}
                 </Badge>
               </div>
             </div>
@@ -443,17 +489,17 @@ export default function ProductDetailPage() {
             <div className="space-y-2">
               <div className="flex items-center space-x-4">
                 <span className="text-4xl font-bold text-beshop-primary">
-                  {formatPrice(productData.price)}
+                  {product ? formatPrice(product.price) : ''}
                 </span>
-                {productData.comparePrice && (
+                {product?.compare_price && (
                   <span className="text-xl text-gray-500 line-through">
-                    {formatPrice(productData.comparePrice)}
+                    {formatPrice(product.compare_price)}
                   </span>
                 )}
               </div>
-              {productData.discount && (
+              {product?.compare_price && product?.price && product.compare_price > product.price && (
                 <p className="text-green-600 font-medium">
-                  Vous économisez {formatPrice(productData.comparePrice! - productData.price)}
+                  Vous économisez {formatPrice(product.compare_price - product.price)}
                 </p>
               )}
             </div>
@@ -467,15 +513,15 @@ export default function ProductDetailPage() {
                   </div>
                   <div>
                     <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold">{productData.vendor.name}</h3>
-                      {productData.vendor.verified && (
+                      <h3 className="font-semibold">{product?.vendor?.name || 'Boutique'}</h3>
+                      {true && (
                         <Verified className="w-4 h-4 text-blue-500" />
                       )}
                     </div>
                     <div className="flex items-center space-x-1 text-sm text-gray-600">
                       <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                      <span>{productData.vendor.rating}</span>
-                      <span>({productData.vendor.reviews} avis)</span>
+                      <span>{(product?.average_rating || 0).toFixed(1)}</span>
+                      <span>({product?.reviews_count || 0} avis)</span>
                     </div>
                   </div>
                 </div>
@@ -539,14 +585,14 @@ export default function ProductDetailPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setQuantity(Math.min(productData.stockCount, quantity + 1))}
-                    disabled={quantity >= productData.stockCount}
+                    onClick={() => setQuantity(Math.min(product?.quantity || 1, quantity + 1))}
+                    disabled={!!product?.track_quantity && quantity >= (product?.quantity || 0)}
                   >
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
                 <span className="text-sm text-gray-600">
-                  {productData.stockCount} disponibles
+                  {product?.quantity ?? 0} disponibles
                 </span>
               </div>
             </div>
@@ -565,10 +611,10 @@ export default function ProductDetailPage() {
                   Acheter maintenant
                 </Button>
                 <WishlistButton
-                  productId={productData.id}
-                  productName={productData.name}
-                  price={productData.price}
-                  productSlug={productData.slug}
+                  productId={product?.id || ''}
+                  productName={product?.name || ''}
+                  price={product?.price || 0}
+                  productSlug={product?.slug || ''}
                   variant="button"
                   showText={true}
                   className="h-12"
@@ -600,24 +646,24 @@ export default function ProductDetailPage() {
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="description">Description</TabsTrigger>
               <TabsTrigger value="specifications">Caractéristiques</TabsTrigger>
-              <TabsTrigger value="reviews">Avis ({productData.reviews})</TabsTrigger>
+              <TabsTrigger value="reviews">Avis ({product?.reviews_count || 0})</TabsTrigger>
               <TabsTrigger value="qa">Questions & Réponses</TabsTrigger>
             </TabsList>
             
             <TabsContent value="description" className="p-6">
               <div className="space-y-4">
                 <p className="text-gray-700 leading-relaxed">
-                  {productData.description}
+                  {product?.description || product?.short_description || ''}
                 </p>
                 <div>
                   <h3 className="font-semibold mb-3">Caractéristiques principales:</h3>
                   <ul className="space-y-2">
-                    {productData.features.map((feature, index) => (
-                      <li key={index} className="flex items-start space-x-2">
+                    {product?.brand && (
+                      <li className="flex items-start space-x-2">
                         <span className="w-2 h-2 bg-beshop-primary rounded-full mt-2 flex-shrink-0"></span>
-                        <span className="text-gray-700">{feature}</span>
+                        <span className="text-gray-700">Marque: {product.brand}</span>
                       </li>
-                    ))}
+                    )}
                   </ul>
                 </div>
               </div>
@@ -625,12 +671,18 @@ export default function ProductDetailPage() {
             
             <TabsContent value="specifications" className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {Object.entries(productData.specifications).map(([key, value]) => (
-                  <div key={key} className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="font-medium text-gray-600">{key}:</span>
-                    <span className="text-gray-900">{value}</span>
+                {product?.sku && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="font-medium text-gray-600">SKU:</span>
+                    <span className="text-gray-900">{product.sku}</span>
                   </div>
-                ))}
+                )}
+                {product?.vendor?.name && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="font-medium text-gray-600">Vendeur:</span>
+                    <span className="text-gray-900">{product.vendor.name}</span>
+                  </div>
+                )}
               </div>
             </TabsContent>
             
@@ -639,20 +691,20 @@ export default function ProductDetailPage() {
                 {/* Reviews Summary */}
                 <div className="flex items-center space-x-8 p-6 bg-gray-50 rounded-lg">
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-beshop-primary">{productData.rating}</div>
+                    <div className="text-4xl font-bold text-beshop-primary">{(product?.average_rating || 0).toFixed(1)}</div>
                     <div className="flex items-center justify-center mt-1">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
                           className={`w-4 h-4 ${
-                            i < Math.floor(productData.rating)
+                            i < Math.floor(product?.average_rating || 0)
                               ? 'fill-yellow-400 text-yellow-400'
                               : 'fill-gray-200 text-gray-200'
                           }`}
                         />
                       ))}
                     </div>
-                    <div className="text-sm text-gray-600 mt-1">{productData.reviews} avis</div>
+                    <div className="text-sm text-gray-600 mt-1">{product?.reviews_count || 0} avis</div>
                   </div>
                   <div className="flex-1">
                     {[5, 4, 3, 2, 1].map((rating) => (
@@ -674,61 +726,8 @@ export default function ProductDetailPage() {
 
                 {/* Individual Reviews */}
                 <div className="space-y-6">
-                  {reviews.map((review) => (
-                    <div key={review.id} className="border-b border-gray-100 pb-6">
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <div className="flex items-center space-x-2 mb-1">
-                            <span className="font-medium">{review.user}</span>
-                            {review.verified && (
-                              <Badge variant="outline" className="text-green-600 border-green-600 text-xs">
-                                Achat vérifié
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <div className="flex">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`w-4 h-4 ${
-                                    i < review.rating
-                                      ? 'fill-yellow-400 text-yellow-400'
-                                      : 'fill-gray-200 text-gray-200'
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                            <span className="text-sm text-gray-600">{review.date}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <h4 className="font-medium mb-2">{review.title}</h4>
-                      <p className="text-gray-700 mb-3">{review.content}</p>
-                      {review.images && (
-                        <div className="flex space-x-2 mb-3">
-                          {review.images.map((image, index) => (
-                            <img
-                              key={index}
-                              src={image}
-                              alt="Review"
-                              className="w-16 h-16 object-cover rounded-lg"
-                            />
-                          ))}
-                        </div>
-                      )}
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
-                        <button className="flex items-center space-x-1 hover:text-beshop-primary">
-                          <ThumbsUp className="w-4 h-4" />
-                          <span>Utile ({review.helpful})</span>
-                        </button>
-                        <button className="flex items-center space-x-1 hover:text-beshop-primary">
-                          <MessageCircle className="w-4 h-4" />
-                          <span>Répondre</span>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                  {/* Placeholder for real reviews integration */}
+                  <div className="text-center text-gray-500">Les avis seront bientôt disponibles.</div>
                 </div>
               </div>
             </TabsContent>
