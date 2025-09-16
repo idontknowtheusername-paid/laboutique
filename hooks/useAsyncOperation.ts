@@ -131,9 +131,10 @@ export function useAsyncOperation<T, Args extends any[] = []>(
   // Execute immediately if requested
   useEffect(() => {
     if (immediate && deps.length === 0) {
-      execute([] as any);
+      // Force a typed empty args call for generic Args
+      execute(...([] as unknown as Args));
     }
-  }, [immediate, execute]);
+  }, [immediate, execute, deps.length]);
 
   return {
     ...state,

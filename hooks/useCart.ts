@@ -71,15 +71,13 @@ export const useCart = () => {
       if (!user || !isSupabaseConfigured()) return;
 
       try {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('cart_items')
-          .insert([
-            {
-              user_id: user.id,
-              product_id: productId,
-              quantity,
-            },
-          ]);
+          .insert({
+            user_id: user.id,
+            product_id: productId,
+            quantity,
+          } as any);
 
         if (!error) {
           await fetchCartItems();
@@ -93,7 +91,7 @@ export const useCart = () => {
       if (!isSupabaseConfigured()) return;
 
       try {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('cart_items')
           .update({ quantity })
           .eq('id', itemId);

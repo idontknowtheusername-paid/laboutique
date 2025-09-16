@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { ChevronLeft, ChevronRight, Star, Heart, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -196,11 +197,13 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
                 <Card className="group hover-lift card-shadow h-full flex flex-col">
                   <div className="relative overflow-hidden">
                     {/* Product Image */}
-                    <div className="aspect-square bg-gray-100">
-                      <img
+                    <div className="aspect-square bg-gray-100 relative">
+                      <Image
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
                       />
                     </div>
 

@@ -153,10 +153,9 @@ export default function DynamicCategoryPage() {
   // Handle load more (pagination)
   const handleLoadMore = useCallback(() => {
     if (hasMore && !loadingMore) {
-      // For now, just increment page and let React Query refetch
       setCurrentPage((prev) => prev + 1);
     }
-  }, [hasMore, loadingMore]);
+  }, [hasMore, loadingMore, setCurrentPage]);
 
   // Retry handler for error state
   const handleRetry = useCallback(() => {

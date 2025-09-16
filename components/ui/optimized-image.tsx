@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ImageOff } from 'lucide-react';
 
@@ -52,14 +53,14 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
                     <ImageOff className="w-8 h-8 text-gray-400" />
                 </div>
             ) : (
-                <img
+                <Image
                     src={currentSrc}
                     alt={alt}
-                    className={`w-full h-full object-cover transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'
-                        }`}
+                    fill
+                    className={`object-cover transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
                     onLoad={handleLoad}
-                    onError={handleError}
-                    loading="lazy"
+                    onError={handleError as any}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
             )}
         </div>

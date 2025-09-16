@@ -91,7 +91,7 @@ export class AuthService extends BaseService {
         profile
       });
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({ user: null, session: null, profile: null }, this.handleError(error));
     }
   }
 
@@ -122,7 +122,7 @@ export class AuthService extends BaseService {
         profile
       });
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({ user: null, session: null, profile: null }, this.handleError(error));
     }
   }
 
@@ -168,7 +168,7 @@ export class AuthService extends BaseService {
         profile
       });
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({ user: null, session: null, profile: null }, this.handleError(error));
     }
   }
 
@@ -187,7 +187,7 @@ export class AuthService extends BaseService {
 
       return this.createResponse(data);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse(null as unknown as UserProfile, this.handleError(error));
     }
   }
 
@@ -196,12 +196,12 @@ export class AuthService extends BaseService {
    */
   static async updateProfile(userId: string, updateData: UpdateProfileData): Promise<ServiceResponse<UserProfile>> {
     try {
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .from('profiles')
         .update({
           ...updateData,
           updated_at: new Date().toISOString()
-        })
+        } as any)
         .eq('id', userId)
         .select()
         .single();
@@ -210,7 +210,7 @@ export class AuthService extends BaseService {
 
       return this.createResponse(data);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse(null as unknown as UserProfile, this.handleError(error));
     }
   }
 
@@ -299,7 +299,7 @@ export class AuthService extends BaseService {
 
       return this.createResponse({ url: data.url });
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({ url: '' }, this.handleError(error));
     }
   }
 
@@ -319,7 +319,7 @@ export class AuthService extends BaseService {
 
       return this.createResponse({ url: data.url });
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({ url: '' }, this.handleError(error));
     }
   }
 
@@ -436,14 +436,20 @@ export class AuthService extends BaseService {
     reviewsCount: number;
   }>> {
     try {
-      const { data, error } = await this.getSupabaseClient()
+      const { data, error } = await (this.getSupabaseClient() as any)
         .rpc('get_user_stats', { user_id: userId });
 
       if (error) throw error;
 
       return this.createResponse(data);
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        totalOrders: 0,
+        totalSpent: 0,
+        wishlistItems: 0,
+        cartItems: 0,
+        reviewsCount: 0,
+      }, this.handleError(error));
     }
   }
 }
