@@ -384,7 +384,7 @@ export default function VendorDashboard() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <img
-                                src={product.image}
+                                src={product.images?.[0] || '/placeholder-product.jpg'}
                                 alt={product.name}
                                 className="w-12 h-12 rounded-lg object-cover"
                               />
