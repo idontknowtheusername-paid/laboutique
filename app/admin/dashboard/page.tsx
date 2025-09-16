@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   BarChart, 
   Bar, 
@@ -46,117 +46,41 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { VendorsService, Vendor } from '@/lib/services/vendors.service';
+import { ProductsService, Product } from '@/lib/services/products.service';
 
-// Mock data
-const salesData = [
-  { month: 'Jan', revenue: 45000000, orders: 1240, users: 890 },
-  { month: 'Fév', revenue: 38000000, orders: 1100, users: 750 },
-  { month: 'Mar', revenue: 52000000, orders: 1450, users: 1200 },
-  { month: 'Avr', revenue: 48000000, orders: 1320, users: 980 },
-  { month: 'Mai', revenue: 61000000, orders: 1680, users: 1450 },
-  { month: 'Jun', revenue: 58000000, orders: 1590, users: 1320 },
-];
-
-const categoryData = [
-  { name: 'Électronique', value: 35, color: '#1E40AF' },
-  { name: 'Mode', value: 25, color: '#EA580C' },
-  { name: 'Maison', value: 20, color: '#7C2D12' },
-  { name: 'Beauté', value: 12, color: '#059669' },
-  { name: 'Sport', value: 8, color: '#DC2626' },
-];
-
-const recentOrders = [
-  {
-    id: '#ORD-12345',
-    customer: 'Jean Baptiste K.',
-    vendor: 'Apple Store',
-    amount: 850000,
-    status: 'En cours',
-    date: '2024-01-15',
-    items: 1
-  },
-  {
-    id: '#ORD-12344',
-    customer: 'Marie Dupont',
-    vendor: 'Fashion House',
-    amount: 45000,
-    status: 'Expédié',
-    date: '2024-01-14',
-    items: 2
-  },
-  {
-    id: '#ORD-12343',
-    customer: 'Koffi Asante',
-    vendor: 'Tech Store',
-    amount: 720000,
-    status: 'Livré',
-    date: '2024-01-13',
-    items: 1
-  },
-];
-
-const topVendors = [
-  {
-    id: '1',
-    name: 'Apple Store Official',
-    revenue: 12500000,
-    orders: 245,
-    rating: 4.9,
-    status: 'Actif',
-    commission: 8.5
-  },
-  {
-    id: '2',
-    name: 'Samsung Electronics',
-    revenue: 8900000,
-    orders: 189,
-    rating: 4.7,
-    status: 'Actif',
-    commission: 7.2
-  },
-  {
-    id: '3',
-    name: 'Fashion House',
-    revenue: 6700000,
-    orders: 456,
-    rating: 4.6,
-    status: 'Actif',
-    commission: 12.3
-  },
-];
-
-const recentUsers = [
-  {
-    id: '1',
-    name: 'Jean Baptiste Kouassi',
-    email: 'jean.kouassi@email.com',
-    joinDate: '2024-01-15',
-    orders: 3,
-    spent: 1250000,
-    status: 'Actif'
-  },
-  {
-    id: '2',
-    name: 'Marie Dupont',
-    email: 'marie.dupont@email.com',
-    joinDate: '2024-01-14',
-    orders: 1,
-    spent: 45000,
-    status: 'Actif'
-  },
-  {
-    id: '3',
-    name: 'Koffi Asante',
-    email: 'koffi.asante@email.com',
-    joinDate: '2024-01-13',
-    orders: 5,
-    spent: 2100000,
-    status: 'Actif'
-  },
-];
+// Backend data state (no mocks)
+const initialSalesData: Array<{ month: string; revenue: number; orders: number; users: number; }> = [];
+const initialCategoryData: Array<{ name: string; value: number; color: string; }> = [];
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [salesData, setSalesData] = useState(initialSalesData);
+  const [categoryData, setCategoryData] = useState(initialCategoryData);
+  const [topVendors, setTopVendors] = useState<Vendor[]>([]);
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [recentUsers, setRecentUsers] = useState<any[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const vendorsRes = await VendorsService.getPopular(5);
+      if (vendorsRes.success && vendorsRes.data) {
+        setTopVendors(vendorsRes.data);
+      }
+      // Optionally derive categoryData from products
+      const productsRes = await ProductsService.getNew(50);
+      if (productsRes.success && productsRes.data) {
+        const counts: Record<string, number> = {};
+        productsRes.data.forEach(p => {
+          const key = p.category?.name || 'Autres';
+          counts[key] = (counts[key] || 0) + 1;
+        });
+        const palette = ['#1E40AF','#EA580C','#7C2D12','#059669','#DC2626','#0EA5E9'];
+        const derived = Object.entries(counts).map(([name, value], i) => ({ name, value, color: palette[i % palette.length]}));
+        setCategoryData(derived);
+      }
+    })();
+  }, []);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-BJ', {
