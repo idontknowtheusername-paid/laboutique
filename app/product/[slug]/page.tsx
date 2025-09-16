@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
@@ -356,10 +357,12 @@ export default function ProductDetailPage() {
           <div className="space-y-4">
             {/* Main Image */}
             <div className="relative aspect-square bg-white rounded-lg overflow-hidden shadow-lg">
-              <img
+              <Image
                 src={productData.images[currentImageIndex]}
                 alt={productData.name}
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
               />
               
               {/* Navigation Arrows */}
@@ -394,11 +397,15 @@ export default function ProductDetailPage() {
                     index === currentImageIndex ? 'border-beshop-primary' : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <img
-                    src={image}
-                    alt={`${productData.name} ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={image}
+                      alt={`${productData.name} ${index + 1}`}
+                      fill
+                      sizes="96px"
+                      className="object-cover"
+                    />
+                  </div>
                 </button>
               ))}
             </div>

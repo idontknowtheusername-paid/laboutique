@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Sparkles, Gift, Crown, Star, Heart, Eye, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -221,11 +222,13 @@ const PersonalizedOffers = () => {
             <Card key={product.id} className="group hover-lift card-shadow h-full flex flex-col bg-white border-blue-100">
               <div className="relative overflow-hidden">
                 {/* Product Image */}
-                <div className="aspect-square bg-gray-100">
-                  <img
+                <div className="aspect-square bg-gray-100 relative">
+                  <Image
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 20vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 

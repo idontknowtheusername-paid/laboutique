@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
 import Footer from '@/components/layout/Footer';
@@ -235,10 +236,12 @@ export default function BlogPage() {
           <Card className="mb-12 overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
               <div className="relative h-64 lg:h-auto">
-                <img
+                <Image
                   src={featuredPost.image}
                   alt={featuredPost.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
                 />
                 <Badge className={`absolute top-4 left-4 ${featuredPost.categoryColor} text-white`}>
                   {featuredPost.category}
@@ -283,10 +286,12 @@ export default function BlogPage() {
           {regularPosts.map((post) => (
             <Card key={post.id} className="hover-lift overflow-hidden">
               <div className="relative h-48">
-                <img
+                <Image
                   src={post.image}
                   alt={post.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover"
                 />
                 <Badge className={`absolute top-3 left-3 ${post.categoryColor} text-white`}>
                   {post.category}

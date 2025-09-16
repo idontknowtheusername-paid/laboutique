@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
 import Footer from '@/components/layout/Footer';
@@ -225,10 +226,12 @@ export default function CartPage() {
                           <div className="flex flex-col sm:flex-row gap-4">
                             {/* Product Image */}
                             <div className="w-full sm:w-24 h-48 sm:h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 relative">
-                              <img
+                              <Image
                                 src={item.product?.images?.[0] || "/placeholder.jpg"}
                                 alt={item.product?.name || "Produit"}
-                                className="w-full h-full object-cover"
+                                fill
+                                sizes="96px"
+                                className="object-cover"
                               />
                               {(isUpdating || isRemoving) && (
                                 <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">

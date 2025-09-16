@@ -98,7 +98,7 @@ export class KYCService extends BaseService {
 
       return this.createResponse(profile as KYCProfile);
     } catch (error) {
-      return this.createResponse({ personal: undefined, business: undefined, documents: [] }, this.handleError(error));
+      return this.createResponse(null, this.handleError(error));
     }
   }
 

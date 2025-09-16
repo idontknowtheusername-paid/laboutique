@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 
 const brands = [
@@ -196,11 +197,13 @@ const FeaturedBrands = () => {
                           className="group hover-lift card-shadow p-6 text-center bg-white"
                         >
                           <div className="space-y-4">
-                            <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full overflow-hidden">
-                              <img
+                            <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full overflow-hidden relative">
+                              <Image
                                 src={brand.logo}
                                 alt={brand.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                fill
+                                sizes="64px"
+                                className="object-cover group-hover:scale-110 transition-transform duration-300"
                               />
                             </div>
                             <div>
