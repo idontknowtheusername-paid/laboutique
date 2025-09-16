@@ -292,9 +292,9 @@ export class OrdersService extends BaseService {
           shipping_address: orderData.shipping_address,
           billing_address: orderData.billing_address || orderData.shipping_address,
           notes: orderData.notes
-        }])
+        }] as any)
         .select()
-        .single()) as any;
+        .single()) as { data: any; error: any };
 
       if (orderError) throw orderError;
 
