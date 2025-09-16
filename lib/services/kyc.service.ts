@@ -161,7 +161,11 @@ export class KYCService extends BaseService {
         documents: (documents as KYCDocument[]) || []
       });
     } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+      return this.createResponse({
+        personal: undefined,
+        business: undefined,
+        documents: []
+      }, this.handleError(error));
     }
   }
 
