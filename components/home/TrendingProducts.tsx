@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -29,6 +29,7 @@ function TrendingProductsContent() {
   const [retryCount, setRetryCount] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const { addToCart } = useCart();
+  const trackRef = useRef<HTMLDivElement | null>(null);
 
   // Check cache first
   const getCachedData = useCallback((): Product[] | null => {
@@ -133,6 +134,11 @@ function TrendingProductsContent() {
     } catch (error) {
       console.error('Erreur lors de l\'ajout au panier:', error);
     }
+  };
+
+  const scrollByAmount = (amount: number) => {
+    if (!trackRef.current) return;
+    trackRef.current.scrollBy({ left: amount, behavior: 'smooth' });
   };
 
   // Loading state
@@ -240,10 +246,25 @@ function TrendingProductsContent() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <Card key={product.id} className="group hover:shadow-lg transition-shadow duration-300">
-              <CardContent className="p-4">
+        <div className="relative">
+          <div className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 hidden md:block">
+            <Button variant="outline" size="icon" onClick={() => scrollByAmount(-320)} aria-label="Précédent">
+              ‹
+            </Button>
+          </div>
+          <div className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 hidden md:block">
+            <Button variant="outline" size="icon" onClick={() => scrollByAmount(320)} aria-label="Suivant">
+              ›
+            </Button>
+          </div>
+          <div
+            ref={trackRef}
+            className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none]"
+            style={{ scrollbarWidth: 'none' as any }}
+          >
+            {products.map((product) => (
+              <Card key={product.id} className="group hover:shadow-lg transition-shadow duration-300 snap-start shrink-0 w-[260px]">
+                <CardContent className="p-4">
                 <div className="relative mb-4">
                   <Link href={`/product/${product.slug}`}>
                     <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
@@ -325,7 +346,8 @@ function TrendingProductsContent() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+            ))}
+          </div>
         </div>
 
         <div className="text-center mt-12">
