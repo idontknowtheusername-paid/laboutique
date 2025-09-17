@@ -215,35 +215,7 @@ const PersonalizedOffers = () => {
           </Link>
         </div>
 
-        {/* Loyalty Status */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white rounded-lg p-4 shadow-sm border border-blue-100">
-            <div className="flex items-center space-x-2">
-              <Crown className="w-5 h-5 text-yellow-500" />
-              <span className="text-sm font-medium text-gray-600">Points de fidélité</span>
-            </div>
-            <p className="text-2xl font-bold text-gray-900 mt-1">{userLoyaltyPoints.toLocaleString()}</p>
-            <p className="text-xs text-gray-500 mt-1">Prochain niveau: 500 points</p>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm border border-blue-100">
-            <div className="flex items-center space-x-2">
-              <Gift className="w-5 h-5 text-green-500" />
-              <span className="text-sm font-medium text-gray-600">Offres exclusives</span>
-            </div>
-            <p className="text-2xl font-bold text-gray-900 mt-1">3</p>
-            <p className="text-xs text-gray-500 mt-1">Disponibles maintenant</p>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm border border-blue-100">
-            <div className="flex items-center space-x-2">
-              <Zap className="w-5 h-5 text-orange-500" />
-              <span className="text-sm font-medium text-gray-600">Économies totales</span>
-            </div>
-            <p className="text-2xl font-bold text-gray-900 mt-1">125,000 XOF</p>
-            <p className="text-xs text-gray-500 mt-1">Ce mois-ci</p>
-          </div>
-        </div>
+        {/* Loyalty Status removed on request */}
 
         {/* Products Carousel */}
         <div className="relative">
@@ -381,23 +353,7 @@ const PersonalizedOffers = () => {
           </div>
         </div>
 
-        {/* AI Recommendation Footer */}
-        <div className="mt-8 bg-white rounded-lg p-4 shadow-sm border border-blue-100">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <h4 className="font-medium text-gray-900">Recommandations IA</h4>
-                <p className="text-sm text-gray-600">Basées sur vos préférences et l'historique d'achat</p>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" className="border-blue-200 text-blue-700 hover:bg-blue-50">
-              Personnaliser
-            </Button>
-          </div>
-        </div>
+        {/* AI Recommendation Footer removed on request */}
       </div>
     </section>
   );
