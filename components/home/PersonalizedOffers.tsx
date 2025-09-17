@@ -137,7 +137,7 @@ const PersonalizedOffers = () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(() => {
         const idx = Math.round(el.scrollLeft / itemWidthRef.current);
-        if (idx !== current) setCurrent(Math.max(0, Math.min(idx, personalizedProducts.length - 1)));
+        if (idx !== current) setCurrent(Math.max(0, Math.min(idx, items.length - 1)));
       });
     };
     el.addEventListener('scroll', onScroll, { passive: true });

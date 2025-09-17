@@ -145,12 +145,12 @@ function TrendingProductsContent() {
     trackRef.current.scrollBy({ left: amount, behavior: 'smooth' });
   };
 
-  const scrollToIndex = (index: number) => {
+  const scrollToIndex = useCallback((index: number) => {
     if (!trackRef.current) return;
     const safeIndex = Math.max(0, Math.min(index, products.length - 1));
     trackRef.current.scrollTo({ left: safeIndex * (itemWidthRef.current), behavior: 'smooth' });
     setCurrent(safeIndex);
-  };
+  }, [products.length]);
 
   useEffect(() => {
     if (!trackRef.current) return;
