@@ -119,7 +119,6 @@ export default function AdminDashboard() {
   };
 
   return (
-    <ProtectedRoute requireAuth={true} requireRole="admin">
       <div className="min-h-screen bg-beshop-background">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
@@ -794,6 +793,5 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </div>
-    </ProtectedRoute>
   );
 }
