@@ -1,0 +1,15 @@
+<svg width="1200" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fashionGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="400" fill="url(#fashionGrad)"/>
+  <text x="600" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" fill="white" font-weight="bold">NOUVELLE COLLECTION</text>
+  <text x="600" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#fce7f3">Mode 2025</text>
+  <text x="600" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#f3e8ff">Découvrez les dernières tendances</text>
+  <text x="600" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#e879f9">Mode africaine moderne et élégante</text>
+  <rect x="520" y="280" width="160" height="45" rx="22" fill="white"/>
+  <text x="600" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#7c3aed" font-weight="bold">Explorer</text>
+</svg>

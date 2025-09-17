@@ -1,0 +1,14 @@
+<svg width="1200" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="electronicsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e40af"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="400" fill="url(#electronicsGrad)"/>
+  <text x="600" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" fill="white" font-weight="bold">SOLDES ÉLECTRONIQUE</text>
+  <text x="600" y="200" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#e5e7eb">Jusqu'à -30%</text>
+  <text x="600" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#d1d5db">Sur tous les smartphones et accessoires</text>
+  <rect x="500" y="270" width="200" height="50" rx="25" fill="white"/>
+  <text x="600" y="305" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#1e40af" font-weight="bold">Voir les offres</text>
+</svg>

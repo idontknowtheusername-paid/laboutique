@@ -1,0 +1,9 @@
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="600" height="400" fill="#f8fafc"/>
+  <rect x="50" y="80" width="500" height="300" rx="10" fill="#e2e8f0"/>
+  <rect x="60" y="90" width="480" height="280" rx="5" fill="#1f2937"/>
+  <rect x="70" y="100" width="460" height="260" rx="3" fill="#000"/>
+  <rect x="275" y="370" width="50" height="10" rx="5" fill="#6b7280"/>
+  <text x="300" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#4b5563" font-weight="bold">MacBook Air M3</text>
+  <text x="300" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6b7280">13 pouces - Gris Sidéral</text>
+</svg>
