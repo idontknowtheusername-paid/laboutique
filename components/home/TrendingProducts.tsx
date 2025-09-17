@@ -30,6 +30,10 @@ function TrendingProductsContent() {
   const [refreshing, setRefreshing] = useState(false);
   const { addToCart } = useCart();
   const trackRef = useRef<HTMLDivElement | null>(null);
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const itemWidthRef = useRef<number>(260 + 24);
+  const rafRef = useRef<number | null>(null);
 
   // Check cache first
   const getCachedData = useCallback((): Product[] | null => {
@@ -140,6 +144,48 @@ function TrendingProductsContent() {
     if (!trackRef.current) return;
     trackRef.current.scrollBy({ left: amount, behavior: 'smooth' });
   };
+
+  const scrollToIndex = (index: number) => {
+    if (!trackRef.current) return;
+    const safeIndex = Math.max(0, Math.min(index, products.length - 1));
+    trackRef.current.scrollTo({ left: safeIndex * (itemWidthRef.current), behavior: 'smooth' });
+    setCurrent(safeIndex);
+  };
+
+  useEffect(() => {
+    if (!trackRef.current) return;
+    const firstCard = trackRef.current.querySelector('.trend-card') as HTMLElement | null;
+    if (firstCard) {
+      const rect = firstCard.getBoundingClientRect();
+      itemWidthRef.current = rect.width + 24; // include gap
+    }
+  }, [products.length]);
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        const idx = Math.round(el.scrollLeft / itemWidthRef.current);
+        if (idx !== current) setCurrent(Math.max(0, Math.min(idx, products.length - 1)));
+      });
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [current, products.length]);
+
+  useEffect(() => {
+    if (paused || products.length === 0) return;
+    const id = setInterval(() => {
+      const next = (current + 1) % products.length;
+      scrollToIndex(next);
+    }, 4000);
+    return () => clearInterval(id);
+  }, [current, paused, products.length]);
 
   // Loading state
   if (loading && products.length === 0) {
@@ -260,10 +306,12 @@ function TrendingProductsContent() {
           <div
             ref={trackRef}
             className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none]"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
             style={{ scrollbarWidth: 'none' as any }}
           >
             {products.map((product) => (
-              <Card key={product.id} className="group hover:shadow-lg transition-shadow duration-300 snap-start shrink-0 w-[260px]">
+              <Card key={product.id} className="trend-card group hover:shadow-lg transition-shadow duration-300 snap-start shrink-0 w-[260px]">
                 <CardContent className="p-4">
                 <div className="relative mb-4">
                   <Link href={`/product/${product.slug}`}>
@@ -348,6 +396,17 @@ function TrendingProductsContent() {
             </Card>
             ))}
           </div>
+        </div>
+
+        <div className="flex items-center justify-center gap-2 mt-6">
+          {products.map((_, i) => (
+            <button
+              key={i}
+              aria-label={`Aller à l'élément ${i + 1}`}
+              onClick={() => scrollToIndex(i)}
+              className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-beshop-primary' : 'w-2 bg-gray-300'}`}
+            />
+          ))}
         </div>
 
         <div className="text-center mt-12">
