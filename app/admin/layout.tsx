@@ -1,13 +1,61 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Bell, LayoutGrid, Users, ShoppingCart, Package, Shield, Megaphone, Settings, Flag } from 'lucide-react';
+import { AuthService } from '@/lib/services/auth.service';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const userResponse = await AuthService.getCurrentUser();
+        if (!userResponse.success || !userResponse.data?.user) {
+          router.push('/auth/login?redirect=/admin/dashboard');
+          return;
+        }
+        
+        // Vérifier si l'utilisateur a le rôle admin
+        const profileResponse = await AuthService.getProfile(userResponse.data.user.id);
+        if (!profileResponse.success || !profileResponse.data || profileResponse.data.role !== 'admin') {
+          router.push('/unauthorized');
+          return;
+        }
+        
+        setIsAuthorized(true);
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        router.push('/auth/login?redirect=/admin/dashboard');
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  // Afficher un loader pendant la vérification
+  if (isAuthorized === null) {
+    return (
+      <div className="min-h-screen bg-beshop-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 bg-gradient-to-r from-beshop-primary to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <span className="text-white font-bold text-sm">B</span>
+          </div>
+          <p className="text-gray-600">Vérification des permissions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si non autorisé, ne rien afficher (redirection en cours)
+  if (!isAuthorized) {
+    return null;
+  }
 
   const nav = [
     { href: '/admin/dashboard', label: "Dashboard", icon: LayoutGrid },
