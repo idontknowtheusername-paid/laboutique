@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import QuickAddToCart from './QuickAddToCart';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
+import { ProductsService, Product } from '@/lib/services/products.service';
 
 interface PersonalizedProduct {
   id: string;
@@ -28,91 +29,23 @@ interface PersonalizedProduct {
   timeLeft?: number;
 }
 
-const personalizedProducts: PersonalizedProduct[] = [
-  {
-    id: '1',
-    name: 'iPhone 15 Pro Max 256GB',
-    slug: 'iphone-15-pro-max-256gb',
-    image: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 850000,
-    comparePrice: 950000,
-    rating: 4.8,
-    reviews: 324,
-    discount: 11,
-    vendor: 'Apple Store',
-    category: 'Smartphones',
-    personalizationReason: 'Basé sur vos recherches récentes',
-    loyaltyPoints: 850,
-    isFlashOffer: true,
-    timeLeft: 3600
-  },
-  {
-    id: '2',
-    name: 'AirPods Pro 2ème génération',
-    slug: 'airpods-pro-2',
-    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 140000,
-    comparePrice: 180000,
-    rating: 4.7,
-    reviews: 891,
-    discount: 22,
-    vendor: 'Apple Store',
-    category: 'Audio',
-    personalizationReason: 'Complète parfaitement votre iPhone',
-    loyaltyPoints: 140,
-    isFlashOffer: false
-  },
-  {
-    id: '3',
-    name: 'MacBook Air M3 13"',
-    slug: 'macbook-air-m3-13',
-    image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 720000,
-    comparePrice: 850000,
-    rating: 4.9,
-    reviews: 189,
-    discount: 15,
-    vendor: 'Apple Store',
-    category: 'Ordinateurs',
-    personalizationReason: 'Recommandé par nos experts',
-    loyaltyPoints: 720,
-    isFlashOffer: true,
-    timeLeft: 7200
-  },
-  {
-    id: '4',
-    name: 'Sony WH-1000XM5 Casque',
-    slug: 'sony-wh-1000xm5',
-    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 180000,
-    comparePrice: 220000,
-    rating: 4.7,
-    reviews: 445,
-    discount: 18,
-    vendor: 'Sony Official',
-    category: 'Audio',
-    personalizationReason: 'Clients similaires ont aimé',
-    loyaltyPoints: 180,
-    isFlashOffer: false
-  },
-  {
-    id: '5',
-    name: 'Samsung Galaxy S24 Ultra',
-    slug: 'samsung-galaxy-s24-ultra',
-    image: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=400',
-    price: 780000,
-    comparePrice: 890000,
-    rating: 4.6,
-    reviews: 256,
-    discount: 12,
-    vendor: 'Samsung Official',
-    category: 'Smartphones',
-    personalizationReason: 'Alternative premium recommandée',
-    loyaltyPoints: 780,
-    isFlashOffer: true,
-    timeLeft: 5400
-  }
-];
+// Runtime data from backend
+const mapToPersonalized = (p: Product, reason: string): PersonalizedProduct => ({
+  id: p.id,
+  name: p.name,
+  slug: p.slug,
+  image: p.images?.[0] || '/placeholder-product.jpg',
+  price: p.price,
+  comparePrice: p.compare_price,
+  rating: p.average_rating || 0,
+  reviews: p.reviews_count || 0,
+  discount: p.compare_price && p.compare_price > p.price ? Math.round(((p.compare_price - p.price) / p.compare_price) * 100) : undefined,
+  vendor: p.vendor?.name || '',
+  category: p.category?.name || '',
+  personalizationReason: reason,
+  loyaltyPoints: Math.max(1, Math.round(p.price / 1000)),
+  isFlashOffer: false
+});
 
 const PersonalizedOffers = () => {
   const { addToCart } = useCart();
@@ -124,6 +57,7 @@ const PersonalizedOffers = () => {
   const [paused, setPaused] = useState(false);
   const itemWidthRef = useRef<number>(240 + 16);
   const rafRef = useRef<number | null>(null);
+  const [items, setItems] = useState<PersonalizedProduct[]>([]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -131,6 +65,46 @@ const PersonalizedOffers = () => {
     }, 1000);
 
     return () => clearInterval(timer);
+  }, []);
+
+  // Load personalized items from backend
+  useEffect(() => {
+    (async () => {
+      try {
+        // Try to load recently viewed from localStorage
+        let recentIds: string[] = [];
+        try {
+          const raw = localStorage.getItem('recently_viewed_product_ids') || localStorage.getItem('recently_viewed');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) recentIds = parsed.slice(-3).reverse();
+          }
+        } catch {}
+
+        let recs: Product[] = [];
+        if (recentIds.length > 0) {
+          // Use getSimilar on the most recent product id
+          const similar = await ProductsService.getSimilar(recentIds[0], 10);
+          if (similar.success && similar.data) recs = similar.data as Product[];
+        }
+
+        if (recs.length === 0) {
+          // Fallback: featured then popular
+          const featured = await ProductsService.getFeatured(10);
+          if (featured.success && featured.data && featured.data.length > 0) {
+            recs = featured.data as Product[];
+          } else {
+            const popular = await ProductsService.getPopular(10);
+            if (popular.success && popular.data) recs = popular.data as Product[];
+          }
+        }
+
+        const reason = recentIds.length > 0 ? 'Basé sur vos vues récentes' : 'Sélection pour vous';
+        setItems(recs.map(p => mapToPersonalized(p, reason)));
+      } catch {
+        setItems([]);
+      }
+    })();
   }, []);
 
   // Measure first card width for snapping calculations
@@ -286,7 +260,7 @@ const PersonalizedOffers = () => {
             onMouseLeave={() => setPaused(false)}
             style={{ scrollbarWidth: 'none' as any }}
           >
-          {personalizedProducts.map((product) => (
+          {items.map((product) => (
             <Card key={product.id} className="perso-card group hover-lift card-shadow h-full flex flex-col bg-white border-blue-100 snap-start shrink-0 w-[240px]">
               <div className="relative overflow-hidden">
                 {/* Product Image */}
@@ -396,7 +370,7 @@ const PersonalizedOffers = () => {
           ))}
           </div>
           <div className="flex items-center justify-center gap-2 mt-6">
-            {personalizedProducts.map((_, i) => (
+            {items.map((_, i) => (
               <button
                 key={i}
                 aria-label={`Aller à l'élément ${i + 1}`}

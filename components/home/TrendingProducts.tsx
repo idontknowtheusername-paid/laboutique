@@ -410,7 +410,7 @@ function TrendingProductsContent() {
         </div>
 
         <div className="text-center mt-12">
-          <Link href="/products">
+          <Link href="/search">
             <Button variant="outline" size="lg">
               Voir tous les produits
             </Button>
