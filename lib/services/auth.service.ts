@@ -146,24 +146,39 @@ export class AuthService extends BaseService {
    */
   static async getCurrentUser(): Promise<ServiceResponse<AuthResponse>> {
     try {
-      const { data: { user }, error } = await this.getSupabaseClient().auth.getUser();
+      // First, get the session which includes the user
+      const { data: { session }, error: sessionError } = await this.getSupabaseClient().auth.getSession();
       
-      if (error) throw error;
+      if (sessionError) {
+        console.warn('Session error:', sessionError);
+        throw sessionError;
+      }
 
-      // Récupérer la session
-      const { data: { session } } = await this.getSupabaseClient().auth.getSession();
+      // If no session, return empty response
+      if (!session || !session.user) {
+        console.log('No active session found');
+        return this.createResponse({
+          user: null,
+          session: null,
+          profile: null
+        });
+      }
+
+      console.log('Active session found for user:', session.user.email);
 
       // Récupérer le profil si l'utilisateur existe
       let profile = null;
-      if (user) {
-        const profileResponse = await this.getProfile(user.id);
+      if (session.user) {
+        const profileResponse = await this.getProfile(session.user.id);
         if (profileResponse.success) {
           profile = profileResponse.data;
+        } else {
+          console.warn('Failed to load profile:', profileResponse.error);
         }
       }
 
       return this.createResponse({
-        user,
+        user: session.user,
         session,
         profile
       });

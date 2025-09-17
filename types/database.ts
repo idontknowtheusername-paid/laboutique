@@ -160,6 +160,44 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
+        Insert: {
+          id?: string;
+          order_number: string;
+          user_id: string;
+          status?: string;
+          payment_status?: string;
+          payment_method?: string;
+          subtotal: number;
+          tax_amount?: number;
+          shipping_amount?: number;
+          discount_amount?: number;
+          total_amount: number;
+          currency?: string;
+          shipping_address?: any;
+          billing_address?: any;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          order_number?: string;
+          user_id?: string;
+          status?: string;
+          payment_status?: string;
+          payment_method?: string;
+          subtotal?: number;
+          tax_amount?: number;
+          shipping_amount?: number;
+          discount_amount?: number;
+          total_amount?: number;
+          currency?: string;
+          shipping_address?: any;
+          billing_address?: any;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
       };
       order_items: {
         Row: {

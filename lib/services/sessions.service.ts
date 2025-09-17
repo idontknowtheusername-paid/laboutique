@@ -291,7 +291,7 @@ export class SessionsService extends BaseService {
   static async getSessionStats(
     dateFrom?: string,
     dateTo?: string
-  ): Promise<ServiceResponse<SessionStats>> {
+  ): Promise<ServiceResponse<SessionStats | null>> {
     try {
       const fromDate = dateFrom || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const toDate = dateTo || new Date().toISOString();
@@ -411,7 +411,7 @@ export class SessionsService extends BaseService {
     is_suspicious: boolean;
     reasons: string[];
     risk_score: number;
-  }>> {
+  } | null>> {
     try {
       const { data: session } = await this.getSupabaseClient()
         .from('user_sessions')

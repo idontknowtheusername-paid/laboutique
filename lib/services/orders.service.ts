@@ -1,4 +1,5 @@
 import { BaseService, ServiceResponse, PaginatedResponse, PaginationParams } from './base.service';
+import { Database } from '@/types/database';
 
 export interface Order {
   id: string;
@@ -395,7 +396,7 @@ export class OrdersService extends BaseService {
    */
   static async getStats(
     filters: { vendor_id?: string; date_from?: string; date_to?: string } = {}
-  ): Promise<ServiceResponse<OrderStats>> {
+  ): Promise<ServiceResponse<OrderStats | null>> {
     try {
       let query = this.getSupabaseClient()
         .from('orders')
@@ -414,10 +415,10 @@ export class OrdersService extends BaseService {
       if (error) throw error;
 
       const totalOrders = orders?.length || 0;
-      const totalRevenue = orders?.reduce((sum, order) => sum + order.total_amount, 0) || 0;
-      const pendingOrders = orders?.filter(order => order.status === 'pending').length || 0;
-      const completedOrders = orders?.filter(order => order.status === 'delivered').length || 0;
-      const cancelledOrders = orders?.filter(order => order.status === 'cancelled').length || 0;
+      const totalRevenue = orders?.reduce((sum: number, order: any) => sum + order.total_amount, 0) || 0;
+      const pendingOrders = orders?.filter((order: any) => order.status === 'pending').length || 0;
+      const completedOrders = orders?.filter((order: any) => order.status === 'delivered').length || 0;
+      const cancelledOrders = orders?.filter((order: any) => order.status === 'cancelled').length || 0;
       const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
       const stats: OrderStats = {

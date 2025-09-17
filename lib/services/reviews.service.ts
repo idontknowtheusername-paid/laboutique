@@ -352,7 +352,7 @@ export class ReviewsService extends BaseService {
   /**
    * Récupérer les statistiques des avis d'un produit
    */
-  static async getProductStats(productId: string): Promise<ServiceResponse<ReviewStats>> {
+  static async getProductStats(productId: string): Promise<ServiceResponse<ReviewStats | null>> {
     try {
       const { data, error } = await (this.getSupabaseClient() as any)
         .rpc('get_product_review_stats', { product_id: productId });

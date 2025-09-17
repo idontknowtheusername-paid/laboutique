@@ -100,10 +100,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Auto logout on auth errors
       if (authError.type === "auth") {
+        console.log('Auth error detected, clearing state:', authError.message);
         setUser(null);
         setSession(null);
         setProfile(null);
         setUserStats(null);
+        
+        // Clear localStorage to prevent stale data
+        if (typeof window !== 'undefined') {
+          try {
+            const authKeys = Object.keys(localStorage).filter(key => 
+              key.startsWith('sb-') || key.includes('auth')
+            );
+            authKeys.forEach(key => localStorage.removeItem(key));
+          } catch (error) {
+            console.warn('Error clearing localStorage:', error);
+          }
+        }
       }
 
       return authError;
@@ -165,25 +178,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setLastOperation(() => getInitialSession);
 
       try {
-        const result = await withRetry(() => AuthService.getCurrentUser(), {
-          maxRetries: 3,
-          retryCondition: (error) => getErrorType(error) === "network",
-        });
-
-        if (result.success && result.data?.success && result.data.data) {
-          const { user, session, profile } = result.data.data;
-          setUser(user);
-          setSession(session);
-          setProfile(profile ?? null);
-
-          // Load user stats if user is authenticated
-          if (user) {
-            await loadUserStats(user.id);
+        // First, try to get session from localStorage
+        const { data: { session: localSession } } = await supabase.auth.getSession();
+        
+        if (localSession) {
+          console.log('Session found in localStorage:', localSession.user.email);
+          setUser(localSession.user);
+          setSession(localSession);
+          
+          // Get profile
+          try {
+            const profileResult = await AuthService.getProfile(localSession.user.id);
+            if (profileResult.success && profileResult.data) {
+              setProfile(profileResult.data);
+            }
+            
+            // Load user stats
+            await loadUserStats(localSession.user.id);
+          } catch (profileError) {
+            console.warn('Error loading profile after session restore:', profileError);
           }
-        } else if (result.error) {
-          handleAuthError(result.error, false);
+        } else {
+          console.log('No session found in localStorage');
+          // Try the service method as fallback
+          const result = await withRetry(() => AuthService.getCurrentUser(), {
+            maxRetries: 3,
+            retryCondition: (error) => getErrorType(error) === "network",
+          });
+
+          if (result.success && result.data?.success && result.data.data) {
+            const { user, session, profile } = result.data.data;
+            console.log('Session restored via service:', user?.email);
+            setUser(user);
+            setSession(session);
+            setProfile(profile ?? null);
+
+            // Load user stats if user is authenticated
+            if (user) {
+              await loadUserStats(user.id);
+            }
+          } else if (result.error) {
+            console.warn('Failed to restore session via service:', result.error);
+            handleAuthError(result.error, false);
+          }
         }
       } catch (error) {
+        console.error('Error during initial session check:', error);
         handleAuthError(error, false);
       } finally {
         setLoading(false);
@@ -196,6 +236,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email || 'no user');
       setSession(session);
       setUser(session?.user ?? null);
 

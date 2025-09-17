@@ -258,7 +258,7 @@ export class ProductsService extends BaseService {
   static async getPopular(limit: number = 10): Promise<ServiceResponse<Product[]>> {
     try {
       // Récupérer les produits avec leurs ventes
-      const { data: products, error } = await this.getSupabaseClient()
+      const { data: products, error } = await (this.getSupabaseClient() as any)
         .from('products')
         .select(`
           *,
@@ -276,8 +276,8 @@ export class ProductsService extends BaseService {
 
       // Récupérer le nombre de ventes pour chaque produit
       const productsWithSales = await Promise.all(
-        products.map(async (product) => {
-          const { count } = await this.getSupabaseClient()
+        products.map(async (product: any) => {
+          const { count } = await (this.getSupabaseClient() as any)
             .from('order_items')
             .select('*', { count: 'exact', head: true })
             .eq('product_id', (product as any).id);
@@ -349,7 +349,7 @@ export class ProductsService extends BaseService {
   ): Promise<ServiceResponse<Product[]>> {
     try {
       // D'abord récupérer le produit pour connaître sa catégorie
-      const { data: product, error: productError } = await this.getSupabaseClient()
+      const { data: product, error: productError } = await (this.getSupabaseClient() as any)
         .from('products')
         .select('category_id, tags')
         .eq('id', productId)
@@ -357,7 +357,7 @@ export class ProductsService extends BaseService {
 
       if (productError) throw productError;
 
-      let query = this.getSupabaseClient()
+      let query = (this.getSupabaseClient() as any)
         .from('products')
         .select(`
           *,

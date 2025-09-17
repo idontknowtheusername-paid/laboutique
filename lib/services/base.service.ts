@@ -79,7 +79,7 @@ export abstract class BaseService {
   }
 
   protected static getSupabaseClient() {
-    return supabase;
+    return supabase as any;
   }
 
   protected static getTypedSupabaseClient() {
