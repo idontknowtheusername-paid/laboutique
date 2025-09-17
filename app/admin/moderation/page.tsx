@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -30,7 +29,6 @@ export default function AdminModerationPage() {
   }, []);
 
   return (
-    <ProtectedRoute requireAuth={true} requireRole="admin">
       <div className="space-y-6">
         <h1 className="text-2xl font-bold">Modération</h1>
 
@@ -111,7 +109,6 @@ export default function AdminModerationPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </ProtectedRoute>
   );
 }
 

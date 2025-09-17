@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,7 +39,6 @@ export default function AdminEditArticlePage() {
   if (!post) return <div className="p-6">Article introuvable.</div>;
 
   return (
-    <ProtectedRoute requireAuth={true} requireRole="admin">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Éditer article</h1>
@@ -99,7 +97,6 @@ export default function AdminEditArticlePage() {
           <Button className="bg-beshop-primary hover:bg-blue-700" onClick={()=>save({ status: 'published' } as any)} disabled={saving}>Publier</Button>
         </div>
       </div>
-    </ProtectedRoute>
   );
 }
 

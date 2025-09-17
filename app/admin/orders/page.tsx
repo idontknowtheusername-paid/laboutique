@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -52,7 +51,6 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <ProtectedRoute requireAuth={true} requireRole="admin">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Gestion des commandes</h1>
@@ -128,7 +126,6 @@ export default function AdminOrdersPage() {
           </CardContent>
         </Card>
       </div>
-    </ProtectedRoute>
   );
 }
 

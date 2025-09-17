@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Bell, LayoutGrid, Users, ShoppingCart, Package, Shield, Megaphone, Settings, Flag } from 'lucide-react';
 
@@ -21,7 +20,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <ProtectedRoute requireAuth={true} requireRole="admin">
       <div className="min-h-screen bg-beshop-background">
         <header className="bg-white border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -66,7 +64,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </main>
         </div>
       </div>
-    </ProtectedRoute>
   );
 }
 
