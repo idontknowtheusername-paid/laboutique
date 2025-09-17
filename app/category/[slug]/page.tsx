@@ -217,7 +217,7 @@ export default function DynamicCategoryPage() {
   };
 
   // Update URL when filters change
-  const updateUrlWithFilters = (nextFilters: FilterState) => {
+  const updateUrlWithFilters = useCallback((nextFilters: FilterState) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("min_price", String(nextFilters.priceRange[0]));
     params.set("max_price", String(nextFilters.priceRange[1]));
@@ -242,20 +242,17 @@ export default function DynamicCategoryPage() {
       params.delete("min_rating");
     }
     router.replace(`/category/${slug}?${params.toString()}`);
-  };
+  }, [router, slug, searchParams]);
 
   // Handle filter changes
-  const handleFilterChange = useCallback(
-    (newFilters: Partial<FilterState>) => {
-      setFilters((prev) => {
-        const next = { ...prev, ...newFilters };
-        updateUrlWithFilters(next);
-        return next;
-      });
-      setCurrentPage(1);
-    },
-    [router, slug, searchParams, updateUrlWithFilters]
-  );
+  const handleFilterChange = useCallback((newFilters: Partial<FilterState>) => {
+    setFilters((prev) => {
+      const next = { ...prev, ...newFilters };
+      updateUrlWithFilters(next);
+      return next;
+    });
+    setCurrentPage(1);
+  }, [updateUrlWithFilters]);
 
   // Update active filters display
   useEffect(() => {
@@ -282,22 +279,7 @@ export default function DynamicCategoryPage() {
     loadCategory();
   }, [loadCategory]);
 
-  // Load products when category or filters change
-  useEffect(() => {
-    if (category) {
-      // loadProducts removed: handled by React Query
-    }
-    // eslint-disable-next-line
-  }, [
-    category,
-    filters.priceRange[0],
-    filters.priceRange[1],
-    filters.brands.join(","),
-    filters.tags.join(","),
-    filters.inStock,
-    filters.minRating,
-    sortBy,
-  ]);
+  // Effect removed: product loading is fully handled by React Query
 
   // Sync filters state with URL on mount
   useEffect(() => {

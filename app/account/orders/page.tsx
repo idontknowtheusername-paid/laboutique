@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { OrdersService, Order, PaginatedResponse } from "@/lib/services";
 import Link from "next/link";
+import NextImage from "next/image";
 
 export default function OrdersPage() {
   const { user } = useAuth();
@@ -260,12 +261,14 @@ export default function OrdersPage() {
                                 key={index}
                                 className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg"
                               >
-                                <img
+                                <NextImage
                                   src={
                                     item.product?.images?.[0] ||
                                     "/placeholder.jpg"
                                   }
                                   alt={item.product?.name || "Produit"}
+                                  width={64}
+                                  height={64}
                                   className="w-16 h-16 object-cover rounded-lg"
                                 />
                                 <div className="flex-1">

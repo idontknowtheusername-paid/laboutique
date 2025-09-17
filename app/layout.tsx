@@ -27,6 +27,7 @@ export const metadata: Metadata = {
     description: "La première plateforme e-commerce premium du Bénin",
     images: ["/images/twitter-image.jpg"],
   },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://beshop.bj'),
 };
 
 export default function RootLayout({

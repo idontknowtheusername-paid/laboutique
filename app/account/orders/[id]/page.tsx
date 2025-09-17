@@ -14,6 +14,7 @@ const USER_STATUSES = [
   "cancelled"
 ];
 import Link from "next/link";
+import NextImage from "next/image";
 
 export default function OrderDetailPage({ params }: { params: { id: string } }) {
   const [order, setOrder] = useState<Order | null>(null);
@@ -142,9 +143,11 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
               <div className="space-y-3">
                 {(order.order_items || []).map((item, idx) => (
                   <div key={idx} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-                    <img
+                    <NextImage
                       src={item.product?.images?.[0] || "/placeholder.jpg"}
                       alt={item.product?.name || "Produit"}
+                      width={64}
+                      height={64}
                       className="w-16 h-16 object-cover rounded-lg"
                     />
                     <div className="flex-1">

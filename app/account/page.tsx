@@ -27,6 +27,7 @@ import {
   Edit
 } from 'lucide-react';
 import Link from 'next/link';
+import NextImage from 'next/image';
 
 export default function AccountPage() {
   const {
@@ -148,9 +149,11 @@ export default function AccountPage() {
                 <CardHeader className="text-center">
                   <div className="w-20 h-20 bg-beshop-primary rounded-full flex items-center justify-center mx-auto mb-4">
                     {profile?.avatar_url ? (
-                      <img
+                      <NextImage
                         src={profile.avatar_url}
                         alt="Avatar"
+                        width={80}
+                        height={80}
                         className="w-full h-full rounded-full object-cover"
                       />
                     ) : (

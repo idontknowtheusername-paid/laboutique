@@ -81,6 +81,8 @@ export default function AuthDebugPage() {
 
   useEffect(() => {
     getDebugInfo();
+    // Dependencies intentionally omitted since getDebugInfo reads latest state internally
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, session, profile, loading, error]);
 
   const getStatusBadge = (condition: boolean, trueText: string, falseText: string) => {
