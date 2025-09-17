@@ -16,7 +16,7 @@ export default function AdminSettingsPage() {
   React.useEffect(() => {
     (async () => {
       const res = await SettingsService.getAll();
-      if (res.success) setValues(res.data);
+      if (res.success && res.data) setValues(res.data as Record<string, any>);
     })();
   }, []);
 

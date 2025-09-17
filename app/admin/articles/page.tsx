@@ -19,7 +19,10 @@ export default function AdminArticlesPage() {
     const res = await ArticlesService.getAll(status === 'all' ? {} : { status });
     setLoading(false);
     if (res.success && res.data) {
-      let list = res.data.items as any as ArticlePost[];
+      const dataAny: any = res.data as any;
+      let list: ArticlePost[] = Array.isArray(dataAny)
+        ? (dataAny as ArticlePost[])
+        : (dataAny.items ?? dataAny.results ?? dataAny.data ?? []) as ArticlePost[];
       if (search) list = list.filter((a) => a.title.toLowerCase().includes(search.toLowerCase()));
       setItems(list);
     }
