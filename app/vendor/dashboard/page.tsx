@@ -44,6 +44,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ProductsService, Product } from '@/lib/services/products.service';
 import { VendorsService, Vendor } from '@/lib/services/vendors.service';
 import { AuthService } from '@/lib/services/auth.service';
+import NextImage from 'next/image';
 
 // Backend state
 const initialSalesData: Array<{ month: string; sales: number; orders: number; }> = [];
@@ -383,9 +384,11 @@ export default function VendorDashboard() {
                         <tr key={product.id}>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              <img
+                              <NextImage
                                 src={product.images?.[0] || '/placeholder-product.jpg'}
                                 alt={product.name}
+                                width={48}
+                                height={48}
                                 className="w-12 h-12 rounded-lg object-cover"
                               />
                               <div className="ml-4">

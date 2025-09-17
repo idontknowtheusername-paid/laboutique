@@ -215,7 +215,10 @@ export class VendorsService extends BaseService {
         .select('total')
         .eq('vendor_id', vendorId);
 
-      const totalRevenue = orderItems?.reduce((sum, item) => sum + (item as any).total, 0) || 0;
+      const totalRevenue = (orderItems as Array<{ total: number }> | null)?.reduce(
+        (sum: number, item: { total: number }) => sum + item.total,
+        0
+      ) || 0;
 
       const stats: VendorStats = {
         total_products: (vendor as any).total_products,

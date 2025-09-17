@@ -21,7 +21,7 @@ import {
   User,
   Globe,
   FileText,
-  Image,
+  Image as ImageIcon,
   Video,
   Quote
 } from 'lucide-react';
@@ -400,8 +400,8 @@ export default function PressPage() {
                     <div className="flex items-start space-x-4">
                       <div className="w-12 h-12 bg-beshop-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                         {asset.type === 'Logo' && <FileText className="w-6 h-6 text-beshop-primary" />}
-                        {asset.type === 'Photos' && <Image className="w-6 h-6 text-beshop-primary" />}
-                        {asset.type === 'Images' && <Image className="w-6 h-6 text-beshop-primary" />}
+                        {asset.type === 'Photos' && <ImageIcon className="w-6 h-6 text-beshop-primary" />}
+                        {asset.type === 'Images' && <ImageIcon className="w-6 h-6 text-beshop-primary" />}
                         {asset.type === 'Vidéo' && <Video className="w-6 h-6 text-beshop-primary" />}
                       </div>
                       <div className="flex-1">
