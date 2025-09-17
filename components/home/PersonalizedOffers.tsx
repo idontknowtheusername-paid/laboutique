@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Sparkles, Gift, Crown, Star, Heart, Eye, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -119,6 +119,11 @@ const PersonalizedOffers = () => {
   const [userLoyaltyPoints, setUserLoyaltyPoints] = useState(2450);
   const [userLevel, setUserLevel] = useState('Gold');
   const [timeLeft, setTimeLeft] = useState(3600);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const itemWidthRef = useRef<number>(240 + 16);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -127,6 +132,56 @@ const PersonalizedOffers = () => {
 
     return () => clearInterval(timer);
   }, []);
+
+  // Measure first card width for snapping calculations
+  useEffect(() => {
+    if (!trackRef.current) return;
+    const firstCard = trackRef.current.querySelector('.perso-card') as HTMLElement | null;
+    if (firstCard) {
+      const rect = firstCard.getBoundingClientRect();
+      itemWidthRef.current = rect.width + 16; // include gap estimate
+    }
+  }, []);
+
+  const scrollByAmount = (amount: number) => {
+    if (!trackRef.current) return;
+    trackRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+  };
+
+  const scrollToIndex = (index: number) => {
+    if (!trackRef.current) return;
+    const safeIndex = Math.max(0, Math.min(index, personalizedProducts.length - 1));
+    trackRef.current.scrollTo({ left: safeIndex * (itemWidthRef.current), behavior: 'smooth' });
+    setCurrent(safeIndex);
+  };
+
+  // Update current index on scroll (throttled)
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        const idx = Math.round(el.scrollLeft / itemWidthRef.current);
+        if (idx !== current) setCurrent(Math.max(0, Math.min(idx, personalizedProducts.length - 1)));
+      });
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [current]);
+
+  // Autoplay
+  useEffect(() => {
+    if (paused || personalizedProducts.length === 0) return;
+    const id = setInterval(() => {
+      const next = (current + 1) % personalizedProducts.length;
+      scrollToIndex(next);
+    }, 4500);
+    return () => clearInterval(id);
+  }, [current, paused]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -216,10 +271,23 @@ const PersonalizedOffers = () => {
           </div>
         </div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {personalizedProducts.map((product, index) => (
-            <Card key={product.id} className="group hover-lift card-shadow h-full flex flex-col bg-white border-blue-100">
+        {/* Products Carousel */}
+        <div className="relative">
+          <div className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 hidden md:block">
+            <Button variant="outline" size="icon" onClick={() => scrollByAmount(-300)} aria-label="Précédent">‹</Button>
+          </div>
+          <div className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 hidden md:block">
+            <Button variant="outline" size="icon" onClick={() => scrollByAmount(300)} aria-label="Suivant">›</Button>
+          </div>
+          <div
+            ref={trackRef}
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none]"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+            style={{ scrollbarWidth: 'none' as any }}
+          >
+          {personalizedProducts.map((product) => (
+            <Card key={product.id} className="perso-card group hover-lift card-shadow h-full flex flex-col bg-white border-blue-100 snap-start shrink-0 w-[240px]">
               <div className="relative overflow-hidden">
                 {/* Product Image */}
                 <div className="aspect-square bg-gray-100 relative">
@@ -326,6 +394,17 @@ const PersonalizedOffers = () => {
               </CardContent>
             </Card>
           ))}
+          </div>
+          <div className="flex items-center justify-center gap-2 mt-6">
+            {personalizedProducts.map((_, i) => (
+              <button
+                key={i}
+                aria-label={`Aller à l'élément ${i + 1}`}
+                onClick={() => scrollToIndex(i)}
+                className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-beshop-primary' : 'w-2 bg-blue-200'}`}
+              />
+            ))}
+          </div>
         </div>
 
         {/* AI Recommendation Footer */}
