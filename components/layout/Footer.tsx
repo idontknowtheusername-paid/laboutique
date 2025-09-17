@@ -128,9 +128,7 @@ const Footer = () => {
                 <Link href="/cookies" className="block text-gray-300 hover:text-white transition-colors">
                   Politique de cookies
                 </Link>
-                <Link href="/vendor/terms" className="block text-gray-300 hover:text-white transition-colors">
-                  Conditions vendeurs
-                </Link>
+                {/* Removed vendor links as per new direction */}
               </nav>
               
               {/* Social Media */}
