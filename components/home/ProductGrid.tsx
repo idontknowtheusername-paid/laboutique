@@ -87,7 +87,6 @@ const ProductGrid: React.FC<ProductGridProps> = ({
       rating: product.average_rating || 0,
       reviews: product.reviews_count || 0,
       discount: discountPercentage,
-      vendor: product.vendor?.name || 'Vendeur inconnu',
       category: product.category?.name || 'Catégorie inconnue',
       badge: product.featured ? 'Vedette' : undefined,
       badgeColor: product.featured ? 'bg-yellow-500' : undefined
@@ -207,22 +206,17 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                   </div>
                 </div>
 
-                  <CardContent className="p-2 md:p-4 flex flex-col flex-grow">
-                    <div className="space-y-1.5 md:space-y-2 flex-grow">
-                      {/* Vendor */}
-                      <p className="text-xs text-gray-500 uppercase tracking-wide truncate">
-                        {transformedProduct.vendor}
-                      </p>
-
+                  <CardContent className="p-3 md:p-4 flex flex-col flex-grow">
+                    <div className="space-y-1 md:space-y-1.5 flex-grow">
                       {/* Product Name */}
                       <Link href={`/product/${product.slug}`}>
-                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-beshop-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
+                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-beshop-primary transition-colors">
                           {product.name}
                         </h3>
                       </Link>
 
                       {/* Rating */}
-                      <div className="flex items-center space-x-1 text-xs">
+                      <div className="flex items-center space-x-1 text-[10px] md:text-xs">
                         <div className="flex items-center">
                           {[...Array(5)].map((_, i) => (
                             <Star
@@ -234,7 +228,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                             />
                           ))}
                         </div>
-                        <span className="text-gray-500 text-xs truncate">({transformedProduct.reviews})</span>
+                        <span className="text-gray-500 truncate">({transformedProduct.reviews})</span>
                       </div>
 
                       {/* Stock Status */}
@@ -249,9 +243,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                       )}
 
                       {/* Price */}
-                      <div className="space-y-1">
-                        <div className="flex flex-col md:flex-row md:items-center space-y-1 md:space-y-0 md:space-x-1 lg:space-x-2">
-                          <span className="font-bold text-beshop-primary text-xs md:text-sm lg:text-lg truncate">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-beshop-primary text-sm md:text-base truncate">
                             {formatPrice(product.price)}
                           </span>
                           {transformedProduct.comparePrice && (
