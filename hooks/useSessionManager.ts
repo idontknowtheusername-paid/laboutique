@@ -36,10 +36,23 @@ export function useSessionManager(options: SessionManagerOptions = {}) {
 
   const getTimeUntilExpiry = useCallback(() => {
     if (!session?.expires_at) return null;
-    
-    const expiryTime = new Date(session.expires_at).getTime();
+
+    // Supabase v2: session.expires_at is a Unix timestamp in seconds (number)
+    // Some flows may provide ISO string. Support both safely.
+    let expiryTimeMs: number;
+    const raw = session.expires_at as unknown;
+    if (typeof raw === 'number') {
+      // seconds -> ms
+      expiryTimeMs = raw * 1000;
+    } else if (typeof raw === 'string') {
+      const parsed = Date.parse(raw);
+      expiryTimeMs = isNaN(parsed) ? 0 : parsed;
+    } else {
+      return null;
+    }
+
     const currentTime = Date.now();
-    return expiryTime - currentTime;
+    return expiryTimeMs - currentTime;
   }, [session]);
 
   const handleSessionExpiry = useCallback(async () => {
