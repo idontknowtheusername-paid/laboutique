@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { AuthDebugInfo } from "@/components/auth/AuthDebugInfo";
+import { useSessionManager } from "@/hooks/useSessionManager";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,9 +12,15 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import Link from "next/link";
 
-export default function ProfileEditPage() {
+function ProfileEditPageContent() {
   const { profile, updateProfile, loading, user } = useAuth();
   const { addToast } = useToast();
+
+  // Initialize session manager for this protected page
+  useSessionManager({
+    autoRefresh: true,
+    redirectOnExpiry: true,
+  });
   const [form, setForm] = useState({
     first_name: profile?.first_name || "",
     last_name: profile?.last_name || "",
@@ -220,5 +229,14 @@ export default function ProfileEditPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function ProfileEditPage() {
+  return (
+    <ProtectedRoute requireAuth={true}>
+      <ProfileEditPageContent />
+      <AuthDebugInfo />
+    </ProtectedRoute>
   );
 }
