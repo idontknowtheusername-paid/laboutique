@@ -149,6 +149,30 @@ export class ReviewsService extends BaseService {
   }
 
   /**
+   * Récupérer les avis à modérer (en attente / signalés)
+   */
+  static async getFlagged(limit: number = 50): Promise<ServiceResponse<ProductReview[]>> {
+    try {
+      const { data, error } = await this.getSupabaseClient()
+        .from('product_reviews')
+        .select(`
+          *,
+          user:profiles (id, first_name, last_name, avatar_url),
+          product:products (id, name, slug, images)
+        `)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+
+      return this.createResponse(data || []);
+    } catch (error) {
+      return this.createResponse([], this.handleError(error));
+    }
+  }
+
+  /**
    * Récupérer les avis d'un produit
    */
   static async getByProduct(

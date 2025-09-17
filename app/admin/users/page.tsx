@@ -90,10 +90,10 @@ export default function AdminUsersPage() {
                 className="pl-10"
                 placeholder="Rechercher (email, prénom, nom)"
                 value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearch(e.target.value); setPage(1); }}
               />
             </div>
-            <Select value={roleFilter} onValueChange={(v: any) => { setRoleFilter(v); setPage(1); }}>
+            <Select value={roleFilter} onValueChange={(v: 'all' | 'customer' | 'vendor' | 'admin') => { setRoleFilter(v); setPage(1); }}>
               <SelectTrigger className="w-56">
                 <SelectValue placeholder="Rôle" />
               </SelectTrigger>
@@ -129,7 +129,7 @@ export default function AdminUsersPage() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {users.map((u) => (
+                  {users.map((u: UserProfile) => (
                     <tr key={u.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
@@ -146,7 +146,7 @@ export default function AdminUsersPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <Badge className={u.role === 'admin' ? 'bg-purple-600' : u.role === 'vendor' ? 'bg-blue-600' : 'bg-gray-600'}>{u.role}</Badge>
-                          <Select value={u.role} onValueChange={(v: any) => handleChangeRole(u.id, v)}>
+                          <Select value={u.role} onValueChange={(v: UserProfile['role']) => handleChangeRole(u.id, v)}>
                             <SelectTrigger className="w-36"><SelectValue placeholder="Changer rôle" /></SelectTrigger>
                             <SelectContent>
                               <SelectItem value="customer">Client</SelectItem>

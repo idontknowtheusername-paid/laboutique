@@ -72,9 +72,9 @@ export default function AdminProductsPage() {
           <CardContent className="p-4 flex flex-col md:flex-row items-center gap-3">
             <div className="relative w-full md:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input className="pl-10" placeholder="Rechercher un produit" value={search} onChange={(e)=>setSearch(e.target.value)} />
+              <Input className="pl-10" placeholder="Rechercher un produit" value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setSearch(e.target.value)} />
             </div>
-            <Select value={category} onValueChange={(v)=>setCategory(v)}>
+            <Select value={category} onValueChange={(v: string)=>setCategory(v)}>
               <SelectTrigger className="w-56"><SelectValue placeholder="Catégorie" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Toutes</SelectItem>

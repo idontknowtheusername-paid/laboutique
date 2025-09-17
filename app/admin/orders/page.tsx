@@ -70,9 +70,9 @@ export default function AdminOrdersPage() {
           <CardContent className="p-4 flex flex-col md:flex-row items-center gap-3">
             <div className="relative w-full md:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input className="pl-10" placeholder="Rechercher (commande, client)" value={search} onChange={(e)=>setSearch(e.target.value)} />
+              <Input className="pl-10" placeholder="Rechercher (commande, client)" value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setSearch(e.target.value)} />
             </div>
-            <Select value={status} onValueChange={(v)=>setStatus(v)}>
+            <Select value={status} onValueChange={(v: string)=>setStatus(v)}>
               <SelectTrigger className="w-56"><SelectValue placeholder="Statut" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous</SelectItem>

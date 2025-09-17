@@ -120,6 +120,26 @@ export class VendorsService extends BaseService {
   }
 
   /**
+   * Récupérer les vendeurs en attente d'approbation
+   */
+  static async getPending(limit: number = 50): Promise<ServiceResponse<Vendor[]>> {
+    try {
+      const { data, error } = await this.getSupabaseClient()
+        .from('vendors')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+
+      return this.createResponse(data || []);
+    } catch (error) {
+      return this.createResponse([], this.handleError(error));
+    }
+  }
+
+  /**
    * Récupérer un vendeur par son slug
    */
   static async getBySlug(slug: string): Promise<ServiceResponse<Vendor | null>> {

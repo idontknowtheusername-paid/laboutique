@@ -18,15 +18,14 @@ export default function AdminModerationPage() {
 
   React.useEffect(() => {
     (async () => {
-      // Placeholder fetches; adapt to backend filters if available
       const prodRes = await ProductsService.getNew(200);
       if (prodRes.success && prodRes.data) setPendingProducts(prodRes.data.filter((p: any) => p.status === 'pending'));
 
-      const revRes = await ReviewsService.getFlagged?.();
-      if (revRes?.success && revRes.data) setFlaggedReviews(revRes.data);
+      const revRes = await ReviewsService.getFlagged();
+      if (revRes.success && revRes.data) setFlaggedReviews(revRes.data);
 
-      const vendRes = await VendorsService.getPending?.();
-      if (vendRes?.success && vendRes.data) setPendingVendors(vendRes.data);
+      const vendRes = await VendorsService.getPending();
+      if (vendRes.success && vendRes.data) setPendingVendors(vendRes.data);
     })();
   }, []);
 
