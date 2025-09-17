@@ -129,7 +129,7 @@ export default function AdminDashboard() {
                 <span className="text-white font-bold text-sm">B</span>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Dashboard Admin</h1>
+                <h1 className="text-xl font-bold text-gray-900">Admin – Tableau de bord</h1>
                 <p className="text-sm text-gray-500">Be Shop - Administration</p>
               </div>
             </div>
