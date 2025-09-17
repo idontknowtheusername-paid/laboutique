@@ -124,7 +124,7 @@ const PersonalizedOffers = () => {
 
   const scrollToIndex = (index: number) => {
     if (!trackRef.current) return;
-    const safeIndex = Math.max(0, Math.min(index, personalizedProducts.length - 1));
+    const safeIndex = Math.max(0, Math.min(index, items.length - 1));
     trackRef.current.scrollTo({ left: safeIndex * (itemWidthRef.current), behavior: 'smooth' });
     setCurrent(safeIndex);
   };
@@ -145,17 +145,17 @@ const PersonalizedOffers = () => {
       el.removeEventListener('scroll', onScroll);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [current]);
+  }, [current, items.length]);
 
   // Autoplay
   useEffect(() => {
-    if (paused || personalizedProducts.length === 0) return;
+    if (paused || items.length === 0) return;
     const id = setInterval(() => {
-      const next = (current + 1) % personalizedProducts.length;
+      const next = (current + 1) % items.length;
       scrollToIndex(next);
     }, 4500);
     return () => clearInterval(id);
-  }, [current, paused]);
+  }, [current, paused, items.length]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR', {

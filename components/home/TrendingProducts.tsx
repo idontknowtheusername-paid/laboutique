@@ -185,7 +185,7 @@ function TrendingProductsContent() {
       scrollToIndex(next);
     }, 4000);
     return () => clearInterval(id);
-  }, [current, paused, products.length]);
+  }, [current, paused, products.length, scrollToIndex]);
 
   // Loading state
   if (loading && products.length === 0) {
