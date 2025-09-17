@@ -9,15 +9,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Bell, Mail, MessageSquare } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { AccountService, NotificationPrefs } from '@/lib/services/account.service';
 
 export default function NotificationsPage() {
-  const [prefs, setPrefs] = React.useState({
-    emailOrders: true,
-    emailPromos: false,
-    smsOrders: false,
-    smsPromos: false,
-    pushAll: true,
-  });
+  const { user } = useAuth();
+  const [prefs, setPrefs] = React.useState<NotificationPrefs | null>(null);
+
+  React.useEffect(() => {
+    (async () => {
+      if (!user?.id) return;
+      const res = await AccountService.getNotificationPrefs(user.id);
+      if (res.success) setPrefs(res.data as NotificationPrefs);
+    })();
+  }, [user?.id]);
 
   return (
     <ProtectedRoute>
@@ -48,7 +53,7 @@ export default function NotificationsPage() {
                         <div className="text-xs text-gray-600">Confirmations, expéditions, retours</div>
                       </div>
                     </div>
-                    <Switch checked={prefs.emailOrders} onCheckedChange={(v) => setPrefs(p => ({...p, emailOrders: !!v}))} />
+                    <Switch checked={!!prefs?.email_orders} onCheckedChange={(v) => setPrefs(p => (p ? { ...p, email_orders: !!v } : p))} />
                   </div>
                   <div className="p-4 border rounded-lg flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -58,7 +63,7 @@ export default function NotificationsPage() {
                         <div className="text-xs text-gray-600">Offres, coupons, recommandations</div>
                       </div>
                     </div>
-                    <Switch checked={prefs.emailPromos} onCheckedChange={(v) => setPrefs(p => ({...p, emailPromos: !!v}))} />
+                    <Switch checked={!!prefs?.email_promos} onCheckedChange={(v) => setPrefs(p => (p ? { ...p, email_promos: !!v } : p))} />
                   </div>
                   <div className="p-4 border rounded-lg flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -68,7 +73,7 @@ export default function NotificationsPage() {
                         <div className="text-xs text-gray-600">Mises à jour expédition</div>
                       </div>
                     </div>
-                    <Switch checked={prefs.smsOrders} onCheckedChange={(v) => setPrefs(p => ({...p, smsOrders: !!v}))} />
+                    <Switch checked={!!prefs?.sms_orders} onCheckedChange={(v) => setPrefs(p => (p ? { ...p, sms_orders: !!v } : p))} />
                   </div>
                   <div className="p-4 border rounded-lg flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -78,7 +83,7 @@ export default function NotificationsPage() {
                         <div className="text-xs text-gray-600">Offres et alertes</div>
                       </div>
                     </div>
-                    <Switch checked={prefs.smsPromos} onCheckedChange={(v) => setPrefs(p => ({...p, smsPromos: !!v}))} />
+                    <Switch checked={!!prefs?.sms_promos} onCheckedChange={(v) => setPrefs(p => (p ? { ...p, sms_promos: !!v } : p))} />
                   </div>
                   <div className="p-4 border rounded-lg flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -88,10 +93,13 @@ export default function NotificationsPage() {
                         <div className="text-xs text-gray-600">Mises à jour en temps réel</div>
                       </div>
                     </div>
-                    <Switch checked={prefs.pushAll} onCheckedChange={(v) => setPrefs(p => ({...p, pushAll: !!v}))} />
+                    <Switch checked={!!prefs?.push_all} onCheckedChange={(v) => setPrefs(p => (p ? { ...p, push_all: !!v } : p))} />
                   </div>
                   <div className="flex gap-3 pt-2">
-                    <Button className="bg-beshop-primary hover:bg-blue-700">Enregistrer</Button>
+                    <Button disabled={!prefs} className="bg-beshop-primary hover:bg-blue-700" onClick={async ()=>{
+                      if (!user?.id || !prefs) return;
+                      await AccountService.upsertNotificationPrefs(user.id, prefs);
+                    }}>Enregistrer</Button>
                     <Button variant="outline">Réinitialiser</Button>
                   </div>
                 </CardContent>

@@ -10,9 +10,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Package, Upload, FileText } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { AccountService, ReturnRequest } from '@/lib/services/account.service';
 
 export default function ReturnsPage() {
+  const { user } = useAuth();
   const [creating, setCreating] = React.useState(false);
+  const [returns, setReturns] = React.useState<ReturnRequest[]>([]);
+  const [form, setForm] = React.useState({ order_id: '', product_name: '', reason: '' });
+
+  React.useEffect(() => {
+    (async () => {
+      if (!user?.id) return;
+      const res = await AccountService.getReturnRequests(user.id);
+      if (res.success && res.data) setReturns(res.data);
+    })();
+  }, [user?.id]);
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-beshop-background">
@@ -41,15 +54,15 @@ export default function ReturnsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg">
                       <div>
                         <label className="block text-sm mb-2">Numéro de commande</label>
-                        <Input placeholder="#ORD-..." />
+                        <Input placeholder="#ORD-..." value={form.order_id} onChange={(e)=>setForm(f=>({...f, order_id: e.target.value}))} />
                       </div>
                       <div>
                         <label className="block text-sm mb-2">Produit</label>
-                        <Input placeholder="Nom du produit" />
+                        <Input placeholder="Nom du produit" value={form.product_name} onChange={(e)=>setForm(f=>({...f, product_name: e.target.value}))} />
                       </div>
                       <div className="md:col-span-2">
                         <label className="block text-sm mb-2">Motif</label>
-                        <Textarea rows={3} placeholder="Expliquez la raison du retour" />
+                        <Textarea rows={3} placeholder="Expliquez la raison du retour" value={form.reason} onChange={(e)=>setForm(f=>({...f, reason: e.target.value}))} />
                       </div>
                       <div className="md:col-span-2">
                         <label className="block text-sm mb-2">Preuve (photo)</label>
@@ -59,20 +72,28 @@ export default function ReturnsPage() {
                         </div>
                       </div>
                       <div className="md:col-span-2 flex gap-3">
-                        <Button className="bg-beshop-primary hover:bg-blue-700">Soumettre</Button>
+                        <Button className="bg-beshop-primary hover:bg-blue-700" onClick={async ()=>{
+                          if (!user?.id) return;
+                          const res = await AccountService.createReturnRequest(user.id, form as any);
+                          if (res.success && res.data) {
+                            setReturns(r => [res.data as ReturnRequest, ...r]);
+                            setCreating(false);
+                            setForm({ order_id: '', product_name: '', reason: '' });
+                          }
+                        }}>Soumettre</Button>
                         <Button variant="outline" onClick={() => setCreating(false)}>Annuler</Button>
                       </div>
                     </div>
                   )}
 
                   <div className="space-y-3">
-                    {[1,2].map(i => (
-                      <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
+                    {returns.map(rr => (
+                      <div key={rr.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded bg-beshop-primary text-white flex items-center justify-center"><Package className="w-5 h-5"/></div>
                           <div>
-                            <div className="font-medium">Retour #{i}</div>
-                            <div className="text-xs text-gray-600">Commande #ORD-1234 • Statut: En cours</div>
+                            <div className="font-medium">Retour #{rr.id}</div>
+                            <div className="text-xs text-gray-600">Commande {rr.order_id} • Statut: {rr.status}</div>
                           </div>
                         </div>
                         <Button variant="outline"><FileText className="w-4 h-4 mr-2"/>Détails</Button>

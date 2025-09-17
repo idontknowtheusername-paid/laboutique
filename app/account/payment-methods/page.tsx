@@ -9,9 +9,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CreditCard, Plus, Trash2, Shield } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { AccountService, PaymentMethod } from '@/lib/services/account.service';
 
 export default function PaymentMethodsPage() {
+  const { user } = useAuth();
   const [adding, setAdding] = React.useState(false);
+  const [methods, setMethods] = React.useState<PaymentMethod[]>([]);
+  const [saving, setSaving] = React.useState(false);
+  const [form, setForm] = React.useState({ holder_name: '', brand: 'Visa', last4: '4242', exp_month: 8, exp_year: 2027 });
+
+  React.useEffect(() => {
+    (async () => {
+      if (!user?.id) return;
+      const res = await AccountService.getPaymentMethods(user.id);
+      if (res.success && res.data) setMethods(res.data);
+    })();
+  }, [user?.id]);
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-beshop-background">
@@ -44,36 +58,55 @@ export default function PaymentMethodsPage() {
                       </div>
                       <div>
                         <label className="block text-sm mb-2">Nom sur la carte</label>
-                        <Input placeholder="NOM PRÉNOM" />
+                        <Input placeholder="NOM PRÉNOM" value={form.holder_name} onChange={(e) => setForm(f => ({...f, holder_name: e.target.value}))} />
                       </div>
                       <div>
                         <label className="block text-sm mb-2">Expiration</label>
-                        <Input placeholder="MM/AA" />
+                        <Input placeholder="MM/AA" value={`${form.exp_month}/${String(form.exp_year).toString().slice(2)}`} onChange={() => {}} />
                       </div>
                       <div>
                         <label className="block text-sm mb-2">CVC</label>
                         <Input placeholder="123" />
                       </div>
                       <div className="md:col-span-2 flex gap-3">
-                        <Button className="bg-beshop-primary hover:bg-blue-700">Enregistrer</Button>
+                        <Button disabled={saving} className="bg-beshop-primary hover:bg-blue-700" onClick={async () => {
+                          if (!user?.id) return;
+                          setSaving(true);
+                          const res = await AccountService.addPaymentMethod(user.id, form as any);
+                          setSaving(false);
+                          if (res.success && res.data) {
+                            setMethods(m => [res.data as PaymentMethod, ...m]);
+                            setAdding(false);
+                          }
+                        }}>Enregistrer</Button>
                         <Button variant="outline" onClick={() => setAdding(false)}>Annuler</Button>
                       </div>
                     </div>
                   )}
 
                   <div className="space-y-3">
-                    {[1,2].map(i => (
-                      <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
+                    {methods.map(pm => (
+                      <div key={pm.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded bg-beshop-primary text-white flex items-center justify-center"><CreditCard className="w-5 h-5"/></div>
                           <div>
-                            <div className="font-medium">Visa se terminant par 4242</div>
-                            <div className="text-xs text-gray-600">Expire 08/27 • Titulaire: Vous</div>
+                            <div className="font-medium">{pm.brand || 'Carte'} se terminant par {pm.last4 || '****'}</div>
+                            <div className="text-xs text-gray-600">Expire {pm.exp_month}/{pm.exp_year} • Titulaire: {pm.holder_name || '—'}</div>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Button variant="outline">Définir par défaut</Button>
-                          <Button variant="outline" className="text-red-600"><Trash2 className="w-4 h-4"/></Button>
+                          {!pm.is_default && <Button variant="outline" onClick={async () => {
+                            if (!user?.id) return;
+                            const res = await AccountService.setDefaultPaymentMethod(user.id, pm.id);
+                            if (res.success) {
+                              const reload = await AccountService.getPaymentMethods(user.id);
+                              if (reload.success && reload.data) setMethods(reload.data);
+                            }
+                          }}>Définir par défaut</Button>}
+                          <Button variant="outline" className="text-red-600" onClick={async () => {
+                            const res = await AccountService.deletePaymentMethod(pm.id);
+                            if (res.success) setMethods(m => m.filter(x => x.id !== pm.id));
+                          }}><Trash2 className="w-4 h-4"/></Button>
                         </div>
                       </div>
                     ))}
