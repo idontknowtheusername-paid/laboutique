@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { 
   BarChart, 
   Bar, 
@@ -58,35 +58,11 @@ const initialCategoryData: Array<{ name: string; value: number; color: string; }
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
-  const router = useRouter();
-  const [authLoading, setAuthLoading] = useState(true);
-  const [authorized, setAuthorized] = useState(false);
   const [salesData, setSalesData] = useState(initialSalesData);
   const [categoryData, setCategoryData] = useState(initialCategoryData);
   const [topVendors, setTopVendors] = useState<Vendor[]>([]);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [recentUsers, setRecentUsers] = useState<UserProfile[]>([]);
-
-  useEffect(() => {
-    // RBAC guard: only admin role
-    (async () => {
-      try {
-        const res = await AuthService.getCurrentUser();
-        const role = res?.data?.profile?.role;
-        if (!res.success || !res.data?.user) {
-          router.replace('/auth/login');
-          return;
-        }
-        if (role !== 'admin') {
-          router.replace('/');
-          return;
-        }
-        setAuthorized(true);
-      } finally {
-        setAuthLoading(false);
-      }
-    })();
-  }, [router]);
 
   useEffect(() => {
     (async () => {
@@ -119,26 +95,7 @@ export default function AdminDashboard() {
       }
     })();
   }, []);
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-beshop-background">
-        <header className="bg-white shadow-sm border-b h-16" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="animate-pulse space-y-4">
-            <div className="h-6 bg-gray-200 rounded w-64"></div>
-            <div className="h-6 bg-gray-200 rounded w-96"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-28 bg-gray-200 rounded" />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!authorized) return null;
+  // RBAC is enforced by ProtectedRoute
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-BJ', {
@@ -162,7 +119,8 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-beshop-background">
+    <ProtectedRoute requireAuth={true} requireRole="admin">
+      <div className="min-h-screen bg-beshop-background">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -377,9 +335,11 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">Gestion des commandes</h2>
               <div className="flex items-center space-x-2">
-                <Button variant="outline">
-                  <Download className="w-4 h-4 mr-2" />
-                  Exporter
+                <Button variant="outline" asChild>
+                  <a href="/admin/orders">
+                    <Download className="w-4 h-4 mr-2" />
+                    Voir toutes
+                  </a>
                 </Button>
                 <Select>
                   <SelectTrigger className="w-48">
@@ -571,16 +531,11 @@ export default function AdminDashboard() {
           <TabsContent value="vendors" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">Gestion des vendeurs</h2>
-              <div className="flex items-center space-x-2">
-                <Button className="bg-beshop-primary hover:bg-blue-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Nouveau vendeur
-                </Button>
-                <Button variant="outline">
-                  <Download className="w-4 h-4 mr-2" />
-                  Exporter
-                </Button>
-              </div>
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" asChild>
+                <a href="/admin/vendors">Gérer</a>
+              </Button>
+            </div>
             </div>
 
             <Card>
@@ -675,7 +630,10 @@ export default function AdminDashboard() {
           <TabsContent value="products" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">Gestion des produits</h2>
-              <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2">
+                <Button variant="outline" asChild>
+                  <a href="/admin/products">Voir tous</a>
+                </Button>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input placeholder="Rechercher un produit..." className="pl-10 w-64" />
@@ -836,6 +794,6 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 }

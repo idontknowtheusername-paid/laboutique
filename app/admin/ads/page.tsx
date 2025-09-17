@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
@@ -15,8 +14,6 @@ import { BannersService, Banner } from '@/lib/services/banners.service';
 import { Download, Plus, Search, Eye, Edit, Trash2, Rocket } from 'lucide-react';
 
 export default function AdminAdsPage() {
-  const router = useRouter();
-  const [authorized, setAuthorized] = React.useState(true); // assume RBAC handled globally
   const [loading, setLoading] = React.useState(true);
   const [items, setItems] = React.useState<Banner[]>([]);
   const [page, setPage] = React.useState(1);
@@ -37,10 +34,8 @@ export default function AdminAdsPage() {
 
   React.useEffect(() => { load(); }, [load]);
 
-  if (!authorized) return null;
-
   return (
-    <ProtectedRoute requireAuth={true}>
+    <ProtectedRoute requireAuth={true} requireRole="admin">
       <div className="min-h-screen bg-beshop-background">
         <Header />
         <CategoryMenu />
