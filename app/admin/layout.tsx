@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  const [avatarInitial, setAvatarInitial] = useState<string>('A');
+  const [adminName, setAdminName] = useState<string>('Admin');
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -27,7 +29,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           router.push('/unauthorized');
           return;
         }
-        
+        // Avatar initial + name
+        const first = profileResponse.data.first_name?.trim();
+        const last = profileResponse.data.last_name?.trim();
+        const email = profileResponse.data.email?.trim();
+        const initial = (first || email || 'A').charAt(0).toUpperCase();
+        setAvatarInitial(initial);
+        setAdminName(first && last ? `${first} ${last}` : (first || 'Admin'));
+
         setIsAuthorized(true);
       } catch (error) {
         console.error('Auth check failed:', error);
@@ -67,6 +76,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/settings', label: "Paramètres", icon: Settings },
   ];
 
+  const currentNavLabel = useMemo(() => {
+    const current = nav.find((n) => pathname?.startsWith(n.href));
+    return current?.label || 'Dashboard';
+  }, [pathname]);
+
   return (
       <div className="min-h-screen bg-beshop-background">
         <header className="bg-white border-b">
@@ -84,8 +98,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Button variant="outline" size="sm">
                 <Bell className="w-4 h-4 mr-2" /> Notifications
               </Button>
-              <div className="w-8 h-8 bg-beshop-primary rounded-full flex items-center justify-center">
-                <span className="text-white font-medium text-sm">A</span>
+              <div className="w-8 h-8 bg-beshop-primary rounded-full flex items-center justify-center" title={adminName}>
+                <span className="text-white font-medium text-sm">{avatarInitial}</span>
               </div>
             </div>
           </div>
@@ -93,12 +107,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
           <aside className="lg:col-span-3">
-            <nav className="bg-white border rounded-lg p-2">
+            <nav className="bg-white border rounded-lg p-2 lg:sticky lg:top-24">
               {nav.map((item) => {
                 const Icon = item.icon;
                 const active = pathname?.startsWith(item.href);
                 return (
-                  <Link key={item.href} href={item.href} className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                  <Link key={item.href} href={item.href} className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 ${active ? 'bg-gray-100 text-gray-900 border border-gray-200' : 'text-gray-700'}`}>
                     <Icon className="w-4 h-4" />
                     {item.label}
                   </Link>
@@ -108,6 +122,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </aside>
 
           <main className="lg:col-span-9">
+            <div className="mb-4 text-xs text-gray-500">
+              <span className="text-gray-400">Admin</span>
+              <span className="mx-2">/</span>
+              <span>{currentNavLabel}</span>
+            </div>
             {children}
           </main>
         </div>

@@ -69,7 +69,10 @@ export default function AdminUsersPage() {
   return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Gestion des utilisateurs</h1>
+          <div>
+            <h1 className="text-2xl font-bold">Utilisateurs</h1>
+            <p className="text-sm text-gray-500">Gestion des comptes et rôles</p>
+          </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={load} disabled={loading}>
               <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
