@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Separator } from '@/components/ui/separator';
 import { Bell, LayoutGrid, Users, ShoppingCart, Package, Shield, Megaphone, Settings, Flag } from 'lucide-react';
 import { AuthService } from '@/lib/services/auth.service';
 
@@ -84,9 +86,37 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <header className="bg-white border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-beshop-primary to-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">B</span>
-              </div>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon" className="mr-2">
+                    <span className="sr-only">Ouvrir le menu</span>
+                    ☰
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-72 p-0">
+                  <div className="p-4 flex items-center gap-3 border-b">
+                    <div className="w-8 h-8 bg-gradient-to-r from-beshop-primary to-blue-600 rounded-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">B</span>
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold">Admin – La Boutique B</div>
+                      <div className="text-xs text-gray-500">Panneau d'administration</div>
+                    </div>
+                  </div>
+                  <nav className="p-2">
+                    {nav.map((item) => {
+                      const Icon = item.icon;
+                      const active = pathname?.startsWith(item.href);
+                      return (
+                        <Link key={item.href} href={item.href} className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 ${active ? 'bg-gray-100 text-gray-900 border border-gray-200' : 'text-gray-700'}`}>
+                          <Icon className="w-4 h-4" />
+                          {item.label}
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                </SheetContent>
+              </Sheet>
               <div>
                 <h1 className="text-lg font-bold">Admin – La Boutique B</h1>
                 <p className="text-xs text-gray-500">Panneau d'administration</p>
@@ -103,23 +133,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </header>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <aside className="lg:col-span-3">
-            <nav className="bg-white border rounded-lg p-2 lg:sticky lg:top-24">
-              {nav.map((item) => {
-                const Icon = item.icon;
-                const active = pathname?.startsWith(item.href);
-                return (
-                  <Link key={item.href} href={item.href} className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 ${active ? 'bg-gray-100 text-gray-900 border border-gray-200' : 'text-gray-700'}`}>
-                    <Icon className="w-4 h-4" />
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
-          </aside>
-
-          <main className="lg:col-span-9">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <main>
             <div className="mb-4 text-xs text-gray-500">
               <span className="text-gray-400">Admin</span>
               <span className="mx-2">/</span>
