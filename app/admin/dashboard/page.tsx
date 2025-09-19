@@ -23,7 +23,6 @@ import { Badge } from '@/components/ui/badge';
 import { VendorsService, Vendor } from '@/lib/services/vendors.service';
 import { ProductsService } from '@/lib/services/products.service';
 import { OrdersService, Order } from '@/lib/services/orders.service';
-import { AuthService, UserProfile } from '@/lib/services/auth.service';
 
 type SalesDatum = { month: string; revenue: number; orders: number; users: number };
 type CategoryDatum = { name: string; value: number; color: string };
@@ -251,10 +250,6 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
-
-          {/* Orders */}
-          <TabsContent value="orders" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">Gestion des commandes</h2>
               <div className="flex items-center space-x-2">
