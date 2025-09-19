@@ -17,34 +17,13 @@ import {
   AreaChart,
   Area
 } from 'recharts';
-import {
-  Users,
-  ShoppingCart,
-  DollarSign,
-  Package,
-  TrendingUp,
-  Eye,
-  Edit,
-  Trash2,
-  Plus,
-  Search,
-  Download,
-  Settings,
-  Bell,
-  Shield,
-  Star
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Users, ShoppingCart, DollarSign, Package, TrendingUp, Star } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { VendorsService, Vendor } from '@/lib/services/vendors.service';
 import { ProductsService } from '@/lib/services/products.service';
 import { OrdersService, Order } from '@/lib/services/orders.service';
 import { AuthService, UserProfile } from '@/lib/services/auth.service';
-import Link from 'next/link';
 
 type SalesDatum = { month: string; revenue: number; orders: number; users: number };
 type CategoryDatum = { name: string; value: number; color: string };
@@ -53,12 +32,10 @@ const initialSalesData: SalesDatum[] = [];
 const initialCategoryData: CategoryDatum[] = [];
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
   const [salesData, setSalesData] = useState<SalesDatum[]>(initialSalesData);
   const [categoryData, setCategoryData] = useState<CategoryDatum[]>(initialCategoryData);
   const [topVendors, setTopVendors] = useState<Vendor[]>([]);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
-  const [recentUsers, setRecentUsers] = useState<UserProfile[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -67,14 +44,6 @@ export default function AdminDashboard() {
 
       const ordersRes = await OrdersService.getRecent(10);
       if (ordersRes.success && ordersRes.data) setRecentOrders(ordersRes.data);
-
-      const { data: profiles } = await (AuthService as any)
-        .getSupabaseClient()
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-      if (profiles) setRecentUsers(profiles);
 
       const productsRes = await ProductsService.getNew(50);
       if (productsRes.success && productsRes.data) {
@@ -125,53 +94,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-beshop-background">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-beshop-primary to-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">B</span>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Admin – Tableau de bord</h1>
-                <p className="text-sm text-gray-500">Be Shop - Administration</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">
-                <Bell className="w-4 h-4 mr-2" />
-                <Badge className="bg-red-500 text-white ml-1">5</Badge>
-              </Button>
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/admin/settings">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Paramètres
-                </Link>
-              </Button>
-              <div className="w-8 h-8 bg-beshop-primary rounded-full flex items-center justify-center">
-                <span className="text-white font-medium text-sm">A</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
-            <TabsTrigger value="orders">Commandes</TabsTrigger>
-            <TabsTrigger value="users">Utilisateurs</TabsTrigger>
-            <TabsTrigger value="vendors">Vendeurs</TabsTrigger>
-            <TabsTrigger value="products">Produits</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="settings">Paramètres</TabsTrigger>
-          </TabsList>
-
-          {/* Overview */}
-          <TabsContent value="overview" className="space-y-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
