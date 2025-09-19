@@ -29,6 +29,7 @@ const Header = () => {
   const { user, signOut } = useAuth();
   const pathname = usePathname();
   const isHome = pathname === '/';
+  const isAuthPage = pathname?.startsWith('/auth/');
   const [annApi, setAnnApi] = useState<CarouselApi | null>(null);
   const router = useRouter();
 
@@ -165,12 +166,12 @@ const Header = () => {
                   <User className="w-5 h-5" />
                   <div className="hidden lg:block text-left">
                     <div className="text-xs text-gray-500">
-                      {user ? "Bonjour" : "Se connecter"}
+                      {user ? "Bonjour" : (isAuthPage ? "Authentification" : "Se connecter")}
                     </div>
                     <div className="text-sm font-medium">
                       {user
                         ? user.user_metadata?.first_name || "Mon compte"
-                        : "Mon compte"}
+                        : (isAuthPage ? "En cours..." : "Mon compte")}
                     </div>
                   </div>
                 </Button>
@@ -194,12 +195,21 @@ const Header = () => {
                   </>
                 ) : (
                   <>
-                    <DropdownMenuItem asChild>
-                      <Link href="/auth/login">Se connecter</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/auth/register">Créer un compte</Link>
-                    </DropdownMenuItem>
+                    {!isAuthPage && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/auth/login">Se connecter</Link>
+                      </DropdownMenuItem>
+                    )}
+                    {pathname !== '/auth/register' && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/auth/register">Créer un compte</Link>
+                      </DropdownMenuItem>
+                    )}
+                    {isAuthPage && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/">Retour à l'accueil</Link>
+                      </DropdownMenuItem>
+                    )}
                   </>
                 )}
               </DropdownMenuContent>
@@ -274,6 +284,8 @@ const Header = () => {
 
 const MobileMenu = () => {
   const { user, signOut } = useAuth();
+  const pathname = usePathname();
+  const isAuthPage = pathname?.startsWith('/auth/');
 
   return (
     <div className="flex flex-col space-y-4 p-4">
@@ -306,12 +318,21 @@ const MobileMenu = () => {
         </>
       ) : (
         <>
-          <Link href="/auth/login">
-            <Button className="w-full btn-primary">Se connecter</Button>
-          </Link>
-          <Link href="/auth/register">
-            <Button variant="outline" className="w-full">Créer un compte</Button>
-          </Link>
+          {!isAuthPage && (
+            <Link href="/auth/login">
+              <Button className="w-full btn-primary">Se connecter</Button>
+            </Link>
+          )}
+          {pathname !== '/auth/register' && (
+            <Link href="/auth/register">
+              <Button variant="outline" className="w-full">Créer un compte</Button>
+            </Link>
+          )}
+          {isAuthPage && (
+            <Link href="/">
+              <Button variant="outline" className="w-full">Retour à l'accueil</Button>
+            </Link>
+          )}
         </>
       )}
 
