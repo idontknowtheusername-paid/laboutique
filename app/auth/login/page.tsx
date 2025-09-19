@@ -89,7 +89,17 @@ export default function LoginPage() {
 
       if (result.success) {
         showSuccessToast('Connexion réussie !');
-        router.push(redirectTo);
+        try {
+          const current = await AuthService.getCurrentUser();
+          const role = current?.data?.profile?.role;
+          if (role === 'admin') {
+            router.push('/admin/dashboard');
+          } else {
+            router.push(redirectTo);
+          }
+        } catch (_) {
+          router.push(redirectTo);
+        }
       } else {
         setError(result.error || 'Erreur lors de la connexion');
       }

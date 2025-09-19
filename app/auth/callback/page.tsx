@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { AuthService } from '@/lib/services';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -41,13 +42,28 @@ export default function AuthCallbackPage() {
               setSuccess(true);
               showSuccessToast('Connexion réussie !');
 
-              // Get redirect URL from state or default to home
-              const redirectTo = searchParams.get('state') || '/';
-
-              // Small delay to show success message
-              setTimeout(() => {
+              // Determine redirect based on role if available
+              try {
+                const { data: { session } } = await supabase.auth.getSession();
+                let redirectTo = searchParams.get('state') || '/';
+                if (session?.user?.id) {
+                  const profileResult = await AuthService.getProfile(session.user.id);
+                  if (profileResult.success && profileResult.data) {
+                    const role = profileResult.data.role;
+                    if (role === 'admin') {
+                      redirectTo = '/admin/dashboard';
+                    }
+                  }
+                }
+                setTimeout(() => {
                   router.push(redirectTo);
-            }, 1500);
+                }, 1200);
+              } catch (_) {
+                const redirectTo = searchParams.get('state') || '/';
+                setTimeout(() => {
+                  router.push(redirectTo);
+                }, 1200);
+              }
           } else {
                   throw new Error('Aucune session créée');
               }
