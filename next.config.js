@@ -6,7 +6,13 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  images: { unoptimized: true },
+  images: {
+    unoptimized: false,
+    remotePatterns: [
+      { protocol: 'https', hostname: '**.supabase.co' },
+      { protocol: 'https', hostname: 'qdagyxqkqgbzqrqzjvzz.supabase.co' },
+    ],
+  },
 };
 
 module.exports = nextConfig;

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Trash2, Upload } from 'lucide-react';
+import Image from 'next/image';
 
 type UploadedItem = {
   url: string;
@@ -94,7 +95,9 @@ export function ImageUploader({
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {items.map((img, idx) => (
               <div key={idx} className="relative group border rounded-lg overflow-hidden">
-                <img src={img.url} alt="uploaded" className="w-full h-32 object-cover" />
+                <div className="relative w-full h-32">
+                  <Image src={img.url} alt="uploaded" fill sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover" />
+                </div>
                 <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <Button size="sm" variant="secondary" onClick={(e)=>{ e.stopPropagation(); removeAt(idx); }}>
                     <Trash2 className="w-4 h-4" />
