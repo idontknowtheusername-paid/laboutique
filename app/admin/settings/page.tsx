@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SettingsService } from '@/lib/services/settings.service';
 import { Badge } from '@/components/ui/badge';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default function AdminSettingsPage() {
   const [saving, setSaving] = React.useState(false);
@@ -31,10 +32,12 @@ export default function AdminSettingsPage() {
 
   return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Paramètres</h1>
-          <Badge className={saving ? 'bg-yellow-600' : 'bg-green-600'}>{saving ? 'Enregistrement...' : 'Synchronisé'}</Badge>
-        </div>
+        <AdminPageHeader
+          title="Paramètres"
+          subtitle="Configuration de l'application"
+          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Paramètres' }]}
+          actions={<Badge className={saving ? 'bg-yellow-600' : 'bg-green-600'}>{saving ? 'Enregistrement...' : 'Synchronisé'}</Badge>}
+        />
 
         <Tabs defaultValue="general" className="space-y-6">
           <TabsList className="flex flex-wrap gap-2">

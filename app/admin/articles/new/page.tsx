@@ -10,6 +10,7 @@ import { ArticlesService, CreateArticleData } from '@/lib/services/articles.serv
 import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '@/components/ui/badge';
 import { ImageUploader } from '@/components/admin/ImageUploader';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default function AdminNewArticlePage() {
   const { profile } = useAuth();
@@ -40,10 +41,12 @@ export default function AdminNewArticlePage() {
 
   return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Nouvel article</h1>
-          {message && <Badge className="bg-blue-600">{message}</Badge>}
-        </div>
+        <AdminPageHeader
+          title="Nouvel article"
+          subtitle="Créer un contenu éditorial"
+          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Articles', href: '/admin/articles' }, { label: 'Nouveau' }]}
+          actions={message ? <Badge className="bg-blue-600">{message}</Badge> : null}
+        />
 
         <Tabs defaultValue="content" className="space-y-6">
           <TabsList className="flex flex-wrap gap-2">

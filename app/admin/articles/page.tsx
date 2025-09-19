@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArticlesService, ArticlePost } from '@/lib/services/articles.service';
 import Link from 'next/link';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import AdminToolbar from '@/components/admin/AdminToolbar';
 
 export default function AdminArticlesPage() {
   const [loading, setLoading] = React.useState(true);
@@ -32,28 +34,32 @@ export default function AdminArticlesPage() {
 
   return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Articles</h1>
-          <Button asChild className="bg-beshop-primary hover:bg-blue-700"><Link href="/admin/articles/new">Nouvel article</Link></Button>
-        </div>
+        <AdminPageHeader
+          title="Articles"
+          subtitle="Contenus éditoriaux du site"
+          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Articles' }]}
+          actions={<Button asChild className="bg-beshop-primary hover:bg-blue-700"><Link href="/admin/articles/new">Nouvel article</Link></Button>}
+        />
 
         <Card>
-          <CardContent className="p-4 flex flex-col md:flex-row items-center gap-3">
-            <div className="relative w-full md:w-72">
-              <Input className="pl-3" placeholder="Rechercher un article" value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setSearch(e.target.value)} />
-            </div>
-            <Select value={status} onValueChange={(v: any)=>setStatus(v)}>
-              <SelectTrigger className="w-56"><SelectValue placeholder="Statut" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous</SelectItem>
-                <SelectItem value="draft">Brouillon</SelectItem>
-                <SelectItem value="published">Publié</SelectItem>
-                <SelectItem value="archived">Archivé</SelectItem>
-              </SelectContent>
-            </Select>
-            <div className="ml-auto flex items-center gap-2">
-              <Button variant="outline" onClick={()=>{ setSearch(''); setStatus('all'); }}>Réinitialiser</Button>
-            </div>
+          <CardContent className="p-0">
+            <AdminToolbar>
+              <div className="relative w-full md:w-72">
+                <Input className="pl-3" placeholder="Rechercher un article" value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setSearch(e.target.value)} />
+              </div>
+              <Select value={status} onValueChange={(v: any)=>setStatus(v)}>
+                <SelectTrigger className="w-56"><SelectValue placeholder="Statut" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous</SelectItem>
+                  <SelectItem value="draft">Brouillon</SelectItem>
+                  <SelectItem value="published">Publié</SelectItem>
+                  <SelectItem value="archived">Archivé</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="ml-auto flex items-center gap-2">
+                <Button variant="outline" onClick={()=>{ setSearch(''); setStatus('all'); }}>Réinitialiser</Button>
+              </div>
+            </AdminToolbar>
           </CardContent>
         </Card>
 

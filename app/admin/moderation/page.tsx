@@ -9,6 +9,7 @@ import { ReviewsService } from '@/lib/services/reviews.service';
 import { VendorsService } from '@/lib/services/vendors.service';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Check, X } from 'lucide-react';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default function AdminModerationPage() {
   const [pendingProducts, setPendingProducts] = React.useState<any[]>([]);
@@ -30,7 +31,11 @@ export default function AdminModerationPage() {
 
   return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Modération</h1>
+        <AdminPageHeader
+          title="Modération"
+          subtitle="Contenus et éléments à approuver"
+          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Modération' }]}
+        />
 
         <Tabs defaultValue="products" className="space-y-4">
           <TabsList>

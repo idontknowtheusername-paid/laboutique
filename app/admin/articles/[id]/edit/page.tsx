@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArticlesService, ArticlePost } from '@/lib/services/articles.service';
 import { Badge } from '@/components/ui/badge';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default function AdminEditArticlePage() {
   const params = useParams();
@@ -40,10 +41,12 @@ export default function AdminEditArticlePage() {
 
   return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Éditer article</h1>
-          {message && <Badge className="bg-blue-600">{message}</Badge>}
-        </div>
+        <AdminPageHeader
+          title="Éditer article"
+          subtitle="Mettre à jour le contenu"
+          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Articles', href: '/admin/articles' }, { label: 'Éditer' }]}
+          actions={message ? <Badge className="bg-blue-600">{message}</Badge> : null}
+        />
 
         <Tabs defaultValue="content" className="space-y-6">
           <TabsList className="flex flex-wrap gap-2">

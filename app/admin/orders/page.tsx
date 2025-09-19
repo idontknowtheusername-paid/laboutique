@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { OrdersService, Order } from '@/lib/services/orders.service';
 import { Download, Search, Eye, Edit, RefreshCw } from 'lucide-react';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import AdminToolbar from '@/components/admin/AdminToolbar';
 
 export default function AdminOrdersPage() {
   const [loading, setLoading] = React.useState(true);
@@ -52,38 +54,44 @@ export default function AdminOrdersPage() {
 
   return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Gestion des commandes</h1>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={load} disabled={loading}>
-              <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
-            </Button>
-            <Button variant="outline">
-              <Download className="w-4 h-4 mr-2" /> Exporter
-            </Button>
-          </div>
-        </div>
+        <AdminPageHeader
+          title="Commandes"
+          subtitle="Suivi des commandes et statuts"
+          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Commandes' }]}
+          actions={(
+            <>
+              <Button variant="outline" onClick={load} disabled={loading}>
+                <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
+              </Button>
+              <Button variant="outline">
+                <Download className="w-4 h-4 mr-2" /> Exporter
+              </Button>
+            </>
+          )}
+        />
 
         <Card>
-          <CardContent className="p-4 flex flex-col md:flex-row items-center gap-3">
-            <div className="relative w-full md:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input className="pl-10" placeholder="Rechercher (commande, client)" value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setSearch(e.target.value)} />
-            </div>
-            <Select value={status} onValueChange={(v: string)=>setStatus(v)}>
-              <SelectTrigger className="w-56"><SelectValue placeholder="Statut" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous</SelectItem>
-                <SelectItem value="pending">En attente</SelectItem>
-                <SelectItem value="processing">En cours</SelectItem>
-                <SelectItem value="shipped">Expédiées</SelectItem>
-                <SelectItem value="delivered">Livrées</SelectItem>
-                <SelectItem value="cancelled">Annulées</SelectItem>
-              </SelectContent>
-            </Select>
-            <div className="ml-auto flex items-center gap-2">
-              <Button variant="outline" onClick={()=>{ setSearch(''); setStatus('all'); }}>Réinitialiser</Button>
-            </div>
+          <CardContent className="p-0">
+            <AdminToolbar>
+              <div className="relative w-full md:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input className="pl-10" placeholder="Rechercher (commande, client)" value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setSearch(e.target.value)} />
+              </div>
+              <Select value={status} onValueChange={(v: string)=>setStatus(v)}>
+                <SelectTrigger className="w-56"><SelectValue placeholder="Statut" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous</SelectItem>
+                  <SelectItem value="pending">En attente</SelectItem>
+                  <SelectItem value="processing">En cours</SelectItem>
+                  <SelectItem value="shipped">Expédiées</SelectItem>
+                  <SelectItem value="delivered">Livrées</SelectItem>
+                  <SelectItem value="cancelled">Annulées</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="ml-auto flex items-center gap-2">
+                <Button variant="outline" onClick={()=>{ setSearch(''); setStatus('all'); }}>Réinitialiser</Button>
+              </div>
+            </AdminToolbar>
           </CardContent>
         </Card>
 
