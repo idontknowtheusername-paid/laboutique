@@ -477,8 +477,15 @@ export default function RegisterPage() {
                 Déjà un compte ? <Link href="/auth/login" className="text-beshop-primary hover:underline">Se connecter</Link>
               </p>
 
-              {/* Social Registration Buttons moved to bottom to match login */}
-              <div className="space-y-3 mt-6">
+              {/* Separator */}
+              <div className="flex items-center gap-3 mt-6">
+                <div className="h-px bg-gray-200 flex-1" />
+                <span className="text-xs text-gray-500">OU</span>
+                <div className="h-px bg-gray-200 flex-1" />
+              </div>
+
+              {/* Social Registration Buttons (bottom) */}
+              <div className="space-y-3 mt-3">
                 <Button
                   type="button"
                   variant="outline"

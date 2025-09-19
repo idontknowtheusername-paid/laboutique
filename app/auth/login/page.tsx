@@ -89,7 +89,17 @@ export default function LoginPage() {
 
       if (result.success) {
         showSuccessToast('Connexion réussie !');
-        router.push(redirectTo);
+        try {
+          const current = await AuthService.getCurrentUser();
+          const role = current?.data?.profile?.role;
+          if (role === 'admin') {
+            router.push('/admin/dashboard');
+          } else {
+            router.push(redirectTo);
+          }
+        } catch (_) {
+          router.push(redirectTo);
+        }
       } else {
         setError(result.error || 'Erreur lors de la connexion');
       }
@@ -234,8 +244,15 @@ export default function LoginPage() {
                 Pas de compte ? <Link href="/auth/register" className="text-beshop-primary hover:underline">Créer un compte</Link>
               </p>
 
-              {/* Social Login Buttons (moved to bottom) */}
-              <div className="space-y-3 mt-6">
+              {/* Separator */}
+              <div className="flex items-center gap-3 mt-6">
+                <div className="h-px bg-gray-200 flex-1" />
+                <span className="text-xs text-gray-500">OU</span>
+                <div className="h-px bg-gray-200 flex-1" />
+              </div>
+
+              {/* Social Login Buttons (bottom) */}
+              <div className="space-y-3 mt-3">
                 <Button
                   type="button"
                   variant="outline"
