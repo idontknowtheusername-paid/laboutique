@@ -145,7 +145,7 @@ const PersonalizedOffers = () => {
       el.removeEventListener('scroll', onScroll);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [current, items.length]);
+  }, [current, items.length, itemWidthRef]);
 
   // Autoplay
   useEffect(() => {
@@ -155,7 +155,7 @@ const PersonalizedOffers = () => {
       scrollToIndex(next);
     }, 4500);
     return () => clearInterval(id);
-  }, [current, paused, items.length]);
+  }, [current, paused, items.length, scrollToIndex]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR', {

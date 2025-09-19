@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -76,10 +76,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/settings', label: "Paramètres", icon: Settings },
   ];
 
-  const currentNavLabel = useMemo(() => {
-    const current = nav.find((n) => pathname?.startsWith(n.href));
-    return current?.label || 'Dashboard';
-  }, [pathname]);
+  const current = nav.find((n) => pathname?.startsWith(n.href));
+  const currentNavLabel = current?.label || 'Dashboard';
 
   return (
       <div className="min-h-screen bg-beshop-background">
