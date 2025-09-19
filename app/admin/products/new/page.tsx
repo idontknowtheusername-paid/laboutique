@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProductsService, CreateProductData } from '@/lib/services/products.service';
 import { Badge } from '@/components/ui/badge';
+import { ImageUploader } from '@/components/admin/ImageUploader';
 
 export default function AdminNewProductPage() {
   const [saving, setSaving] = React.useState(false);
@@ -16,7 +17,7 @@ export default function AdminNewProductPage() {
   const [form, setForm] = React.useState<Partial<CreateProductData>>({
     name: '', slug: '', sku: '', price: 0, vendor_id: '', category_id: '',
     status: 'draft', track_quantity: true, quantity: 0, featured: false,
-    meta_title: '', meta_description: ''
+    meta_title: '', meta_description: '', images: []
   });
 
   const update = (patch: Partial<CreateProductData>) => setForm((f) => ({ ...f, ...patch }));
@@ -83,6 +84,19 @@ export default function AdminNewProductPage() {
                 <div className="md:col-span-2">
                   <label className="block text-sm mb-2">Résumé</label>
                   <Textarea value={form.short_description || ''} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ short_description: e.target.value })} />
+                </div>
+                <div className="md:col-span-2">
+                  <ImageUploader
+                    label="Images du produit"
+                    bucket="public"
+                    folder="products"
+                    multiple
+                    value={(form.images || []).map((url: any)=>({ url }))}
+                    onChange={(next)=>{
+                      const urls = Array.isArray(next) ? next.map((n:any)=>n.url) : (next ? [next.url] : []);
+                      update({ images: urls });
+                    }}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm mb-2">Vendeur (ID)</label>

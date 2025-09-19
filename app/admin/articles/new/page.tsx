@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArticlesService, CreateArticleData } from '@/lib/services/articles.service';
 import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '@/components/ui/badge';
+import { ImageUploader } from '@/components/admin/ImageUploader';
 
 export default function AdminNewArticlePage() {
   const { profile } = useAuth();
@@ -69,6 +70,19 @@ export default function AdminNewArticlePage() {
                 <div className="md:col-span-2">
                   <label className="block text-sm mb-2">Contenu</label>
                   <Textarea value={form.content || ''} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>set({ content: e.target.value })} rows={12} />
+                </div>
+                <div className="md:col-span-2">
+                  <ImageUploader
+                    label="Image de couverture"
+                    bucket="public"
+                    folder="articles"
+                    multiple={false}
+                    value={form.cover_image_url ? { url: form.cover_image_url } : null}
+                    onChange={(next)=>{
+                      const url = Array.isArray(next) ? next[0]?.url : next?.url;
+                      set({ cover_image_url: url });
+                    }}
+                  />
                 </div>
               </CardContent>
             </Card>
