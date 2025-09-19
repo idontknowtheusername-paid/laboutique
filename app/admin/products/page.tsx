@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { ProductsService } from '@/lib/services/products.service';
 import { Download, Search, Eye, Edit, RefreshCw } from 'lucide-react';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import AdminToolbar from '@/components/admin/AdminToolbar';
 
 interface AdminProduct {
   id: string;
@@ -54,40 +56,43 @@ export default function AdminProductsPage() {
 
   return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Produits</h1>
-            <p className="text-sm text-gray-500">Catalogue et statut de publication</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={load} disabled={loading}>
-              <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
-            </Button>
-            <Button variant="outline">
-              <Download className="w-4 h-4 mr-2" /> Exporter
-            </Button>
-          </div>
-        </div>
+        <AdminPageHeader
+          title="Produits"
+          subtitle="Catalogue et statut de publication"
+          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Produits' }]}
+          actions={(
+            <>
+              <Button variant="outline" onClick={load} disabled={loading}>
+                <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
+              </Button>
+              <Button variant="outline">
+                <Download className="w-4 h-4 mr-2" /> Exporter
+              </Button>
+            </>
+          )}
+        />
 
         <Card>
-          <CardContent className="p-4 flex flex-col md:flex-row items-center gap-3">
-            <div className="relative w-full md:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input className="pl-10" placeholder="Rechercher un produit" value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setSearch(e.target.value)} />
-            </div>
-            <Select value={category} onValueChange={(v: string)=>setCategory(v)}>
-              <SelectTrigger className="w-56"><SelectValue placeholder="Catégorie" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes</SelectItem>
-                <SelectItem value="electronique">Électronique</SelectItem>
-                <SelectItem value="mode">Mode</SelectItem>
-                <SelectItem value="maison">Maison</SelectItem>
-                <SelectItem value="beaute">Beauté</SelectItem>
-              </SelectContent>
-            </Select>
-            <div className="ml-auto flex items-center gap-2">
-              <Button variant="outline" onClick={()=>{ setSearch(''); setCategory('all'); }}>Réinitialiser</Button>
-            </div>
+          <CardContent className="p-0">
+            <AdminToolbar>
+              <div className="relative w-full md:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input className="pl-10" placeholder="Rechercher un produit" value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setSearch(e.target.value)} />
+              </div>
+              <Select value={category} onValueChange={(v: string)=>setCategory(v)}>
+                <SelectTrigger className="w-56"><SelectValue placeholder="Catégorie" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes</SelectItem>
+                  <SelectItem value="electronique">Électronique</SelectItem>
+                  <SelectItem value="mode">Mode</SelectItem>
+                  <SelectItem value="maison">Maison</SelectItem>
+                  <SelectItem value="beaute">Beauté</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="ml-auto flex items-center gap-2">
+                <Button variant="outline" onClick={()=>{ setSearch(''); setCategory('all'); }}>Réinitialiser</Button>
+              </div>
+            </AdminToolbar>
           </CardContent>
         </Card>
 

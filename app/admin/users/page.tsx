@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { AuthService, UserProfile } from '@/lib/services/auth.service';
 import { Download, Search, Shield, Trash2, RefreshCw } from 'lucide-react';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import AdminToolbar from '@/components/admin/AdminToolbar';
 
 export default function AdminUsersPage() {
   const [loading, setLoading] = React.useState(true);
@@ -68,23 +70,25 @@ export default function AdminUsersPage() {
 
   return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Utilisateurs</h1>
-            <p className="text-sm text-gray-500">Gestion des comptes et rôles</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={load} disabled={loading}>
-              <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
-            </Button>
-            <Button variant="outline">
-              <Download className="w-4 h-4 mr-2" /> Exporter
-            </Button>
-          </div>
-        </div>
+        <AdminPageHeader
+          title="Utilisateurs"
+          subtitle="Gestion des comptes et rôles"
+          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Utilisateurs' }]}
+          actions={(
+            <>
+              <Button variant="outline" onClick={load} disabled={loading}>
+                <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
+              </Button>
+              <Button variant="outline">
+                <Download className="w-4 h-4 mr-2" /> Exporter
+              </Button>
+            </>
+          )}
+        />
 
         <Card>
-          <CardContent className="p-4 flex flex-col md:flex-row items-center gap-3">
+          <CardContent className="p-0">
+            <AdminToolbar>
             <div className="relative w-full md:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
@@ -110,6 +114,7 @@ export default function AdminUsersPage() {
                 Réinitialiser
               </Button>
             </div>
+            </AdminToolbar>
           </CardContent>
         </Card>
 
