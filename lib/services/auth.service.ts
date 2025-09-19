@@ -303,10 +303,12 @@ export class AuthService extends BaseService {
    */
   static async signInWithGoogle(): Promise<ServiceResponse<{ url: string }>> {
     try {
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+      const redirectTo = appUrl ? `${appUrl}/auth/callback` : undefined;
       const { data, error } = await this.getSupabaseClient().auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`
+          redirectTo
         }
       });
 
@@ -314,7 +316,11 @@ export class AuthService extends BaseService {
 
       return this.createResponse({ url: data.url });
     } catch (error) {
-      return this.createResponse({ url: '' }, this.handleError(error));
+      const message = this.handleError(error);
+      const hint = message.includes('provider is not enabled')
+        ? 'Provider non activé dans Supabase Auth. Activez Google et configurez les clés.'
+        : undefined;
+      return this.createResponse({ url: '' }, hint ? `${message}. ${hint}` : message);
     }
   }
 
@@ -323,10 +329,12 @@ export class AuthService extends BaseService {
    */
   static async signInWithFacebook(): Promise<ServiceResponse<{ url: string }>> {
     try {
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+      const redirectTo = appUrl ? `${appUrl}/auth/callback` : undefined;
       const { data, error } = await this.getSupabaseClient().auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`
+          redirectTo
         }
       });
 
@@ -334,7 +342,11 @@ export class AuthService extends BaseService {
 
       return this.createResponse({ url: data.url });
     } catch (error) {
-      return this.createResponse({ url: '' }, this.handleError(error));
+      const message = this.handleError(error);
+      const hint = message.includes('provider is not enabled')
+        ? 'Provider non activé dans Supabase Auth. Activez Facebook et configurez les clés.'
+        : undefined;
+      return this.createResponse({ url: '' }, hint ? `${message}. ${hint}` : message);
     }
   }
 
