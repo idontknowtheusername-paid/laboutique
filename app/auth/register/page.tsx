@@ -225,11 +225,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-beshop-background flex items-center">
       <div className="container py-8">
-        <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-beshop-primary">Accueil</Link>
-          <span>/</span>
-          <span className="text-gray-900 font-medium">Créer un compte</span>
-        </nav>
+        {/* breadcrumb removed on auth pages */}
 
         <div className="max-w-md mx-auto">
           <Card>
