@@ -39,26 +39,59 @@ export function ImageUploader({
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
+    
+    // Vérifier la limite de 10 images
+    const maxImages = 10;
+    const currentCount = items.length;
+    const newFiles = Array.from(files);
+    
+    if (currentCount + newFiles.length > maxImages) {
+      alert(`Vous ne pouvez ajouter que ${maxImages} images maximum. Vous avez déjà ${currentCount} images.`);
+      return;
+    }
+    
+    // Vérifier la taille des fichiers (10MB max)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const oversizedFiles = newFiles.filter(file => file.size > maxSize);
+    if (oversizedFiles.length > 0) {
+      alert(`Certains fichiers sont trop volumineux (max 10MB). Fichiers rejetés: ${oversizedFiles.map(f => f.name).join(', ')}`);
+      return;
+    }
+    
     setUploading(true);
-    setUploadProgress({ current: 0, total: files.length });
+    setUploadProgress({ current: 0, total: newFiles.length });
     const next: UploadedItem[] = [...items];
     
     // Upload all files in parallel for better performance
-    const uploadPromises = Array.from(files).map(async (file, index) => {
-      const res = await uploadToStorage(bucket, file, folder);
-      setUploadProgress(prev => ({ ...prev, current: prev.current + 1 }));
-      if (res.success && res.url) {
-        return { url: res.url, path: res.path };
+    const uploadPromises = newFiles.map(async (file) => {
+      try {
+        const res = await uploadToStorage(bucket, file, folder);
+        setUploadProgress(prev => ({ ...prev, current: prev.current + 1 }));
+        if (res.success && res.url) {
+          return { url: res.url, path: res.path };
+        } else {
+          console.error('Upload failed for', file.name, res.error);
+          return null;
+        }
+      } catch (error) {
+        console.error('Upload error for', file.name, error);
+        setUploadProgress(prev => ({ ...prev, current: prev.current + 1 }));
+        return null;
       }
-      return null;
     });
     
     try {
       const results = await Promise.all(uploadPromises);
       const successfulUploads = results.filter((item) => item !== null) as UploadedItem[];
       next.push(...successfulUploads);
+      
+      if (successfulUploads.length < newFiles.length) {
+        const failedCount = newFiles.length - successfulUploads.length;
+        alert(`${failedCount} image(s) n'ont pas pu être uploadées. Vérifiez la configuration Supabase.`);
+      }
     } catch (error) {
       console.error('Upload error:', error);
+      alert('Erreur lors de l\'upload des images. Vérifiez la configuration Supabase.');
     }
     
     setUploading(false);
@@ -88,14 +121,17 @@ export function ImageUploader({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium">{label}</label>
-          {uploading && (
-            <Badge className="bg-blue-600">
-              {uploadProgress.total > 0 
-                ? `${uploadProgress.current}/${uploadProgress.total} images` 
-                : 'Upload...'
-              }
-            </Badge>
-          )}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">{items.length}/10 images</span>
+            {uploading && (
+              <Badge className="bg-blue-600">
+                {uploadProgress.total > 0 
+                  ? `${uploadProgress.current}/${uploadProgress.total} images` 
+                  : 'Upload...'
+                }
+              </Badge>
+            )}
+          </div>
         </div>
 
         <div
@@ -117,7 +153,7 @@ export function ImageUploader({
           </p>
           {!uploading && (
             <p className="text-xs text-gray-500 mt-1">
-              Formats supportés: JPG, PNG, WebP (max 10MB par image)
+              Formats supportés: JPG, PNG, WebP (max 10MB par image, 10 images max)
             </p>
           )}
           <Input
