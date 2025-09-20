@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProductsService, CreateProductData } from '@/lib/services/products.service';
 import { Badge } from '@/components/ui/badge';
 import { ImageUploader } from '@/components/admin/ImageUploader';
+import { Download } from 'lucide-react';
 
 // Fonction utilitaire pour générer un slug
 function generateSlug(name: string): string {
@@ -63,6 +64,52 @@ export default function AdminNewProductPage() {
     });
   };
 
+  const handleImportClick = () => {
+    const url = prompt('Collez l\'URL du produit AliExpress ou AliBaba :');
+    if (!url) return;
+
+    if (!url.includes('aliexpress.com') && !url.includes('alibaba.com')) {
+      alert('URL non supportée. Seuls AliExpress et AliBaba sont supportés.');
+      return;
+    }
+
+    // Import direct
+    handleDirectImport(url);
+  };
+
+  const handleDirectImport = async (url: string) => {
+    try {
+      setSaving(true);
+      setMessage('');
+
+      const response = await fetch('/api/products/import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url, importDirectly: true }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erreur lors de l\'import');
+      }
+
+      setMessage('Produit importé avec succès !');
+      setTimeout(() => {
+        setMessage('');
+        // Rediriger vers la liste des produits
+        window.location.href = '/admin/products';
+      }, 2000);
+
+    } catch (error: any) {
+      setMessage(error.message || 'Erreur lors de l\'import du produit');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   async function handleSave(status: 'draft' | 'active') {
     setSaving(true);
     setMessage('');
@@ -98,6 +145,14 @@ export default function AdminNewProductPage() {
           <h1 className="text-2xl font-bold">Nouveau produit</h1>
           <div className="flex items-center gap-3">
             {message && <Badge className="bg-blue-600">{message}</Badge>}
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              onClick={handleImportClick}
+            >
+              <Download className="w-4 h-4" />
+              Importer depuis AliExpress/AliBaba
+            </Button>
           </div>
         </div>
 
