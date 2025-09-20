@@ -29,6 +29,7 @@ export function ImageUploader({
   onChange: (next: UploadedItem[] | UploadedItem | null) => void;
 }) {
   const [uploading, setUploading] = React.useState(false);
+  const [uploadProgress, setUploadProgress] = React.useState<{ current: number; total: number }>({ current: 0, total: 0 });
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   const items: UploadedItem[] = React.useMemo(() => {
@@ -39,12 +40,29 @@ export function ImageUploader({
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
     setUploading(true);
+    setUploadProgress({ current: 0, total: files.length });
     const next: UploadedItem[] = [...items];
-    for (const file of Array.from(files)) {
+    
+    // Upload all files in parallel for better performance
+    const uploadPromises = Array.from(files).map(async (file, index) => {
       const res = await uploadToStorage(bucket, file, folder);
-      if (res.success && res.url) next.push({ url: res.url, path: res.path });
+      setUploadProgress(prev => ({ ...prev, current: prev.current + 1 }));
+      if (res.success && res.url) {
+        return { url: res.url, path: res.path };
+      }
+      return null;
+    });
+    
+    try {
+      const results = await Promise.all(uploadPromises);
+      const successfulUploads = results.filter((item) => item !== null) as UploadedItem[];
+      next.push(...successfulUploads);
+    } catch (error) {
+      console.error('Upload error:', error);
     }
+    
     setUploading(false);
+    setUploadProgress({ current: 0, total: 0 });
     onChange(multiple ? next : next[0] ?? null);
   }
 
@@ -70,23 +88,45 @@ export function ImageUploader({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium">{label}</label>
-          {uploading && <Badge className="bg-blue-600">Upload...</Badge>}
+          {uploading && (
+            <Badge className="bg-blue-600">
+              {uploadProgress.total > 0 
+                ? `${uploadProgress.current}/${uploadProgress.total} images` 
+                : 'Upload...'
+              }
+            </Badge>
+          )}
         </div>
 
         <div
-          className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 transition-colors"
-          onClick={() => inputRef.current?.click()}
+          className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+            uploading 
+              ? 'border-blue-400 bg-blue-50' 
+              : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+          }`}
+          onClick={() => !uploading && inputRef.current?.click()}
           onDrop={onDrop}
           onDragOver={onDragOver}
         >
-          <Upload className="w-5 h-5 mx-auto mb-2 text-gray-500" />
-          <p className="text-sm text-gray-600">Glissez-déposez des images ici, ou cliquez pour sélectionner</p>
+          <Upload className={`w-8 h-8 mx-auto mb-3 ${uploading ? 'text-blue-500 animate-pulse' : 'text-gray-500'}`} />
+          <p className={`text-sm ${uploading ? 'text-blue-600' : 'text-gray-600'}`}>
+            {uploading 
+              ? 'Upload en cours...' 
+              : 'Glissez-déposez des images ici, ou cliquez pour sélectionner'
+            }
+          </p>
+          {!uploading && (
+            <p className="text-xs text-gray-500 mt-1">
+              Formats supportés: JPG, PNG, WebP (max 10MB par image)
+            </p>
+          )}
           <Input
             ref={inputRef as any}
             type="file"
             accept="image/*"
             multiple={multiple}
             className="hidden"
+            disabled={uploading}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFiles(e.target.files)}
           />
         </div>

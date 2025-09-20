@@ -60,34 +60,55 @@ export default function AdminNewProductPage() {
 
         <Tabs defaultValue="infos" className="space-y-6">
           <TabsList className="flex flex-wrap gap-2">
-            <TabsTrigger value="infos">Infos</TabsTrigger>
-            <TabsTrigger value="pricing">Prix & Stock</TabsTrigger>
-            <TabsTrigger value="seo">SEO</TabsTrigger>
+            <TabsTrigger value="infos">Informations de base</TabsTrigger>
+            <TabsTrigger value="pricing">Prix et stock</TabsTrigger>
+            <TabsTrigger value="seo">Référencement</TabsTrigger>
           </TabsList>
 
           <TabsContent value="infos">
             <Card>
-              <CardHeader><CardTitle>Informations</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Informations du produit</CardTitle></CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Nom</label>
-                  <Input value={form.name || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ name: e.target.value })} />
+                  <label className="block text-sm font-medium mb-2">Nom du produit *</label>
+                  <Input 
+                    placeholder="Ex: iPhone 15 Pro Max 256GB"
+                    value={form.name || ''} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ name: e.target.value })} 
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm mb-2">Slug</label>
-                  <Input value={form.slug || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ slug: e.target.value })} />
+                  <label className="block text-sm font-medium mb-2">URL du produit</label>
+                  <Input 
+                    placeholder="Ex: iphone-15-pro-max-256gb"
+                    value={form.slug || ''} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ slug: e.target.value })} 
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Laissez vide pour générer automatiquement</p>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm mb-2">Description</label>
-                  <Textarea value={form.description || ''} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ description: e.target.value })} />
+                  <label className="block text-sm font-medium mb-2">Description complète</label>
+                  <Textarea 
+                    placeholder="Décrivez en détail votre produit, ses caractéristiques, avantages..."
+                    rows={4}
+                    value={form.description || ''} 
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ description: e.target.value })} 
+                  />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm mb-2">Résumé</label>
-                  <Textarea value={form.short_description || ''} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ short_description: e.target.value })} />
+                  <label className="block text-sm font-medium mb-2">Résumé court</label>
+                  <Textarea 
+                    placeholder="Description courte qui apparaîtra dans les listes (max 150 caractères)"
+                    rows={2}
+                    maxLength={150}
+                    value={form.short_description || ''} 
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ short_description: e.target.value })} 
+                  />
+                  <p className="text-xs text-gray-500 mt-1">{form.short_description?.length || 0}/150 caractères</p>
                 </div>
                 <div className="md:col-span-2">
                   <ImageUploader
-                    label="Images du produit"
+                    label="Photos du produit"
                     bucket="public"
                     folder="products"
                     multiple
@@ -97,14 +118,25 @@ export default function AdminNewProductPage() {
                       update({ images: urls });
                     }}
                   />
+                  <p className="text-xs text-gray-500 mt-1">Glissez-déposez plusieurs images ou cliquez pour sélectionner. La première image sera l'image principale.</p>
                 </div>
                 <div>
-                  <label className="block text-sm mb-2">Vendeur (ID)</label>
-                  <Input value={form.vendor_id || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ vendor_id: e.target.value })} />
+                  <label className="block text-sm font-medium mb-2">Vendeur</label>
+                  <Input 
+                    placeholder="ID du vendeur (ex: 123)"
+                    value={form.vendor_id || ''} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ vendor_id: e.target.value })} 
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Temporaire: sera remplacé par un sélecteur</p>
                 </div>
                 <div>
-                  <label className="block text-sm mb-2">Catégorie (ID)</label>
-                  <Input value={form.category_id || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ category_id: e.target.value })} />
+                  <label className="block text-sm font-medium mb-2">Catégorie</label>
+                  <Input 
+                    placeholder="ID de la catégorie (ex: 456)"
+                    value={form.category_id || ''} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ category_id: e.target.value })} 
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Temporaire: sera remplacé par un sélecteur</p>
                 </div>
               </CardContent>
             </Card>
@@ -112,19 +144,36 @@ export default function AdminNewProductPage() {
 
           <TabsContent value="pricing">
             <Card>
-              <CardHeader><CardTitle>Prix & Stock</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Prix et gestion du stock</CardTitle></CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">SKU</label>
-                  <Input value={form.sku || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ sku: e.target.value })} />
+                  <label className="block text-sm font-medium mb-2">Code produit (SKU)</label>
+                  <Input 
+                    placeholder="Ex: IPH15PM-256-BLK"
+                    value={form.sku || ''} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ sku: e.target.value })} 
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Identifiant unique du produit</p>
                 </div>
                 <div>
-                  <label className="block text-sm mb-2">Prix</label>
-                  <Input type="number" value={form.price ?? 0} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ price: Number(e.target.value) })} />
+                  <label className="block text-sm font-medium mb-2">Prix de vente (FCFA) *</label>
+                  <Input 
+                    type="number" 
+                    placeholder="Ex: 850000"
+                    value={form.price ?? 0} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ price: Number(e.target.value) })} 
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Prix en francs CFA</p>
                 </div>
                 <div>
-                  <label className="block text-sm mb-2">Quantité</label>
-                  <Input type="number" value={form.quantity ?? 0} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ quantity: Number(e.target.value) })} />
+                  <label className="block text-sm font-medium mb-2">Quantité en stock</label>
+                  <Input 
+                    type="number" 
+                    placeholder="Ex: 10"
+                    value={form.quantity ?? 0} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ quantity: Number(e.target.value) })} 
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Nombre d'unités disponibles</p>
                 </div>
               </CardContent>
             </Card>
@@ -132,15 +181,26 @@ export default function AdminNewProductPage() {
 
           <TabsContent value="seo">
             <Card>
-              <CardHeader><CardTitle>SEO</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Référencement (SEO)</CardTitle></CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Meta Title</label>
-                  <Input value={form.meta_title || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ meta_title: e.target.value })} />
+                  <label className="block text-sm font-medium mb-2">Titre de la page</label>
+                  <Input 
+                    placeholder="Ex: iPhone 15 Pro Max 256GB - Meilleur prix au Bénin"
+                    value={form.meta_title || ''} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ meta_title: e.target.value })} 
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Titre qui apparaîtra dans les résultats Google (max 60 caractères)</p>
                 </div>
                 <div>
-                  <label className="block text-sm mb-2">Meta Description</label>
-                  <Input value={form.meta_description || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ meta_description: e.target.value })} />
+                  <label className="block text-sm font-medium mb-2">Description de la page</label>
+                  <Textarea 
+                    placeholder="Description qui apparaîtra sous le titre dans Google..."
+                    rows={3}
+                    value={form.meta_description || ''} 
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ meta_description: e.target.value })} 
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Description pour les moteurs de recherche (max 160 caractères)</p>
                 </div>
               </CardContent>
             </Card>
@@ -148,8 +208,12 @@ export default function AdminNewProductPage() {
         </Tabs>
 
         <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={()=>handleSave('draft')} disabled={saving}>Enregistrer brouillon</Button>
-          <Button className="bg-beshop-primary hover:bg-blue-700" onClick={()=>handleSave('active')} disabled={saving}>Publier</Button>
+          <Button variant="outline" onClick={()=>handleSave('draft')} disabled={saving}>
+            {saving ? 'Enregistrement...' : 'Enregistrer comme brouillon'}
+          </Button>
+          <Button className="bg-beshop-primary hover:bg-blue-700" onClick={()=>handleSave('active')} disabled={saving}>
+            {saving ? 'Publication...' : 'Publier le produit'}
+          </Button>
         </div>
       </div>
   );
