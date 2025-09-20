@@ -11,6 +11,19 @@ import { ProductsService, CreateProductData } from '@/lib/services/products.serv
 import { Badge } from '@/components/ui/badge';
 import { ImageUploader } from '@/components/admin/ImageUploader';
 
+// Fonction utilitaire pour générer un slug
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize('NFD') // Décomposer les caractères accentués
+    .replace(/[\u0300-\u036f]/g, '') // Supprimer les accents
+    .replace(/[^a-z0-9\s-]/g, '') // Garder seulement lettres, chiffres, espaces et tirets
+    .replace(/\s+/g, '-') // Remplacer les espaces par des tirets
+    .replace(/-+/g, '-') // Remplacer les tirets multiples par un seul
+    .trim() // Supprimer les espaces en début/fin
+    .replace(/^-+|-+$/g, ''); // Supprimer les tirets en début/fin
+}
+
 export default function AdminNewProductPage() {
   const [saving, setSaving] = React.useState(false);
   const [message, setMessage] = React.useState<string>('');
@@ -20,7 +33,18 @@ export default function AdminNewProductPage() {
     meta_title: '', meta_description: '', images: []
   });
 
-  const update = (patch: Partial<CreateProductData>) => setForm((f) => ({ ...f, ...patch }));
+  const update = (patch: Partial<CreateProductData>) => {
+    setForm((f) => {
+      const newForm = { ...f, ...patch };
+      
+      // Générer automatiquement le slug si le nom change et que le slug est vide
+      if (patch.name && !f.slug) {
+        newForm.slug = generateSlug(patch.name);
+      }
+      
+      return newForm;
+    });
+  };
 
   async function handleSave(status: 'draft' | 'active') {
     setSaving(true);
@@ -86,7 +110,7 @@ export default function AdminNewProductPage() {
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Partie de l'URL qui identifie votre produit (ex: laboutique.bj/produits/iphone-15-pro-max-256gb). 
-                    Laissez vide pour générer automatiquement à partir du nom.
+                    <span className="font-medium text-green-600">Généré automatiquement</span> à partir du nom si laissé vide.
                   </p>
                 </div>
                 <div className="md:col-span-2">

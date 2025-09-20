@@ -63,7 +63,7 @@ export interface ProductSortOptions {
 
 export interface CreateProductData {
   name: string;
-  slug: string;
+  slug?: string; // Optionnel - généré automatiquement si pas fourni
   description?: string;
   short_description?: string;
   sku: string;
@@ -385,14 +385,33 @@ export class ProductsService extends BaseService {
   }
 
   /**
+   * Générer un slug à partir du nom du produit
+   */
+  private static generateSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .normalize('NFD') // Décomposer les caractères accentués
+      .replace(/[\u0300-\u036f]/g, '') // Supprimer les accents
+      .replace(/[^a-z0-9\s-]/g, '') // Garder seulement lettres, chiffres, espaces et tirets
+      .replace(/\s+/g, '-') // Remplacer les espaces par des tirets
+      .replace(/-+/g, '-') // Remplacer les tirets multiples par un seul
+      .trim() // Supprimer les espaces en début/fin
+      .replace(/^-+|-+$/g, ''); // Supprimer les tirets en début/fin
+  }
+
+  /**
    * Créer un nouveau produit
    */
   static async create(productData: CreateProductData): Promise<ServiceResponse<Product | null>> {
     try {
+      // Générer le slug automatiquement si pas fourni
+      const slug = productData.slug?.trim() || this.generateSlug(productData.name);
+      
       const { data, error } = await (this.getSupabaseClient() as any)
         .from('products')
         .insert([{
           ...productData,
+          slug,
           track_quantity: productData.track_quantity ?? true,
           quantity: productData.quantity ?? 0,
           status: productData.status ?? 'draft',
