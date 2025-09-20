@@ -78,8 +78,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/settings', label: "Paramètres", icon: Settings },
   ];
 
-  const current = nav.find((n) => pathname?.startsWith(n.href));
-  const currentNavLabel = current?.label || 'Dashboard';
 
   return (
       <div className="min-h-screen bg-beshop-background">
@@ -135,11 +133,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <main>
-            <div className="mb-4 text-xs text-gray-500">
-              <span className="text-gray-400">Admin</span>
-              <span className="mx-2">/</span>
-              <span>{currentNavLabel}</span>
-            </div>
             {children}
           </main>
         </div>
