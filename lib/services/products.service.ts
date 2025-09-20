@@ -113,7 +113,30 @@ export class ProductsService extends BaseService {
       let query = this.getSupabaseClient()
         .from('products')
         .select(`
-          *,
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          created_at,
+          updated_at,
           category:categories(id, name, slug),
           vendor:vendors(id, name, slug, logo_url)
         `, { count: 'exact' });
@@ -189,7 +212,30 @@ export class ProductsService extends BaseService {
       const { data, error } = await this.getSupabaseClient()
         .from('products')
         .select(`
-          *,
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          created_at,
+          updated_at,
           category:categories(id, name, slug),
           vendor:vendors(id, name, slug, logo_url, description)
         `)
@@ -243,7 +289,30 @@ export class ProductsService extends BaseService {
       const { data, error } = await this.getSupabaseClient()
         .from('products')
         .select(`
-          *,
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          created_at,
+          updated_at,
           category:categories(id, name, slug),
           vendor:vendors(id, name, slug, logo_url)
         `)
@@ -269,7 +338,30 @@ export class ProductsService extends BaseService {
       const { data: products, error } = await (this.getSupabaseClient() as any)
         .from('products')
         .select(`
-          *,
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          created_at,
+          updated_at,
           category:categories(id, name, slug),
           vendor:vendors(id, name, slug, logo_url)
         `)
@@ -316,7 +408,30 @@ export class ProductsService extends BaseService {
       const { data, error } = await this.getSupabaseClient()
         .from('products')
         .select(`
-          *,
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          created_at,
+          updated_at,
           category:categories(id, name, slug),
           vendor:vendors(id, name, slug, logo_url)
         `)
@@ -368,7 +483,30 @@ export class ProductsService extends BaseService {
       let query = (this.getSupabaseClient() as any)
         .from('products')
         .select(`
-          *,
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          created_at,
+          updated_at,
           category:categories(id, name, slug),
           vendor:vendors(id, name, slug, logo_url)
         `)
@@ -415,10 +553,13 @@ export class ProductsService extends BaseService {
       // Générer le slug automatiquement si pas fourni
       const slug = productData.slug?.trim() || this.generateSlug(productData.name);
       
+      // Filtrer les champs qui n'existent pas dans la base de données
+      const { specifications, source_url, source_platform, original_price, ...validProductData } = productData;
+      
       const { data, error } = await (this.getSupabaseClient() as any)
         .from('products')
         .insert([{
-          ...productData,
+          ...validProductData,
           slug,
           track_quantity: productData.track_quantity ?? true,
           quantity: productData.quantity ?? 0,
@@ -426,7 +567,30 @@ export class ProductsService extends BaseService {
           featured: productData.featured ?? false
         }])
         .select(`
-          *,
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          created_at,
+          updated_at,
           category:categories(id, name, slug),
           vendor:vendors(id, name, slug, logo_url)
         `)
@@ -455,7 +619,30 @@ export class ProductsService extends BaseService {
         })
         .eq('id', id)
         .select(`
-          *,
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          created_at,
+          updated_at,
           category:categories(id, name, slug),
           vendor:vendors(id, name, slug, logo_url)
         `)
