@@ -73,7 +73,6 @@ export default function AdminUsersPage() {
         <AdminPageHeader
           title="Utilisateurs"
           subtitle="Gestion des comptes et rôles"
-          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Utilisateurs' }]}
           actions={(
             <>
               <Button variant="outline" onClick={load} disabled={loading}>

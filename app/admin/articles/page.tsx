@@ -37,7 +37,6 @@ export default function AdminArticlesPage() {
         <AdminPageHeader
           title="Articles"
           subtitle="Contenus éditoriaux du site"
-          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Articles' }]}
           actions={<Button asChild className="bg-beshop-primary hover:bg-blue-700"><Link href="/admin/articles/new">Nouvel article</Link></Button>}
         />
 

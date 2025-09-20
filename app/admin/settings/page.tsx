@@ -35,7 +35,6 @@ export default function AdminSettingsPage() {
         <AdminPageHeader
           title="Paramètres"
           subtitle="Configuration de l'application"
-          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Paramètres' }]}
           actions={<Badge className={saving ? 'bg-yellow-600' : 'bg-green-600'}>{saving ? 'Enregistrement...' : 'Synchronisé'}</Badge>}
         />
 

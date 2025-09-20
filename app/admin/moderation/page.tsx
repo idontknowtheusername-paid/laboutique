@@ -34,7 +34,6 @@ export default function AdminModerationPage() {
         <AdminPageHeader
           title="Modération"
           subtitle="Contenus et éléments à approuver"
-          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Modération' }]}
         />
 
         <Tabs defaultValue="products" className="space-y-4">

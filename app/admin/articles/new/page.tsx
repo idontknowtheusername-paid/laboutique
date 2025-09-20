@@ -44,7 +44,6 @@ export default function AdminNewArticlePage() {
         <AdminPageHeader
           title="Nouvel article"
           subtitle="Créer un contenu éditorial"
-          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Articles', href: '/admin/articles' }, { label: 'Nouveau' }]}
           actions={message ? <Badge className="bg-blue-600">{message}</Badge> : null}
         />
 

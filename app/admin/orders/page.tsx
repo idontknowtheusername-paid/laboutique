@@ -57,7 +57,6 @@ export default function AdminOrdersPage() {
         <AdminPageHeader
           title="Commandes"
           subtitle="Suivi des commandes et statuts"
-          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Commandes' }]}
           actions={(
             <>
               <Button variant="outline" onClick={load} disabled={loading}>

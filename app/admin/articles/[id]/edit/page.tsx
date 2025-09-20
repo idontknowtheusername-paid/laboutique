@@ -44,7 +44,6 @@ export default function AdminEditArticlePage() {
         <AdminPageHeader
           title="Éditer article"
           subtitle="Mettre à jour le contenu"
-          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Articles', href: '/admin/articles' }, { label: 'Éditer' }]}
           actions={message ? <Badge className="bg-blue-600">{message}</Badge> : null}
         />
 

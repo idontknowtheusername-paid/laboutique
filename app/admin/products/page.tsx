@@ -59,7 +59,6 @@ export default function AdminProductsPage() {
         <AdminPageHeader
           title="Produits"
           subtitle="Catalogue et statut de publication"
-          breadcrumb={[{ label: 'Admin', href: '/admin/dashboard' }, { label: 'Produits' }]}
           actions={(
             <>
               <Button variant="outline" onClick={load} disabled={loading}>
