@@ -10,6 +10,7 @@ export interface Product {
   price: number;
   compare_price?: number;
   cost_price?: number;
+  original_price?: number;
   track_quantity: boolean;
   quantity: number;
   weight?: number;
@@ -23,6 +24,9 @@ export interface Product {
   featured: boolean;
   meta_title?: string;
   meta_description?: string;
+  specifications?: Record<string, string>;
+  source_url?: string;
+  source_platform?: 'aliexpress' | 'alibaba';
   created_at: string;
   updated_at: string;
   // Relations
@@ -70,6 +74,7 @@ export interface CreateProductData {
   price: number;
   compare_price?: number;
   cost_price?: number;
+  original_price?: number;
   track_quantity?: boolean;
   quantity?: number;
   weight?: number;
@@ -83,6 +88,9 @@ export interface CreateProductData {
   featured?: boolean;
   meta_title?: string;
   meta_description?: string;
+  specifications?: Record<string, string>;
+  source_url?: string;
+  source_platform?: 'aliexpress' | 'alibaba';
 }
 
 export interface UpdateProductData extends Partial<CreateProductData> {
