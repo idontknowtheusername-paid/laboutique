@@ -89,8 +89,7 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Form submitted:', formData);
+    // Handle form submission (PII-safe: avoid logging user data in client console)
     setIsSubmitted(true);
     
     // Reset form after 3 seconds

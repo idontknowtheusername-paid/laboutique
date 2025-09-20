@@ -18,6 +18,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import ClientSafe from '@/components/ui/client-safe';
+import { throttle } from '@/lib/utils';
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 
@@ -65,12 +66,11 @@ const Header = () => {
   }, [annApi]);
 
   useEffect(() => {
-    const handleScroll = () => {
+    const throttled = throttle(() => {
       setIsScrolled(window.scrollY > 10);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    }, 100);
+    window.addEventListener('scroll', throttled, { passive: true } as AddEventListenerOptions);
+    return () => window.removeEventListener('scroll', throttled as EventListener);
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
