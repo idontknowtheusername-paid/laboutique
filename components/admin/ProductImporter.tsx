@@ -9,22 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, ExternalLink, Download, Eye, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
-
-interface ScrapedProductData {
-  name: string;
-  price: number;
-  original_price?: number;
-  description: string;
-  short_description: string;
-  images: string[];
-  category?: string;
-  brand?: string;
-  sku?: string;
-  stock_quantity?: number;
-  specifications?: Record<string, string>;
-  source_url: string;
-  source_platform: 'aliexpress' | 'alibaba';
-}
+import { ScrapedProductData } from '@/lib/services/types';
 
 interface ProductImporterProps {
   onImport?: (productData: ScrapedProductData) => void;

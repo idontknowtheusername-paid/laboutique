@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProductsService, CreateProductData } from '@/lib/services/products.service';
 import { Badge } from '@/components/ui/badge';
 import { ImageUploader } from '@/components/admin/ImageUploader';
-import { ProductImporter } from '@/components/admin/ProductImporter';
+import { SimpleProductImporter } from '@/components/admin/SimpleProductImporter';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Download } from 'lucide-react';
 
@@ -112,22 +112,11 @@ export default function AdminNewProductPage() {
                 <DialogHeader>
                   <DialogTitle>Import de produit</DialogTitle>
                 </DialogHeader>
-                <ProductImporter 
-                  onImport={(productData) => {
-                    // Pré-remplir le formulaire avec les données importées
-                    update({
-                      name: productData.name,
-                      slug: productData.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-'),
-                      description: productData.description,
-                      short_description: productData.short_description,
-                      price: productData.price,
-                      original_price: productData.original_price,
-                      images: productData.images,
-                      sku: productData.sku,
-                      quantity: productData.stock_quantity || 0,
-                      meta_title: `${productData.name} - La Boutique B`,
-                      meta_description: productData.short_description
-                    });
+                <SimpleProductImporter 
+                  onImport={(url) => {
+                    // Afficher un message de succès
+                    setMessage('Produit importé avec succès !');
+                    setTimeout(() => setMessage(''), 3000);
                   }}
                 />
               </DialogContent>
