@@ -25,21 +25,82 @@ export default function StorageDebugPage() {
     
     try {
       console.log('🔍 Vérification des buckets...');
+      console.log('🔧 Configuration Supabase:', {
+        url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+        hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      });
+      
+      // Test de connexion Supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('👤 Utilisateur connecté:', user?.email || 'Non connecté');
+      
       const { data, error } = await supabase.storage.listBuckets();
       
-      console.log('📦 Résultat:', { data, error });
+      console.log('📦 Résultat complet:', { data, error });
+      console.log('📦 Données brutes:', JSON.stringify(data, null, 2));
+      console.log('📦 Erreur brute:', JSON.stringify(error, null, 2));
       
       if (error) {
-        setError(`Erreur: ${error.message}`);
+        setError(`Erreur: ${error.message} (Code: ${error.statusCode || 'N/A'})`);
         console.error('❌ Erreur buckets:', error);
       } else {
         setBuckets(data || []);
         setSuccess(`${data?.length || 0} bucket(s) trouvé(s)`);
         console.log('✅ Buckets trouvés:', data);
+        
+        // Test direct du bucket images
+        if (data && data.length > 0) {
+          console.log('🧪 Test direct du bucket images...');
+          const { data: files, error: filesError } = await supabase.storage
+            .from('images')
+            .list('', { limit: 1 });
+          console.log('📁 Test bucket images:', { files, filesError });
+        }
       }
     } catch (err: any) {
       setError(`Erreur: ${err.message}`);
       console.error('❌ Exception:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const testDirectBucketAccess = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      console.log('🧪 Test direct d\'accès au bucket images...');
+      
+      // Test 1: Lister les fichiers du bucket images
+      const { data: files, error: filesError } = await supabase.storage
+        .from('images')
+        .list('', { limit: 10 });
+      
+      console.log('📁 Test list files:', { files, filesError });
+      
+      // Test 2: Créer un fichier de test
+      const testFile = new File(['Test direct'], 'test-direct.txt', { type: 'text/plain' });
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(`test-direct-${Date.now()}.txt`, testFile);
+      
+      console.log('📤 Test upload direct:', { uploadData, uploadError });
+      
+      if (uploadError) {
+        setError(`Erreur upload direct: ${uploadError.message}`);
+      } else {
+        setSuccess('✅ Test direct réussi ! Le bucket images fonctionne.');
+        
+        // Nettoyer le fichier de test
+        if (uploadData?.path) {
+          await supabase.storage.from('images').remove([uploadData.path]);
+        }
+      }
+      
+    } catch (err: any) {
+      setError(`Erreur test direct: ${err.message}`);
+      console.error('❌ Test direct failed:', err);
     } finally {
       setLoading(false);
     }
@@ -145,6 +206,9 @@ export default function StorageDebugPage() {
             </Button>
             <Button onClick={() => window.location.reload()} variant="outline">
               Recharger la page
+            </Button>
+            <Button onClick={testDirectBucketAccess} disabled={loading} variant="secondary">
+              Test Direct Bucket
             </Button>
           </div>
           
