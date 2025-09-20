@@ -76,7 +76,7 @@ export default function AdminNewArticlePage() {
                 <div className="md:col-span-2">
                   <ImageUploader
                     label="Image de couverture"
-                    bucket="public"
+                    bucket="public1"
                     folder="articles"
                     multiple={false}
                     value={form.cover_image_url ? { url: form.cover_image_url } : null}
