@@ -21,18 +21,25 @@ export default function StorageDebugPage() {
   const checkBuckets = async () => {
     setLoading(true);
     setError(null);
+    setSuccess(null);
     
     try {
+      console.log('🔍 Vérification des buckets...');
       const { data, error } = await supabase.storage.listBuckets();
+      
+      console.log('📦 Résultat:', { data, error });
       
       if (error) {
         setError(`Erreur: ${error.message}`);
+        console.error('❌ Erreur buckets:', error);
       } else {
         setBuckets(data || []);
         setSuccess(`${data?.length || 0} bucket(s) trouvé(s)`);
+        console.log('✅ Buckets trouvés:', data);
       }
     } catch (err: any) {
       setError(`Erreur: ${err.message}`);
+      console.error('❌ Exception:', err);
     } finally {
       setLoading(false);
     }
@@ -132,9 +139,14 @@ export default function StorageDebugPage() {
           <CardTitle>Buckets disponibles</CardTitle>
         </CardHeader>
         <CardContent>
-          <Button onClick={checkBuckets} disabled={loading} className="mb-4">
-            {loading ? 'Vérification...' : 'Vérifier les buckets'}
-          </Button>
+          <div className="flex gap-2 mb-4">
+            <Button onClick={checkBuckets} disabled={loading}>
+              {loading ? 'Vérification...' : 'Vérifier les buckets'}
+            </Button>
+            <Button onClick={() => window.location.reload()} variant="outline">
+              Recharger la page
+            </Button>
+          </div>
           
           {error && (
             <Alert variant="destructive">
