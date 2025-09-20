@@ -42,6 +42,23 @@ export default function AdminNewProductPage() {
         newForm.slug = generateSlug(patch.name);
       }
       
+      // Générer automatiquement le SEO si le nom change
+      if (patch.name) {
+        // Meta title : nom du produit + " - La Boutique B"
+        if (!f.meta_title) {
+          newForm.meta_title = `${patch.name} - La Boutique B`;
+        }
+        
+        // Meta description : résumé court ou début de la description
+        if (!f.meta_description) {
+          const description = f.short_description || f.description || '';
+          const metaDesc = description.length > 0 
+            ? description.substring(0, 150) + (description.length > 150 ? '...' : '')
+            : `Découvrez ${patch.name} sur La Boutique B. Qualité garantie, livraison rapide au Bénin.`;
+          newForm.meta_description = metaDesc;
+        }
+      }
+      
       return newForm;
     });
   };
@@ -114,24 +131,25 @@ export default function AdminNewProductPage() {
                   </p>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2">Description complète</label>
+                  <label className="block text-sm font-medium mb-2">Description complète du produit</label>
                   <Textarea 
-                    placeholder="Décrivez en détail votre produit, ses caractéristiques, avantages..."
+                    placeholder="Décrivez en détail votre produit, ses caractéristiques, avantages, spécifications techniques..."
                     rows={4}
                     value={form.description || ''} 
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ description: e.target.value })} 
                   />
+                  <p className="text-xs text-gray-500 mt-1">Description détaillée qui apparaîtra sur la page produit complète</p>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2">Résumé court</label>
+                  <label className="block text-sm font-medium mb-2">Aperçu du produit</label>
                   <Textarea 
-                    placeholder="Description courte qui apparaîtra dans les listes (max 150 caractères)"
+                    placeholder="Description courte qui apparaîtra dans les listes et cartes de produits (max 150 caractères)"
                     rows={2}
                     maxLength={150}
                     value={form.short_description || ''} 
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ short_description: e.target.value })} 
                   />
-                  <p className="text-xs text-gray-500 mt-1">{form.short_description?.length || 0}/150 caractères</p>
+                  <p className="text-xs text-gray-500 mt-1">{form.short_description?.length || 0}/150 caractères - Utilisé dans les listes et aperçus</p>
                 </div>
                 <div className="md:col-span-2">
                   <ImageUploader
@@ -208,16 +226,24 @@ export default function AdminNewProductPage() {
 
           <TabsContent value="seo">
             <Card>
-              <CardHeader><CardTitle>Référencement (SEO)</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Référencement (SEO)</CardTitle>
+                <p className="text-sm text-gray-500 mt-1">
+                  <span className="font-medium text-green-600">Généré automatiquement</span> à partir du nom du produit
+                </p>
+              </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Titre de la page</label>
                   <Input 
-                    placeholder="Ex: iPhone 15 Pro Max 256GB - Meilleur prix au Bénin"
+                    placeholder="Ex: iPhone 15 Pro Max 256GB - La Boutique B"
                     value={form.meta_title || ''} 
                     onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ meta_title: e.target.value })} 
                   />
-                  <p className="text-xs text-gray-500 mt-1">Titre qui apparaîtra dans les résultats Google (max 60 caractères)</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Titre qui apparaîtra dans les résultats Google (max 60 caractères). 
+                    <span className="font-medium text-green-600">Généré automatiquement</span> si laissé vide.
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Description de la page</label>
@@ -227,7 +253,10 @@ export default function AdminNewProductPage() {
                     value={form.meta_description || ''} 
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ meta_description: e.target.value })} 
                   />
-                  <p className="text-xs text-gray-500 mt-1">Description pour les moteurs de recherche (max 160 caractères)</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Description pour les moteurs de recherche (max 160 caractères). 
+                    <span className="font-medium text-green-600">Générée automatiquement</span> à partir de l'aperçu du produit.
+                  </p>
                 </div>
               </CardContent>
             </Card>
