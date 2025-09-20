@@ -56,7 +56,7 @@ export default function StorageDebugPage() {
       
       // Tester l'upload
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('public1')
+        .from('images')
         .upload(`test-${Date.now()}.txt`, testFile);
       
       if (uploadError) {
@@ -70,7 +70,7 @@ export default function StorageDebugPage() {
         
         // Tester la suppression
         const { error: deleteError } = await supabase.storage
-          .from('public1')
+          .from('images')
           .remove([uploadData.path]);
         
         setTestResults((prev: any) => ({
@@ -94,7 +94,7 @@ export default function StorageDebugPage() {
     
     try {
       // Tester l'accès public à une URL
-      const { data } = supabase.storage.from('public1').getPublicUrl('test.txt');
+      const { data } = supabase.storage.from('images').getPublicUrl('test.txt');
       
       const response = await fetch(data.publicUrl);
       
@@ -179,7 +179,7 @@ export default function StorageDebugPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Tests du bucket "public1"</CardTitle>
+          <CardTitle>Tests du bucket "images"</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2">
@@ -242,17 +242,17 @@ export default function StorageDebugPage() {
           <CardTitle>Instructions de correction</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
-          <p><strong>Si le bucket "public1" n'existe pas :</strong></p>
+          <p><strong>Si le bucket "images" n'existe pas :</strong></p>
           <ol className="list-decimal list-inside space-y-1 ml-4">
             <li>Allez dans le dashboard Supabase</li>
             <li>Storage → Create a new bucket</li>
-            <li>Nom: "public1"</li>
+            <li>Nom: "images"</li>
             <li>Public: Oui</li>
           </ol>
           
           <p className="mt-4"><strong>Si les politiques RLS sont manquantes :</strong></p>
           <ol className="list-decimal list-inside space-y-1 ml-4">
-            <li>Storage → public1 → Policies</li>
+            <li>Storage → images → Policies</li>
             <li>Créez les politiques suivantes :</li>
             <li>INSERT: authenticated users can upload</li>
             <li>SELECT: public can read</li>
