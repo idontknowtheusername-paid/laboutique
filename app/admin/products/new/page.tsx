@@ -84,7 +84,10 @@ export default function AdminNewProductPage() {
                     value={form.slug || ''} 
                     onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ slug: e.target.value })} 
                   />
-                  <p className="text-xs text-gray-500 mt-1">Laissez vide pour générer automatiquement</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Partie de l'URL qui identifie votre produit (ex: laboutique.bj/produits/iphone-15-pro-max-256gb). 
+                    Laissez vide pour générer automatiquement à partir du nom.
+                  </p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">Description complète</label>
