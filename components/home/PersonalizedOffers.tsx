@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { Sparkles, Gift, Crown, Star, Heart, Eye, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -122,12 +122,12 @@ const PersonalizedOffers = () => {
     trackRef.current.scrollBy({ left: amount, behavior: 'smooth' });
   };
 
-  const scrollToIndex = (index: number) => {
+  const scrollToIndex = useCallback((index: number) => {
     if (!trackRef.current) return;
     const safeIndex = Math.max(0, Math.min(index, items.length - 1));
     trackRef.current.scrollTo({ left: safeIndex * (itemWidthRef.current), behavior: 'smooth' });
     setCurrent(safeIndex);
-  };
+  }, [items.length]);
 
   // Update current index on scroll (throttled)
   useEffect(() => {

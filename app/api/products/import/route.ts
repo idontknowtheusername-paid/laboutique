@@ -49,9 +49,9 @@ export async function POST(request: NextRequest) {
           price: productData.price,
           original_price: productData.original_price,
           images: productData.images,
-          category_id: 1, // Catégorie par défaut
-          vendor_id: 1, // Vendeur par défaut
-          sku: productData.sku,
+          category_id: '1', // Catégorie par défaut
+          vendor_id: '1', // Vendeur par défaut
+          sku: productData.sku || `IMPORT-${Date.now()}`,
           quantity: productData.stock_quantity || 0,
           track_quantity: true,
           status: 'draft',
