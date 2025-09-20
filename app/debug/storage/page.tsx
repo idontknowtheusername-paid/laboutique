@@ -41,7 +41,7 @@ export default function StorageDebugPage() {
       console.log('📦 Erreur brute:', JSON.stringify(error, null, 2));
       
       if (error) {
-        setError(`Erreur: ${error.message} (Code: ${error.statusCode || 'N/A'})`);
+        setError(`Erreur: ${error.message}`);
         console.error('❌ Erreur buckets:', error);
       } else {
         setBuckets(data || []);
