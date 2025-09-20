@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
-import { Bell, LayoutGrid, Users, ShoppingCart, Package, Shield, Megaphone, Settings, Flag } from 'lucide-react';
+import { Bell, LayoutGrid, Users, ShoppingCart, Package, Shield, Megaphone, Settings, Flag, Home } from 'lucide-react';
 import { AuthService } from '@/lib/services/auth.service';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -78,6 +78,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/settings', label: "Paramètres", icon: Settings },
   ];
 
+  const externalLinks = [
+    { href: '/', label: "Voir le site", icon: Home, external: true },
+  ];
+
 
   return (
       <div className="min-h-screen bg-beshop-background">
@@ -112,6 +116,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         </Link>
                       );
                     })}
+                    
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      {externalLinks.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <Link 
+                            key={item.href} 
+                            href={item.href} 
+                            target={item.external ? "_blank" : undefined}
+                            rel={item.external ? "noopener noreferrer" : undefined}
+                            className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 text-gray-700"
+                          >
+                            <Icon className="w-4 h-4" />
+                            {item.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
                   </nav>
                 </SheetContent>
               </Sheet>
