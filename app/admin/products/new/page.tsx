@@ -10,9 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProductsService, CreateProductData } from '@/lib/services/products.service';
 import { Badge } from '@/components/ui/badge';
 import { ImageUploader } from '@/components/admin/ImageUploader';
-import { SimpleProductImporter } from '@/components/admin/SimpleProductImporter';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Download } from 'lucide-react';
 
 // Fonction utilitaire pour générer un slug
 function generateSlug(name: string): string {
@@ -101,26 +98,6 @@ export default function AdminNewProductPage() {
           <h1 className="text-2xl font-bold">Nouveau produit</h1>
           <div className="flex items-center gap-3">
             {message && <Badge className="bg-blue-600">{message}</Badge>}
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Download className="w-4 h-4" />
-                  Importer depuis AliExpress/AliBaba
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>Import de produit</DialogTitle>
-                </DialogHeader>
-                <SimpleProductImporter 
-                  onImport={(url) => {
-                    // Afficher un message de succès
-                    setMessage('Produit importé avec succès !');
-                    setTimeout(() => setMessage(''), 3000);
-                  }}
-                />
-              </DialogContent>
-            </Dialog>
           </div>
         </div>
 
