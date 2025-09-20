@@ -154,7 +154,7 @@ export default function AdminNewProductPage() {
                 <div className="md:col-span-2">
                   <ImageUploader
                     label="Photos du produit"
-                    bucket="images"
+                    bucket="public1"
                     folder="products"
                     multiple
                     value={(form.images || []).map((url: any)=>({ url }))}
