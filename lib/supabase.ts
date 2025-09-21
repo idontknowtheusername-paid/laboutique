@@ -105,6 +105,18 @@ export const getProduct = async (slug: string) => {
 };
 
 export const searchProducts = async (query: string, filters?: any) => {
+  // Basic validation & sanitization to prevent malformed OR filters
+  const raw = (query || '').trim();
+  if (raw.length < 2) {
+    return { data: [], error: null };
+  }
+  // Escape characters that have special meaning in PostgREST or ILIKE patterns
+  const escaped = raw
+    .replace(/%/g, '\\%')
+    .replace(/_/g, '\\_')
+    .replace(/,/g, '')
+    .slice(0, 100);
+
   let searchQuery = supabase
     .from('products')
     .select(`
@@ -113,23 +125,25 @@ export const searchProducts = async (query: string, filters?: any) => {
       vendors (name, logo_url)
     `)
     .eq('status', 'active')
-    .or(`name.ilike.%${query}%, description.ilike.%${query}%, tags.ilike.%${query}%`);
+    .or(
+      `name.ilike.%${escaped}%,description.ilike.%${escaped}%,tags.ilike.%${escaped}%`
+    );
 
   if (filters?.category) {
     searchQuery = searchQuery.eq('category_id', filters.category);
   }
   
-  if (filters?.minPrice) {
+  if (typeof filters?.minPrice === 'number') {
     searchQuery = searchQuery.gte('price', filters.minPrice);
   }
   
-  if (filters?.maxPrice) {
+  if (typeof filters?.maxPrice === 'number') {
     searchQuery = searchQuery.lte('price', filters.maxPrice);
   }
 
   const { data, error } = await searchQuery
     .order('created_at', { ascending: false })
-    .limit(50);
+    .limit(25);
   
   return { data, error };
 };
