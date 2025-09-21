@@ -160,7 +160,7 @@ export default function AdminNewProductPage() {
               variant="secondary" 
               size="lg"
               className="flex items-center gap-3 bg-white text-blue-600 hover:bg-gray-100 font-semibold px-6 py-3"
-              onClick={handleImportClick}
+              onClick={() => window.location.href = '/admin/products/import'}
             >
               <Download className="w-5 h-5" />
               IMPORTER UN PRODUIT

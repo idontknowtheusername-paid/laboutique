@@ -68,6 +68,12 @@ export default function AdminProductsPage() {
                 <Download className="w-4 h-4 mr-2" /> Exporter
               </Button>
               <Button 
+                variant="outline"
+                onClick={() => window.location.href = '/admin/products/import'}
+              >
+                <Download className="w-4 h-4 mr-2" /> Importer
+              </Button>
+              <Button 
                 className="bg-beshop-primary hover:bg-blue-700"
                 onClick={() => window.location.href = '/admin/products/new'}
               >
