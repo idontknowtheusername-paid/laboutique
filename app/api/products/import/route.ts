@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     if (importDirectly) {
       try {
         // Récupérer une catégorie par défaut
-        const { data: defaultCategory } = await supabase
+        const { data: defaultCategory } = await (supabase as any)
           .from('categories')
           .select('id')
           .eq('status', 'active')
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
           .single();
 
         // Récupérer un vendeur par défaut ou en créer un
-        let { data: defaultVendor } = await supabase
+        let { data: defaultVendor } = await (supabase as any)
           .from('vendors')
           .select('id')
           .eq('status', 'active')
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
         // Si aucun vendeur n'existe, créer un vendeur par défaut
         if (!defaultVendor) {
-          const { data: newVendor, error: vendorError } = await supabase
+          const { data: newVendor, error: vendorError } = await (supabase as any)
             .from('vendors')
             .insert([{
               name: 'Import Automatique',
