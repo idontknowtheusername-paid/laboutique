@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ProductsService } from '@/lib/services/products.service';
 import { ScrapingService } from '@/lib/services/scraping.service';
 import { ScrapedProductData } from '@/lib/services/types';
+import { supabase } from '@/lib/supabase';
 
 // Fonction pour valider l'URL
 function validateUrl(url: string): { valid: boolean; error?: string } {
@@ -41,6 +42,50 @@ export async function POST(request: NextRequest) {
     // Si import direct, créer le produit
     if (importDirectly) {
       try {
+        // Récupérer une catégorie par défaut
+        const { data: defaultCategory } = await supabase
+          .from('categories')
+          .select('id')
+          .eq('status', 'active')
+          .limit(1)
+          .single();
+
+        // Récupérer un vendeur par défaut ou en créer un
+        let { data: defaultVendor } = await supabase
+          .from('vendors')
+          .select('id')
+          .eq('status', 'active')
+          .limit(1)
+          .single();
+
+        // Si aucun vendeur n'existe, créer un vendeur par défaut
+        if (!defaultVendor) {
+          const { data: newVendor, error: vendorError } = await supabase
+            .from('vendors')
+            .insert([{
+              name: 'Import Automatique',
+              slug: 'import-automatique',
+              email: 'import@laboutique.bj',
+              status: 'active',
+              commission_rate: 10.00,
+              rating: 0,
+              total_reviews: 0,
+              total_products: 0,
+              total_orders: 0
+            }])
+            .select('id')
+            .single();
+
+          if (vendorError) {
+            console.error('Error creating default vendor:', vendorError);
+            return NextResponse.json(
+              { error: 'Impossible de créer un vendeur par défaut' },
+              { status: 500 }
+            );
+          }
+          defaultVendor = newVendor;
+        }
+
         const product = await ProductsService.create({
           name: productData.name,
           slug: productData.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-'),
@@ -49,8 +94,8 @@ export async function POST(request: NextRequest) {
           price: productData.price,
           original_price: productData.original_price,
           images: productData.images,
-          category_id: '1', // Catégorie par défaut
-          vendor_id: '1', // Vendeur par défaut
+          category_id: defaultCategory?.id || null,
+          vendor_id: defaultVendor.id,
           sku: productData.sku || `IMPORT-${Date.now()}`,
           quantity: productData.stock_quantity || 0,
           track_quantity: true,
