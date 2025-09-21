@@ -148,7 +148,9 @@ export function ImageUploader({
           <p className={`text-sm ${uploading ? 'text-blue-600' : 'text-gray-600'}`}>
             {uploading 
               ? 'Upload en cours...' 
-              : 'Glissez-déposez des images ici, ou cliquez pour sélectionner'
+              : multiple 
+                ? 'Glissez-déposez plusieurs images ici, ou cliquez pour sélectionner plusieurs fichiers'
+                : 'Glissez-déposez une image ici, ou cliquez pour sélectionner'
             }
           </p>
           {!uploading && (
@@ -165,6 +167,17 @@ export function ImageUploader({
             disabled={uploading}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFiles(e.target.files)}
           />
+          {multiple && !uploading && (
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm" 
+              className="mt-3"
+              onClick={() => inputRef.current?.click()}
+            >
+              Sélectionner plusieurs images
+            </Button>
+          )}
         </div>
 
         {items.length > 0 && (
