@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { ProductsService } from '@/lib/services/products.service';
-import { Download, Search, Eye, Edit, RefreshCw, Plus } from 'lucide-react';
+import { Download, Search, Eye, Edit, RefreshCw } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
 
@@ -68,16 +68,10 @@ export default function AdminProductsPage() {
                 <Download className="w-4 h-4 mr-2" /> Exporter
               </Button>
               <Button 
-                variant="outline"
+                className="bg-beshop-primary hover:bg-blue-700"
                 onClick={() => window.location.href = '/admin/products/import'}
               >
-                <Download className="w-4 h-4 mr-2" /> Importer
-              </Button>
-              <Button 
-                className="bg-beshop-primary hover:bg-blue-700"
-                onClick={() => window.location.href = '/admin/products/new'}
-              >
-                <Plus className="w-4 h-4 mr-2" /> Nouveau produit
+                <Download className="w-4 h-4 mr-2" /> Importer un article
               </Button>
             </>
           )}

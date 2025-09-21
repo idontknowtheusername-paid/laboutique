@@ -144,8 +144,8 @@ export default function AdminImportProductPage() {
           Retour aux produits
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">Import de produit</h1>
-          <p className="text-gray-600">Importez des produits depuis AliExpress ou AliBaba</p>
+          <h1 className="text-2xl font-bold">Importer un article</h1>
+          <p className="text-gray-600">Importez des articles depuis AliExpress ou AliBaba</p>
         </div>
       </div>
 
@@ -171,7 +171,7 @@ export default function AdminImportProductPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Download className="w-5 h-5" />
-              Import rapide
+              Import d'article
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -218,10 +218,10 @@ export default function AdminImportProductPage() {
         {previewData && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ExternalLink className="w-5 h-5" />
-                Aperçu du produit
-              </CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <ExternalLink className="w-5 h-5" />
+              Aperçu de l'article
+            </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
@@ -273,7 +273,7 @@ export default function AdminImportProductPage() {
                     disabled={loading}
                     className="w-full bg-beshop-primary hover:bg-blue-700"
                   >
-                    {loading ? 'Import en cours...' : 'Importer ce produit'}
+                    {loading ? 'Import en cours...' : 'Importer cet article'}
                   </Button>
                 </div>
               </div>
