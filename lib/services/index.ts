@@ -8,6 +8,7 @@ export { OrdersService } from './orders.service';
 export { CartService } from './cart.service';
 export { WishlistService } from './wishlist.service';
 export { ReviewsService } from './reviews.service';
+export { StatsService } from './stats.service';
 
 // Export types
 export type {
@@ -77,3 +78,10 @@ export type {
   UpdateReviewData,
   ReviewStats
 } from './reviews.service';
+
+export type {
+  DashboardStats,
+  SalesData,
+  CategoryData,
+  MonthlyStats
+} from './stats.service';
