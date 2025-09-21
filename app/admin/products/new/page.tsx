@@ -65,6 +65,7 @@ export default function AdminNewProductPage() {
   };
 
   const handleImportClick = () => {
+    console.log('🚀 Import button clicked!');
     const url = prompt('Collez l\'URL du produit AliExpress ou AliBaba :');
     if (!url) return;
 
@@ -148,20 +149,21 @@ export default function AdminNewProductPage() {
           </div>
         </div>
 
-        {/* Bouton d'import plus visible */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        {/* IMPORT ALIEXPRESS/ALIBABA - TRÈS VISIBLE */}
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-blue-900">Import rapide</h3>
-              <p className="text-xs text-blue-700">Importez des produits depuis AliExpress ou AliBaba</p>
+              <h2 className="text-xl font-bold mb-2">🚀 Import Rapide</h2>
+              <p className="text-blue-100">Importez des produits depuis AliExpress ou AliBaba en un clic !</p>
             </div>
             <Button 
-              variant="default" 
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+              variant="secondary" 
+              size="lg"
+              className="flex items-center gap-3 bg-white text-blue-600 hover:bg-gray-100 font-semibold px-6 py-3"
               onClick={handleImportClick}
             >
-              <Download className="w-4 h-4" />
-              Importer un produit
+              <Download className="w-5 h-5" />
+              IMPORTER UN PRODUIT
             </Button>
           </div>
         </div>
