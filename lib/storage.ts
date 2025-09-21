@@ -21,18 +21,9 @@ export async function uploadToStorage(
       return { success: false, error: 'Supabase not configured' };
     }
 
-    // Vérifier que le bucket existe
-    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
-    if (bucketsError) {
-      console.error('Error listing buckets:', bucketsError);
-      return { success: false, error: `Bucket error: ${bucketsError.message}` };
-    }
-
-    const bucketExists = buckets?.some(b => b.name === bucket);
-    if (!bucketExists) {
-      console.error('Bucket does not exist:', bucket, 'Available buckets:', buckets?.map(b => b.name));
-      return { success: false, error: `Bucket '${bucket}' does not exist` };
-    }
+    // Skip bucket existence check since listBuckets() has issues
+    // We'll try to upload directly and handle errors if the bucket doesn't exist
+    console.log('Attempting upload to bucket:', bucket);
 
     const fileExt = file.name.split('.').pop()?.toLowerCase() || 'bin';
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
