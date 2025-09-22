@@ -10,6 +10,7 @@ import CategoriesConnected from '@/components/home/CategoriesConnected';
 import ProductGrid from '@/components/home/ProductGrid';
 import FeaturedBrands from '@/components/home/FeaturedBrands';
 import PersonalizedOffers from '@/components/home/PersonalizedOffers';
+import ImportedProducts from '@/components/home/ImportedProducts';
 import Footer from '@/components/layout/Footer';
 import { ProductsService, CategoriesService, Product, Category } from '@/lib/services';
 
@@ -144,6 +145,7 @@ export default function Home() {
           <HeroCarousel />
         </section>
 
+        <ImportedProducts />
         <FlashSalesConnected />
         <TrendingProducts />
         <CategoriesConnected />

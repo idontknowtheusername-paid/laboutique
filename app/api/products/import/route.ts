@@ -68,13 +68,39 @@ export async function POST(request: NextRequest) {
     // Si import direct, créer le produit
     if (importDirectly) {
       try {
-        // Récupérer une catégorie par défaut
-        const { data: defaultCategory } = await (supabase as any)
+        // Récupérer une catégorie par défaut ou en créer une
+        let { data: defaultCategory } = await (supabase as any)
           .from('categories')
           .select('id')
           .eq('status', 'active')
           .limit(1)
           .single();
+
+        // Si aucune catégorie n'existe, créer une catégorie par défaut
+        if (!defaultCategory) {
+          const { data: newCategory, error: categoryError } = await (supabase as any)
+            .from('categories')
+            .insert([{
+              name: 'Produits Importés',
+              slug: 'produits-importes',
+              description: 'Catégorie par défaut pour les produits importés',
+              status: 'active',
+              sort_order: 999,
+              meta_title: 'Produits Importés - La Boutique B',
+              meta_description: 'Découvrez nos produits importés de qualité'
+            }])
+            .select('id')
+            .single();
+
+          if (categoryError) {
+            console.error('Error creating default category:', categoryError);
+            return NextResponse.json(
+              { error: 'Impossible de créer une catégorie par défaut' },
+              { status: 500 }
+            );
+          }
+          defaultCategory = newCategory;
+        }
 
         // Récupérer un vendeur par défaut ou en créer un
         let { data: defaultVendor } = await (supabase as any)
