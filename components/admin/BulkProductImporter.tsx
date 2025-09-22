@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+// import { Progress } from '@/components/ui/progress'; // Temporairement désactivé
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Download, XCircle, AlertCircle, StopCircle } from 'lucide-react';
 import { ScrapedProductData } from '@/lib/services/types';
@@ -174,9 +174,14 @@ export function BulkProductImporter() {
 
           {importing && (
             <div className="space-y-2">
-              <Progress value={progress} className="w-full" />
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
               <p className="text-sm text-gray-500 text-center">
-                Traitement : {stats.success + stats.error} sur {stats.total} produits
+                Traitement : {stats.success + stats.error} sur {stats.total} produits ({Math.round(progress)}%)
               </p>
             </div>
           )}
