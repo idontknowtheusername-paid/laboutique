@@ -4,6 +4,7 @@ import { ScrapingService } from '@/lib/services/scraping.service';
 import { validateImportedProduct } from '@/lib/schemas/product-import.schema';
 import { ScrapedProductData } from '@/lib/services/types';
 import { supabase } from '@/lib/supabase';
+import { findBestCategory, getDefaultCategory } from '@/lib/utils/category-matcher';
 
 // Fonction pour valider l'URL
 function validateUrl(url: string): { valid: boolean; error?: string } {
@@ -68,38 +69,33 @@ export async function POST(request: NextRequest) {
     // Si import direct, créer le produit
     if (importDirectly) {
       try {
-        // Récupérer une catégorie par défaut ou en créer une
-        let { data: defaultCategory } = await (supabase as any)
+        // Récupérer toutes les catégories disponibles
+        const { data: availableCategories, error: categoriesError } = await (supabase as any)
           .from('categories')
-          .select('id')
-          .eq('status', 'active')
-          .limit(1)
-          .single();
+          .select('id, name, slug')
+          .eq('status', 'active');
 
-        // Si aucune catégorie n'existe, créer une catégorie par défaut
-        if (!defaultCategory) {
-          const { data: newCategory, error: categoryError } = await (supabase as any)
-            .from('categories')
-            .insert([{
-              name: 'Produits Importés',
-              slug: 'produits-importes',
-              description: 'Catégorie par défaut pour les produits importés',
-              status: 'active',
-              sort_order: 999,
-              meta_title: 'Produits Importés - La Boutique B',
-              meta_description: 'Découvrez nos produits importés de qualité'
-            }])
-            .select('id')
-            .single();
+        if (categoriesError) {
+          console.error('Error fetching categories:', categoriesError);
+          return NextResponse.json(
+            { error: 'Impossible de récupérer les catégories' },
+            { status: 500 }
+          );
+        }
 
-          if (categoryError) {
-            console.error('Error creating default category:', categoryError);
-            return NextResponse.json(
-              { error: 'Impossible de créer une catégorie par défaut' },
-              { status: 500 }
-            );
-          }
-          defaultCategory = newCategory;
+        // Trouver la meilleure catégorie basée sur le nom du produit
+        let selectedCategoryId = findBestCategory(productData.name, availableCategories || []);
+        
+        // Si aucune catégorie n'est trouvée, utiliser une catégorie par défaut
+        if (!selectedCategoryId) {
+          selectedCategoryId = getDefaultCategory(availableCategories || []);
+        }
+
+        if (!selectedCategoryId) {
+          return NextResponse.json(
+            { error: 'Aucune catégorie disponible. Veuillez créer des catégories d\'abord.' },
+            { status: 500 }
+          );
         }
 
         // Récupérer un vendeur par défaut ou en créer un
@@ -146,7 +142,7 @@ export async function POST(request: NextRequest) {
           price: productData.price,
           original_price: productData.original_price,
           images: productData.images,
-          category_id: defaultCategory?.id || null,
+          category_id: selectedCategoryId,
           vendor_id: defaultVendor.id,
           sku: productData.sku || `IMPORT-${Date.now()}`,
           quantity: productData.stock_quantity || 0,

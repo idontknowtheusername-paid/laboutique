@@ -10,6 +10,7 @@ import { ProductsService } from '@/lib/services/products.service';
 import { Download, Search, Eye, Edit, RefreshCw } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
+import ImportedProductsPreview from '@/components/admin/ImportedProductsPreview';
 
 interface AdminProduct {
   id: string;
@@ -81,6 +82,9 @@ export default function AdminProductsPage() {
           </>
         }
       />
+
+      {/* Preview des produits importés */}
+      <ImportedProductsPreview />
 
       <Card>
         <CardContent className="p-0">
