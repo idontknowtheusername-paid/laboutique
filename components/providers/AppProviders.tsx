@@ -20,35 +20,52 @@ interface AppProvidersProps {
 }
 
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      refetchOnWindowFocus: false,
+      retry: 3,
+      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+    },
+  },
+});
 
-function PrefetchUserData() {
+const PrefetchUserData = React.memo(function PrefetchUserData() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  
   React.useEffect(() => {
     if (user?.id) {
-      // Prefetch profile
+      // Prefetch profile with stale time
       queryClient.prefetchQuery({
         queryKey: ["profile", user.id],
         queryFn: () =>
           import("@/lib/services/auth.service").then((m) =>
             m.AuthService.getProfile(user.id)
           ),
+        staleTime: 5 * 60 * 1000, // 5 minutes
       });
-      // Prefetch orders
+      
+      // Prefetch orders with stale time
       queryClient.prefetchQuery({
         queryKey: ["orders", user.id],
         queryFn: () => OrdersService.getByUser(user.id),
+        staleTime: 2 * 60 * 1000, // 2 minutes
       });
-      // Prefetch wishlist
+      
+      // Prefetch wishlist with stale time
       queryClient.prefetchQuery({
         queryKey: ["wishlist", user.id],
         queryFn: () => WishlistService.getByUser(user.id),
+        staleTime: 5 * 60 * 1000, // 5 minutes
       });
     }
-  }, [user, queryClient]);
+  }, [user?.id, queryClient]);
+  
   return null;
-}
+});
 
 export function AppProviders({ children }: AppProvidersProps) {
   return (

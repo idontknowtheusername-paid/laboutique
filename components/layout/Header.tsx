@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Search, User, Heart, ShoppingCart, Menu, X } from 'lucide-react';
@@ -32,11 +32,12 @@ const Header = () => {
   const [annApi, setAnnApi] = useState<CarouselApi | null>(null);
   const router = useRouter();
 
-  const announcements = [
+  // Memoize announcements to prevent re-renders
+  const announcements = useMemo(() => [
     {
       id: 'a1',
       title: 'Super Soldes du Week-end',
-      subtitle: 'Jusqu’à -30% sur électronique',
+      subtitle: 'Jusqu'à -30% sur électronique',
       href: '/category/electronique',
       bg: 'from-beshop-primary to-blue-600',
     },
@@ -54,7 +55,7 @@ const Header = () => {
       href: '/category/maison-jardin',
       bg: 'from-amber-500 to-orange-600',
     },
-  ];
+  ], []);
 
   useEffect(() => {
     if (!annApi) return;
@@ -64,23 +65,32 @@ const Header = () => {
     return () => clearInterval(intervalId);
   }, [annApi]);
 
+  // Throttled scroll handler for performance
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 10);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
-  };
+  }, [searchQuery, router]);
 
-  const cartItemsCount = getCartItemsCount();
+  const cartItemsCount = useMemo(() => getCartItemsCount(), [getCartItemsCount]);
 
   return (
     <header

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Star, Heart, Eye, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -56,15 +56,18 @@ const ProductGrid: React.FC<ProductGridProps> = ({
     return 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('fr-BJ', {
-      style: 'currency',
-      currency: 'XOF',
-      minimumFractionDigits: 0,
-    }).format(price);
-  };
+  // Memoize expensive calculations
+  const formatPrice = useMemo(() => {
+    return (price: number) => {
+      return new Intl.NumberFormat('fr-BJ', {
+        style: 'currency',
+        currency: 'XOF',
+        minimumFractionDigits: 0,
+      }).format(price);
+    };
+  }, []);
 
-  const displayedProducts = products.slice(0, maxItems);
+  const displayedProducts = useMemo(() => products.slice(0, maxItems), [products, maxItems]);
 
   // Enhanced retry function with exponential backoff
   const handleRetry = useCallback(() => {
@@ -74,24 +77,26 @@ const ProductGrid: React.FC<ProductGridProps> = ({
     }
   }, [onRetry]);
 
-  // Transform backend product data to UI format
-  const transformProduct = (product: Product) => {
-    const discountPercentage = product.compare_price && product.compare_price > product.price
-      ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
-      : undefined;
+  // Transform backend product data to UI format - Memoized
+  const transformedProducts = useMemo(() => {
+    return displayedProducts.map(product => {
+      const discountPercentage = product.compare_price && product.compare_price > product.price
+        ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
+        : undefined;
 
-    return {
-      ...product,
-      image: product.images?.[0] || '/placeholder-product.jpg',
-      comparePrice: product.compare_price,
-      rating: product.average_rating || 0,
-      reviews: product.reviews_count || 0,
-      discount: discountPercentage,
-      category: product.category?.name || 'Catégorie inconnue',
-      badge: product.featured ? 'Vedette' : undefined,
-      badgeColor: product.featured ? 'bg-yellow-500' : undefined
-    };
-  };
+      return {
+        ...product,
+        image: product.images?.[0] || '/images/placeholder-product.jpg',
+        comparePrice: product.compare_price,
+        rating: product.average_rating || 0,
+        reviews: product.reviews_count || 0,
+        discount: discountPercentage,
+        category: product.category?.name || 'Catégorie inconnue',
+        badge: product.featured ? 'Vedette' : undefined,
+        badgeColor: product.featured ? 'bg-yellow-500' : undefined
+      };
+    });
+  }, [displayedProducts]);
 
   return (
     <section className={`py-12 ${backgroundColor}`}>
@@ -148,24 +153,24 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         )}
 
         {/* Products Grid */}
-        {!isLoading && !error && displayedProducts.length > 0 && (
+        {!isLoading && !error && transformedProducts.length > 0 && (
           <div className={`grid ${getGridCols()} gap-3 md:gap-4 lg:gap-6`}>
-            {displayedProducts.map((product) => {
-              const transformedProduct = transformProduct(product);
-              return (
-                <Card key={product.id} className="group hover-lift card-shadow h-full flex flex-col">
+            {transformedProducts.map((transformedProduct) => (
+                <Card key={transformedProduct.id} className="group hover-lift card-shadow h-full flex flex-col">
                   <div className="relative overflow-hidden">
                     {/* Product Image */}
                     <div className="aspect-square bg-gray-100 relative">
                       <Image
                         src={transformedProduct.image}
-                        alt={product.name}
+                        alt={transformedProduct.name}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                         sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                        loading="lazy"
+                        quality={75}
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = '/placeholder-product.jpg';
+                          target.src = '/images/placeholder-product.jpg';
                         }}
                       />
                     </div>
@@ -182,7 +187,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                           {transformedProduct.badge}
                         </Badge>
                       )}
-                      {product.status !== 'active' && (
+                      {transformedProduct.status !== 'active' && (
                         <Badge className="bg-gray-500 text-white text-xs">
                           Indisponible
                         </Badge>
@@ -192,10 +197,10 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                   {/* Quick Actions */}
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2">
                       <WishlistButton
-                        productId={product.id}
-                        productName={product.name}
-                        price={product.price}
-                        productSlug={product.slug}
+                        productId={transformedProduct.id}
+                        productName={transformedProduct.name}
+                        price={transformedProduct.price}
+                        productSlug={transformedProduct.slug}
                         size="sm"
                         variant="icon"
                         className="w-7 h-7 md:w-8 md:h-8"
@@ -209,9 +214,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                   <CardContent className="p-3 md:p-4 flex flex-col flex-grow">
                     <div className="space-y-1 md:space-y-1.5 flex-grow">
                       {/* Product Name */}
-                      <Link href={`/product/${product.slug}`}>
+                      <Link href={`/product/${transformedProduct.slug}`}>
                         <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-beshop-primary transition-colors">
-                          {product.name}
+                          {transformedProduct.name}
                         </h3>
                       </Link>
 
@@ -232,10 +237,10 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                       </div>
 
                       {/* Stock Status */}
-                      {product.track_quantity && (
+                      {transformedProduct.track_quantity && (
                         <div className="text-xs">
-                          {product.quantity > 0 ? (
-                            <span className="text-green-600">En stock ({product.quantity})</span>
+                          {transformedProduct.quantity > 0 ? (
+                            <span className="text-green-600">En stock ({transformedProduct.quantity})</span>
                           ) : (
                             <span className="text-red-600">Rupture de stock</span>
                           )}
@@ -246,7 +251,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-beshop-primary text-sm md:text-base truncate">
-                            {formatPrice(product.price)}
+                            {formatPrice(transformedProduct.price)}
                           </span>
                           {transformedProduct.comparePrice && (
                             <span className="text-xs text-gray-500 line-through truncate">
@@ -260,16 +265,15 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                     {/* Add to Cart - Toujours en bas */}
                     <div className="mt-auto pt-2">
                       <QuickAddToCart
-                        productId={product.id}
-                        productName={product.name}
-                        price={product.price}
-                        disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
+                        productId={transformedProduct.id}
+                        productName={transformedProduct.name}
+                        price={transformedProduct.price}
+                        disabled={transformedProduct.status !== 'active' || (transformedProduct.track_quantity && transformedProduct.quantity <= 0)}
                       />
                     </div>
                   </CardContent>
                 </Card>
-              );
-            })}
+              ))}
           </div>
         )}
 

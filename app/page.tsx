@@ -1,17 +1,43 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
-import HeroCarousel from '@/components/home/HeroCarousel';
-import FlashSalesConnected from '@/components/home/FlashSalesConnected';
-import TrendingProducts from '@/components/home/TrendingProducts';
-import CategoriesConnected from '@/components/home/CategoriesConnected';
-import ProductGrid from '@/components/home/ProductGrid';
-import FeaturedBrands from '@/components/home/FeaturedBrands';
-import PersonalizedOffers from '@/components/home/PersonalizedOffers';
 import Footer from '@/components/layout/Footer';
 import { ProductsService, CategoriesService, Product, Category } from '@/lib/services';
+import { ProductSkeleton } from '@/components/ui/loading-skeleton';
+
+// Lazy load heavy components with suspense
+const HeroCarousel = dynamic(() => import('@/components/home/HeroCarousel'), {
+  loading: () => <div className="h-[500px] lg:h-[600px] bg-gray-100 animate-pulse rounded-xl" />
+});
+
+const FlashSalesConnected = dynamic(() => import('@/components/home/FlashSalesConnected'), {
+  loading: () => <ProductSkeleton count={4} />
+});
+
+const TrendingProducts = dynamic(() => import('@/components/home/TrendingProducts'), {
+  loading: () => <ProductSkeleton count={4} />
+});
+
+const CategoriesConnected = dynamic(() => import('@/components/home/CategoriesConnected'), {
+  loading: () => <div className="h-32 bg-gray-100 animate-pulse rounded-xl" />
+});
+
+const ProductGrid = dynamic(() => import('@/components/home/ProductGrid'), {
+  loading: () => <ProductSkeleton count={8} />
+});
+
+const FeaturedBrands = dynamic(() => import('@/components/home/FeaturedBrands'), {
+  loading: () => <div className="h-48 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
+const PersonalizedOffers = dynamic(() => import('@/components/home/PersonalizedOffers'), {
+  loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
 
 interface HomeState {
   products: Product[];
