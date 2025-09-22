@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { AuthService, UserProfile } from "@/lib/services";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { withRetry, getErrorType, getErrorMessage } from "@/lib/utils/retry";
 import { showAuthErrorToast } from "@/components/ui/enhanced-toast";
 
@@ -178,6 +178,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setLastOperation(() => getInitialSession);
 
       try {
+        // Fast-fail if Supabase not configured to avoid infinite loading
+        if (!isSupabaseConfigured()) {
+          console.warn('Supabase is not configured. Skipping auth session check.');
+          setUser(null);
+          setSession(null);
+          setProfile(null);
+          setUserStats(null);
+          setLoading(false);
+          return;
+        }
+
         // First, try to get session from localStorage
         const { data: { session: localSession } } = await supabase.auth.getSession();
         

@@ -1,4 +1,5 @@
 import { BaseService, ServiceResponse, PaginatedResponse, PaginationParams } from './base.service';
+import { isSupabaseConfigured } from '@/lib/supabase';
 
 export interface Product {
   id: string;
@@ -107,6 +108,9 @@ export class ProductsService extends BaseService {
     sort: ProductSortOptions = { field: 'created_at', direction: 'desc' }
   ): Promise<PaginatedResponse<Product>> {
     try {
+      if (!isSupabaseConfigured()) {
+        return this.createPaginatedResponse([], { page: 1, limit: pagination.limit || 20, total: 0, totalPages: 0, hasNext: false, hasPrev: false }, 'Supabase non configuré');
+      }
       const { page = 1, limit = 20 } = pagination;
       const offset = (page - 1) * limit;
 
@@ -286,6 +290,9 @@ export class ProductsService extends BaseService {
    */
   static async getFeatured(limit: number = 10): Promise<ServiceResponse<Product[]>> {
     try {
+      if (!isSupabaseConfigured()) {
+        return this.createResponse([], 'Supabase non configuré');
+      }
       const { data, error } = await this.getSupabaseClient()
         .from('products')
         .select(`
@@ -405,6 +412,9 @@ export class ProductsService extends BaseService {
    */
   static async getNew(limit: number = 10): Promise<ServiceResponse<Product[]>> {
     try {
+      if (!isSupabaseConfigured()) {
+        return this.createResponse([], 'Supabase non configuré');
+      }
       const { data, error } = await this.getSupabaseClient()
         .from('products')
         .select(`
