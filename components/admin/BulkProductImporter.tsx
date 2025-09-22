@@ -28,6 +28,7 @@ export function BulkProductImporter() {
   const [importing, setImporting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [publishDirectly, setPublishDirectly] = useState(false);
+  const [shouldCancel, setShouldCancel] = useState(false);
 
   // Valider les URLs
   const validateUrls = (input: string): string[] => {
@@ -54,14 +55,27 @@ export function BulkProductImporter() {
     setTasks(newTasks);
     setImporting(true);
     setProgress(0);
+    setShouldCancel(false);
 
     // Traiter les URLs une par une
     for (let i = 0; i < newTasks.length; i++) {
-      if (!importing) break; // Permettre l'annulation
+      // Vérifier si l'import a été annulé
+      if (shouldCancel) {
+        break;
+      }
 
       const task = newTasks[i];
       task.status = 'processing';
-      setTasks([...newTasks]);
+      
+      // Mettre à jour l'état immédiatement
+      setTasks(prevTasks => {
+        const updatedTasks = [...prevTasks];
+        updatedTasks[i] = task;
+        return updatedTasks;
+      });
+      
+      // Petite pause pour permettre la mise à jour de l'UI
+      await new Promise(resolve => setTimeout(resolve, 200));
 
       try {
         const response = await fetch('/api/products/import', {
@@ -87,15 +101,23 @@ export function BulkProductImporter() {
         task.error = error.message;
       }
 
-      setTasks([...newTasks]);
+      // Mettre à jour l'état avec les nouvelles données
+      setTasks(prevTasks => {
+        const updatedTasks = [...prevTasks];
+        updatedTasks[i] = task;
+        return updatedTasks;
+      });
+      
       setProgress(((i + 1) / newTasks.length) * 100);
     }
 
     setImporting(false);
+    setShouldCancel(false);
   };
 
   // Annuler l'import
   const cancelImport = () => {
+    setShouldCancel(true);
     setImporting(false);
   };
 

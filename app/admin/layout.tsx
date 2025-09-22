@@ -19,6 +19,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
+    // Si on a déjà vérifié et qu'on est autorisé, ne pas re-vérifier
+    if (hasChecked && isAuthorized) {
+      return;
+    }
+
     if (loading) return;
 
     // No user -> redirect once
@@ -57,7 +62,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       setAvatarInitial(email.charAt(0).toUpperCase());
       setAdminName('Admin');
     }
-  }, [loading, user, profile, router]);
+  }, [loading, user, profile, router, hasChecked, isAuthorized]);
 
   // Afficher un loader pendant la vérification
   if (!hasChecked) {
