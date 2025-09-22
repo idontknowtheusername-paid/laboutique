@@ -1,11 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-          body: JSON.stringify({ 
-            url: task.url, 
-            importDirectly: true,
-            publishDirectly: publishDirectly 
-          }),mport { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -71,7 +67,11 @@ export function BulkProductImporter() {
         const response = await fetch('/api/products/import', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: task.url, importDirectly: true })
+          body: JSON.stringify({ 
+            url: task.url, 
+            importDirectly: true,
+            publishDirectly: publishDirectly 
+          })
         });
 
         const result = await response.json();
