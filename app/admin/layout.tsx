@@ -15,22 +15,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user, profile, loading } = useAuth();
   const [avatarInitial, setAvatarInitial] = useState<string>('A');
   const [adminName, setAdminName] = useState<string>('Admin');
+  const [hasChecked, setHasChecked] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
     if (loading) return;
 
+    // No user -> redirect once
     if (!user) {
+      setHasChecked(true);
+      setIsAuthorized(false);
       router.replace('/auth/login?redirect=/admin/dashboard');
       return;
     }
 
+    // User present but not admin -> redirect once
     if (profile && profile.role !== 'admin') {
+      setHasChecked(true);
+      setIsAuthorized(false);
       router.replace('/unauthorized');
       return;
     }
 
-    // Set header identity once profile available
-    if (profile) {
+    // Authorized
+    if (user && profile?.role === 'admin') {
+      setIsAuthorized(true);
+      setHasChecked(true);
       const first = profile.first_name?.trim();
       const last = profile.last_name?.trim();
       const email = profile.email?.trim();
@@ -38,10 +48,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       setAvatarInitial(initial);
       setAdminName(first && last ? `${first} ${last}` : (first || 'Admin'));
     }
+
+    // If user exists but profile not yet loaded, allow rendering to avoid blocking navigation
+    if (user && !profile) {
+      setIsAuthorized(true);
+      setHasChecked(true);
+      const email = (user.email || 'admin').trim();
+      setAvatarInitial(email.charAt(0).toUpperCase());
+      setAdminName('Admin');
+    }
   }, [loading, user, profile, router]);
 
   // Afficher un loader pendant la vérification
-  if (loading || !user || (profile && profile.role !== 'admin')) {
+  if (!hasChecked) {
     return (
       <div className="min-h-screen bg-beshop-background flex items-center justify-center">
         <div className="text-center">
