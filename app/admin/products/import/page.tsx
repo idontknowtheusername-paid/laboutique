@@ -257,12 +257,14 @@ export default function AdminImportProductPage() {
                 {previewData.images && previewData.images.length > 0 && (
                   <div className="grid grid-cols-3 gap-2">
                     {previewData.images.slice(0, 3).map((image: string, index: number) => (
-                      <img 
-                        key={index}
-                        src={image} 
-                        alt={`Image ${index + 1}`}
-                        className="w-full h-20 object-cover rounded border"
-                      />
+                      <div key={index} className="relative w-full h-20">
+                        <Image
+                          src={image}
+                          alt={`Image ${index + 1}`}
+                          fill
+                          className="object-cover rounded border"
+                        />
+                      </div>
                     ))}
                   </div>
                 )}
