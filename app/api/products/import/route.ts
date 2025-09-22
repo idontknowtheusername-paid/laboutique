@@ -12,7 +12,7 @@ function validateUrl(url: string): { valid: boolean; error?: string } {
 
 export async function POST(request: NextRequest) {
   try {
-      const { url, importDirectly = false, publishDirectly = false } = await req.json();
+    const { url, importDirectly = false, publishDirectly = false } = await request.json();
     
     if (!url) {
       return NextResponse.json(
@@ -57,7 +57,6 @@ export async function POST(request: NextRequest) {
     }
 
     const productData = validationResult.data;
-  }
     
     // Si import direct, créer le produit
     if (importDirectly) {
