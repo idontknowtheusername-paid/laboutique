@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Données invalides',
-          details: validationResult.error.issues.map(err => ({
+          details: validationResult.errors?.issues.map(err => ({
             path: err.path.join('.'),
             message: err.message
           }))
@@ -57,6 +57,13 @@ export async function POST(request: NextRequest) {
     }
 
     const productData = validationResult.data;
+    
+    if (!productData) {
+      return NextResponse.json(
+        { error: 'Données de produit manquantes' },
+        { status: 400 }
+      );
+    }
     
     // Si import direct, créer le produit
     if (importDirectly) {
@@ -122,7 +129,6 @@ export async function POST(request: NextRequest) {
           featured: false,
           meta_title: `${productData.name} - La Boutique B`,
           meta_description: productData.short_description,
-          specifications: productData.specifications,
           source_url: productData.source_url,
           source_platform: productData.source_platform
         });

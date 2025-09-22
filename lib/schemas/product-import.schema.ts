@@ -45,10 +45,7 @@ export const importedProductSchema = z.object({
     .max(50, 'Le SKU ne peut pas dépasser 50 caractères')
     .regex(/^[A-Za-z0-9-_]+$/, 'Le SKU ne peut contenir que des lettres, chiffres, tirets et underscores'),
   
-  source_platform: z.enum(['aliexpress', 'alibaba'], {
-    required_error: 'La plateforme source est requise',
-    invalid_type_error: 'Plateforme source invalide'
-  }),
+  source_platform: z.enum(['aliexpress', 'alibaba']),
   
   source_url: z.string()
     .url('L\'URL source n\'est pas valide')
