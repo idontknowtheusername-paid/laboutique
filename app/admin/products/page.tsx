@@ -64,9 +64,6 @@ export default function AdminProductsPage() {
             <Button variant="outline" onClick={load} disabled={loading}>
               <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
             </Button>
-            <Button variant="outline">
-              <Download className="w-4 h-4 mr-2" /> Exporter
-            </Button>
             <Button
               variant="outline"
               onClick={() => (window.location.href = "/admin/products/import")}
