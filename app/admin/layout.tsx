@@ -7,50 +7,41 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { Bell, LayoutGrid, Users, ShoppingCart, Package, Shield, Megaphone, Settings, Flag, Home } from 'lucide-react';
-import { AuthService } from '@/lib/services/auth.service';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  const { user, profile, loading } = useAuth();
   const [avatarInitial, setAvatarInitial] = useState<string>('A');
   const [adminName, setAdminName] = useState<string>('Admin');
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const userResponse = await AuthService.getCurrentUser();
-        if (!userResponse.success || !userResponse.data?.user) {
-          router.push('/auth/login?redirect=/admin/dashboard');
-          return;
-        }
-        
-        // Vérifier si l'utilisateur a le rôle admin
-        const profileResponse = await AuthService.getProfile(userResponse.data.user.id);
-        if (!profileResponse.success || !profileResponse.data || profileResponse.data.role !== 'admin') {
-          router.push('/unauthorized');
-          return;
-        }
-        // Avatar initial + name
-        const first = profileResponse.data.first_name?.trim();
-        const last = profileResponse.data.last_name?.trim();
-        const email = profileResponse.data.email?.trim();
-        const initial = (first || email || 'A').charAt(0).toUpperCase();
-        setAvatarInitial(initial);
-        setAdminName(first && last ? `${first} ${last}` : (first || 'Admin'));
+    if (loading) return;
 
-        setIsAuthorized(true);
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        router.push('/auth/login?redirect=/admin/dashboard');
-      }
-    };
+    if (!user) {
+      router.replace('/auth/login?redirect=/admin/dashboard');
+      return;
+    }
 
-    checkAuth();
-  }, [router]);
+    if (profile && profile.role !== 'admin') {
+      router.replace('/unauthorized');
+      return;
+    }
+
+    // Set header identity once profile available
+    if (profile) {
+      const first = profile.first_name?.trim();
+      const last = profile.last_name?.trim();
+      const email = profile.email?.trim();
+      const initial = (first || email || 'A').charAt(0).toUpperCase();
+      setAvatarInitial(initial);
+      setAdminName(first && last ? `${first} ${last}` : (first || 'Admin'));
+    }
+  }, [loading, user, profile, router]);
 
   // Afficher un loader pendant la vérification
-  if (isAuthorized === null) {
+  if (loading || !user || (profile && profile.role !== 'admin')) {
     return (
       <div className="min-h-screen bg-beshop-background flex items-center justify-center">
         <div className="text-center">
@@ -61,11 +52,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </div>
     );
-  }
-
-  // Si non autorisé, ne rien afficher (redirection en cours)
-  if (!isAuthorized) {
-    return null;
   }
 
   const nav = [
