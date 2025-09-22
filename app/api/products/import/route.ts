@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ProductsService } from '@/lib/services/products.service';
 import { ScrapingService } from '@/lib/services/scraping.service';
+import { validateImportedProduct } from '@/lib/schemas/product-import.schema';
 import { ScrapedProductData } from '@/lib/services/types';
 import { supabase } from '@/lib/supabase';
 
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest) {
     
     if (!url) {
       return NextResponse.json(
-        { error: 'URL is required' },
+        { error: 'URL requise' },
         { status: 400 }
       );
     }
@@ -30,14 +31,33 @@ export async function POST(request: NextRequest) {
     }
     
     // Scraper les données
-    const productData = await ScrapingService.scrapeProduct(url);
+    const scrapedData = await ScrapingService.scrapeProduct(url);
     
-    if (!productData) {
+    if (!scrapedData) {
       return NextResponse.json(
         { error: 'Impossible de récupérer les données du produit' },
         { status: 500 }
       );
     }
+
+    // Valider les données avec notre schéma
+    const validationResult = await validateImportedProduct(scrapedData);
+
+    if (!validationResult.success) {
+      return NextResponse.json(
+        {
+          error: 'Données invalides',
+          details: validationResult.errors?.errors.map(err => ({
+            path: err.path.join('.'),
+            message: err.message
+          }))
+        },
+        { status: 400 }
+      );
+    }
+
+    const productData = validationResult.data;
+  }
     
     // Si import direct, créer le produit
     if (importDirectly) {
