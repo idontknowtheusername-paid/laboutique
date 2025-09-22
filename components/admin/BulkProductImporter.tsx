@@ -1,7 +1,11 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
+          body: JSON.stringify({ 
+            url: task.url, 
+            importDirectly: true,
+            publishDirectly: publishDirectly 
+          }),mport { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +31,7 @@ export function BulkProductImporter() {
   const [tasks, setTasks] = useState<ImportTask[]>([]);
   const [importing, setImporting] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [publishDirectly, setPublishDirectly] = useState(false);
 
   // Valider les URLs
   const validateUrls = (input: string): string[] => {

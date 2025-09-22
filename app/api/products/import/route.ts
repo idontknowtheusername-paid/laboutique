@@ -12,7 +12,7 @@ function validateUrl(url: string): { valid: boolean; error?: string } {
 
 export async function POST(request: NextRequest) {
   try {
-    const { url, importDirectly = false } = await request.json();
+      const { url, importDirectly = false, publishDirectly = false } = await req.json();
     
     if (!url) {
       return NextResponse.json(
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
           sku: productData.sku || `IMPORT-${Date.now()}`,
           quantity: productData.stock_quantity || 0,
           track_quantity: true,
-          status: 'draft',
+          status: publishDirectly ? 'active' : 'draft',
           featured: false,
           meta_title: `${productData.name} - La Boutique B`,
           meta_description: productData.short_description,
