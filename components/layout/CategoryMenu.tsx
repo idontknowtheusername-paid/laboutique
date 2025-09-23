@@ -120,8 +120,9 @@ const CategoryMenu = () => {
   // Loading state
   if (loading) {
     return (
-      <div className={`bg-white border-b transition-all duration-300 ${isScrolled ? 'py-2' : 'py-3'
-        }`} style={{ marginTop: '110px' }}>
+      <div className={`bg-white border-b transition-all duration-300 z-40 ${
+        isScrolled ? 'fixed top-0 left-0 right-0 py-2 shadow-md' : 'category-menu-offset py-3'
+      }`}>
         <div className="container">
           <div className="flex items-center space-x-4">
             <div className="bg-gray-200 animate-pulse rounded px-6 py-2 h-10 w-48"></div>
@@ -137,8 +138,9 @@ const CategoryMenu = () => {
   // Error state
   if (error) {
     return (
-      <div className={`bg-white border-b transition-all duration-300 ${isScrolled ? 'py-2' : 'py-3'
-        }`} style={{ marginTop: '110px' }}>
+      <div className={`bg-white border-b transition-all duration-300 z-40 ${
+        isScrolled ? 'fixed top-0 left-0 right-0 py-2 shadow-md' : 'category-menu-offset py-3'
+      }`}>
         <div className="container">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-red-600">
@@ -161,9 +163,9 @@ const CategoryMenu = () => {
   }
 
   return (
-    <div className={`bg-white border-b transition-all duration-300 ${
-      isScrolled ? 'py-2' : 'py-3'
-    }`} style={{ marginTop: '110px' }}>
+    <div className={`bg-white border-b transition-all duration-300 z-40 ${
+      isScrolled ? 'fixed top-0 left-0 right-0 py-2 shadow-md' : 'category-menu-offset py-3'
+    }`}>
       <div className="container">
         <NavigationMenu>
           <NavigationMenuList className="flex flex-wrap gap-1">

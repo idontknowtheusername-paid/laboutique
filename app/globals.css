@@ -9,6 +9,11 @@
   --beshop-accent: #7C2D12;
   --beshop-background: #F8FAFC;
   --beshop-text: #0F172A;
+  
+  /* Header Layout Variables */
+  --header-announcement-height: 40px;
+  --header-main-height: 80px;
+  --header-total-height: calc(var(--header-announcement-height) + var(--header-main-height));
 }
 
 @layer base {
@@ -129,4 +134,13 @@
   background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
   background-size: 400px 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* Header Layout Classes */
+.header-offset {
+  margin-top: var(--header-total-height);
+}
+
+.category-menu-offset {
+  margin-top: calc(var(--header-total-height) + 8px);
 }
