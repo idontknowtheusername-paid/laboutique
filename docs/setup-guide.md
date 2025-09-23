@@ -11,8 +11,8 @@
 5. **Copier tout le contenu** de `docs//supabase-setup.sql`
 6. **Coller et exécuter** le script
 7. **Vérifier qu'il n'y a pas d'erreurs**
-8. **Optionnel : Ajouter des données de test**
-   - Créer une nouvelle query
+8. **Optionnel : Ajouter des données de test**,
+   - Créer une nouvelle query 
    - Copier le contenu de `docs/test-data.sql`
    - Exécuter pour avoir des produits de démonstration
 
