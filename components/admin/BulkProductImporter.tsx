@@ -29,6 +29,7 @@ export function BulkProductImporter() {
   const [progress, setProgress] = useState(0);
   const [publishDirectly, setPublishDirectly] = useState(false);
   const [shouldCancel, setShouldCancel] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Valider les URLs
   const validateUrls = (input: string): string[] => {
@@ -40,10 +41,15 @@ export function BulkProductImporter() {
 
   // Gérer l'import
   const handleImport = async () => {
+    setError(null);
     const validUrls = validateUrls(urls);
     if (validUrls.length === 0) {
+      setError("Veuillez entrer au moins une URL valide.");
       return;
     }
+
+    // Vérification côté frontend : catégories et vendeurs
+    // On suppose que le backend attribue automatiquement, mais on peut vérifier après la réponse
 
     // Initialiser les tâches
     const newTasks: ImportTaskState[] = validUrls.map(url => ({
@@ -94,8 +100,15 @@ export function BulkProductImporter() {
           throw new Error(result.error || 'Erreur lors de l\'import');
         }
 
-        task.status = 'success';
-        task.data = result.data;
+        // Validation stricte : catégorie et vendeur
+        if (!result.data?.category_id || !result.data?.vendor_id) {
+          task.status = 'error';
+          task.error = "Catégorie ou vendeur non attribué. Import impossible.";
+          setError("Catégorie ou vendeur non attribué. Veuillez vérifier la configuration des catégories et vendeurs dans l'admin.");
+        } else {
+          task.status = 'success';
+          task.data = result.data;
+        }
       } catch (error: any) {
         task.status = 'error';
         task.error = error.message;
@@ -132,6 +145,11 @@ export function BulkProductImporter() {
 
   return (
     <div className="space-y-6">
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
