@@ -271,8 +271,8 @@ const PersonalizedOffers = () => {
                 </div>
               </div>
 
-              <CardContent className="p-2 md:p-4 flex flex-col flex-grow">
-                <div className="space-y-1.5 md:space-y-2 flex-grow">
+              <CardContent className="p-3 md:p-4 flex flex-col flex-grow">
+                <div className="space-y-1 md:space-y-1.5 flex-grow">
                   {/* Personalization Reason */}
                   <p className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full text-center">
                     {product.personalizationReason}
@@ -280,18 +280,18 @@ const PersonalizedOffers = () => {
 
                   {/* Product Name */}
                   <Link href={`/product/${product.slug}`}>
-                    <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-blue-600 transition-colors min-h-[2.5rem] md:min-h-[3rem]">
+                    <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-beshop-primary transition-colors">
                       {product.name}
                     </h3>
                   </Link>
 
                   {/* Rating */}
-                  <div className="flex items-center space-x-2 text-xs md:text-sm">
+                  <div className="flex items-center space-x-1 text-[10px] md:text-xs">
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-2.5 h-2.5 md:w-3 md:h-3 ${
+                          className={`w-2.5 h-2.5 ${
                             i < Math.floor(product.rating)
                               ? 'fill-yellow-400 text-yellow-400'
                               : 'fill-gray-200 text-gray-200'
@@ -303,13 +303,13 @@ const PersonalizedOffers = () => {
                   </div>
 
                   {/* Price */}
-                  <div className="space-y-1">
-                    <div className="flex flex-col md:flex-row items-start md:items-center space-y-1 md:space-y-0 md:space-x-2">
-                      <span className="font-bold text-blue-600 text-sm md:text-lg">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-beshop-primary text-sm md:text-base truncate">
                         {formatPrice(product.price)}
                       </span>
                       {product.comparePrice && (
-                        <span className="text-xs md:text-sm text-gray-500 line-through">
+                        <span className="text-xs text-gray-500 line-through truncate">
                           {formatPrice(product.comparePrice)}
                         </span>
                       )}
@@ -329,8 +329,8 @@ const PersonalizedOffers = () => {
                   </div>
                 </div>
 
-                {/* Add to Cart */}
-                <div className="mt-2 md:mt-3">
+                {/* Add to Cart - Toujours en bas */}
+                <div className="mt-auto pt-2">
                   <QuickAddToCart
                     productId={product.id}
                     productName={product.name}
