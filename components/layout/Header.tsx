@@ -37,7 +37,7 @@ const Header = () => {
     {
       id: 'a1',
       title: 'Super Soldes du Week-end',
-      subtitle: 'Jusqu'à -30% sur électronique',
+      subtitle: 'Jusqu\'à -30% sur électronique',
       href: '/category/electronique',
       bg: 'from-beshop-primary to-blue-600',
     },

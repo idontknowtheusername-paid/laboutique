@@ -49,7 +49,7 @@ export function PerformanceMonitor({
             requestResponse: navigationEntry.responseEnd - navigationEntry.requestStart,
             
             // DOM Processing
-            domProcessing: navigationEntry.domComplete - navigationEntry.domLoading,
+            domProcessing: navigationEntry.domComplete - navigationEntry.responseEnd,
           };
 
           console.log('[Performance Metrics]', metrics);
@@ -101,7 +101,7 @@ export function PerformanceMonitor({
     }
 
     // Report performance metrics periodically
-    const reportInterval = setInterval(() => {
+    const intervalId = setInterval(() => {
       if ('memory' in performance) {
         const memory = (performance as any).memory;
         reportWebVitals({
@@ -126,7 +126,7 @@ export function PerformanceMonitor({
       observer.disconnect();
       resourceObserver.disconnect();
       longTaskObserver.disconnect();
-      clearInterval(reportInterval);
+      clearInterval(intervalId);
     };
   }, [enabled, reportInterval, reportWebVitals]);
 

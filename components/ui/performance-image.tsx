@@ -137,6 +137,7 @@ export const PerformanceImage: React.FC<PerformanceImageProps> = ({
             <Image
               {...imageProps}
               fill
+              alt={alt}
             />
           ) : (
             width && height ? (
@@ -144,11 +145,13 @@ export const PerformanceImage: React.FC<PerformanceImageProps> = ({
                 {...imageProps}
                 width={width}
                 height={height}
+                alt={alt}
               />
             ) : (
               <Image
                 {...imageProps}
                 fill
+                alt={alt}
               />
             )
           )
