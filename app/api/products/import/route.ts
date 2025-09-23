@@ -111,8 +111,8 @@ export async function POST(request: NextRequest) {
           const { data: newVendor, error: vendorError } = await (supabase as any)
             .from('vendors')
             .insert([{
-              name: 'Import Automatique',
-              slug: 'import-automatique',
+              name: 'La Boutique B Import',
+              slug: 'laboutique-import',
               email: 'import@laboutique.bj',
               status: 'active',
               commission_rate: 10.00,
