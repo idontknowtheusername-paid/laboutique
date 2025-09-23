@@ -143,6 +143,7 @@ export function BulkProductImporter() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+
           <Textarea
             placeholder="https://www.aliexpress.com/item/...\nhttps://www.alibaba.com/product/..."
             value={urls}
@@ -150,6 +151,19 @@ export function BulkProductImporter() {
             disabled={importing}
             rows={5}
           />
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="publishDirectly"
+              checked={publishDirectly}
+              onChange={e => setPublishDirectly(e.target.checked)}
+              disabled={importing}
+            />
+            <label htmlFor="publishDirectly" className="text-sm cursor-pointer">
+              Publier directement les produits importés
+            </label>
+          </div>
 
           <div className="flex justify-between items-center">
             <div className="flex gap-2">

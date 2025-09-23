@@ -186,10 +186,22 @@ export default function AdminProductsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            window.location.href = `/admin/products/${p.id}`;
+                          }}
+                        >
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            window.location.href = `/admin/products/${p.id}/edit`;
+                          }}
+                        >
                           <Edit className="w-4 h-4" />
                         </Button>
                       </div>

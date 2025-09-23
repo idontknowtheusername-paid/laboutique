@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProductsService, UpdateProductData, Product } from '@/lib/services/products.service';
 import { Badge } from '@/components/ui/badge';
+import { showSuccessToast, showErrorToast } from '@/components/ui/enhanced-toast';
 
 export default function AdminEditProductPage() {
   const params = useParams();
@@ -40,8 +41,10 @@ export default function AdminEditProductPage() {
     if (res.success && res.data) {
       setProduct(res.data as Product);
       setMessage('Produit mis à jour.');
+      showSuccessToast('Produit publié avec succès !');
     } else {
       setMessage(res.error || 'Erreur de sauvegarde');
+      showErrorToast(res.error || 'Erreur de sauvegarde');
     }
   }
 
