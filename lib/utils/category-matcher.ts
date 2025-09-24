@@ -1,3 +1,47 @@
+type CategoryRecord = { id: string; name: string; slug?: string };
+
+const DEFAULT_CATEGORY_ID = 'c1011f0a-a196-4678-934a-85ae8b9cff35';
+
+export function findBestCategory(productName: string, categories: CategoryRecord[]): string | null {
+  const name = (productName || '').toLowerCase();
+  let best: { id: string; score: number } | null = null;
+
+  const keywords: Record<string, string[]> = {
+    electronique: ['iphone', 'samsung', 'smartphone', 'ordinateur', 'laptop', 'écouteur', 'earbuds', 'tablette', 'tv', 'usb', 'chargeur'],
+    mode: ['t-shirt', 'chemise', 'pantalon', 'robe', 'chaussure', 'sneakers', 'vêtement'],
+    beaute: ['maquillage', 'cosmétique', 'parfum', 'soin', 'beaute', 'beauty'],
+    maison: ['cuisine', 'ustensile', 'décoration', 'lampe', 'linge', 'maison'],
+    sport: ['sport', 'fitness', 'ballon', 'vélo', 'yoga']
+  };
+
+  const normalized = (s?: string) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  for (const c of categories) {
+    const cName = normalized(c.name);
+    const cSlug = normalized(c.slug || '');
+    let score = 0;
+
+    // Basic keyword scoring
+    for (const [group, words] of Object.entries(keywords)) {
+      for (const w of words) {
+        if (name.includes(w)) score += 2;
+        if (cName.includes(group) || cSlug.includes(group)) score += 1;
+      }
+    }
+
+    // Direct name/slug inclusion bonus
+    if (name.includes(cName) || (cSlug && name.includes(cSlug))) score += 3;
+
+    if (!best || score > best.score) best = { id: c.id, score };
+  }
+
+  return best && best.score > 0 ? best.id : null;
+}
+
+export function getDefaultCategory(): string {
+  return DEFAULT_CATEGORY_ID;
+}
+
 // Logique intelligente pour associer un produit à une catégorie basée sur son nom
 export interface Category {
   id: string;

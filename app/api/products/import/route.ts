@@ -77,20 +77,20 @@ export async function POST(request: NextRequest) {
       try {
         console.log('[IMPORT] Import direct activé');
         const db = (isSupabaseAdminConfigured() ? supabaseAdmin : supabase) as any;
-        // Récupérer toutes les catégories disponibles
-        const { data: availableCategories, error: categoriesError } = await db
-          .from('categories')
-          .select('id, name, slug')
-          .eq('status', 'active');
-
-        console.log('[IMPORT] Catégories actives récupérées:', availableCategories);
-
-        if (categoriesError) {
-          console.error('Error fetching categories:', categoriesError);
-          return NextResponse.json(
-            { error: 'Impossible de récupérer les catégories' },
-            { status: 500 }
-          );
+        // Récupérer toutes les catégories disponibles (tolérant aux erreurs)
+        let availableCategories: any[] = [];
+        try {
+          const { data: cats, error: categoriesError } = await db
+            .from('categories')
+            .select('id, name, slug')
+            .eq('status', 'active');
+          if (categoriesError) {
+            console.warn('[IMPORT] Catégories non disponibles, on appliquera la catégorie par défaut. Détails:', categoriesError);
+          } else {
+            availableCategories = cats || [];
+          }
+        } catch (e) {
+          console.warn('[IMPORT] Exception lors de la récupération des catégories, fallback par défaut:', e);
         }
 
         // Trouver la meilleure catégorie basée sur le nom du produit
