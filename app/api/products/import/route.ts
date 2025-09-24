@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
             } : null
           });
 
-          if (anyVendor && anyVendor.id) {
+          if (anyVendor && (anyVendor as any).id) {
             defaultVendor = anyVendor as { id: string };
             console.log('[IMPORT] ✅ Vendeur existant trouvé:', defaultVendor.id);
           } else {
@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
                 },
                 { status: 500 }
               );
-            } else if (newVendor && newVendor.id) {
+            } else if (newVendor && (newVendor as any).id) {
               defaultVendor = newVendor as { id: string };
               console.log('[IMPORT] ✅ Vendeur par défaut créé:', defaultVendor.id);
             } else {
