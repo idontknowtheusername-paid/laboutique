@@ -1,5 +1,6 @@
 "use client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from 'next/navigation';
 
 import React, {
   createContext,
@@ -68,6 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -482,6 +484,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     return () => clearInterval(refreshInterval);
   }, [session, refreshSession]);
+
+  // Déconnexion automatique après 1h d'inactivité (mouvements, clics, touches)
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    const resetTimeout = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        signOut();
+        router.replace('/auth/login?timeout=1');
+      }, 60 * 60 * 1000); // 1h
+    };
+    const events = ['mousemove', 'mousedown', 'keydown', 'touchstart'];
+    events.forEach(e => window.addEventListener(e, resetTimeout));
+    resetTimeout();
+    return () => {
+      clearTimeout(timeoutId);
+      events.forEach(e => window.removeEventListener(e, resetTimeout));
+    };
+  }, [signOut, router]);
 
   const value: AuthContextType = {
     user,

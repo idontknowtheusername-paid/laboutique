@@ -10,6 +10,7 @@ import { AuthService, UserProfile } from '@/lib/services/auth.service';
 import { Download, Search, Shield, Trash2, RefreshCw } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
+import { useToast } from "@/components/ui/toast";
 
 export default function AdminUsersPage() {
   const [loading, setLoading] = React.useState(true);
@@ -18,6 +19,7 @@ export default function AdminUsersPage() {
   const [roleFilter, setRoleFilter] = React.useState<'all' | 'customer' | 'vendor' | 'admin'>('all');
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
+  const { addToast } = useToast();
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -50,54 +52,135 @@ export default function AdminUsersPage() {
   React.useEffect(() => { load(); }, [load]);
 
   async function handleChangeRole(userId: string, newRole: UserProfile['role']) {
-    const res = await AuthService.updateProfile(userId, { } as any);
-    // Use direct update for role as it might be immutable in UpdateProfileData type
+    const res = await AuthService.updateProfile(userId, {} as any);
     const { error } = await (AuthService as any).getSupabaseClient()
       .from('profiles')
       .update({ role: newRole, updated_at: new Date().toISOString() })
       .eq('id', userId);
-    if (!error) await load();
+    if (!error) {
+      await load();
+      addToast({
+        type: "success",
+        title: "Rôle modifié",
+        description: `Le rôle de l'utilisateur a été mis à jour.`,
+      });
+    } else {
+      addToast({
+        type: "error",
+        title: "Erreur",
+        description: `Impossible de modifier le rôle.`,
+      });
+    }
   }
 
   async function handleDelete(userId: string) {
-    // Hard delete profile row; auth.user remains unless using admin API. This is acceptable for MVP.
-    const { error } = await (AuthService as any).getSupabaseClient()
-      .from('profiles')
+    const { error } = await (AuthService as any)
+      .getSupabaseClient()
+      .from("profiles")
       .delete()
-      .eq('id', userId);
-    if (!error) await load();
+      .eq("id", userId);
+    if (!error) {
+      await load();
+      addToast({
+        type: "success",
+        title: "Utilisateur supprimé",
+        description: `L'utilisateur a bien été supprimé.`,
+      });
+    } else {
+      addToast({
+        type: "error",
+        title: "Erreur",
+        description: `Impossible de supprimer l'utilisateur.`,
+      });
+    }
+  }
+
+  // Export CSV
+  function handleExportCSV() {
+    if (!users.length) {
+      addToast({
+        type: "info",
+        title: "Aucun utilisateur à exporter",
+      });
+      return;
+    }
+    const headers = [
+      "id",
+      "email",
+      "first_name",
+      "last_name",
+      "role",
+      "created_at",
+    ];
+    const csvRows = [headers.join(",")];
+    users.forEach((u) => {
+      csvRows.push(
+        [
+          u.id,
+          u.email,
+          u.first_name || "",
+          u.last_name || "",
+          u.role,
+          u.created_at,
+        ]
+          .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+          .join(",")
+      );
+    });
+    const csvContent = csvRows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "utilisateurs.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+    addToast({
+      type: "success",
+      title: "Export CSV",
+      description: "Le fichier CSV a été téléchargé.",
+    });
   }
 
   return (
-      <div className="space-y-6">
-        <AdminPageHeader
-          title="Utilisateurs"
-          subtitle="Gestion des comptes et rôles"
-          actions={(
-            <>
-              <Button variant="outline" onClick={load} disabled={loading}>
-                <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
-              </Button>
-              <Button variant="outline">
-                <Download className="w-4 h-4 mr-2" /> Exporter
-              </Button>
-            </>
-          )}
-        />
+    <div className="space-y-6">
+      <AdminPageHeader
+        title="Utilisateurs"
+        subtitle="Gestion des comptes et rôles"
+        actions={
+          <>
+            <Button variant="outline" onClick={load} disabled={loading}>
+              <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
+            </Button>
+            <Button variant="outline" onClick={handleExportCSV}>
+              <Download className="w-4 h-4 mr-2" /> Exporter
+            </Button>
+          </>
+        }
+      />
 
-        <Card>
-          <CardContent className="p-0">
-            <AdminToolbar>
+      <Card>
+        <CardContent className="p-0">
+          <AdminToolbar>
             <div className="relative w-full md:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 className="pl-10"
                 placeholder="Rechercher (email, prénom, nom)"
                 value={search}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearch(e.target.value); setPage(1); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
               />
             </div>
-            <Select value={roleFilter} onValueChange={(v: 'all' | 'customer' | 'vendor' | 'admin') => { setRoleFilter(v); setPage(1); }}>
+            <Select
+              value={roleFilter}
+              onValueChange={(v: "all" | "customer" | "vendor" | "admin") => {
+                setRoleFilter(v);
+                setPage(1);
+              }}
+            >
               <SelectTrigger className="w-56">
                 <SelectValue placeholder="Rôle" />
               </SelectTrigger>
@@ -109,79 +192,142 @@ export default function AdminUsersPage() {
               </SelectContent>
             </Select>
             <div className="ml-auto flex items-center gap-2">
-              <Button variant="outline" onClick={() => { setSearch(''); setRoleFilter('all'); setPage(1); }}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearch("");
+                  setRoleFilter("all");
+                  setPage(1);
+                }}
+              >
                 Réinitialiser
               </Button>
             </div>
-            </AdminToolbar>
-          </CardContent>
-        </Card>
+          </AdminToolbar>
+        </CardContent>
+      </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Utilisateurs</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inscription</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+      <Card>
+        <CardHeader>
+          <CardTitle>Utilisateurs</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Utilisateur
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Rôle
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Inscription
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {users.map((u: UserProfile) => (
+                  <tr key={u.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-beshop-primary rounded-full flex items-center justify-center">
+                          <span className="text-white font-medium text-sm">
+                            {(u.first_name || u.email || "?")[0]}
+                          </span>
+                        </div>
+                        <div className="ml-3">
+                          <div className="text-sm font-medium text-gray-900">
+                            {u.first_name} {u.last_name}
+                          </div>
+                          <div className="text-xs text-gray-500">{u.id}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {u.email}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          className={
+                            u.role === "admin"
+                              ? "bg-purple-600"
+                              : u.role === "vendor"
+                              ? "bg-blue-600"
+                              : "bg-gray-600"
+                          }
+                        >
+                          {u.role}
+                        </Badge>
+                        <Select
+                          value={u.role}
+                          onValueChange={(v: UserProfile["role"]) =>
+                            handleChangeRole(u.id, v)
+                          }
+                        >
+                          <SelectTrigger className="w-36">
+                            <SelectValue placeholder="Changer rôle" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="customer">Client</SelectItem>
+                            <SelectItem value="vendor">Vendeur</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {new Date(u.created_at).toLocaleDateString("fr-FR")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(u.id)}
+                          className="text-red-600"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {users.map((u: UserProfile) => (
-                    <tr key={u.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 bg-beshop-primary rounded-full flex items-center justify-center">
-                            <span className="text-white font-medium text-sm">{(u.first_name || u.email || '?')[0]}</span>
-                          </div>
-                          <div className="ml-3">
-                            <div className="text-sm font-medium text-gray-900">{u.first_name} {u.last_name}</div>
-                            <div className="text-xs text-gray-500">{u.id}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{u.email}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <Badge className={u.role === 'admin' ? 'bg-purple-600' : u.role === 'vendor' ? 'bg-blue-600' : 'bg-gray-600'}>{u.role}</Badge>
-                          <Select value={u.role} onValueChange={(v: UserProfile['role']) => handleChangeRole(u.id, v)}>
-                            <SelectTrigger className="w-36"><SelectValue placeholder="Changer rôle" /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="customer">Client</SelectItem>
-                              <SelectItem value="vendor">Vendeur</SelectItem>
-                              <SelectItem value="admin">Admin</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{new Date(u.created_at).toLocaleDateString('fr-FR')}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="sm" onClick={() => handleDelete(u.id)} className="text-red-600">
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="flex justify-center gap-2 py-4">
-              <Button size="sm" variant="outline" disabled={page===1} onClick={() => setPage((p) => p - 1)}>Précédent</Button>
-              <span className="px-2 py-1 text-sm">Page {page} / {totalPages}</span>
-              <Button size="sm" variant="outline" disabled={page===totalPages} onClick={() => setPage((p) => p + 1)}>Suivant</Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="flex justify-center gap-2 py-4">
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={page === 1}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              Précédent
+            </Button>
+            <span className="px-2 py-1 text-sm">
+              Page {page} / {totalPages}
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Suivant
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 

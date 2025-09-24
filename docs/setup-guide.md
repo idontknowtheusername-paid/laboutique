@@ -39,7 +39,7 @@ npm run dev
 
 ### 4. Vérifier les données de test
 
-1. **Page d'accueil** : doit afficher les produits de test
+1. **Page d'accueil** : doit afficher les produits de test ,
 2. **Catégories** : doit avoir Électronique, Mode, etc.
 3. **Recherche** : doit fonctionner avec "iPhone"
 

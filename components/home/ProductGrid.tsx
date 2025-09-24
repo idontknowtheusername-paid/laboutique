@@ -99,7 +99,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   }, [displayedProducts]);
 
   return (
-    <section className={`py-12 ${backgroundColor}`}>
+  <section className={`py-2 ${backgroundColor}`}>
       <div className="container">
         {/* Header */}
         {isLoading ? (

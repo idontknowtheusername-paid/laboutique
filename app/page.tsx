@@ -165,84 +165,105 @@ export default function Home() {
       <Header />
       <CategoryMenu />
 
-      <div className="pt-8">
-        <section className="container mb-12">
+      <div className="pt-4">
+        <section className="container mb-6">
           <HeroCarousel />
         </section>
 
-        <FlashSalesConnected />
-        <TrendingProducts />
-        <CategoriesConnected />
+        <div className="mb-4">
+          <FlashSalesConnected />
+        </div>
+        <div className="mb-4">
+          <TrendingProducts />
+        </div>
+        <div className="mb-4">
+          <CategoriesConnected />
+        </div>
 
         {featuredProducts.length > 0 && (
-          <ProductGrid
-            title="Produits en Vedette"
-            subtitle="Notre sélection de produits exceptionnels"
-            products={featuredProducts}
-            viewAllLink="/products?featured=true"
-            backgroundColor="bg-white"
-            maxItems={8}
-          />
+          <div className="mb-4">
+            <ProductGrid
+              title="Produits en Vedette"
+              subtitle="Notre sélection de produits exceptionnels"
+              products={featuredProducts}
+              viewAllLink="/products?featured=true"
+              backgroundColor="bg-white"
+              maxItems={8}
+            />
+          </div>
         )}
 
         {newProducts.length > 0 && (
-          <ProductGrid
-            title="Nouveaux Produits"
-            subtitle="Découvrez nos dernières nouveautés"
-            products={newProducts}
-            viewAllLink="/products?sort=newest"
-            backgroundColor="bg-gray-50"
-            maxItems={8}
-          />
+          <div className="mb-4">
+            <ProductGrid
+              title="Nouveaux Produits"
+              subtitle="Découvrez nos dernières nouveautés"
+              products={newProducts}
+              viewAllLink="/products?sort=newest"
+              backgroundColor="bg-gray-50"
+              maxItems={8}
+            />
+          </div>
         )}
 
         {electronicsProducts.length > 0 && (
-          <ProductGrid
-            title="Électronique & High-Tech"
-            subtitle="Les dernières technologies"
-            products={electronicsProducts}
-            viewAllLink="/category/electronique"
-            backgroundColor="bg-white"
-            maxItems={8}
-          />
+          <div className="mb-4">
+            <ProductGrid
+              title="Électronique & High-Tech"
+              subtitle="Les dernières technologies"
+              products={electronicsProducts}
+              viewAllLink="/category/electronique"
+              backgroundColor="bg-white"
+              maxItems={8}
+            />
+          </div>
         )}
 
         {fashionProducts.length > 0 && (
-          <ProductGrid
-            title="Mode & Beauté"
-            subtitle="Collections tendance"
-            products={fashionProducts}
-            viewAllLink="/category/mode-beaute"
-            backgroundColor="bg-gray-50"
-            maxItems={8}
-          />
+          <div className="mb-4">
+            <ProductGrid
+              title="Mode & Beauté"
+              subtitle="Collections tendance"
+              products={fashionProducts}
+              viewAllLink="/category/mode-beaute"
+              backgroundColor="bg-gray-50"
+              maxItems={8}
+            />
+          </div>
         )}
 
         {homeProducts.length > 0 && (
-          <ProductGrid
-            title="Maison & Jardin"
-            subtitle="Tout pour votre intérieur"
-            products={homeProducts}
-            viewAllLink="/category/maison-jardin"
-            backgroundColor="bg-white"
-            maxItems={8}
-          />
+          <div className="mb-4">
+            <ProductGrid
+              title="Maison & Jardin"
+              subtitle="Tout pour votre intérieur"
+              products={homeProducts}
+              viewAllLink="/category/maison-jardin"
+              backgroundColor="bg-white"
+              maxItems={8}
+            />
+          </div>
         )}
 
         {sportsProducts.length > 0 && (
-          <ProductGrid
-            title="Sport & Loisirs"
-            subtitle="Équipements sportifs"
-            products={sportsProducts}
-            viewAllLink="/category/sport-loisirs"
-            backgroundColor="bg-gray-50"
-            maxItems={8}
-          />
+          <div className="mb-4">
+            <ProductGrid
+              title="Sport & Loisirs"
+              subtitle="Équipements sportifs"
+              products={sportsProducts}
+              viewAllLink="/category/sport-loisirs"
+              backgroundColor="bg-gray-50"
+              maxItems={8}
+            />
+          </div>
         )}
 
-
-        <FeaturedBrands />
-        <PersonalizedOffers />
+        <div className="mb-4">
+          <FeaturedBrands />
+        </div>
+        <div>
+          <PersonalizedOffers />
+        </div>
       </div>
 
       <Footer />

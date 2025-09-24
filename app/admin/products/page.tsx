@@ -190,7 +190,11 @@ export default function AdminProductsPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => {
-                            window.location.href = `/admin/products/${p.id}`;
+                            if (p.slug) {
+                              window.open(`/product/${p.slug}`, "_blank");
+                            } else {
+                              alert("Slug du produit manquant.");
+                            }
                           }}
                         >
                           <Eye className="w-4 h-4" />

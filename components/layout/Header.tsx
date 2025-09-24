@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, User, Heart, ShoppingCart, Menu, X } from 'lucide-react';
+import { Search, User, Heart, ShoppingCart, Menu, X, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -26,7 +26,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { getCartItemsCount } = useCart();
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const pathname = usePathname();
   const isHome = pathname === '/';
   const [annApi, setAnnApi] = useState<CarouselApi | null>(null);
@@ -164,65 +164,84 @@ const Header = () => {
           </form>
 
           {/* Right Section */}
+
           <div className="flex items-center space-x-4">
-            {/* Account */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            {/* Account or Admin */}
+            {profile?.role === 'admin' ? (
+              // Admin: Crown icon, direct link to dashboard, no dropdown
+              <Link href="/admin/dashboard">
                 <Button
                   variant="ghost"
-                  className="flex items-center space-x-2 text-gray-700 hover:text-beshop-primary"
+                  className="flex items-center space-x-2 text-yellow-600 hover:text-yellow-700"
+                  title="Admin Dashboard"
                 >
-                  <User className="w-5 h-5" />
-                  <div className="hidden lg:block text-left">
-                    <div className="text-xs text-gray-500">
-                      {user ? "Bonjour" : "Se connecter"}
-                    </div>
-                    <div className="text-sm font-medium">
-                      {user ? user.user_metadata?.first_name || "Mon compte" : "Mon compte"}
-                    </div>
-                  </div>
+                  <Crown className="w-6 h-6" />
+                  <span className="hidden lg:block text-sm font-medium">Admin</span>
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                {user ? (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link href="/account">Mon profil</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/account/orders">Mes commandes</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/account/wishlist">Ma liste de souhaits</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => signOut()}>
-                      Se déconnecter
-                    </DropdownMenuItem>
-                  </>
-                ) : (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link href="/auth/login">Se connecter</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/auth/register">Créer un compte</Link>
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </Link>
+            ) : (
+              <>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-beshop-primary"
+                    >
+                      <User className="w-5 h-5" />
+                      <div className="hidden lg:block text-left">
+                        <div className="text-xs text-gray-500">
+                          {user ? "Bonjour" : "Se connecter"}
+                        </div>
+                        <div className="text-sm font-medium">
+                          {user ? user.user_metadata?.first_name || "Mon compte" : "Mon compte"}
+                        </div>
+                      </div>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    {user ? (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link href="/account">Mon profil</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/account/orders">Mes commandes</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/account/wishlist">Ma liste de souhaits</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => signOut()}>
+                          Se déconnecter
+                        </DropdownMenuItem>
+                      </>
+                    ) : (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link href="/auth/login">Se connecter</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/auth/register">Créer un compte</Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            )}
 
-            {/* Wishlist */}
-            <Link href="/wishlist" className="relative">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-gray-700 hover:text-beshop-primary"
-              >
-                <Heart className="w-6 h-6" />
-              </Button>
-            </Link>
+            {/* Wishlist (hide for admin) */}
+            {profile?.role !== 'admin' && (
+              <Link href="/wishlist" className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-700 hover:text-beshop-primary"
+                >
+                  <Heart className="w-6 h-6" />
+                </Button>
+              </Link>
+            )}
 
             {/* Cart */}
             <Link href="/cart" className="relative">

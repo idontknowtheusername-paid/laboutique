@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-// import { Progress } from '@/components/ui/progress'; // Temporairement désactivé
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Download, XCircle, AlertCircle, StopCircle } from 'lucide-react';
 import { ScrapedProductData } from '@/lib/services/types';
@@ -39,6 +38,21 @@ export function BulkProductImporter() {
       .filter(url => url && (url.includes('aliexpress.com') || url.includes('alibaba.com')));
   };
 
+  // Calculer les statistiques
+  const stats = {
+    total: tasks.length,
+    success: tasks.filter(t => t.status === 'success').length,
+    error: tasks.filter(t => t.status === 'error').length,
+    processing: tasks.filter(t => t.status === 'processing').length,
+    pending: tasks.filter(t => t.status === 'pending').length
+  };
+
+  // Fonction pour annuler l'import
+  const cancelImport = () => {
+    setShouldCancel(true);
+    setImporting(false);
+  };
+
   // Gérer l'import
   const handleImport = async () => {
     setError(null);
@@ -47,9 +61,6 @@ export function BulkProductImporter() {
       setError("Veuillez entrer au moins une URL valide.");
       return;
     }
-
-    // Vérification côté frontend : catégories et vendeurs
-    // On suppose que le backend attribue automatiquement, mais on peut vérifier après la réponse
 
     // Initialiser les tâches
     const newTasks: ImportTaskState[] = validUrls.map(url => ({
@@ -125,31 +136,17 @@ export function BulkProductImporter() {
     }
 
     setImporting(false);
-    setShouldCancel(false);
-  };
-
-  // Annuler l'import
-  const cancelImport = () => {
-    setShouldCancel(true);
-    setImporting(false);
-  };
-
-  // Stats des imports
-  const stats = {
-    total: tasks.length,
-    success: tasks.filter(t => t.status === 'success').length,
-    error: tasks.filter(t => t.status === 'error').length,
-    pending: tasks.filter(t => t.status === 'pending').length,
-    processing: tasks.filter(t => t.status === 'processing').length
   };
 
   return (
     <div className="space-y-6">
       {error && (
         <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
+      
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -161,9 +158,8 @@ export function BulkProductImporter() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-
           <Textarea
-            placeholder="https://www.aliexpress.com/item/...\nhttps://www.alibaba.com/product/..."
+            placeholder="https://www.aliexpress.com/item/...&#10;https://www.alibaba.com/product/..."
             value={urls}
             onChange={(e) => setUrls(e.target.value)}
             disabled={importing}
