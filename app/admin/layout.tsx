@@ -15,21 +15,33 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user, profile, loading } = useAuth();
   const [avatarInitial, setAvatarInitial] = useState<string>('A');
   const [adminName, setAdminName] = useState<string>('Admin');
-  const [hasChecked, setHasChecked] = useState(false);
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [hasChecked, setHasChecked] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return window.sessionStorage.getItem('adminAuthorized') === '1';
+      } catch {}
+    }
+    return false;
+  });
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return window.sessionStorage.getItem('adminAuthorized') === '1';
+      } catch {}
+    }
+    return false;
+  });
 
   useEffect(() => {
-    // Si on a déjà vérifié et qu'on est autorisé, ne pas re-vérifier
-    if (hasChecked && isAuthorized) {
-      return;
-    }
-
     if (loading) return;
 
     // No user -> redirect once
     if (!user) {
       setHasChecked(true);
       setIsAuthorized(false);
+      if (typeof window !== 'undefined') {
+        try { window.sessionStorage.removeItem('adminAuthorized'); } catch {}
+      }
       router.replace('/auth/login?redirect=/admin/dashboard');
       return;
     }
@@ -38,6 +50,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (profile && profile.role !== 'admin') {
       setHasChecked(true);
       setIsAuthorized(false);
+      if (typeof window !== 'undefined') {
+        try { window.sessionStorage.removeItem('adminAuthorized'); } catch {}
+      }
       router.replace('/unauthorized');
       return;
     }
@@ -46,6 +61,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (user && profile?.role === 'admin') {
       setIsAuthorized(true);
       setHasChecked(true);
+      if (typeof window !== 'undefined') {
+        try { window.sessionStorage.setItem('adminAuthorized', '1'); } catch {}
+      }
       const first = profile.first_name?.trim();
       const last = profile.last_name?.trim();
       const email = profile.email?.trim();
@@ -58,11 +76,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (user && !profile) {
       setIsAuthorized(true);
       setHasChecked(true);
+      if (typeof window !== 'undefined') {
+        try { window.sessionStorage.setItem('adminAuthorized', '1'); } catch {}
+      }
       const email = (user.email || 'admin').trim();
       setAvatarInitial(email.charAt(0).toUpperCase());
       setAdminName('Admin');
     }
-  }, [loading, user, profile, router, hasChecked, isAuthorized]);
+  }, [loading, user, profile, router]);
 
   // Afficher un loader pendant la vérification
   if (!hasChecked) {

@@ -191,13 +191,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           return;
         }
 
-        // First, try to get session from localStorage
+        // First, try to get session from in-memory or sessionStorage cache to avoid flicker
+        if (typeof window !== 'undefined') {
+          const cached = window.sessionStorage.getItem('sb-session');
+          if (cached) {
+            try {
+              const parsed = JSON.parse(cached);
+              if (parsed?.access_token && parsed?.user) {
+                setUser(parsed.user);
+                setSession(parsed);
+              }
+            } catch {}
+          }
+        }
+
+        // Then, try to get session from localStorage (supabase)
         const { data: { session: localSession } } = await supabase.auth.getSession();
         
         if (localSession) {
           console.log('Session found in localStorage:', localSession.user.email);
           setUser(localSession.user);
           setSession(localSession);
+          try {
+            if (typeof window !== 'undefined') {
+              window.sessionStorage.setItem('sb-session', JSON.stringify(localSession));
+            }
+          } catch {}
           
           // Get profile
           try {
@@ -252,6 +271,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log('Auth state changed:', event, session?.user?.email || 'no user');
       setSession(session);
       setUser(session?.user ?? null);
+      try {
+        if (typeof window !== 'undefined') {
+          if (session) window.sessionStorage.setItem('sb-session', JSON.stringify(session));
+          else window.sessionStorage.removeItem('sb-session');
+        }
+      } catch {}
 
       if (session?.user) {
         // Récupérer le profil utilisateur et les stats
