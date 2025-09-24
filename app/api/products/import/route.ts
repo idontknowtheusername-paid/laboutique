@@ -107,7 +107,6 @@ export async function POST(request: NextRequest) {
         let { data: defaultVendor } = await db
           .from('vendors')
           .select('id')
-          .eq('status', 'active')
           .limit(1)
           .single();
         console.log('[IMPORT] Vendeur actif existant:', defaultVendor?.id);
@@ -141,7 +140,7 @@ export async function POST(request: NextRequest) {
               defaultVendor = existingVendor as any;
             } else {
               return NextResponse.json(
-                { error: 'Impossible de créer un vendeur par défaut' },
+                { error: 'Impossible de créer un vendeur par défaut', details: vendorError?.message || vendorError },
                 { status: 500 }
               );
             }
