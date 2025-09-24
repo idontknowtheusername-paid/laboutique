@@ -7,6 +7,10 @@ import { supabase } from '@/lib/supabase';
 import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase-server';
 import { findBestCategory, getDefaultCategory } from '@/lib/utils/category-matcher';
 
+// Ensure Node.js runtime so server-only env vars (service role) are available
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 // Fonction pour valider l'URL
 function validateUrl(url: string): { valid: boolean; error?: string } {
   return ScrapingService.validateProductUrl(url);
@@ -72,8 +76,9 @@ export async function POST(request: NextRequest) {
     if (importDirectly) {
       try {
         console.log('[IMPORT] Import direct activé');
+        const db = (isSupabaseAdminConfigured() ? supabaseAdmin : supabase) as any;
         // Récupérer toutes les catégories disponibles
-        const { data: availableCategories, error: categoriesError } = await (supabase as any)
+        const { data: availableCategories, error: categoriesError } = await db
           .from('categories')
           .select('id, name, slug')
           .eq('status', 'active');
@@ -98,7 +103,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Récupérer un vendeur par défaut ou en créer un
-        let { data: defaultVendor } = await (supabase as any)
+        let { data: defaultVendor } = await db
           .from('vendors')
           .select('id')
           .eq('status', 'active')
@@ -107,7 +112,7 @@ export async function POST(request: NextRequest) {
         console.log('[IMPORT] Vendeur trouvé:', defaultVendor?.id);
         // Si aucun vendeur trouvé, fallback sur le premier actif
         if (!defaultVendor) {
-          const { data: firstVendor } = await (supabase as any)
+          const { data: firstVendor } = await db
             .from('vendors')
             .select('id')
             .eq('status', 'active')
@@ -118,7 +123,7 @@ export async function POST(request: NextRequest) {
         }
         // Si toujours rien, créer un vendeur par défaut
         if (!defaultVendor) {
-          const { data: newVendor, error: vendorError } = await (supabase as any)
+          const { data: newVendor, error: vendorError } = await db
             .from('vendors')
             .insert([{
               name: 'La Boutique B Import',
@@ -147,7 +152,7 @@ export async function POST(request: NextRequest) {
 
         // Si aucun vendeur n'existe, créer un vendeur par défaut
         if (!defaultVendor) {
-          const { data: newVendor, error: vendorError } = await (supabase as any)
+          const { data: newVendor, error: vendorError } = await db
             .from('vendors')
             .insert([{
               name: 'La Boutique B Import',
@@ -206,8 +211,7 @@ export async function POST(request: NextRequest) {
         };
         console.log('[IMPORT] Payload envoyé à ProductsService.create:', productPayload);
         // Use admin client to bypass RLS for server-side import when configured
-        const clientForInsert = isSupabaseAdminConfigured() ? supabaseAdmin : (supabase as any);
-        const creationResponse = await ProductsService.createWithClient(clientForInsert, productPayload);
+        const creationResponse = await ProductsService.createWithClient(db, productPayload);
 
         if (!creationResponse.success || !creationResponse.data) {
           const errMsg = creationResponse.error || 'Erreur lors de la création du produit';
