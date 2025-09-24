@@ -16,6 +16,7 @@ interface AdminProduct {
   id: string;
   name: string;
   price: number;
+  slug?: string;
   status?: string;
   category?: { name: string };
   vendor?: { name: string };
