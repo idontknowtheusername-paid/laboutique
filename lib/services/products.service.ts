@@ -126,6 +126,7 @@ export class ProductsService extends BaseService {
           price,
           compare_price,
           cost_price,
+          original_price,
           track_quantity,
           quantity,
           weight,
@@ -139,6 +140,8 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
+          source_url,
+          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),
@@ -225,6 +228,7 @@ export class ProductsService extends BaseService {
           price,
           compare_price,
           cost_price,
+          original_price,
           track_quantity,
           quantity,
           weight,
@@ -238,6 +242,8 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
+          source_url,
+          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),
@@ -305,6 +311,7 @@ export class ProductsService extends BaseService {
           price,
           compare_price,
           cost_price,
+          original_price,
           track_quantity,
           quantity,
           weight,
@@ -318,6 +325,8 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
+          source_url,
+          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),
@@ -354,6 +363,7 @@ export class ProductsService extends BaseService {
           price,
           compare_price,
           cost_price,
+          original_price,
           track_quantity,
           quantity,
           weight,
@@ -367,6 +377,8 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
+          source_url,
+          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),
@@ -564,7 +576,7 @@ export class ProductsService extends BaseService {
       const slug = productData.slug?.trim() || this.generateSlug(productData.name);
       
       // Filtrer les champs qui n'existent pas dans la base de données
-      const { specifications, source_url, source_platform, original_price, ...validProductData } = productData;
+      const { specifications, ...validProductData } = productData;
       
       const { data, error } = await (this.getSupabaseClient() as any)
         .from('products')
@@ -586,6 +598,7 @@ export class ProductsService extends BaseService {
           price,
           compare_price,
           cost_price,
+          original_price,
           track_quantity,
           quantity,
           weight,
@@ -599,6 +612,8 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
+          source_url,
+          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),
