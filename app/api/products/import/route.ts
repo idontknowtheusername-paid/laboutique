@@ -76,7 +76,12 @@ export async function POST(request: NextRequest) {
     if (importDirectly) {
       try {
         console.log('[IMPORT] Import direct activé');
-        const db = (isSupabaseAdminConfigured() ? supabaseAdmin : supabase) as any;
+        console.log('[IMPORT] Supabase admin configured:', isSupabaseAdminConfigured());
+        console.log('[IMPORT] SUPABASE_URL:', process.env.SUPABASE_URL ? 'SET' : 'NOT SET');
+        console.log('[IMPORT] SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'SET' : 'NOT SET');
+        
+        // Force use of admin client for server-side operations
+        const db = supabaseAdmin;
         // Récupérer toutes les catégories disponibles (tolérant aux erreurs)
         let availableCategories: any[] = [];
         try {
