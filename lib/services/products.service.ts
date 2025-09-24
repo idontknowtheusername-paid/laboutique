@@ -630,6 +630,68 @@ export class ProductsService extends BaseService {
   }
 
   /**
+   * Create using a supplied supabase client (e.g., service-role for RLS bypass)
+   */
+  static async createWithClient(client: any, productData: CreateProductData): Promise<ServiceResponse<Product | null>> {
+    try {
+      const slug = productData.slug?.trim() || this.generateSlug(productData.name);
+      const { specifications, original_price, ...rest } = productData as any;
+      const validProductData = {
+        ...rest,
+        compare_price: (rest as any).compare_price ?? original_price,
+      } as any;
+
+      const { data, error } = await client
+        .from('products')
+        .insert([{
+          ...validProductData,
+          slug,
+          track_quantity: productData.track_quantity ?? true,
+          quantity: productData.quantity ?? 0,
+          status: productData.status ?? 'draft',
+          featured: productData.featured ?? false
+        }])
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          source_url,
+          source_platform,
+          created_at,
+          updated_at,
+          category:categories(id, name, slug),
+          vendor:vendors(id, name, slug, logo_url)
+        `)
+        .single();
+
+      if (error) throw error;
+
+      return this.createResponse(data);
+    } catch (error) {
+      return this.createResponse(null, this.handleError(error));
+    }
+  }
+
+  /**
    * Mettre à jour un produit
    */
   static async update(updateData: UpdateProductData): Promise<ServiceResponse<Product | null>> {

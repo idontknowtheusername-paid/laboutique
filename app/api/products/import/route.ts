@@ -4,6 +4,7 @@ import { ScrapingService } from '@/lib/services/scraping.service';
 import { validateImportedProduct } from '@/lib/schemas/product-import.schema';
 import { ScrapedProductData } from '@/lib/services/types';
 import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 import { findBestCategory, getDefaultCategory } from '@/lib/utils/category-matcher';
 
 // Fonction pour valider l'URL
@@ -204,7 +205,8 @@ export async function POST(request: NextRequest) {
           source_platform: productData.source_platform
         };
         console.log('[IMPORT] Payload envoyé à ProductsService.create:', productPayload);
-        const creationResponse = await ProductsService.create(productPayload);
+        // Use admin client to bypass RLS for server-side import
+        const creationResponse = await ProductsService.createWithClient(supabaseAdmin, productPayload);
 
         if (!creationResponse.success || !creationResponse.data) {
           const errMsg = creationResponse.error || 'Erreur lors de la création du produit';
