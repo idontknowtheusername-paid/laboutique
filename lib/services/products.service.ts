@@ -26,6 +26,7 @@ export interface Product {
   meta_title?: string;
   meta_description?: string;
   specifications?: Record<string, string>;
+  // Optional runtime-only fields (not necessarily in DB)
   source_url?: string;
   source_platform?: 'aliexpress' | 'alibaba';
   created_at: string;
@@ -90,6 +91,7 @@ export interface CreateProductData {
   meta_title?: string;
   meta_description?: string;
   specifications?: Record<string, string>;
+  // Optional runtime-only fields (not necessarily in DB)
   source_url?: string;
   source_platform?: 'aliexpress' | 'alibaba';
 }
@@ -139,8 +141,6 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
-          source_url,
-          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),
@@ -240,8 +240,6 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
-          source_url,
-          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),
@@ -322,8 +320,6 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
-          source_url,
-          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),
