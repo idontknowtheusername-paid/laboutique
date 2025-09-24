@@ -139,6 +139,8 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
+          source_url,
+          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),
@@ -238,6 +240,8 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
+          source_url,
+          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),
@@ -318,6 +322,8 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
+          source_url,
+          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),
@@ -563,8 +569,13 @@ export class ProductsService extends BaseService {
       // Générer le slug automatiquement si pas fourni
       const slug = productData.slug?.trim() || this.generateSlug(productData.name);
       
-      // Filtrer les champs qui n'existent pas dans la base de données
-      const { specifications, source_url, source_platform, original_price, ...validProductData } = productData;
+      // Filtrer les champs qui n'existent pas dans la base de données et mapper les champs affichés côté UI
+      const { specifications, original_price, ...rest } = productData;
+      const validProductData = {
+        ...rest,
+        // S'assurer que compare_price est renseigné si original_price est fourni par l'import
+        compare_price: rest.compare_price ?? original_price,
+      } as any;
       
       const { data, error } = await (this.getSupabaseClient() as any)
         .from('products')
@@ -573,6 +584,7 @@ export class ProductsService extends BaseService {
           slug,
           track_quantity: productData.track_quantity ?? true,
           quantity: productData.quantity ?? 0,
+          // Respecter le statut fourni par l'appelant (API d'import passe 'active')
           status: productData.status ?? 'draft',
           featured: productData.featured ?? false
         }])
@@ -599,6 +611,8 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
+          source_url,
+          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),

@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Données invalides',
-          details: validationResult.errors?.issues.map(err => ({
+          details: validationResult.errors?.issues.map((err: any) => ({
             path: err.path.join('.'),
             message: err.message
           }))
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
 
         // Corriger les images pour Next.js : préfixer par '/' si ce sont des fichiers locaux
 
-        const fixedImages = (productData.images || []).map(img => {
+        const fixedImages = (productData.images || []).map((img: string) => {
           if (!img) return '';
           if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('/')) return img;
           return '/' + img;
@@ -188,7 +188,8 @@ export async function POST(request: NextRequest) {
           description: productData.description,
           short_description: productData.short_description,
           price: productData.price,
-          original_price: productData.original_price,
+          // Mapper le prix original en compare_price pour la base de données
+          compare_price: productData.original_price,
           images: fixedImages,
           category_id: selectedCategoryId,
           vendor_id: defaultVendor.id,
@@ -203,11 +204,20 @@ export async function POST(request: NextRequest) {
           source_platform: productData.source_platform
         };
         console.log('[IMPORT] Payload envoyé à ProductsService.create:', productPayload);
-        const product = await ProductsService.create(productPayload);
-        
+        const creationResponse = await ProductsService.create(productPayload);
+
+        if (!creationResponse.success || !creationResponse.data) {
+          const errMsg = creationResponse.error || 'Erreur lors de la création du produit';
+          console.error('Error creating product:', errMsg);
+          return NextResponse.json(
+            { error: errMsg },
+            { status: 500 }
+          );
+        }
+
         return NextResponse.json({
           success: true,
-          product,
+          data: creationResponse.data,
           message: 'Produit importé avec succès'
         });
       } catch (error) {
