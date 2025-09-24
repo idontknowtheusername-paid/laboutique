@@ -107,63 +107,89 @@ export async function POST(request: NextRequest) {
         const defaultVendorSlug = 'laboutique-import';
         let defaultVendor: { id: string } | null = null;
 
-        // 1. Tenter de trouver un vendeur existant par slug
-        const { data: existingVendor, error: fetchVendorError } = await db
-          .from('vendors')
-          .select('id')
-          .eq('slug', defaultVendorSlug)
-          .limit(1)
-          .single();
-
-        if (fetchVendorError && fetchVendorError.code !== 'PGRST116') { // PGRST116 means no rows found
-          console.error('Error fetching existing vendor:', fetchVendorError);
-          // Continue, try to create
-        }
-
-        if (existingVendor) {
-          defaultVendor = existingVendor;
-          console.log('[IMPORT] Vendeur existant trouvé:', defaultVendor?.id);
-        } else {
-          // 2. Si non trouvé, tenter de créer un nouveau vendeur
-          const { data: newVendor, error: createVendorError } = await db
+        try {
+          // 1. Tenter de trouver un vendeur existant par slug
+          const { data: existingVendor, error: fetchVendorError } = await db
             .from('vendors')
-            .insert([{
+            .select('id')
+            .eq('slug', defaultVendorSlug)
+            .limit(1)
+            .single();
+
+          if (fetchVendorError && fetchVendorError.code !== 'PGRST116') { // PGRST116 means no rows found
+            console.error('Error fetching existing vendor:', fetchVendorError);
+            // Continue, try to create
+          }
+
+          if (existingVendor) {
+            defaultVendor = existingVendor;
+            console.log('[IMPORT] Vendeur existant trouvé:', defaultVendor?.id);
+          } else {
+            // 2. Si non trouvé, tenter de créer un nouveau vendeur avec des champs minimaux
+            const vendorData = {
               name: 'La Boutique B Import',
               slug: defaultVendorSlug,
               email: 'import@laboutique.bj',
-              status: 'active',
-              commission_rate: 10.00,
-              rating: 0,
-              total_reviews: 0,
-              total_products: 0,
-              total_orders: 0
-            }])
-            .select('id')
-            .single();
+              status: 'active'
+            };
 
-          if (createVendorError) {
-            console.error('Error creating default vendor:', createVendorError);
-            // If creation fails, try to fetch again in case of race condition or external creation
-            const { data: retryVendor, error: retryFetchError } = await db
+            console.log('[IMPORT] Tentative de création du vendeur avec données:', vendorData);
+
+            const { data: newVendor, error: createVendorError } = await db
               .from('vendors')
+              .insert([vendorData])
               .select('id')
-              .eq('slug', defaultVendorSlug)
-              .limit(1)
               .single();
 
-            if (retryVendor) {
-              defaultVendor = retryVendor;
-              console.log('[IMPORT] Vendeur trouvé après échec de création (race condition):', defaultVendor?.id);
+            if (createVendorError) {
+              console.error('Error creating default vendor:', createVendorError);
+              console.error('Vendor creation error details:', {
+                code: createVendorError.code,
+                message: createVendorError.message,
+                details: createVendorError.details,
+                hint: createVendorError.hint
+              });
+              
+              // If creation fails, try to fetch again in case of race condition or external creation
+              const { data: retryVendor, error: retryFetchError } = await db
+                .from('vendors')
+                .select('id')
+                .eq('slug', defaultVendorSlug)
+                .limit(1)
+                .single();
+
+              console.log('Retry fetch result:', { retryVendor, retryFetchError });
+
+              if (retryVendor) {
+                defaultVendor = retryVendor;
+                console.log('[IMPORT] Vendeur trouvé après échec de création (race condition):', defaultVendor?.id);
+              } else {
+                return NextResponse.json(
+                  { 
+                    error: 'Impossible de créer un vendeur par défaut', 
+                    details: createVendorError.message,
+                    errorCode: createVendorError.code,
+                    errorDetails: createVendorError.details,
+                    retryError: retryFetchError?.message,
+                    vendorData: vendorData
+                  },
+                  { status: 500 }
+                );
+              }
             } else {
-              return NextResponse.json(
-                { error: 'Impossible de créer un vendeur par défaut', details: createVendorError.message },
-                { status: 500 }
-              );
+              defaultVendor = newVendor;
+              console.log('[IMPORT] Vendeur par défaut créé:', defaultVendor?.id);
             }
-          } else {
-            defaultVendor = newVendor;
-            console.log('[IMPORT] Vendeur par défaut créé:', defaultVendor?.id);
           }
+        } catch (vendorError) {
+          console.error('Unexpected error in vendor handling:', vendorError);
+          return NextResponse.json(
+            { 
+              error: 'Erreur inattendue lors de la gestion du vendeur', 
+              details: vendorError instanceof Error ? vendorError.message : 'Erreur inconnue'
+            },
+            { status: 500 }
+          );
         }
 
         if (!defaultVendor) {
