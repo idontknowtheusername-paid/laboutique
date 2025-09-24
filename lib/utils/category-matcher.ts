@@ -42,15 +42,7 @@ export function getDefaultCategory(): string {
   return DEFAULT_CATEGORY_ID;
 }
 
-// Logique intelligente pour associer un produit à une catégorie basée sur son nom
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  keywords?: string[];
-}
-
-// Mots-clés pour chaque catégorie
+// Mots-clés pour matcher les slugs de catégories
 const categoryKeywords: Record<string, string[]> = {
   'electronique': [
     'smartphone', 'phone', 'téléphone', 'iphone', 'samsung', 'huawei', 'xiaomi',
@@ -126,9 +118,9 @@ const categoryKeywords: Record<string, string[]> = {
   ]
 };
 
-// Fonction pour trouver la meilleure catégorie basée sur le nom du produit
-export function findBestCategory(productName: string, availableCategories: Category[]): string | null {
-  const normalizedName = productName.toLowerCase();
+// Amélioration: si la première passe ne trouve rien, on tente via les slugs connus
+export function findBestCategoryByKeywords(productName: string, availableCategories: CategoryRecord[]): string | null {
+  const normalizedName = (productName || '').toLowerCase();
   
   // Compter les correspondances pour chaque catégorie
   const categoryScores: Record<string, number> = {};
@@ -160,27 +152,11 @@ export function findBestCategory(productName: string, availableCategories: Categ
   
   // Vérifier que la catégorie trouvée existe dans les catégories disponibles
   if (bestCategorySlug) {
-    const matchingCategory = availableCategories.find(cat => cat.slug === bestCategorySlug);
+    const matchingCategory = availableCategories.find(cat => (cat.slug || '').toLowerCase() === bestCategorySlug);
     if (matchingCategory) {
       return matchingCategory.id;
     }
   }
   
   return null;
-}
-
-// Fonction pour obtenir une catégorie par défaut si aucune correspondance n'est trouvée
-export function getDefaultCategory(availableCategories: Category[]): string | null {
-  // Priorité des catégories par défaut
-  const defaultCategorySlugs = ['electronique', 'mode', 'maison', 'sport'];
-  
-  for (const slug of defaultCategorySlugs) {
-    const category = availableCategories.find(cat => cat.slug === slug);
-    if (category) {
-      return category.id;
-    }
-  }
-  
-  // Si aucune catégorie par défaut n'existe, prendre la première disponible
-  return availableCategories.length > 0 ? availableCategories[0].id : null;
 }

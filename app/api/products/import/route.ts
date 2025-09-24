@@ -5,7 +5,7 @@ import { validateImportedProduct } from '@/lib/schemas/product-import.schema';
 import { ScrapedProductData } from '@/lib/services/types';
 import { supabase } from '@/lib/supabase';
 import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase-server';
-import { findBestCategory, getDefaultCategory } from '@/lib/utils/category-matcher';
+import { findBestCategory, getDefaultCategory, findBestCategoryByKeywords } from '@/lib/utils/category-matcher';
 
 // Ensure Node.js runtime so server-only env vars (service role) are available
 export const runtime = 'nodejs';
@@ -94,7 +94,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Trouver la meilleure catégorie basée sur le nom du produit
-        let selectedCategoryId = findBestCategory(productData.name, availableCategories || []);
+        let selectedCategoryId = findBestCategory(productData.name, availableCategories || [])
+          || findBestCategoryByKeywords(productData.name, availableCategories || []);
         console.log('[IMPORT] Catégorie trouvée:', selectedCategoryId);
         // Si aucune catégorie n'est trouvée, utiliser une catégorie par défaut (UUID explicite)
         if (!selectedCategoryId) {
