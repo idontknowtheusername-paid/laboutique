@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
             
             const { data: newVendor, error: createVendorError } = await db
               .from('vendors')
-              .insert([vendorData])
+              .insert([vendorData] as any)
               .select('id')
               .single();
 
