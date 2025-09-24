@@ -566,7 +566,8 @@ export class ProductsService extends BaseService {
       const slug = productData.slug?.trim() || this.generateSlug(productData.name);
       
       // Filtrer les champs qui n'existent pas dans la base de données et mapper les champs affichés côté UI
-      const { specifications, original_price, ...rest } = productData;
+      // Retirer explicitement les champs runtime-only: source_url, source_platform, specifications
+      const { specifications, original_price, source_url, source_platform, ...rest } = productData;
       const validProductData = {
         ...rest,
         // S'assurer que compare_price est renseigné si original_price est fourni par l'import

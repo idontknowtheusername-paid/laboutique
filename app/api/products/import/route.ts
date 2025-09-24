@@ -199,9 +199,7 @@ export async function POST(request: NextRequest) {
           status: 'active' as 'active', // On force ici et on cast pour TS
           featured: false,
           meta_title: `${productData.name} - La Boutique B`,
-          meta_description: productData.short_description,
-          source_url: productData.source_url,
-          source_platform: productData.source_platform
+          meta_description: productData.short_description
         };
         console.log('[IMPORT] Payload envoyé à ProductsService.create:', productPayload);
         const creationResponse = await ProductsService.create(productPayload);
