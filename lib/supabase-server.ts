@@ -12,3 +12,7 @@ export const supabaseAdmin = createClient<Database>(supabaseUrl, serviceRoleKey,
   },
 });
 
+export const isSupabaseAdminConfigured = () => {
+  return Boolean(supabaseUrl && serviceRoleKey && supabaseUrl.includes('.supabase.co'));
+};
+
