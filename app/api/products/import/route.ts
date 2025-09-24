@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Scraper les données
+    // Scraper les données (simulation, aucune API key nécessaire)
     const scrapedData = await ScrapingService.scrapeProduct(url);
     
     if (!scrapedData) {
