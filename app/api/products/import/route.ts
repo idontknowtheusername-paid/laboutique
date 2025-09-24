@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
 
         if (existingVendor) {
           defaultVendor = existingVendor;
-          console.log('[IMPORT] Vendeur existant trouvé:', defaultVendor.id);
+          console.log('[IMPORT] Vendeur existant trouvé:', defaultVendor?.id);
         } else {
           // 2. Si non trouvé, tenter de créer un nouveau vendeur
           const { data: newVendor, error: createVendorError } = await db
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
 
             if (retryVendor) {
               defaultVendor = retryVendor;
-              console.log('[IMPORT] Vendeur trouvé après échec de création (race condition):', defaultVendor.id);
+              console.log('[IMPORT] Vendeur trouvé après échec de création (race condition):', defaultVendor?.id);
             } else {
               return NextResponse.json(
                 { error: 'Impossible de créer un vendeur par défaut', details: createVendorError.message },
