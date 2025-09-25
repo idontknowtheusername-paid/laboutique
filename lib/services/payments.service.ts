@@ -66,47 +66,10 @@ export class PaymentsService extends BaseService {
     metadata?: any;
   }): Promise<ServiceResponse<PaymentIntent | null>> {
     try {
-      const reference = `PAY_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-      
-      let authorizationUrl = '';
-      let clientSecret = '';
-
-      // Intégration avec les providers de paiement
-      switch (data.provider) {
-        case 'paystack':
-          const paystackResponse = await this.initializePaystack({
-            email: 'user@example.com', // TODO: récupérer l'email de l'utilisateur
-            amount: data.amount * 100, // Paystack utilise les kobo
-            reference,
-            currency: data.currency,
-            metadata: data.metadata
-          });
-          authorizationUrl = paystackResponse.authorization_url;
-          break;
-
-        case 'flutterwave':
-          const flutterwaveResponse = await this.initializeFlutterwave({
-            amount: data.amount,
-            currency: data.currency,
-            tx_ref: reference,
-            customer: { email: 'user@example.com' }, // TODO: récupérer les données utilisateur
-            metadata: data.metadata
-          });
-          authorizationUrl = flutterwaveResponse.link;
-          break;
-
-        case 'mtn_momo':
-        case 'orange_money':
-          // Initialiser le paiement mobile money
-          const momoResponse = await this.initializeMobileMoney({
-            provider: data.provider,
-            amount: data.amount,
-            currency: data.currency,
-            phone: data.metadata?.phone,
-            reference
-          });
-          break;
-      }
+      // Deprecated: legacy providers removed in favor of FedaPay flow
+      const reference = `DEPRECATED_${Date.now()}`;
+      const authorizationUrl = '';
+      const clientSecret = '';
 
       const supabaseClient = this.getSupabaseClient() as any;
       const { data: intent, error } = await supabaseClient
@@ -376,23 +339,13 @@ export class PaymentsService extends BaseService {
     currency: string;
     metadata?: any;
   }): Promise<{ authorization_url: string; access_code: string; reference: string }> {
-    // TODO: Implémenter l'intégration Paystack
-    const response = await fetch('https://api.paystack.co/transaction/initialize', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-
-    const result = await response.json();
-    return result.data;
+    // Deprecated
+    return { authorization_url: '', access_code: '', reference: data.reference };
   }
 
   private static async initializeFlutterwave(data: any): Promise<{ link: string }> {
-    // TODO: Implémenter l'intégration Flutterwave
-    return { link: 'https://checkout.flutterwave.com/v3/hosted/pay/example' };
+    // Deprecated
+    return { link: '' };
   }
 
   private static async initializeMobileMoney(data: {
@@ -402,36 +355,23 @@ export class PaymentsService extends BaseService {
     phone?: string;
     reference: string;
   }): Promise<any> {
-    // TODO: Implémenter l'intégration Mobile Money
-    return { success: true };
+    // Deprecated
+    return { success: false };
   }
 
   private static async verifyPaystack(reference: string): Promise<{ success: boolean; data?: any; error?: string }> {
-    try {
-      const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
-        headers: {
-          'Authorization': `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
-        }
-      });
-
-      const result = await response.json();
-      return {
-        success: result.status && result.data.status === 'success',
-        data: result.data
-      };
-    } catch (error) {
-      return { success: false, error: 'Erreur de vérification Paystack' };
-    }
+    // Deprecated
+    return { success: false, error: 'Deprecated' };
   }
 
   private static async verifyFlutterwave(reference: string): Promise<{ success: boolean; data?: any; error?: string }> {
-    // TODO: Implémenter la vérification Flutterwave
-    return { success: true };
+    // Deprecated
+    return { success: false, error: 'Deprecated' };
   }
 
   private static async verifyMobileMoney(reference: string, provider: string): Promise<{ success: boolean; data?: any; error?: string }> {
-    // TODO: Implémenter la vérification Mobile Money
-    return { success: true };
+    // Deprecated
+    return { success: false, error: 'Deprecated' };
   }
 
   /**

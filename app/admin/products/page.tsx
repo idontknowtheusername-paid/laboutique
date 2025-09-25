@@ -27,6 +27,7 @@ export default function AdminProductsPage() {
   const [items, setItems] = React.useState<AdminProduct[]>([]);
   const [search, setSearch] = React.useState('');
   const [category, setCategory] = React.useState<string>('all');
+  const [totalCount, setTotalCount] = React.useState<number>(0);
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -45,6 +46,17 @@ export default function AdminProductsPage() {
   }, [search, category]);
 
   React.useEffect(() => { load(); }, [load]);
+
+  // Fetch total products count (all active products) once
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const res = await ProductsService.getAll({}, { page: 1, limit: 1 });
+        // getAll returns pagination with total
+        setTotalCount(res.pagination?.total || 0);
+      } catch {}
+    })();
+  }, []);
 
   function statusColor(s?: string) {
     switch (s) {
@@ -126,6 +138,9 @@ export default function AdminProductsPage() {
               >
                 Réinitialiser
               </Button>
+              <span className="text-sm text-gray-600 whitespace-nowrap">
+                Total: <span className="font-medium">{totalCount}</span>
+              </span>
             </div>
           </AdminToolbar>
         </CardContent>

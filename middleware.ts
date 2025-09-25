@@ -39,7 +39,24 @@ const publicRoutes = [
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const { pathname } = req.nextUrl;
-  
+  // Cache policy by route pattern
+  const setCache = (value: string) => res.headers.set('Cache-Control', value);
+
+  // Static-like public pages (marketing/info)
+  if (pathname === '/' || pathname.startsWith('/about') || pathname.startsWith('/help') || pathname.startsWith('/faq') || pathname.startsWith('/privacy') || pathname.startsWith('/terms') || pathname.startsWith('/press') || pathname.startsWith('/careers')) {
+    setCache('public, s-maxage=300, stale-while-revalidate=600');
+  }
+
+  // Product/category listing pages
+  if (pathname.startsWith('/products') || pathname.startsWith('/category') || pathname.startsWith('/categories')) {
+    setCache('public, s-maxage=120, stale-while-revalidate=300');
+  }
+
+  // Sensitive/user-specific routes: disable caching
+  if (pathname.startsWith('/account') || pathname.startsWith('/checkout') || pathname.startsWith('/cart') || pathname.startsWith('/admin')) {
+    setCache('private, no-store');
+  }
+
   // Let client-side handle all auth logic to avoid middleware complexity
   // Only handle the auth callback route
   if (pathname === '/auth/callback') {
