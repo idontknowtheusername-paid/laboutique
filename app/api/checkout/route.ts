@@ -19,6 +19,18 @@ export async function POST(request: NextRequest) {
     const callback_url = `${appUrl}/checkout/success`;
     const webhook_url = `${appUrl}/api/fedapay/webhook`;
 
+    // Create pending order first for idempotency and pass order_id in metadata
+    const pendingOrder = await OrdersService.create({
+      user_id,
+      items,
+      shipping_address: customer?.shipping_address || {},
+      billing_address: customer?.billing_address || customer?.shipping_address || {},
+      payment_method: 'fedapay',
+      notes: 'Pending via FedaPay',
+    } as any);
+
+    const orderId = (pendingOrder?.data as any)?.id;
+
     const tx = await FedaPayService.createTransaction({
       amount: total,
       description: 'Commande La Boutique B',
@@ -27,21 +39,14 @@ export async function POST(request: NextRequest) {
         email: customer?.email,
         phone_number: customer?.phone,
       },
-      metadata: { user_id, items },
+      metadata: { user_id, items, order_id: orderId },
       callback_url,
       webhook_url,
     });
 
-    // Option: create a pending order to hold context; or wait for webhook
-    // Here we create a pending order with minimal info for traceability
-    await OrdersService.create({
-      user_id,
-      items,
-      shipping_address: customer?.shipping_address || {},
-      billing_address: customer?.billing_address || customer?.shipping_address || {},
-      payment_method: 'fedapay',
-      notes: `FedaPay ref: ${tx.reference}`,
-    } as any);
+    if (orderId) {
+      await OrdersService.update({ id: orderId, notes: `FedaPay ref: ${tx.reference}` } as any);
+    }
 
     return NextResponse.json({ success: true, payment_url: tx.payment_url, reference: tx.reference });
   } catch (error: any) {

@@ -35,6 +35,13 @@ export async function POST(request: NextRequest) {
 
     if (orderId) {
       await OrdersService.update({ id: orderId, payment_status: paymentStatus, status: orderStatus, notes: `FedaPay ${reference}` } as any);
+    } else if (reference) {
+      // Fallback: find by reference in notes if metadata missing
+      const found = await OrdersService.getByReferenceInNotes(reference);
+      const ord = found?.data as any;
+      if (ord?.id) {
+        await OrdersService.update({ id: ord.id, payment_status: paymentStatus, status: orderStatus } as any);
+      }
     }
 
     return NextResponse.json({ received: true });
