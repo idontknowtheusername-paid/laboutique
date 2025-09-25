@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading, signOut } = useAuth();
   const [avatarInitial, setAvatarInitial] = useState<string>('A');
   const [adminName, setAdminName] = useState<string>('Admin');
   const [hasChecked, setHasChecked] = useState<boolean>(() => {
@@ -164,6 +164,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                           </Link>
                         );
                       })}
+                      <button
+                        onClick={() => signOut()}
+                        className="mt-3 w-full text-left flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 text-red-600"
+                        type="button"
+                        aria-label="Se déconnecter"
+                      >
+                        <Shield className="w-4 h-4" /> Se déconnecter
+                      </button>
                     </div>
                   </nav>
                 </SheetContent>
