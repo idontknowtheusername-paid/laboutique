@@ -81,6 +81,8 @@ const milestones = [
   { year: '2024', title: 'Vision internationale', description: 'Expansion prévue en Afrique de l\'Ouest' }
 ];
 
+export const revalidate = 300;
+
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-beshop-background">
