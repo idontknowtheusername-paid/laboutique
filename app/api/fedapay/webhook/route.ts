@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { OrdersService } from '@/lib/services/orders.service';
 
 export async function POST(request: NextRequest) {
@@ -9,9 +10,15 @@ export async function POST(request: NextRequest) {
 
     const payload = await request.text();
 
-    // TODO: Verify signature according to FedaPay docs (HMAC). For now, accept in sandbox.
-    // const isValid = verifyHmac(payload, signature, secret)
-    // if (!isValid) return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    // Verify HMAC signature (FedaPay docs): HMAC SHA-256 of raw body with secret, compared to header
+    const computed = crypto
+      .createHmac('sha256', secret)
+      .update(payload, 'utf8')
+      .digest('hex');
+
+    if (!signature || signature !== computed) {
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    }
 
     const json = JSON.parse(payload || '{}');
     const eventType = json?.event || json?.type || '';

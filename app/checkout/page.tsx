@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
 import Footer from '@/components/layout/Footer';
@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { CreditCard, Truck, ShieldCheck, CheckCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 
 const cartSummary = [
@@ -24,6 +25,14 @@ export default function CheckoutPage() {
   const [placed, setPlaced] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    // Protéger la page checkout si non connecté
+    if (typeof window !== 'undefined' && !user) {
+      router.replace('/auth/login?redirect=/checkout');
+    }
+  }, [user, router]);
 
   const subtotal = cartSummary.reduce((s, i) => s + i.price * i.qty, 0);
   const shipping = subtotal > 50000 ? 0 : 2000;
@@ -37,7 +46,7 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: 'current-user', // TODO: replace with real user id from auth context
+          user_id: user?.id,
           items: cartSummary.map(i => ({ product_id: i.id, vendor_id: 'default', quantity: i.qty, price: i.price })),
           customer: {
             name: 'Client',
