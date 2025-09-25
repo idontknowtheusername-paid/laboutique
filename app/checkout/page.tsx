@@ -24,6 +24,7 @@ const formatPrice = (price: number) => new Intl.NumberFormat('fr-BJ', { style: '
 export default function CheckoutPage() {
   const [placed, setPlaced] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const router = useRouter();
   const { user } = useAuth();
 
@@ -42,6 +43,7 @@ export default function CheckoutPage() {
     e.preventDefault();
     try {
       setLoading(true);
+      setErrorMsg(null);
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -65,7 +67,7 @@ export default function CheckoutPage() {
       setPlaced(true);
     } catch (err) {
       console.error(err);
-      alert('Le paiement a échoué. Réessayez.');
+      setErrorMsg((err as Error)?.message || 'Le paiement a échoué. Réessayez.');
     } finally {
       setLoading(false);
     }
@@ -117,19 +119,21 @@ export default function CheckoutPage() {
                 </CardContent>
               </Card>
 
-              {/* Payment */}
+              {/* Payment (hosted by FedaPay) */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center"><CreditCard className="w-5 h-5 mr-2" /> Paiement</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input placeholder="Titulaire de la carte" />
-                  <Input placeholder="Numéro de carte" />
-                  <Input placeholder="MM/AA" />
-                  <Input placeholder="CVC" />
-                  <div className="md:col-span-2 text-sm text-gray-600 flex items-center">
+                <CardContent className="space-y-3">
+                  <div className="text-sm text-gray-700">
+                    Vous serez redirigé vers la page sécurisée de FedaPay pour renseigner vos informations et finaliser le paiement.
+                  </div>
+                  <div className="text-sm text-gray-600 flex items-center">
                     <ShieldCheck className="w-4 h-4 mr-2 text-beshop-secondary" /> Paiement sécurisé • Chiffré
                   </div>
+                  {errorMsg ? (
+                    <div className="text-sm text-red-600">{errorMsg}</div>
+                  ) : null}
                 </CardContent>
               </Card>
 
