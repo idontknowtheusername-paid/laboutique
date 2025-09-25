@@ -24,6 +24,10 @@ const EnvSchema = z.object({
 });
 
 function main() {
+  if (process.env.ALLOW_MISSING_ENV === '1') {
+    console.warn('\n⚠️ Skipping strict env validation due to ALLOW_MISSING_ENV=1');
+    return;
+  }
 	const parsed = EnvSchema.safeParse(process.env);
 	if (!parsed.success) {
 		console.error('\n❌ Invalid or missing environment variables:\n');
