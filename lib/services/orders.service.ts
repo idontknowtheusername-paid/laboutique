@@ -290,7 +290,7 @@ export class OrdersService extends BaseService {
 
       // Calculer les totaux
       const subtotal = orderData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      const taxAmount = subtotal * 0.18; // 18% de TVA (ajustable)
+      const taxAmount = subtotal * 0.02; // 2% de TVA (ajustable)
       const shippingAmount = 2000; // Frais de livraison fixes (ajustable)
       const discountAmount = 0; // À implémenter avec les coupons
       const totalAmount = subtotal + taxAmount + shippingAmount - discountAmount;
