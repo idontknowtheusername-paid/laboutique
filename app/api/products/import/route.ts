@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
             }
 
             if (existingBySource) {
-              console.log('[IMPORT] ✅ Produit déjà importé, renvoi de l\'existant:', existingBySource.slug);
+              console.log('[IMPORT] ✅ Produit déjà importé, renvoi de l\'existant:', (existingBySource as any).slug);
               return NextResponse.json({
                 success: true,
                 data: existingBySource,
