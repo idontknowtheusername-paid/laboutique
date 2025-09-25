@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { CreditCard, Truck, ShieldCheck, CheckCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const cartSummary = [
@@ -21,14 +22,44 @@ const formatPrice = (price: number) => new Intl.NumberFormat('fr-BJ', { style: '
 
 export default function CheckoutPage() {
   const [placed, setPlaced] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const subtotal = cartSummary.reduce((s, i) => s + i.price * i.qty, 0);
   const shipping = subtotal > 50000 ? 0 : 2000;
   const total = subtotal + shipping;
 
-  const placeOrder = (e: React.FormEvent) => {
+  const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    setPlaced(true);
+    try {
+      setLoading(true);
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: 'current-user', // TODO: replace with real user id from auth context
+          items: cartSummary.map(i => ({ product_id: i.id, vendor_id: 'default', quantity: i.qty, price: i.price })),
+          customer: {
+            name: 'Client',
+            email: 'client@example.com',
+            phone: '+22900000000',
+            shipping_address: {},
+          }
+        })
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Checkout failed');
+      if (json.payment_url) {
+        window.location.href = json.payment_url;
+        return;
+      }
+      setPlaced(true);
+    } catch (err) {
+      console.error(err);
+      alert('Le paiement a échoué. Réessayez.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -93,7 +124,7 @@ export default function CheckoutPage() {
                 </CardContent>
               </Card>
 
-              <Button onClick={placeOrder} className="w-full bg-beshop-primary hover:bg-blue-700 h-12">Confirmer et payer</Button>
+              <Button disabled={loading} onClick={placeOrder} className="w-full bg-beshop-primary hover:bg-blue-700 h-12">{loading ? 'Redirection...' : 'Confirmer et payer'}</Button>
             </div>
 
             {/* Right: Summary */}

@@ -19,6 +19,12 @@ const EnvSchema = z.object({
 
   // Paystack (if used)
   PAYSTACK_SECRET_KEY: z.string().optional(),
+
+  // FedaPay
+  FEDAPAY_API_KEY: z.string().optional(),
+  FEDAPAY_PUBLIC_KEY: z.string().optional(),
+  FEDAPAY_MODE: z.enum(['test', 'live']).optional(),
+  FEDAPAY_WEBHOOK_SECRET: z.string().optional(),
 });
 
 function main() {
@@ -43,6 +49,13 @@ function main() {
   const allStripe = stripeKeys.every(Boolean);
   if (someStripe && !allStripe) {
     console.warn('⚠️ Stripe keys are partially configured. Provide all three or none.');
+  }
+
+  const fedaKeys = [env.FEDAPAY_API_KEY, env.FEDAPAY_PUBLIC_KEY, env.FEDAPAY_MODE];
+  const someFeda = fedaKeys.some(Boolean);
+  const allFeda = fedaKeys.every(Boolean);
+  if (someFeda && !allFeda) {
+    console.warn('⚠️ FedaPay keys are partially configured. Provide API key, PUBLIC key and MODE.');
   }
 }
 
