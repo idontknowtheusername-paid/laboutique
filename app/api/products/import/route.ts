@@ -145,6 +145,34 @@ export async function POST(request: NextRequest) {
           console.log('[IMPORT] 🔧 Catégorie par défaut forcée (UUID):', selectedCategoryId);
         }
 
+        // Éviter les doublons: si un produit avec la même source_url existe déjà, on le renvoie directement
+        try {
+          if (productData.source_url) {
+            console.log('[IMPORT] 🔁 Vérification d\'un produit existant par source_url:', productData.source_url);
+            const { data: existingBySource, error: existingBySourceError } = await db
+              .from('products')
+              .select('id, name, slug, status')
+              .eq('source_url', productData.source_url)
+              .limit(1)
+              .single();
+
+            if (existingBySourceError && existingBySourceError.code !== 'PGRST116') {
+              console.warn('[IMPORT] ⚠️ Erreur lors de la vérification par source_url:', existingBySourceError);
+            }
+
+            if (existingBySource) {
+              console.log('[IMPORT] ✅ Produit déjà importé, renvoi de l\'existant:', existingBySource.slug);
+              return NextResponse.json({
+                success: true,
+                data: existingBySource,
+                message: 'Produit déjà importé (source identique), aucun doublon créé'
+              });
+            }
+          }
+        } catch (dupeCheckError) {
+          console.warn('[IMPORT] ⚠️ Erreur non bloquante de vérification de doublon par source_url:', dupeCheckError);
+        }
+
         // Récupérer un vendeur existant (approche simplifiée)
         let defaultVendor: { id: string } | null = null;
 
@@ -264,11 +292,36 @@ export async function POST(request: NextRequest) {
           return '/' + img;
         });
 
+        // Générer un slug unique pour éviter les conflits de contrainte unique
+        let baseSlug = productData.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+        let uniqueSlug = baseSlug;
+        try {
+          console.log('[IMPORT] 🔎 Vérification des slugs existants pour la base:', baseSlug);
+          const { data: existingSlugs, error: existingSlugsError } = await db
+            .from('products')
+            .select('slug')
+            .ilike('slug', `${baseSlug}%`);
+
+          if (existingSlugsError) {
+            console.warn('[IMPORT] ⚠️ Erreur lors de la récupération des slugs existants:', existingSlugsError);
+          } else if (existingSlugs && existingSlugs.length > 0) {
+            const taken = new Set<string>(existingSlugs.map((r: any) => r.slug));
+            if (taken.has(baseSlug)) {
+              let suffix = 2;
+              while (taken.has(`${baseSlug}-${suffix}`)) suffix++;
+              uniqueSlug = `${baseSlug}-${suffix}`;
+            }
+          }
+          console.log('[IMPORT] ✅ Slug unique déterminé:', uniqueSlug);
+        } catch (slugError) {
+          console.warn('[IMPORT] ⚠️ Erreur non bloquante lors de la génération de slug unique, utilisation du slug de base:', slugError);
+        }
+
         // On force le statut à 'active' quoi qu'il arrive
         console.log('[IMPORT] 🏗️ Construction du payload produit...');
         const productPayload = {
           name: productData.name,
-          slug: productData.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-'),
+          slug: uniqueSlug,
           description: productData.description,
           short_description: productData.short_description,
           price: productData.price,
