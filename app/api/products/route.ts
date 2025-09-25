@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { ProductsService } from '@/lib/services';
 
 export async function GET(request: NextRequest) {
@@ -49,7 +50,22 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const res = NextResponse.json(result);
+    // ETag support
+    const body = JSON.stringify(result);
+    const etag = 'W/"' + crypto.createHash('sha1').update(body).digest('hex') + '"';
+    const ifNoneMatch = request.headers.get('if-none-match');
+    if (ifNoneMatch && ifNoneMatch === etag) {
+      const notModified = new NextResponse(null, { status: 304 });
+      notModified.headers.set('ETag', etag);
+      notModified.headers.set('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300');
+      return notModified;
+    }
+
+    const res = new NextResponse(body, {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.headers.set('ETag', etag);
     res.headers.set('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300');
     return res;
   } catch (error) {
