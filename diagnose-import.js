@@ -1,11 +1,29 @@
 // Script de diagnostic pour l'import de produits
+async function waitForReady(url, timeoutMs = 20000) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    try {
+      const res = await fetch(url);
+      if (res.ok || res.status === 404) return true;
+    } catch (_) {}
+    await new Promise(r => setTimeout(r, 500));
+  }
+  return false;
+}
+
 const diagnoseImport = async () => {
   console.log('🔍 Diagnostic de l\'import de produits...\n');
+  const baseUrl = process.env.DIAG_BASE_URL || 'http://localhost:3000';
+  const healthUrl = `${baseUrl}/api/health`;
+  const importUrl = `${baseUrl}/api/products/import`;
+  console.log(`🔗 Base URL: ${baseUrl}`);
+  console.log('⏳ Attente du serveur...');
+  await waitForReady(baseUrl);
   
   // Test 1: Vérifier la connectivité de l'API
   console.log('1️⃣ Test de connectivité API...');
   try {
-    const healthResponse = await fetch('http://localhost:3000/api/health');
+    const healthResponse = await fetch(healthUrl);
     if (healthResponse.ok) {
       console.log('✅ API accessible');
     } else {
@@ -18,7 +36,7 @@ const diagnoseImport = async () => {
   // Test 2: Test de scraping (sans import)
   console.log('\n2️⃣ Test de scraping...');
   try {
-    const scrapeResponse = await fetch('http://localhost:3000/api/products/import', {
+    const scrapeResponse = await fetch(importUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -44,7 +62,7 @@ const diagnoseImport = async () => {
   // Test 3: Test d'import complet
   console.log('\n3️⃣ Test d\'import complet...');
   try {
-    const importResponse = await fetch('http://localhost:3000/api/products/import', {
+    const importResponse = await fetch(importUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -75,6 +93,7 @@ const diagnoseImport = async () => {
           console.log('   → Problème de permissions RLS');
         } else if (importResult.error.includes('API key')) {
           console.log('   → Problème de configuration Supabase');
+          console.log('\n🛠️ Action requise: Définir SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY, puis redémarrer.');
         } else if (importResult.error.includes('column') || importResult.error.includes('does not exist')) {
           console.log('   → Problème de schéma de base de données');
         } else {
