@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/validate-env.ts",
+    "prebuild": "node scripts/validate-env.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
