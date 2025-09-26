@@ -127,6 +127,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-72 p-0">
+                <SheetHeader className="sr-only">
+                  <SheetTitle>Menu d'administration</SheetTitle>
+                </SheetHeader>
                   <div className="p-4 flex items-center gap-3 border-b">
                     <div className="w-8 h-8 bg-gradient-to-r from-beshop-primary to-blue-600 rounded-lg flex items-center justify-center">
                       <span className="text-white font-bold text-sm">B</span>
