@@ -39,6 +39,14 @@ const PersonalizedOffers = dynamic(() => import('@/components/home/PersonalizedO
   ssr: false
 });
 
+const MobileAppSection = dynamic(() => import('@/components/home/MobileAppSection'), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />
+});
+
+const TrustElements = dynamic(() => import('@/components/home/TrustElements'), {
+  loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-xl" />
+});
+
 interface HomeState {
   products: Product[];
   categories: Category[];
@@ -261,6 +269,17 @@ export default function Home() {
         <div className="mb-4">
           <FeaturedBrands />
         </div>
+        
+        {/* Mobile App Section */}
+        <div className="mb-4">
+          <MobileAppSection />
+        </div>
+        
+        {/* Trust Elements */}
+        <div className="mb-4">
+          <TrustElements />
+        </div>
+        
         <div>
           <PersonalizedOffers />
         </div>
