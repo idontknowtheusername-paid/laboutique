@@ -113,14 +113,14 @@ export const LoadingSpinner: React.FC<{ size?: 'sm' | 'md' | 'lg' }> = ({ size =
   };
 
   return (
-    <div className={`animate-spin rounded-full border-2 border-gray-300 border-t-beshop-primary ${sizeClasses[size]}`} />
+    <div className={`animate-spin rounded-full border-2 border-gray-300 border-t-jomiastore-primary ${sizeClasses[size]}`} />
   );
 };
 
 // Full Page Loading
 export const FullPageLoading: React.FC = () => {
   return (
-    <div className="min-h-screen bg-beshop-background flex items-center justify-center">
+    <div className="min-h-screen bg-jomiastore-background flex items-center justify-center">
       <div className="text-center">
         <LoadingSpinner size="lg" />
         <p className="mt-4 text-gray-600">Chargement...</p>

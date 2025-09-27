@@ -26,19 +26,19 @@ const contactInfo = [
     icon: MapPin,
     title: 'Adresse',
     details: ['Quartier Ganhi, Cotonou', 'République du Bénin'],
-    color: 'text-beshop-primary'
+    color: 'text-jomiastore-primary'
   },
   {
     icon: Phone,
     title: 'Téléphone',
     details: ['+229 XX XX XX XX', '+229 YY YY YY YY'],
-    color: 'text-beshop-secondary'
+    color: 'text-jomiastore-secondary'
   },
   {
     icon: Mail,
     title: 'Email',
-    details: ['contact@beshop.bj', 'support@beshop.bj'],
-    color: 'text-beshop-accent'
+    details: ['contact@jomiastore.com', 'support@jomiastore.com'],
+    color: 'text-jomiastore-accent'
   },
   {
     icon: Clock,
@@ -108,14 +108,14 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-beshop-background">
+    <div className="min-h-screen bg-jomiastore-background">
       <Header />
       <CategoryMenu />
       
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-beshop-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Contact</span>
         </nav>
@@ -255,7 +255,7 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full bg-beshop-primary hover:bg-blue-700 h-12">
+                  <Button type="submit" className="w-full bg-jomiastore-primary hover:bg-blue-700 h-12">
                     <Send className="w-4 h-4 mr-2" />
                     Envoyer le message
                   </Button>
@@ -276,8 +276,8 @@ export default function ContactPage() {
                   const IconComponent = option.icon;
                   return (
                     <div key={index} className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="w-12 h-12 bg-beshop-primary/10 rounded-full flex items-center justify-center mr-4">
-                        <IconComponent className="w-6 h-6 text-beshop-primary" />
+                      <div className="w-12 h-12 bg-jomiastore-primary/10 rounded-full flex items-center justify-center mr-4">
+                        <IconComponent className="w-6 h-6 text-jomiastore-primary" />
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900">{option.title}</h3>
@@ -344,10 +344,10 @@ export default function ContactPage() {
             <CardContent>
               <div className="bg-gray-200 h-64 md:h-96 rounded-lg flex items-center justify-center">
                 <div className="text-center">
-                  <MapPin className="w-16 h-16 text-beshop-primary mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Be Shop Headquarters</h3>
+                  <MapPin className="w-16 h-16 text-jomiastore-primary mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">JomiaStore Headquarters</h3>
                   <p className="text-gray-600">Quartier Ganhi, Cotonou, Bénin</p>
-                  <Button className="mt-4 bg-beshop-primary hover:bg-blue-700">
+                  <Button className="mt-4 bg-jomiastore-primary hover:bg-blue-700">
                     Voir sur Google Maps
                   </Button>
                 </div>

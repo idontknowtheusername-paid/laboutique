@@ -95,7 +95,7 @@ Livrable: avis utiles avec agrégats.
 
 Livrable: back-office minimal pour gérer le catalogue.
 
-#### Phase 9 — Vendeurs (Marketplace MVP)
+#### Phase 9 — Vendeurs (Centre Commercial Digital MVP)
 - Back: table `vendors`, ownership des produits, policies propriétaires.
 - UI: `vendor/register`, `vendor/dashboard` pour gérer ses produits.
 

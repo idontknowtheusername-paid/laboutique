@@ -280,7 +280,7 @@ const PersonalizedOffers = () => {
 
                   {/* Product Name */}
                   <Link href={`/product/${product.slug}`}>
-                    <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-beshop-primary transition-colors">
+                    <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-jomiastore-primary transition-colors">
                       {product.name}
                     </h3>
                   </Link>
@@ -305,7 +305,7 @@ const PersonalizedOffers = () => {
                   {/* Price */}
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-beshop-primary text-sm md:text-base truncate">
+                      <span className="font-bold text-jomiastore-primary text-sm md:text-base truncate">
                         {formatPrice(product.price)}
                       </span>
                       {product.comparePrice && (
@@ -347,7 +347,7 @@ const PersonalizedOffers = () => {
                 key={i}
                 aria-label={`Aller à l'élément ${i + 1}`}
                 onClick={() => scrollToIndex(i)}
-                className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-beshop-primary' : 'w-2 bg-blue-200'}`}
+                className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-jomiastore-primary' : 'w-2 bg-blue-200'}`}
               />
             ))}
           </div>

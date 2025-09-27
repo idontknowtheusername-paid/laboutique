@@ -1,12 +1,14 @@
-const CACHE_NAME = 'be-shop-v1';
-const STATIC_CACHE_NAME = 'be-shop-static-v1';
-const DYNAMIC_CACHE_NAME = 'be-shop-dynamic-v1';
+const CACHE_NAME = 'jomiastore-v1';
+const STATIC_CACHE_NAME = 'jomiastore-static-v1';
+const DYNAMIC_CACHE_NAME = 'jomiastore-dynamic-v1';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
   '/',
   '/images/placeholder-product.jpg',
   '/favicon.ico',
+  '/favicon.svg',
+  '/manifest.json',
   // Add other static assets
 ];
 

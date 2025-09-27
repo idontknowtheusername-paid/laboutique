@@ -152,7 +152,7 @@ export default function ProductDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-beshop-background">
+    <div className="min-h-screen bg-jomiastore-background">
       <Header />
       <CategoryMenu />
       
@@ -171,11 +171,11 @@ export default function ProductDetailPage() {
         )}
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-          <Link href="/" className="hover:text-beshop-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
           <span>/</span>
-          <Link href="/category/electronique" className="hover:text-beshop-primary">Électronique</Link>
+          <Link href="/category/electronique" className="hover:text-jomiastore-primary">Électronique</Link>
           <span>/</span>
-          <Link href="/category/electronique/smartphones" className="hover:text-beshop-primary">Smartphones</Link>
+          <Link href="/category/electronique/smartphones" className="hover:text-jomiastore-primary">Smartphones</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">{product?.name || '...'}</span>
         </nav>
@@ -222,7 +222,7 @@ export default function ProductDetailPage() {
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
                   className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                    index === currentImageIndex ? 'border-beshop-primary' : 'border-gray-200 hover:border-gray-300'
+                    index === currentImageIndex ? 'border-jomiastore-primary' : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <div className="relative w-full h-full">
@@ -270,7 +270,7 @@ export default function ProductDetailPage() {
             {/* Price */}
             <div className="space-y-2">
               <div className="flex items-center space-x-4">
-                <span className="text-4xl font-bold text-beshop-primary">
+                <span className="text-4xl font-bold text-jomiastore-primary">
                   {product ? formatPrice(product.price) : ''}
                 </span>
                 {product?.compare_price && (
@@ -290,7 +290,7 @@ export default function ProductDetailPage() {
             <Card className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-beshop-primary rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-jomiastore-primary rounded-full flex items-center justify-center">
                     <span className="text-white font-bold">A</span>
                   </div>
                   <div>
@@ -348,7 +348,7 @@ export default function ProductDetailPage() {
             <div className="space-y-3">
               <Button 
                 onClick={handleAddToCart}
-                className="w-full bg-beshop-primary hover:bg-blue-700 h-12 text-lg"
+                className="w-full bg-jomiastore-primary hover:bg-blue-700 h-12 text-lg"
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
                 Ajouter au panier
@@ -372,15 +372,15 @@ export default function ProductDetailPage() {
             {/* Services */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t">
               <div className="flex items-center space-x-2 text-sm">
-                <Truck className="w-5 h-5 text-beshop-secondary" />
+                <Truck className="w-5 h-5 text-jomiastore-secondary" />
                 <span>Livraison gratuite</span>
               </div>
               <div className="flex items-center space-x-2 text-sm">
-                <Shield className="w-5 h-5 text-beshop-secondary" />
+                <Shield className="w-5 h-5 text-jomiastore-secondary" />
                 <span>Garantie officielle</span>
               </div>
               <div className="flex items-center space-x-2 text-sm">
-                <RotateCcw className="w-5 h-5 text-beshop-secondary" />
+                <RotateCcw className="w-5 h-5 text-jomiastore-secondary" />
                 <span>Retour 30 jours</span>
               </div>
             </div>
@@ -407,7 +407,7 @@ export default function ProductDetailPage() {
                   <ul className="space-y-2">
                     {product?.brand && (
                       <li className="flex items-start space-x-2">
-                        <span className="w-2 h-2 bg-beshop-primary rounded-full mt-2 flex-shrink-0"></span>
+                        <span className="w-2 h-2 bg-jomiastore-primary rounded-full mt-2 flex-shrink-0"></span>
                         <span className="text-gray-700">Marque: {product.brand}</span>
                       </li>
                     )}
@@ -438,7 +438,7 @@ export default function ProductDetailPage() {
                 {/* Reviews Summary */}
                 <div className="flex items-center space-x-8 p-6 bg-gray-50 rounded-lg">
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-beshop-primary">{(product?.average_rating || 0).toFixed(1)}</div>
+                    <div className="text-4xl font-bold text-jomiastore-primary">{(product?.average_rating || 0).toFixed(1)}</div>
                     <div className="flex items-center justify-center mt-1">
                       {[...Array(5)].map((_, i) => (
                         <Star
@@ -488,7 +488,7 @@ export default function ProductDetailPage() {
                 <p className="text-gray-600 mb-6">
                   Soyez le premier à poser une question sur ce produit
                 </p>
-                <Button className="bg-beshop-primary hover:bg-blue-700">
+                <Button className="bg-jomiastore-primary hover:bg-blue-700">
                   Poser une question
                 </Button>
               </div>

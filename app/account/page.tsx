@@ -173,21 +173,21 @@ export default function AccountPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-beshop-primary" />
+        <Loader2 className="w-8 h-8 animate-spin text-jomiastore-primary" />
       </div>
     );
   }
 
   return (
     <ProtectedRoute requireAuth={true} redirectTo="/auth/login">
-      <div className="min-h-screen bg-beshop-background">
+      <div className="min-h-screen bg-jomiastore-background">
         <Header />
         <CategoryMenu />
 
         <div className="container py-8">
           {/* Breadcrumb */}
           <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-            <Link href="/" className="hover:text-beshop-primary">
+            <Link href="/" className="hover:text-jomiastore-primary">
               Accueil
             </Link>
             <span>/</span>
@@ -206,7 +206,7 @@ export default function AccountPage() {
             <div className="lg:col-span-1">
               <Card>
                 <CardHeader className="text-center">
-                  <div className="w-20 h-20 bg-beshop-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-20 h-20 bg-jomiastore-primary rounded-full flex items-center justify-center mx-auto mb-4">
                     {profile?.avatar_url ? (
                       <NextImage
                         src={profile.avatar_url}
@@ -252,19 +252,19 @@ export default function AccountPage() {
                 <CardContent className="space-y-4">
                   {statsLoading || refreshing ? (
                     <div className="flex justify-center py-8">
-                      <Loader2 className="w-6 h-6 animate-spin text-beshop-primary" />
+                      <Loader2 className="w-6 h-6 animate-spin text-jomiastore-primary" />
                     </div>
                   ) : (
                     <>
                       <div className="grid grid-cols-2 gap-4 text-center">
                         <div>
-                          <div className="text-2xl font-bold text-beshop-primary">
+                          <div className="text-2xl font-bold text-jomiastore-primary">
                             {userStats?.totalOrders || 0}
                           </div>
                           <div className="text-sm text-gray-600">Commandes</div>
                         </div>
                         <div>
-                          <div className="text-2xl font-bold text-beshop-primary">
+                          <div className="text-2xl font-bold text-jomiastore-primary">
                             {userStats?.reviewsCount || 0}
                           </div>
                           <div className="text-sm text-gray-600">
@@ -312,8 +312,8 @@ export default function AccountPage() {
                       <Card className="hover-lift transition-all duration-200 cursor-pointer">
                         <CardContent className="p-6">
                           <div className="flex items-start space-x-4">
-                            <div className="w-12 h-12 bg-beshop-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                              <IconComponent className="w-6 h-6 text-beshop-primary" />
+                            <div className="w-12 h-12 bg-jomiastore-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                              <IconComponent className="w-6 h-6 text-jomiastore-primary" />
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-1">
@@ -500,7 +500,7 @@ export default function AccountPage() {
                               <NextImage src={p.images?.[0] || '/placeholder-product.jpg'} alt={p.name} fill className="object-cover" sizes="(min-width: 768px) 25vw, 50vw" />
                             </div>
                             <div className="p-3">
-                              <div className="text-sm font-medium line-clamp-2 group-hover:text-beshop-primary">{p.name}</div>
+                              <div className="text-sm font-medium line-clamp-2 group-hover:text-jomiastore-primary">{p.name}</div>
                               <div className="text-sm text-gray-700 mt-1">{formatPrice(p.price)}</div>
                             </div>
                           </div>

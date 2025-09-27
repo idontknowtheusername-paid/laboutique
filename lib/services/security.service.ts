@@ -488,7 +488,7 @@ export class SecurityService extends BaseService {
 
   private static async generateQRCode(userId: string, secret: string): Promise<string> {
     // TODO: Implémenter la génération de QR code
-    const issuer = 'YourMarketplace';
+    const issuer = 'JomiaStoreHub';
     const label = `${issuer}:${userId}`;
     const otpauth = `otpauth://totp/${label}?secret=${secret}&issuer=${issuer}`;
     return `data:image/png;base64,${Buffer.from(otpauth).toString('base64')}`;

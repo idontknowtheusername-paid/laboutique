@@ -16,7 +16,7 @@ export default function UnauthorizedPage() {
   };
 
   return (
-    <div className="min-h-screen bg-beshop-background flex items-center justify-center">
+    <div className="min-h-screen bg-jomiastore-background flex items-center justify-center">
       <div className="container max-w-md">
         <Card>
           <CardHeader>

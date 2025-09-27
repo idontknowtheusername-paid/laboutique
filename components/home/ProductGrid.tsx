@@ -117,7 +117,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
               <Link href={viewAllLink}>
                 <Button
                   variant="outline"
-                  className="border-beshop-primary text-beshop-primary hover:bg-beshop-primary hover:text-white text-sm md:text-base"
+                  className="border-jomiastore-primary text-jomiastore-primary hover:bg-jomiastore-primary hover:text-white text-sm md:text-base"
                 >
                   <span className="md:hidden">Tout voir</span>
                   <span className="hidden md:inline">Voir tout</span>
@@ -215,7 +215,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                     <div className="space-y-1 md:space-y-1.5 flex-grow">
                       {/* Product Name */}
                       <Link href={`/product/${transformedProduct.slug}`}>
-                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-beshop-primary transition-colors">
+                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-jomiastore-primary transition-colors">
                           {transformedProduct.name}
                         </h3>
                       </Link>
@@ -250,7 +250,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                       {/* Price */}
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-beshop-primary text-sm md:text-base truncate">
+                          <span className="font-bold text-jomiastore-primary text-sm md:text-base truncate">
                             {formatPrice(transformedProduct.price)}
                           </span>
                           {transformedProduct.comparePrice && (
@@ -284,7 +284,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
               onClick={onLoadMore}
               disabled={loadingMore}
               variant="outline"
-              className="border-beshop-primary text-beshop-primary hover:bg-beshop-primary hover:text-white text-sm md:text-base"
+              className="border-jomiastore-primary text-jomiastore-primary hover:bg-jomiastore-primary hover:text-white text-sm md:text-base"
             >
               {loadingMore ? (
                 <>
@@ -304,7 +304,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
             <Link href={viewAllLink}>
               <Button
                 variant="outline"
-                className="border-beshop-primary text-beshop-primary hover:bg-beshop-primary hover:text-white text-sm md:text-base"
+                className="border-jomiastore-primary text-jomiastore-primary hover:bg-jomiastore-primary hover:text-white text-sm md:text-base"
               >
                 Voir {products.length - maxItems} autres produits
               </Button>

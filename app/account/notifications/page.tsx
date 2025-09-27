@@ -26,14 +26,14 @@ export default function NotificationsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-beshop-background">
+      <div className="min-h-screen bg-jomiastore-background">
         <Header />
         <CategoryMenu />
         <div className="container py-8">
           <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-            <a href="/" className="hover:text-beshop-primary">Accueil</a>
+            <a href="/" className="hover:text-jomiastore-primary">Accueil</a>
             <span>/</span>
-            <a href="/account" className="hover:text-beshop-primary">Mon compte</a>
+            <a href="/account" className="hover:text-jomiastore-primary">Mon compte</a>
             <span>/</span>
             <span className="text-gray-900 font-medium">Notifications</span>
           </nav>
@@ -96,7 +96,7 @@ export default function NotificationsPage() {
                     <Switch checked={!!prefs?.push_all} onCheckedChange={(v) => setPrefs(p => (p ? { ...p, push_all: !!v } : p))} />
                   </div>
                   <div className="flex gap-3 pt-2">
-                    <Button disabled={!prefs} className="bg-beshop-primary hover:bg-blue-700" onClick={async ()=>{
+                    <Button disabled={!prefs} className="bg-jomiastore-primary hover:bg-blue-700" onClick={async ()=>{
                       if (!user?.id || !prefs) return;
                       await AccountService.upsertNotificationPrefs(user.id, prefs);
                     }}>Enregistrer</Button>

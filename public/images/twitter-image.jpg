@@ -1,6 +1,6 @@
 <svg width="1200" height="600" xmlns="http://www.w3.org/2000/svg">
   <rect width="1200" height="600" fill="#1e40af"/>
-  <text x="600" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="44" fill="white" font-weight="bold">Be Shop</text>
-  <text x="600" y="320" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#e5e7eb">Marketplace Premium</text>
+  <text x="600" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="44" fill="white" font-weight="bold">JomiaStore</text>
+  <text x="600" y="320" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#e5e7eb">Centre commercial digital</text>
   <text x="600" y="360" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#d1d5db">Shopping en ligne au Bénin</text>
 </svg>

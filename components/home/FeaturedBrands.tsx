@@ -207,7 +207,7 @@ const FeaturedBrands = () => {
                               />
                             </div>
                             <div>
-                              <h3 className="font-bold text-gray-900 group-hover:text-beshop-primary transition-colors">
+                              <h3 className="font-bold text-gray-900 group-hover:text-jomiastore-primary transition-colors">
                                 {brand.name}
                               </h3>
                               <p className="text-sm text-gray-500">
@@ -230,7 +230,7 @@ const FeaturedBrands = () => {
                 key={index}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
                   index === currentSlide
-                    ? "bg-beshop-primary scale-125"
+                    ? "bg-jomiastore-primary scale-125"
                     : "bg-gray-300 hover:bg-gray-400"
                 }`}
                 onClick={() => goToSlide(index)}

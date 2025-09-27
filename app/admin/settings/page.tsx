@@ -94,7 +94,7 @@ export default function AdminSettingsPage() {
               </div>
               <div className="md:col-span-2 flex justify-end">
                 <Button
-                  className="bg-beshop-primary hover:bg-blue-700"
+                  className="bg-jomiastore-primary hover:bg-blue-700"
                   onClick={() =>
                     saveGroup("general", [
                       ["site_name", get("general.site_name")],
@@ -136,7 +136,7 @@ export default function AdminSettingsPage() {
               </div>
               <div className="md:col-span-2 flex justify-end">
                 <Button
-                  className="bg-beshop-primary hover:bg-blue-700"
+                  className="bg-jomiastore-primary hover:bg-blue-700"
                   onClick={() =>
                     saveGroup("appearance", [
                       ["primary_color", get("appearance.primary_color")],
@@ -190,7 +190,7 @@ export default function AdminSettingsPage() {
               </div>
               <div className="md:col-span-2 flex justify-end">
                 <Button
-                  className="bg-beshop-primary hover:bg-blue-700"
+                  className="bg-jomiastore-primary hover:bg-blue-700"
                   onClick={() =>
                     saveGroup("orders", [
                       ["cancel_window_min", get("orders.cancel_window_min")],
@@ -239,7 +239,7 @@ export default function AdminSettingsPage() {
               </div>
               <div className="md:col-span-2 flex justify-end">
                 <Button
-                  className="bg-beshop-primary hover:bg-blue-700"
+                  className="bg-jomiastore-primary hover:bg-blue-700"
                   onClick={() =>
                     SettingsService.upsertMany([
                       {
@@ -301,7 +301,7 @@ export default function AdminSettingsPage() {
               </div>
               <div className="md:col-span-2 flex justify-end">
                 <Button
-                  className="bg-beshop-primary hover:bg-blue-700"
+                  className="bg-jomiastore-primary hover:bg-blue-700"
                   onClick={() =>
                     saveGroup("security", [
                       ["require_admin_2fa", get("security.require_admin_2fa")],
@@ -358,7 +358,7 @@ export default function AdminSettingsPage() {
               </div>
               <div className="md:col-span-2 flex justify-end">
                 <Button
-                  className="bg-beshop-primary hover:bg-blue-700"
+                  className="bg-jomiastore-primary hover:bg-blue-700"
                   onClick={() =>
                     saveGroup("maintenance", [
                       ["enabled", get("maintenance.enabled")],

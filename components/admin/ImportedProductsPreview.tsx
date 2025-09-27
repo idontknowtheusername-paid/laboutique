@@ -76,7 +76,7 @@ export default function ImportedProductsPreview() {
     return (
       <div className="py-8">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-beshop-primary mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-jomiastore-primary mx-auto mb-4"></div>
           <p className="text-gray-600">Chargement des produits importés...</p>
         </div>
       </div>
@@ -96,7 +96,7 @@ export default function ImportedProductsPreview() {
           <p className="text-gray-600 mb-4">Commencez par importer des produits depuis AliExpress ou AliBaba</p>
           <Button
             onClick={() => window.location.href = '/admin/products/import'}
-            className="bg-beshop-primary hover:bg-blue-700"
+            className="bg-jomiastore-primary hover:bg-blue-700"
           >
             <Eye className="w-4 h-4 mr-2" />
             Importer un produit
@@ -177,7 +177,7 @@ export default function ImportedProductsPreview() {
                     
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex flex-col">
-                        <span className="text-lg font-bold text-beshop-primary">
+                        <span className="text-lg font-bold text-jomiastore-primary">
                           {formatPrice(product.price)}
                         </span>
                         {product.original_price && product.original_price > product.price && (
@@ -244,7 +244,7 @@ export default function ImportedProductsPreview() {
                 key={index}
                 onClick={() => setCurrentIndex(index)}
                 className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentIndex ? 'bg-beshop-primary' : 'bg-gray-300'
+                  index === currentIndex ? 'bg-jomiastore-primary' : 'bg-gray-300'
                 }`}
               />
             ))}
