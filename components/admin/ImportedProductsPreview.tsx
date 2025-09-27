@@ -18,28 +18,36 @@ export default function ImportedProductsPreview() {
   useEffect(() => {
     const loadImportedProducts = async () => {
       try {
+        console.log('[ImportedProductsPreview] Début du chargement...');
         setLoading(true);
         
-        // Récupérer les produits importés (avec source_platform)
-        const response = await ProductsService.getAll(
-          { 
-            // Filtrer les produits importés
-            status: 'active'
-          }, 
-          { limit: 20 }
-        );
-
-        if (response.success && response.data) {
-          // Filtrer les produits qui ont été importés (avec source_platform)
-          const importedProducts = response.data.filter(product => 
-            product.source_platform === 'aliexpress' || product.source_platform === 'alibaba'
-          );
-          setProducts(importedProducts);
+        // Récupérer les produits importés depuis l'API mock
+        const url = '/api/products/mock?limit=20&source_platform=alibaba,aliexpress';
+        console.log('[ImportedProductsPreview] Appel API:', url);
+        
+        const response = await fetch(url);
+        console.log('[ImportedProductsPreview] Réponse reçue:', response.status, response.ok);
+        
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('[ImportedProductsPreview] Données reçues:', result);
+        
+        if (result.success && result.data) {
+          // Les produits sont déjà filtrés par source_platform dans l'API
+          console.log('[ImportedProductsPreview] Produits chargés:', result.data.length);
+          setProducts(result.data);
+        } else {
+          console.error('[ImportedProductsPreview] Erreur dans la réponse:', result.error);
+          setError(result.error || 'Erreur lors du chargement');
         }
       } catch (err) {
-        console.error('Erreur lors du chargement des produits importés:', err);
+        console.error('[ImportedProductsPreview] Erreur lors du chargement des produits importés:', err);
         setError('Erreur lors du chargement');
       } finally {
+        console.log('[ImportedProductsPreview] Fin du chargement');
         setLoading(false);
       }
     };
