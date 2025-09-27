@@ -58,95 +58,167 @@ export class ScrapingService {
   }
 
   /**
-   * Simulation de scraping (à remplacer par une vraie API en production)
+   * Scraping réel avec Puppeteer (remplace la simulation)
    */
   private static async simulateScraping(
     url: string, 
     platform: keyof typeof ScrapingService.SUPPORTED_PLATFORMS
   ): Promise<ScrapedProductData> {
-    // Simuler un délai de scraping
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    const platformInfo = this.getPlatformInfo(platform);
+    console.log(`[SCRAPING] 🕷️ Début du scraping réel pour ${platform}:`, url);
     
-    // Générer des données réalistes basées sur l'URL
+    try {
+      // Utiliser Puppeteer pour le scraping réel
+      const puppeteer = await import('puppeteer');
+      const browser = await puppeteer.launch({ 
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Pour les environnements Docker/CI
+      });
+      const page = await browser.newPage();
+
+      // Définir un user agent réaliste
+      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+
+      try {
+        console.log(`[SCRAPING] 📄 Chargement de la page...`);
+        await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+        
+        console.log(`[SCRAPING] 🔍 Extraction des données...`);
+        const productData = await page.evaluate((platform) => {
+          // Sélecteurs spécifiques selon la plateforme
+          const selectors = {
+            aliexpress: {
+              name: 'h1[data-pl="product-title"], .product-title-text, h1',
+              price: '.price-current, .price .notranslate, [data-pl="price"]',
+              images: '.images-view-item img, .gallery-image img, .product-image img',
+              description: '.product-detail-description, .product-description'
+            },
+            alibaba: {
+              name: 'h1.product-title, .product-title, h1',
+              price: '.price-current, .price-value, .price',
+              images: '.product-image img, .gallery-image img, .main-image img',
+              description: '.product-description, .detail-description'
+            }
+          };
+
+          const platformSelectors = selectors[platform] || selectors.aliexpress;
+
+          // Extraire le nom
+          const nameElement = document.querySelector(platformSelectors.name);
+          const name = nameElement?.textContent?.trim() || 'Produit sans nom';
+
+          // Extraire le prix
+          const priceElement = document.querySelector(platformSelectors.price);
+          const priceText = priceElement?.textContent?.trim() || '0';
+          const price = parseFloat(priceText.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+          
+          // Si le prix est 0, utiliser un prix par défaut
+          const finalPrice = price > 0 ? price : (platform === 'aliexpress' ? 25 : 15);
+
+          // Extraire les images
+          const imageElements = document.querySelectorAll(platformSelectors.images);
+          const images = Array.from(imageElements)
+            .map(img => img.src || img.getAttribute('data-src'))
+            .filter(src => src && src.startsWith('http'))
+            .slice(0, 5); // Max 5 images
+
+          // Extraire la description
+          const descElement = document.querySelector(platformSelectors.description);
+          const description = descElement?.textContent?.trim() || 'Description non disponible';
+
+          return {
+            name,
+            price: Math.round(finalPrice * 100), // Convertir en centimes
+            original_price: Math.round(finalPrice * 1.2 * 100),
+            description,
+            short_description: description.substring(0, 150) + (description.length > 150 ? '...' : ''),
+            images: images.length > 0 ? images : ['https://via.placeholder.com/500x500'],
+            brand: 'Marque inconnue',
+            category: 'Général',
+            stock_quantity: Math.floor(Math.random() * 50) + 1,
+            source_url: window.location.href,
+            platform
+          };
+        }, platform);
+
+        await browser.close();
+        
+        console.log(`[SCRAPING] ✅ Données extraites:`, {
+          name: productData.name,
+          price: productData.price,
+          imagesCount: productData.images.length
+        });
+
+        return {
+          ...productData,
+          sku: `${platform.toUpperCase()}-${Date.now()}`,
+          specifications: {
+            'Source': 'Scraping réel',
+            'Importé le': new Date().toLocaleDateString('fr-FR'),
+            'Plateforme': platform,
+            'URL originale': url
+          },
+          source_platform: platform
+        };
+
+      } catch (pageError) {
+        await browser.close();
+        console.error(`[SCRAPING] ❌ Erreur lors du scraping:`, pageError);
+        throw pageError;
+      }
+
+    } catch (error) {
+      console.error(`[SCRAPING] ❌ Erreur critique:`, error);
+      
+      // Fallback vers la simulation si le scraping échoue
+      console.log(`[SCRAPING] 🔄 Fallback vers la simulation...`);
+      return this.fallbackSimulation(url, platform);
+    }
+  }
+
+  /**
+   * Simulation de fallback (si le scraping réel échoue)
+   */
+  private static fallbackSimulation(
+    url: string, 
+    platform: keyof typeof ScrapingService.SUPPORTED_PLATFORMS
+  ): ScrapedProductData {
+    const platformInfo = this.getPlatformInfo(platform);
     const urlParts = url.split('/');
     const productId = urlParts[urlParts.length - 1] || 'unknown';
     
-    // Données simulées réalistes
-    const sampleProducts = {
-      aliexpress: [
-        {
-          name: 'iPhone 15 Pro Max 256GB - Smartphone Apple',
-          price: 450000, // FCFA
-          original_price: 550000,
-          description: 'iPhone 15 Pro Max 256GB en excellent état. Écran 6.7 pouces Super Retina XDR, processeur A17 Pro, triple caméra 48MP. Livré avec chargeur et câble.',
-          short_description: 'iPhone 15 Pro Max 256GB - Smartphone Apple haut de gamme avec triple caméra 48MP',
-          images: [
-            'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=500',
-            'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500',
-            'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=500'
-          ],
-          brand: 'Apple',
-          category: 'Smartphones',
-          stock_quantity: 15
-        },
-        {
-          name: 'Samsung Galaxy S24 Ultra 512GB - Smartphone Android',
-          price: 380000,
-          original_price: 450000,
-          description: 'Samsung Galaxy S24 Ultra 512GB avec S Pen. Écran 6.8 pouces Dynamic AMOLED 2X, processeur Snapdragon 8 Gen 3, caméra 200MP.',
-          short_description: 'Samsung Galaxy S24 Ultra 512GB avec S Pen et caméra 200MP',
-          images: [
-            'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500',
-            'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=500'
-          ],
-          brand: 'Samsung',
-          category: 'Smartphones',
-          stock_quantity: 8
-        }
-      ],
-      alibaba: [
-        {
-          name: 'Lot de 100 T-shirts Coton Bio - Blanc',
-          price: 15000,
-          original_price: 20000,
-          description: 'Lot de 100 T-shirts en coton bio de qualité supérieure. Taille unique, couleur blanche. Idéal pour la personnalisation ou la revente.',
-          short_description: 'Lot de 100 T-shirts coton bio blanc - Qualité supérieure',
-          images: [
-            'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500',
-            'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=500'
-          ],
-          brand: 'Coton Bio',
-          category: 'Textile',
-          stock_quantity: 50
-        },
-        {
-          name: 'Coffret Maquillage Professionnel - 24 Couleurs',
-          price: 25000,
-          original_price: 35000,
-          description: 'Coffret de maquillage professionnel avec 24 couleurs de fard à paupières. Palette complète pour tous les looks. Qualité professionnelle.',
-          short_description: 'Coffret maquillage professionnel 24 couleurs - Palette complète',
-          images: [
-            'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500',
-            'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=500'
-          ],
-          brand: 'Beauty Pro',
-          category: 'Cosmétiques',
-          stock_quantity: 25
-        }
-      ]
+    // Données de fallback
+    const fallbackProducts = {
+      aliexpress: {
+        name: 'Produit AliExpress - ' + productId.substring(0, 10),
+        price: 2500000, // 25,000 FCFA en centimes
+        original_price: 3500000, // 35,000 FCFA en centimes
+        description: 'Produit importé depuis AliExpress. Description non disponible.',
+        short_description: 'Produit AliExpress importé',
+        images: ['https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=500'],
+        brand: 'AliExpress',
+        category: 'Import',
+        stock_quantity: 10
+      },
+      alibaba: {
+        name: 'Produit AliBaba - ' + productId.substring(0, 10),
+        price: 1500000, // 15,000 FCFA en centimes
+        original_price: 2000000, // 20,000 FCFA en centimes
+        description: 'Produit importé depuis AliBaba. Description non disponible.',
+        short_description: 'Produit AliBaba importé',
+        images: ['https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500'],
+        brand: 'AliBaba',
+        category: 'Import',
+        stock_quantity: 25
+      }
     };
 
-    // Sélectionner un produit aléatoire basé sur l'ID
-    const products = sampleProducts[platform];
-    const selectedProduct = products[Math.abs(productId.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % products.length];
+    const selectedProduct = fallbackProducts[platform];
 
     return {
       ...selectedProduct,
-      sku: `${platform.toUpperCase()}-${Date.now()}`,
+      sku: `${platform.toUpperCase()}-FALLBACK-${Date.now()}`,
       specifications: {
-        'Source': platformInfo?.name || platform,
+        'Source': 'Simulation (scraping échoué)',
         'Importé le': new Date().toLocaleDateString('fr-FR'),
         'Plateforme': platformInfo?.name || platform,
         'URL originale': url
