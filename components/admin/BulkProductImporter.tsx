@@ -53,7 +53,77 @@ export function BulkProductImporter() {
     setImporting(false);
   };
 
-  // Gérer l'import
+  // Fonction pour traiter une URL individuelle
+  const processUrl = async (task: ImportTaskState, index: number): Promise<ImportTaskState> => {
+    if (shouldCancel) {
+      task.status = 'error';
+      task.error = 'Import annulé';
+      return task;
+    }
+
+    task.status = 'processing';
+    
+    // Mettre à jour l'état immédiatement
+    setTasks(prevTasks => {
+      const updatedTasks = [...prevTasks];
+      updatedTasks[index] = task;
+      return updatedTasks;
+    });
+
+    try {
+      const response = await fetch('/api/products/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          url: task.url, 
+          importDirectly: true,
+          publishDirectly: publishDirectly 
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erreur lors de l\'import');
+      }
+
+      // Validation stricte : catégorie et vendeur
+      if (!result.data?.category_id || !result.data?.vendor_id) {
+        task.status = 'error';
+        task.error = "Catégorie ou vendeur non attribué. Import impossible.";
+        setError("Catégorie ou vendeur non attribué. Veuillez vérifier la configuration des catégories et vendeurs dans l'admin.");
+      } else {
+        task.status = 'success';
+        task.data = result.data;
+      }
+    } catch (error: any) {
+      task.status = 'error';
+      task.error = error.message;
+    }
+
+    return task;
+  };
+
+  // Fonction pour traiter les URLs par lots
+  const processBatch = async (batch: ImportTaskState[], batchIndex: number): Promise<ImportTaskState[]> => {
+    const startIndex = batchIndex * 3; // 3 URLs par lot
+    const results = await Promise.allSettled(
+      batch.map((task, index) => processUrl(task, startIndex + index))
+    );
+
+    return results.map((result, index) => {
+      if (result.status === 'fulfilled') {
+        return result.value;
+      } else {
+        const task = batch[index];
+        task.status = 'error';
+        task.error = result.reason?.message || 'Erreur inconnue';
+        return task;
+      }
+    });
+  };
+
+  // Gérer l'import avec traitement parallèle
   const handleImport = async () => {
     setError(null);
     const validUrls = validateUrls(urls);
@@ -74,65 +144,40 @@ export function BulkProductImporter() {
     setProgress(0);
     setShouldCancel(false);
 
-    // Traiter les URLs une par une
-    for (let i = 0; i < newTasks.length; i++) {
-      // Vérifier si l'import a été annulé
+    // Traiter les URLs par lots de 3 pour éviter de surcharger le serveur
+    const BATCH_SIZE = 3;
+    const batches = [];
+    for (let i = 0; i < newTasks.length; i += BATCH_SIZE) {
+      batches.push(newTasks.slice(i, i + BATCH_SIZE));
+    }
+
+    let completedTasks = 0;
+
+    for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
       if (shouldCancel) {
         break;
       }
 
-      const task = newTasks[i];
-      task.status = 'processing';
-      
-      // Mettre à jour l'état immédiatement
+      const batch = batches[batchIndex];
+      const processedBatch = await processBatch(batch, batchIndex);
+
+      // Mettre à jour l'état avec les résultats du lot
       setTasks(prevTasks => {
         const updatedTasks = [...prevTasks];
-        updatedTasks[i] = task;
-        return updatedTasks;
-      });
-      
-      // Petite pause pour permettre la mise à jour de l'UI
-      await new Promise(resolve => setTimeout(resolve, 200));
-
-      try {
-        const response = await fetch('/api/products/import', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            url: task.url, 
-            importDirectly: true,
-            publishDirectly: publishDirectly 
-          })
+        const startIndex = batchIndex * BATCH_SIZE;
+        processedBatch.forEach((task, index) => {
+          updatedTasks[startIndex + index] = task;
         });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(result.error || 'Erreur lors de l\'import');
-        }
-
-        // Validation stricte : catégorie et vendeur
-        if (!result.data?.category_id || !result.data?.vendor_id) {
-          task.status = 'error';
-          task.error = "Catégorie ou vendeur non attribué. Import impossible.";
-          setError("Catégorie ou vendeur non attribué. Veuillez vérifier la configuration des catégories et vendeurs dans l'admin.");
-        } else {
-          task.status = 'success';
-          task.data = result.data;
-        }
-      } catch (error: any) {
-        task.status = 'error';
-        task.error = error.message;
-      }
-
-      // Mettre à jour l'état avec les nouvelles données
-      setTasks(prevTasks => {
-        const updatedTasks = [...prevTasks];
-        updatedTasks[i] = task;
         return updatedTasks;
       });
-      
-      setProgress(((i + 1) / newTasks.length) * 100);
+
+      completedTasks += batch.length;
+      setProgress((completedTasks / newTasks.length) * 100);
+
+      // Petite pause entre les lots pour éviter de surcharger le serveur
+      if (batchIndex < batches.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
     }
 
     setImporting(false);

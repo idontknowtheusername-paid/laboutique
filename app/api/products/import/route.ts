@@ -139,10 +139,57 @@ export async function POST(request: NextRequest) {
           || findBestCategoryByKeywords(productData.name, availableCategories || []);
         console.log('[IMPORT] 📊 Catégorie trouvée par matching:', selectedCategoryId);
         
-        // Si aucune catégorie n'est trouvée, utiliser une catégorie par défaut (UUID explicite)
+        // Si aucune catégorie n'est trouvée, créer ou utiliser une catégorie par défaut
         if (!selectedCategoryId) {
-          selectedCategoryId = 'c1011f0a-a196-4678-934a-85ae8b9cff35'; // Catégorie "Électronique" par défaut
-          console.log('[IMPORT] 🔧 Catégorie par défaut forcée (UUID):', selectedCategoryId);
+          try {
+            // Essayer de trouver une catégorie "Import" existante
+            const { data: defaultCategory, error: defaultCategoryError } = await db
+              .from('categories')
+              .select('id')
+              .eq('slug', 'produits-importes')
+              .limit(1)
+              .single();
+
+            if (defaultCategory && (defaultCategory as any).id) {
+              selectedCategoryId = (defaultCategory as any).id;
+              console.log('[IMPORT] ✅ Catégorie "Import" existante trouvée:', selectedCategoryId);
+            } else {
+              // Créer une catégorie par défaut pour les imports
+              const { data: newCategory, error: createCategoryError } = await db
+                .from('categories')
+                .insert([{
+                  name: 'Produits Importés',
+                  slug: 'produits-importes',
+                  description: 'Catégorie par défaut pour les produits importés',
+                  status: 'active'
+                }])
+                .select('id')
+                .single();
+
+              if (createCategoryError) {
+                console.error('[IMPORT] ❌ Erreur création catégorie par défaut:', createCategoryError);
+                // Fallback vers la première catégorie disponible
+                if (availableCategories.length > 0) {
+                  selectedCategoryId = availableCategories[0].id;
+                  console.log('[IMPORT] 🔧 Fallback vers première catégorie disponible:', selectedCategoryId);
+                } else {
+                  throw new Error('Aucune catégorie disponible et impossible de créer une catégorie par défaut');
+                }
+              } else if (newCategory && (newCategory as any).id) {
+                selectedCategoryId = (newCategory as any).id;
+                console.log('[IMPORT] ✅ Catégorie par défaut créée:', selectedCategoryId);
+              }
+            }
+          } catch (categoryFallbackError) {
+            console.error('[IMPORT] ❌ Erreur lors de la gestion de la catégorie par défaut:', categoryFallbackError);
+            return NextResponse.json(
+              { 
+                error: 'Impossible de déterminer une catégorie pour le produit',
+                details: categoryFallbackError instanceof Error ? categoryFallbackError.message : 'Erreur inconnue'
+              },
+              { status: 500 }
+            );
+          }
         }
 
         // Éviter les doublons: si un produit avec la même source_url existe déjà, on le renvoie directement
@@ -284,13 +331,23 @@ export async function POST(request: NextRequest) {
 
         console.log('[IMPORT] ✅ Vendeur final sélectionné:', defaultVendor.id);
 
-        // Corriger les images pour Next.js : préfixer par '/' si ce sont des fichiers locaux
-
+        // Corriger et valider les images pour Next.js
         const fixedImages = (productData.images || []).map((img: string) => {
-          if (!img) return '';
-          if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('/')) return img;
+          if (!img) return '/placeholder-product.jpg';
+          
+          // Garder les URLs externes telles quelles
+          if (img.startsWith('http://') || img.startsWith('https://')) {
+            return img;
+          }
+          
+          // Préfixer par '/' si c'est un chemin relatif
+          if (img.startsWith('/')) {
+            return img;
+          }
+          
+          // Préfixer par '/' pour les fichiers locaux
           return '/' + img;
-        });
+        }).filter(img => img && img !== '/placeholder-product.jpg'); // Filtrer les images vides
 
         // Générer un slug unique pour éviter les conflits de contrainte unique
         let baseSlug = productData.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');

@@ -34,8 +34,15 @@ export const importedProductSchema = z.object({
   // Images
   images: z.array(
     z.string()
-      .url('L\'URL de l\'image n\'est pas valide')
-      .refine(url => url.startsWith('https://'), 'L\'URL doit utiliser HTTPS')
+      .min(1, 'L\'URL de l\'image ne peut pas être vide')
+      .refine(url => {
+        // Accepter les URLs HTTP/HTTPS, les chemins relatifs et absolus
+        return url.startsWith('http://') || 
+               url.startsWith('https://') || 
+               url.startsWith('/') || 
+               url.startsWith('./') ||
+               url.match(/^[a-zA-Z0-9_-]+\.(jpg|jpeg|png|gif|webp)$/i);
+      }, 'L\'URL de l\'image doit être valide (HTTP/HTTPS, chemin relatif ou nom de fichier)')
   ).min(1, 'Au moins une image est requise')
     .max(10, 'Maximum 10 images par produit'),
 
