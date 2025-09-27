@@ -1,0 +1,121 @@
+{
+  "categories": [
+    {
+      "id": "cat-1",
+      "name": "Électronique",
+      "slug": "electronique",
+      "status": "active"
+    },
+    {
+      "id": "cat-2",
+      "name": "Mode",
+      "slug": "mode",
+      "status": "active"
+    },
+    {
+      "id": "cat-3",
+      "name": "Maison & Jardin",
+      "slug": "maison-jardin",
+      "status": "active"
+    },
+    {
+      "id": "cat-4",
+      "name": "Beauté & Santé",
+      "slug": "beaute-sante",
+      "status": "active"
+    },
+    {
+      "id": "cat-import",
+      "name": "Produits Importés",
+      "slug": "produits-importes",
+      "status": "active"
+    }
+  ],
+  "vendors": [
+    {
+      "id": "vendor-1",
+      "name": "Vendeur par défaut",
+      "slug": "vendeur-defaut",
+      "email": "default@laboutique.bj",
+      "status": "active"
+    },
+    {
+      "id": "vendor-import",
+      "name": "Vendeur Import",
+      "slug": "vendeur-import",
+      "email": "import@laboutique.bj",
+      "status": "active"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod-1758974738231",
+      "name": "Produit importé de https://www.alibaba.com/x/B0l3Ay?ck=pdp",
+      "slug": "produit-importe-1758974738230",
+      "description": "Description du produit importé",
+      "short_description": "Produit importé",
+      "sku": "IMPORT-1758974738230",
+      "price": 29.99,
+      "compare_price": 39.99,
+      "track_quantity": true,
+      "quantity": 0,
+      "category_id": "cat-1",
+      "vendor_id": "vendor-1",
+      "images": [
+        "https://via.placeholder.com/400x400?text=Product+Image"
+      ],
+      "status": "draft",
+      "featured": false,
+      "source_url": "https://www.alibaba.com/x/B0l3Ay?ck=pdp",
+      "source_platform": "alibaba",
+      "created_at": "2025-09-27T12:05:38.231Z",
+      "updated_at": "2025-09-27T12:05:38.231Z"
+    },
+    {
+      "id": "prod-1758974758492",
+      "name": "Produit importé de https://www.alibaba.com/x/B0l3Ay?ck=pdp",
+      "slug": "produit-importe-1758974758492",
+      "description": "Description du produit importé",
+      "short_description": "Produit importé",
+      "sku": "IMPORT-1758974758491",
+      "price": 29.99,
+      "compare_price": 39.99,
+      "track_quantity": true,
+      "quantity": 0,
+      "category_id": "cat-1",
+      "vendor_id": "vendor-1",
+      "images": [
+        "https://via.placeholder.com/400x400?text=Product+Image"
+      ],
+      "status": "active",
+      "featured": false,
+      "source_url": "https://www.alibaba.com/x/B0l3Ay?ck=pdp",
+      "source_platform": "alibaba",
+      "created_at": "2025-09-27T12:05:58.492Z",
+      "updated_at": "2025-09-27T12:05:58.492Z"
+    },
+    {
+      "id": "prod-1758974758588",
+      "name": "Produit importé de https://www.aliexpress.com/item/1234567890.html",
+      "slug": "produit-importe-1758974758588",
+      "description": "Description du produit importé",
+      "short_description": "Produit importé",
+      "sku": "IMPORT-1758974758588",
+      "price": 29.99,
+      "compare_price": 39.99,
+      "track_quantity": true,
+      "quantity": 0,
+      "category_id": "cat-1",
+      "vendor_id": "vendor-1",
+      "images": [
+        "https://via.placeholder.com/400x400?text=Product+Image"
+      ],
+      "status": "draft",
+      "featured": false,
+      "source_url": "https://www.aliexpress.com/item/1234567890.html",
+      "source_platform": "alibaba",
+      "created_at": "2025-09-27T12:05:58.588Z",
+      "updated_at": "2025-09-27T12:05:58.588Z"
+    }
+  ]
+}

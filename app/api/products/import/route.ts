@@ -105,9 +105,23 @@ export async function POST(request: NextRequest) {
         
         // Force use of admin client for server-side operations
         const db = supabaseAdmin;
-        // Récupérer toutes les catégories disponibles (tolérant aux erreurs)
+        
+        // Forcer l'utilisation de Supabase (pas de mock en production)
+        if (!isSupabaseAdminConfigured()) {
+          console.error('[IMPORT] ❌ Supabase non configuré - clés manquantes');
+          return NextResponse.json(
+            { 
+              error: 'Base de données non configurée',
+              details: 'Les variables d\'environnement Supabase ne sont pas configurées correctement. Vérifiez SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY.'
+            },
+            { status: 500 }
+          );
+        }
+        
+        // Récupérer toutes les catégories disponibles depuis Supabase
         console.log('[IMPORT] 🏷️ Récupération des catégories...');
         let availableCategories: any[] = [];
+        
         try {
           const { data: cats, error: categoriesError } = await db
             .from('categories')
@@ -124,13 +138,28 @@ export async function POST(request: NextRequest) {
           });
           
           if (categoriesError) {
-            console.warn('[IMPORT] ⚠️ Catégories non disponibles, on appliquera la catégorie par défaut. Détails:', categoriesError);
+            console.error('[IMPORT] ❌ Erreur récupération catégories:', categoriesError);
+            return NextResponse.json(
+              { 
+                error: 'Erreur base de données',
+                details: `Impossible de récupérer les catégories: ${categoriesError.message}`,
+                errorCode: categoriesError.code
+              },
+              { status: 500 }
+            );
           } else {
             availableCategories = cats || [];
             console.log('[IMPORT] ✅ Catégories récupérées:', availableCategories.map(c => ({ id: c.id, name: c.name, slug: c.slug })));
           }
         } catch (e) {
-          console.warn('[IMPORT] 💥 Exception lors de la récupération des catégories, fallback par défaut:', e);
+          console.error('[IMPORT] 💥 Exception lors de la récupération des catégories:', e);
+          return NextResponse.json(
+            { 
+              error: 'Erreur base de données',
+              details: e instanceof Error ? e.message : 'Erreur inconnue lors de la récupération des catégories'
+            },
+            { status: 500 }
+          );
         }
 
         // Trouver la meilleure catégorie basée sur le nom du produit
@@ -139,10 +168,63 @@ export async function POST(request: NextRequest) {
           || findBestCategoryByKeywords(productData.name, availableCategories || []);
         console.log('[IMPORT] 📊 Catégorie trouvée par matching:', selectedCategoryId);
         
-        // Si aucune catégorie n'est trouvée, utiliser une catégorie par défaut (UUID explicite)
+        // Si aucune catégorie n'est trouvée, créer ou utiliser une catégorie par défaut
         if (!selectedCategoryId) {
-          selectedCategoryId = 'c1011f0a-a196-4678-934a-85ae8b9cff35'; // Catégorie "Électronique" par défaut
-          console.log('[IMPORT] 🔧 Catégorie par défaut forcée (UUID):', selectedCategoryId);
+          try {
+            // Utiliser Supabase uniquement
+            const { data: defaultCategory, error: defaultCategoryError } = await db
+              .from('categories')
+              .select('id')
+              .eq('slug', 'produits-importes')
+              .limit(1)
+              .single();
+
+            if (defaultCategory && (defaultCategory as any).id) {
+              selectedCategoryId = (defaultCategory as any).id;
+              console.log('[IMPORT] ✅ Catégorie "Import" existante trouvée:', selectedCategoryId);
+            } else {
+              // Créer une catégorie par défaut pour les imports
+              const { data: newCategory, error: createCategoryError } = await db
+                .from('categories')
+                .insert([{
+                  name: 'Produits Importés',
+                  slug: 'produits-importes',
+                  description: 'Catégorie par défaut pour les produits importés',
+                  status: 'active'
+                }] as any)
+                .select('id')
+                .single();
+
+              if (createCategoryError) {
+                console.error('[IMPORT] ❌ Erreur création catégorie par défaut:', createCategoryError);
+                // Fallback vers la première catégorie disponible
+                if (availableCategories.length > 0) {
+                  selectedCategoryId = availableCategories[0].id;
+                  console.log('[IMPORT] 🔧 Fallback vers première catégorie disponible:', selectedCategoryId);
+                } else {
+                  return NextResponse.json(
+                    { 
+                      error: 'Aucune catégorie disponible',
+                      details: 'Aucune catégorie trouvée et impossible de créer une catégorie par défaut'
+                    },
+                    { status: 500 }
+                  );
+                }
+              } else if (newCategory && (newCategory as any).id) {
+                selectedCategoryId = (newCategory as any).id;
+                console.log('[IMPORT] ✅ Catégorie par défaut créée:', selectedCategoryId);
+              }
+            }
+          } catch (categoryFallbackError) {
+            console.error('[IMPORT] ❌ Erreur lors de la gestion de la catégorie par défaut:', categoryFallbackError);
+            return NextResponse.json(
+              { 
+                error: 'Impossible de déterminer une catégorie pour le produit',
+                details: categoryFallbackError instanceof Error ? categoryFallbackError.message : 'Erreur inconnue'
+              },
+              { status: 500 }
+            );
+          }
         }
 
         // Éviter les doublons: si un produit avec la même source_url existe déjà, on le renvoie directement
@@ -173,13 +255,13 @@ export async function POST(request: NextRequest) {
           console.warn('[IMPORT] ⚠️ Erreur non bloquante de vérification de doublon par source_url:', dupeCheckError);
         }
 
-        // Récupérer un vendeur existant (approche simplifiée)
+        // Récupérer un vendeur existant depuis Supabase
         let defaultVendor: { id: string } | null = null;
 
         try {
           console.log('[IMPORT] 🔍 Recherche d\'un vendeur existant...');
           
-          // 1. Tenter de trouver n'importe quel vendeur existant
+          // Utiliser Supabase uniquement
           const { data: anyVendor, error: fetchAnyVendorError } = await db
             .from('vendors')
             .select('id')
@@ -199,9 +281,7 @@ export async function POST(request: NextRequest) {
             defaultVendor = anyVendor as { id: string };
             console.log('[IMPORT] ✅ Vendeur existant trouvé:', defaultVendor.id);
           } else {
-            // 2. Si aucun vendeur n'existe, tenter de créer un vendeur minimal
-            console.log('[IMPORT] 🚫 Aucun vendeur trouvé, tentative de création...');
-            
+            // Créer un vendeur par défaut
             const vendorData = {
               name: 'Vendeur par défaut',
               slug: 'vendeur-defaut-' + Date.now(),
@@ -209,57 +289,25 @@ export async function POST(request: NextRequest) {
               status: 'active'
             };
             
-            console.log('[IMPORT] 📦 Données vendeur à créer:', vendorData);
-            
             const { data: newVendor, error: createVendorError } = await db
               .from('vendors')
               .insert([vendorData] as any)
               .select('id')
               .single();
 
-            console.log('[IMPORT] 📊 Résultat création vendeur:', { 
-              newVendor, 
-              createVendorError: createVendorError ? {
-                code: createVendorError.code,
-                message: createVendorError.message,
-                details: createVendorError.details,
-                hint: createVendorError.hint
-              } : null
-            });
-
             if (createVendorError) {
               console.error('[IMPORT] ❌ Error creating default vendor:', createVendorError);
-              console.error('[IMPORT] 📋 Vendor creation error details:', {
-                code: createVendorError.code,
-                message: createVendorError.message,
-                details: createVendorError.details,
-                hint: createVendorError.hint
-              });
-              
               return NextResponse.json(
                 { 
                   error: 'Impossible de créer un vendeur par défaut', 
                   details: createVendorError.message,
-                  errorCode: createVendorError.code,
-                  errorDetails: createVendorError.details,
-                  hint: createVendorError.hint,
-                  vendorData: vendorData
+                  errorCode: createVendorError.code
                 },
                 { status: 500 }
               );
             } else if (newVendor && (newVendor as any).id) {
               defaultVendor = newVendor as { id: string };
               console.log('[IMPORT] ✅ Vendeur par défaut créé:', defaultVendor.id);
-            } else {
-              console.error('[IMPORT] ❌ Vendeur créé mais ID manquant:', newVendor);
-              return NextResponse.json(
-                { 
-                  error: 'Vendeur créé mais ID manquant', 
-                  details: 'La création du vendeur a réussi mais aucun ID n\'a été retourné',
-                  newVendor: newVendor
-                },
-                { status: 500 }
-              );
             }
           }
         } catch (vendorError) {
@@ -267,8 +315,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(
             { 
               error: 'Erreur inattendue lors de la gestion du vendeur', 
-              details: vendorError instanceof Error ? vendorError.message : 'Erreur inconnue',
-              stack: vendorError instanceof Error ? vendorError.stack : undefined
+              details: vendorError instanceof Error ? vendorError.message : 'Erreur inconnue'
             },
             { status: 500 }
           );
@@ -284,13 +331,23 @@ export async function POST(request: NextRequest) {
 
         console.log('[IMPORT] ✅ Vendeur final sélectionné:', defaultVendor.id);
 
-        // Corriger les images pour Next.js : préfixer par '/' si ce sont des fichiers locaux
-
+        // Corriger et valider les images pour Next.js
         const fixedImages = (productData.images || []).map((img: string) => {
-          if (!img) return '';
-          if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('/')) return img;
+          if (!img) return '/placeholder-product.jpg';
+          
+          // Garder les URLs externes telles quelles
+          if (img.startsWith('http://') || img.startsWith('https://')) {
+            return img;
+          }
+          
+          // Préfixer par '/' si c'est un chemin relatif
+          if (img.startsWith('/')) {
+            return img;
+          }
+          
+          // Préfixer par '/' pour les fichiers locaux
           return '/' + img;
-        });
+        }).filter(img => img && img !== '/placeholder-product.jpg'); // Filtrer les images vides
 
         // Générer un slug unique pour éviter les conflits de contrainte unique
         let baseSlug = productData.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
@@ -328,7 +385,7 @@ export async function POST(request: NextRequest) {
           // Mapper le prix original en compare_price pour la base de données
           compare_price: productData.original_price,
           images: fixedImages,
-          category_id: selectedCategoryId,
+          category_id: selectedCategoryId || undefined, // Convert null to undefined
           vendor_id: defaultVendor.id,
           sku: productData.sku || `IMPORT-${Date.now()}`,
           quantity: productData.stock_quantity || 0,
@@ -353,8 +410,8 @@ export async function POST(request: NextRequest) {
           imagesCount: productPayload.images?.length || 0
         });
         
-        console.log('[IMPORT] 🚀 Appel à ProductsService.createWithClient...');
-        // Use admin client to bypass RLS for server-side import when configured
+        console.log('[IMPORT] 🚀 Création du produit...');
+        // Utiliser Supabase uniquement
         const creationResponse = await ProductsService.createWithClient(db, productPayload);
 
         console.log('[IMPORT] 📊 Résultat création produit:', {
@@ -379,6 +436,30 @@ export async function POST(request: NextRequest) {
         }
 
         console.log('[IMPORT] ✅ Produit créé avec succès:', creationResponse.data.id);
+        console.log('[IMPORT] 📊 Données produit créé:', {
+          id: creationResponse.data.id,
+          name: creationResponse.data.name,
+          category_id: creationResponse.data.category_id,
+          vendor_id: creationResponse.data.vendor_id,
+          status: creationResponse.data.status
+        });
+        
+        // Vérifier que les champs requis sont présents
+        if (!creationResponse.data.category_id || !creationResponse.data.vendor_id) {
+          console.error('[IMPORT] ❌ Produit créé mais catégorie ou vendeur manquant:', {
+            category_id: creationResponse.data.category_id,
+            vendor_id: creationResponse.data.vendor_id
+          });
+          return NextResponse.json(
+            { 
+              error: 'Produit créé mais catégorie ou vendeur manquant',
+              details: `category_id: ${creationResponse.data.category_id}, vendor_id: ${creationResponse.data.vendor_id}`,
+              data: creationResponse.data
+            },
+            { status: 500 }
+          );
+        }
+        
         return NextResponse.json({
           success: true,
           data: creationResponse.data,
