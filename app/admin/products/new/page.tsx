@@ -27,6 +27,24 @@ function generateSlug(name: string): string {
     .replace(/^-+|-+$/g, ''); // Supprimer les tirets en début/fin
 }
 
+// Fonction utilitaire pour générer un SKU
+function generateSKU(name: string, categoryId?: string): string {
+  const timestamp = Date.now().toString().slice(-6); // 6 derniers chiffres du timestamp
+  const namePrefix = name
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '') // Garder seulement lettres et chiffres
+    .slice(0, 4); // Max 4 caractères
+  
+  const categoryPrefix = categoryId ? categoryId.slice(-2).toUpperCase() : 'PRD';
+  
+  return `${categoryPrefix}-${namePrefix}-${timestamp}`;
+}
+
+// Fonction utilitaire pour générer l'URL du produit
+function generateProductURL(slug: string): string {
+  return `${window.location.origin}/product/${slug}`;
+}
+
 export default function AdminNewProductPage() {
   const [saving, setSaving] = React.useState(false);
   const [message, setMessage] = React.useState<string>('');
@@ -44,6 +62,16 @@ export default function AdminNewProductPage() {
       // Générer automatiquement le slug si le nom change et que le slug est vide
       if (patch.name && !f.slug) {
         newForm.slug = generateSlug(patch.name);
+      }
+      
+      // Générer automatiquement le SKU si le nom change et que le SKU est vide
+      if (patch.name && !f.sku) {
+        newForm.sku = generateSKU(patch.name, newForm.category_id);
+      }
+      
+      // Régénérer le SKU si la catégorie change et qu'on a déjà un nom
+      if (patch.category_id && f.name && f.sku) {
+        newForm.sku = generateSKU(f.name, patch.category_id);
       }
       
       // Générer automatiquement le SEO si le nom change
@@ -370,13 +398,60 @@ export default function AdminNewProductPage() {
                       </span>
                     )}
                   </label>
-                  <Input 
-                    placeholder="Ex: IPH15PM-256-BLK"
-                    value={form.sku || ''} 
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ sku: e.target.value })}
-                    className={errors.sku ? 'border-red-500' : ''}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Identifiant unique du produit</p>
+                  <div className="flex items-center gap-2">
+                    <Input 
+                      placeholder="Ex: IPH15PM-256-BLK"
+                      value={form.sku || ''} 
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ sku: e.target.value })}
+                      className={errors.sku ? 'border-red-500' : ''}
+                    />
+                    {form.sku && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(form.sku!);
+                          setMessage('SKU copié dans le presse-papiers !');
+                          setTimeout(() => setMessage(''), 3000);
+                        }}
+                      >
+                        Copier
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {form.name ? 'Généré automatiquement - Modifiable si nécessaire' : 'Identifiant unique du produit'}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    URL du produit
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <Input 
+                      value={form.slug ? generateProductURL(form.slug) : ''}
+                      readOnly
+                      className="bg-gray-50 text-gray-600"
+                      placeholder="L'URL sera générée automatiquement"
+                    />
+                    {form.slug && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const url = generateProductURL(form.slug!);
+                          navigator.clipboard.writeText(url);
+                          setMessage('URL copiée dans le presse-papiers !');
+                          setTimeout(() => setMessage(''), 3000);
+                        }}
+                      >
+                        Copier
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">URL publique du produit (générée automatiquement)</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
