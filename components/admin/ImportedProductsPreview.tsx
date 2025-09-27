@@ -21,8 +21,8 @@ export default function ImportedProductsPreview() {
         console.log('[ImportedProductsPreview] Début du chargement...');
         setLoading(true);
         
-        // Récupérer les produits importés depuis l'API mock
-        const url = '/api/products/mock?limit=20&source_platform=alibaba,aliexpress';
+        // Utiliser l'API route pour récupérer les produits importés
+        const url = '/api/products/imported?limit=20&source_platform=alibaba,aliexpress';
         console.log('[ImportedProductsPreview] Appel API:', url);
         
         const response = await fetch(url);
@@ -36,7 +36,6 @@ export default function ImportedProductsPreview() {
         console.log('[ImportedProductsPreview] Données reçues:', result);
         
         if (result.success && result.data) {
-          // Les produits sont déjà filtrés par source_platform dans l'API
           console.log('[ImportedProductsPreview] Produits chargés:', result.data.length);
           setProducts(result.data);
         } else {
