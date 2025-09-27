@@ -71,15 +71,15 @@ export function BulkProductImporter() {
     });
 
     try {
-      const response = await fetch('/api/products/import', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          url: task.url, 
-          importDirectly: true,
-          publishDirectly: publishDirectly 
-        })
-      });
+        const response = await fetch('/api/products/import-simple', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            url: task.url, 
+            importDirectly: true,
+            publishDirectly: publishDirectly 
+          })
+        });
 
       const result = await response.json();
 
@@ -90,8 +90,9 @@ export function BulkProductImporter() {
       // Validation stricte : catégorie et vendeur
       if (!result.data?.category_id || !result.data?.vendor_id) {
         task.status = 'error';
-        task.error = "Catégorie ou vendeur non attribué. Import impossible.";
-        setError("Catégorie ou vendeur non attribué. Veuillez vérifier la configuration des catégories et vendeurs dans l'admin.");
+        const errorDetails = `Catégorie: ${result.data?.category_id || 'manquante'}, Vendeur: ${result.data?.vendor_id || 'manquant'}`;
+        task.error = `Catégorie ou vendeur non attribué. ${errorDetails}`;
+        setError(`Catégorie ou vendeur non attribué. Veuillez vérifier la configuration des catégories et vendeurs dans l'admin. Détails: ${errorDetails}`);
       } else {
         task.status = 'success';
         task.data = result.data;
