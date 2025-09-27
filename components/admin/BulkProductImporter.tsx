@@ -71,7 +71,7 @@ export function BulkProductImporter() {
     });
 
     try {
-        const response = await fetch('/api/products/import-simple', {
+        const response = await fetch('/api/products/import', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 

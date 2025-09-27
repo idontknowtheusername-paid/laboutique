@@ -6,7 +6,6 @@ import { ScrapedProductData } from '@/lib/services/types';
 import { supabase } from '@/lib/supabase';
 import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase-server';
 import { findBestCategory, getDefaultCategory, findBestCategoryByKeywords } from '@/lib/utils/category-matcher';
-import { MockDbService } from '@/lib/services/mock-db.service';
 
 // Ensure Node.js runtime so server-only env vars (service role) are available
 export const runtime = 'nodejs';
@@ -107,46 +106,60 @@ export async function POST(request: NextRequest) {
         // Force use of admin client for server-side operations
         const db = supabaseAdmin;
         
-        // Vérifier si Supabase est configuré
-        const useMockDb = !isSupabaseAdminConfigured();
-        if (useMockDb) {
-          console.log('[IMPORT] 🔄 Utilisation de la base de données mock (Supabase non configuré)');
+        // Forcer l'utilisation de Supabase (pas de mock en production)
+        if (!isSupabaseAdminConfigured()) {
+          console.error('[IMPORT] ❌ Supabase non configuré - clés manquantes');
+          return NextResponse.json(
+            { 
+              error: 'Base de données non configurée',
+              details: 'Les variables d\'environnement Supabase ne sont pas configurées correctement. Vérifiez SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY.'
+            },
+            { status: 500 }
+          );
         }
         
-        // Récupérer toutes les catégories disponibles
+        // Récupérer toutes les catégories disponibles depuis Supabase
         console.log('[IMPORT] 🏷️ Récupération des catégories...');
         let availableCategories: any[] = [];
         
-        if (useMockDb) {
-          // Utiliser la base de données mock
-          availableCategories = MockDbService.getCategories();
-          console.log('[IMPORT] ✅ Catégories mock récupérées:', availableCategories.map(c => ({ id: c.id, name: c.name, slug: c.slug })));
-        } else {
-          // Utiliser Supabase
-          try {
-            const { data: cats, error: categoriesError } = await db
-              .from('categories')
-              .select('id, name, slug')
-              .eq('status', 'active');
-            
-            console.log('[IMPORT] 📊 Résultat récupération catégories:', { 
-              catsCount: cats?.length || 0, 
-              categoriesError: categoriesError ? {
-                code: categoriesError.code,
-                message: categoriesError.message,
-                details: categoriesError.details
-              } : null
-            });
-            
-            if (categoriesError) {
-              console.warn('[IMPORT] ⚠️ Catégories non disponibles, on appliquera la catégorie par défaut. Détails:', categoriesError);
-            } else {
-              availableCategories = cats || [];
-              console.log('[IMPORT] ✅ Catégories récupérées:', availableCategories.map(c => ({ id: c.id, name: c.name, slug: c.slug })));
-            }
-          } catch (e) {
-            console.warn('[IMPORT] 💥 Exception lors de la récupération des catégories, fallback par défaut:', e);
+        try {
+          const { data: cats, error: categoriesError } = await db
+            .from('categories')
+            .select('id, name, slug')
+            .eq('status', 'active');
+          
+          console.log('[IMPORT] 📊 Résultat récupération catégories:', { 
+            catsCount: cats?.length || 0, 
+            categoriesError: categoriesError ? {
+              code: categoriesError.code,
+              message: categoriesError.message,
+              details: categoriesError.details
+            } : null
+          });
+          
+          if (categoriesError) {
+            console.error('[IMPORT] ❌ Erreur récupération catégories:', categoriesError);
+            return NextResponse.json(
+              { 
+                error: 'Erreur base de données',
+                details: `Impossible de récupérer les catégories: ${categoriesError.message}`,
+                errorCode: categoriesError.code
+              },
+              { status: 500 }
+            );
+          } else {
+            availableCategories = cats || [];
+            console.log('[IMPORT] ✅ Catégories récupérées:', availableCategories.map(c => ({ id: c.id, name: c.name, slug: c.slug })));
           }
+        } catch (e) {
+          console.error('[IMPORT] 💥 Exception lors de la récupération des catégories:', e);
+          return NextResponse.json(
+            { 
+              error: 'Erreur base de données',
+              details: e instanceof Error ? e.message : 'Erreur inconnue lors de la récupération des catégories'
+            },
+            { status: 500 }
+          );
         }
 
         // Trouver la meilleure catégorie basée sur le nom du produit
@@ -158,60 +171,48 @@ export async function POST(request: NextRequest) {
         // Si aucune catégorie n'est trouvée, créer ou utiliser une catégorie par défaut
         if (!selectedCategoryId) {
           try {
-            if (useMockDb) {
-              // Utiliser la base de données mock
-              const defaultCategory = MockDbService.findCategoryBySlug('produits-importes');
-              if (defaultCategory) {
-                selectedCategoryId = defaultCategory.id;
-                console.log('[IMPORT] ✅ Catégorie "Import" mock trouvée:', selectedCategoryId);
-              } else {
-                // Créer une catégorie par défaut dans la mock DB
-                const newCategory = MockDbService.createCategory({
+            // Utiliser Supabase uniquement
+            const { data: defaultCategory, error: defaultCategoryError } = await db
+              .from('categories')
+              .select('id')
+              .eq('slug', 'produits-importes')
+              .limit(1)
+              .single();
+
+            if (defaultCategory && (defaultCategory as any).id) {
+              selectedCategoryId = (defaultCategory as any).id;
+              console.log('[IMPORT] ✅ Catégorie "Import" existante trouvée:', selectedCategoryId);
+            } else {
+              // Créer une catégorie par défaut pour les imports
+              const { data: newCategory, error: createCategoryError } = await db
+                .from('categories')
+                .insert([{
                   name: 'Produits Importés',
                   slug: 'produits-importes',
+                  description: 'Catégorie par défaut pour les produits importés',
                   status: 'active'
-                });
-                selectedCategoryId = newCategory.id;
-                console.log('[IMPORT] ✅ Catégorie par défaut mock créée:', selectedCategoryId);
-              }
-            } else {
-              // Utiliser Supabase
-              const { data: defaultCategory, error: defaultCategoryError } = await db
-                .from('categories')
+                }] as any)
                 .select('id')
-                .eq('slug', 'produits-importes')
-                .limit(1)
                 .single();
 
-              if (defaultCategory && (defaultCategory as any).id) {
-                selectedCategoryId = (defaultCategory as any).id;
-                console.log('[IMPORT] ✅ Catégorie "Import" existante trouvée:', selectedCategoryId);
-              } else {
-                // Créer une catégorie par défaut pour les imports
-                const { data: newCategory, error: createCategoryError } = await db
-                  .from('categories')
-                  .insert([{
-                    name: 'Produits Importés',
-                    slug: 'produits-importes',
-                    description: 'Catégorie par défaut pour les produits importés',
-                    status: 'active'
-                  }] as any)
-                  .select('id')
-                  .single();
-
-                if (createCategoryError) {
-                  console.error('[IMPORT] ❌ Erreur création catégorie par défaut:', createCategoryError);
-                  // Fallback vers la première catégorie disponible
-                  if (availableCategories.length > 0) {
-                    selectedCategoryId = availableCategories[0].id;
-                    console.log('[IMPORT] 🔧 Fallback vers première catégorie disponible:', selectedCategoryId);
-                  } else {
-                    throw new Error('Aucune catégorie disponible et impossible de créer une catégorie par défaut');
-                  }
-                } else if (newCategory && (newCategory as any).id) {
-                  selectedCategoryId = (newCategory as any).id;
-                  console.log('[IMPORT] ✅ Catégorie par défaut créée:', selectedCategoryId);
+              if (createCategoryError) {
+                console.error('[IMPORT] ❌ Erreur création catégorie par défaut:', createCategoryError);
+                // Fallback vers la première catégorie disponible
+                if (availableCategories.length > 0) {
+                  selectedCategoryId = availableCategories[0].id;
+                  console.log('[IMPORT] 🔧 Fallback vers première catégorie disponible:', selectedCategoryId);
+                } else {
+                  return NextResponse.json(
+                    { 
+                      error: 'Aucune catégorie disponible',
+                      details: 'Aucune catégorie trouvée et impossible de créer une catégorie par défaut'
+                    },
+                    { status: 500 }
+                  );
                 }
+              } else if (newCategory && (newCategory as any).id) {
+                selectedCategoryId = (newCategory as any).id;
+                console.log('[IMPORT] ✅ Catégorie par défaut créée:', selectedCategoryId);
               }
             }
           } catch (categoryFallbackError) {
@@ -254,77 +255,59 @@ export async function POST(request: NextRequest) {
           console.warn('[IMPORT] ⚠️ Erreur non bloquante de vérification de doublon par source_url:', dupeCheckError);
         }
 
-        // Récupérer un vendeur existant
+        // Récupérer un vendeur existant depuis Supabase
         let defaultVendor: { id: string } | null = null;
 
         try {
           console.log('[IMPORT] 🔍 Recherche d\'un vendeur existant...');
           
-          if (useMockDb) {
-            // Utiliser la base de données mock
-            const vendors = MockDbService.getVendors();
-            if (vendors.length > 0) {
-              defaultVendor = { id: vendors[0].id };
-              console.log('[IMPORT] ✅ Vendeur mock existant trouvé:', defaultVendor.id);
-            } else {
-              // Créer un vendeur par défaut dans la mock DB
-              const newVendor = MockDbService.createVendor({
-                name: 'Vendeur par défaut',
-                slug: 'vendeur-defaut',
-                email: 'default@laboutique.bj',
-                status: 'active'
-              });
-              defaultVendor = { id: newVendor.id };
-              console.log('[IMPORT] ✅ Vendeur par défaut mock créé:', defaultVendor.id);
-            }
+          // Utiliser Supabase uniquement
+          const { data: anyVendor, error: fetchAnyVendorError } = await db
+            .from('vendors')
+            .select('id')
+            .limit(1)
+            .single();
+
+          console.log('[IMPORT] 📊 Résultat recherche vendeur:', { 
+            anyVendor, 
+            fetchAnyVendorError: fetchAnyVendorError ? {
+              code: fetchAnyVendorError.code,
+              message: fetchAnyVendorError.message,
+              details: fetchAnyVendorError.details
+            } : null
+          });
+
+          if (anyVendor && (anyVendor as any).id) {
+            defaultVendor = anyVendor as { id: string };
+            console.log('[IMPORT] ✅ Vendeur existant trouvé:', defaultVendor.id);
           } else {
-            // Utiliser Supabase
-            const { data: anyVendor, error: fetchAnyVendorError } = await db
+            // Créer un vendeur par défaut
+            const vendorData = {
+              name: 'Vendeur par défaut',
+              slug: 'vendeur-defaut-' + Date.now(),
+              email: 'default@laboutique.bj',
+              status: 'active'
+            };
+            
+            const { data: newVendor, error: createVendorError } = await db
               .from('vendors')
+              .insert([vendorData] as any)
               .select('id')
-              .limit(1)
               .single();
 
-            console.log('[IMPORT] 📊 Résultat recherche vendeur:', { 
-              anyVendor, 
-              fetchAnyVendorError: fetchAnyVendorError ? {
-                code: fetchAnyVendorError.code,
-                message: fetchAnyVendorError.message,
-                details: fetchAnyVendorError.details
-              } : null
-            });
-
-            if (anyVendor && (anyVendor as any).id) {
-              defaultVendor = anyVendor as { id: string };
-              console.log('[IMPORT] ✅ Vendeur existant trouvé:', defaultVendor.id);
-            } else {
-              // Créer un vendeur par défaut
-              const vendorData = {
-                name: 'Vendeur par défaut',
-                slug: 'vendeur-defaut-' + Date.now(),
-                email: 'default@laboutique.bj',
-                status: 'active'
-              };
-              
-              const { data: newVendor, error: createVendorError } = await db
-                .from('vendors')
-                .insert([vendorData] as any)
-                .select('id')
-                .single();
-
-              if (createVendorError) {
-                console.error('[IMPORT] ❌ Error creating default vendor:', createVendorError);
-                return NextResponse.json(
-                  { 
-                    error: 'Impossible de créer un vendeur par défaut', 
-                    details: createVendorError.message
-                  },
-                  { status: 500 }
-                );
-              } else if (newVendor && (newVendor as any).id) {
-                defaultVendor = newVendor as { id: string };
-                console.log('[IMPORT] ✅ Vendeur par défaut créé:', defaultVendor.id);
-              }
+            if (createVendorError) {
+              console.error('[IMPORT] ❌ Error creating default vendor:', createVendorError);
+              return NextResponse.json(
+                { 
+                  error: 'Impossible de créer un vendeur par défaut', 
+                  details: createVendorError.message,
+                  errorCode: createVendorError.code
+                },
+                { status: 500 }
+              );
+            } else if (newVendor && (newVendor as any).id) {
+              defaultVendor = newVendor as { id: string };
+              console.log('[IMPORT] ✅ Vendeur par défaut créé:', defaultVendor.id);
             }
           }
         } catch (vendorError) {
@@ -428,29 +411,8 @@ export async function POST(request: NextRequest) {
         });
         
         console.log('[IMPORT] 🚀 Création du produit...');
-        let creationResponse;
-        
-        if (useMockDb) {
-          // Utiliser la base de données mock
-          try {
-            const newProduct = MockDbService.createProduct(productPayload);
-            creationResponse = {
-              success: true,
-              data: newProduct,
-              error: null
-            };
-            console.log('[IMPORT] ✅ Produit créé dans la mock DB:', newProduct.id);
-          } catch (error) {
-            creationResponse = {
-              success: false,
-              data: null,
-              error: error instanceof Error ? error.message : 'Erreur inconnue'
-            };
-          }
-        } else {
-          // Utiliser Supabase
-          creationResponse = await ProductsService.createWithClient(db, productPayload);
-        }
+        // Utiliser Supabase uniquement
+        const creationResponse = await ProductsService.createWithClient(db, productPayload);
 
         console.log('[IMPORT] 📊 Résultat création produit:', {
           success: creationResponse.success,
