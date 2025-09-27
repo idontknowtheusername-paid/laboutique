@@ -126,16 +126,18 @@ const Header = () => {
       <div className="container py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">B</span>
-            </div>
+          <Link href="/" className="flex items-center space-x-3">
+            <img 
+              src="/logo.svg" 
+              alt="JomiaStore Hub" 
+              className="h-10 w-auto"
+            />
             <div>
               <h1 className="text-2xl font-bold text-jomiastore-primary">
-                JomiaStore
+                JomiaStore Hub
               </h1>
               <p className="text-xs text-gray-500 -mt-1">
-                Elite Shopping Experience
+                Centre commercial digital
               </p>
             </div>
           </Link>

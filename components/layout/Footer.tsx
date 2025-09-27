@@ -27,10 +27,12 @@ const Footer = () => {
             {/* Brand */}
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold">B</span>
-                </div>
-                <span className="font-semibold">JomiaStore</span>
+                <img 
+                  src="/logo-mono.svg" 
+                  alt="JomiaStore Hub" 
+                  className="h-8 w-auto"
+                />
+                <span className="font-semibold">JomiaStore Hub</span>
               </div>
               <div className="space-y-2 text-gray-300 text-xs">
                 <div className="flex items-center space-x-2">
