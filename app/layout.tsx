@@ -6,7 +6,7 @@ import { AppProviders } from "@/components/providers/AppProviders";
 export const metadata: Metadata = {
   title: "JomiaStore - Benin Elite Shopping Experience",
   description:
-    "JomiaStore est la première plateforme e-commerce du Bénin offrant une expérience d'achat premium avec des produits authentiques, une livraison rapide et un service client exceptionnel.",
+    "JomiaStore Hub - Le centre commercial digital du Bénin. Découvrez des milliers de produits authentiques avec une livraison rapide et un service client exceptionnel.",
   keywords:
     "e-commerce Bénin, shopping en ligne, électronique, mode, maison, beauté, JomiaStore",
   authors: [{ name: "JomiaStore Team" }],
@@ -18,14 +18,14 @@ export const metadata: Metadata = {
     url: "https://www.jomiastore.com",
     siteName: "JomiaStore",
     title: "JomiaStore - Benin Elite Shopping Experience",
-    description: "La première plateforme e-commerce premium du Bénin",
+    description: "JomiaStore Hub - Le centre commercial digital du Bénin",
     images: ["/images/og-image.jpg"],
   },
   twitter: {
     card: "summary_large_image",
     site: "@JomiaStoreBenin",
     title: "JomiaStore - Benin Elite Shopping Experience",
-    description: "La première plateforme e-commerce premium du Bénin",
+    description: "JomiaStore Hub - Le centre commercial digital du Bénin",
     images: ["/images/twitter-image.jpg"],
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.jomiastore.com'),

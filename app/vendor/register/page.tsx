@@ -38,7 +38,7 @@ export default function VendorRegisterPage() {
         <div className="text-center mb-10">
           <Badge className="bg-jomiastore-primary/10 text-jomiastore-primary mb-3">Marketplace</Badge>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Ouvrez votre boutique</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">Rejoignez des milliers de vendeurs et développez votre activité sur JomiaStore.</p>
+          <p className="text-gray-600 max-w-2xl mx-auto">Rejoignez des milliers de vendeurs et développez votre activité sur JomiaStore Hub, le centre commercial digital du Bénin.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -9,8 +9,8 @@ import Image from 'next/image';
 const slides = [
   {
     id: 1,
-    title: 'Découvrez JomiaStore',
-    subtitle: 'La nouvelle expérience shopping premium du Bénin',
+    title: 'Découvrez JomiaStore Hub',
+    subtitle: 'Le centre commercial digital du Bénin',
     description: 'Des milliers de produits authentiques, une livraison rapide et un service client exceptionnel.',
     cta: 'Découvrir maintenant',
     link: '/products',

@@ -215,7 +215,7 @@ export default function InvestorsPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-700 mb-4">
-                    Devenir la plateforme e-commerce de référence en Afrique de l'Ouest, 
+                    Devenir le centre commercial digital de référence en Afrique de l'Ouest, 
                     en connectant des millions de consommateurs et de vendeurs dans un écosystème 
                     digital florissant.
                   </p>
