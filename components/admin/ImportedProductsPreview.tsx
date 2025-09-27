@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, ExternalLink, Eye } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink, Eye, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { ProductsService, Product } from '@/lib/services';
 import Link from 'next/link';
@@ -101,13 +101,23 @@ export default function ImportedProductsPreview() {
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun produit importé</h3>
           <p className="text-gray-600 mb-4">Commencez par importer des produits depuis AliExpress ou AliBaba</p>
-          <Button
-            onClick={() => window.location.href = '/admin/products/import'}
-            className="bg-beshop-primary hover:bg-blue-700"
-          >
-            <Eye className="w-4 h-4 mr-2" />
-            Importer un produit
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              onClick={() => window.location.href = '/admin/products/import'}
+              className="bg-beshop-primary hover:bg-blue-700"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              Importer un produit
+            </Button>
+            <Button
+              onClick={() => window.location.href = '/admin/products/new'}
+              variant="outline"
+              className="border-green-600 text-green-600 hover:bg-green-50"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Créer manuellement
+            </Button>
+          </div>
         </div>
       </div>
     );
