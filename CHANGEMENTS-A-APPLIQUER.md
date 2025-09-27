@@ -204,7 +204,7 @@ export default function Home() {
               Devenez vendeur sur JomiaStore
             </h2>
             <p className="mb-6 text-lg md:text-2xl">
-              Rejoignez notre marketplace !
+              Rejoignez notre centre commercial digital !
             </p>
             <a href="/vendor/register" className="inline-block bg-white text-jomiastore-accent font-semibold px-8 py-3 rounded-lg shadow hover:bg-gray-100 transition">
               S'inscrire comme vendeur
