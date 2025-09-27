@@ -117,8 +117,8 @@ export class ScrapingService {
           // Extraire les images
           const imageElements = document.querySelectorAll(platformSelectors.images);
           const images = Array.from(imageElements)
-            .map(img => img.src || img.getAttribute('data-src'))
-            .filter(src => src && src.startsWith('http'))
+            .map(img => (img as HTMLImageElement).src || img.getAttribute('data-src'))
+            .filter((src): src is string => src !== null && src.startsWith('http'))
             .slice(0, 5); // Max 5 images
 
           // Extraire la description

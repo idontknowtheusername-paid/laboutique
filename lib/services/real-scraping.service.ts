@@ -85,7 +85,7 @@ export class RealScrapingService {
                      document.querySelector('[data-pl="price"]')?.textContent?.trim();
 
         const images = Array.from(document.querySelectorAll('.images-view-item img, .gallery-image img'))
-          .map(img => img.src || img.getAttribute('data-src'))
+          .map(img => (img as HTMLImageElement).src || img.getAttribute('data-src'))
           .filter(src => src && src.startsWith('http'));
 
         const description = document.querySelector('.product-detail-description')?.textContent?.trim() ||

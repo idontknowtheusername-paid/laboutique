@@ -21,7 +21,7 @@ export function VendorSelector({ value, onChange, placeholder = "Sélectionner u
         setLoading(true);
         const result = await VendorsService.getAll();
         if (result.success && result.data) {
-          setVendors(result.data.items || []);
+          setVendors(result.data || []);
         } else {
           setError('Erreur lors du chargement des vendeurs');
         }
