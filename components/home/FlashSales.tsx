@@ -208,7 +208,7 @@ const FlashSales = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-beshop-secondary to-orange-600 rounded-xl p-6 text-white">
+    <div className="bg-gradient-to-r from-jomiastore-secondary to-orange-600 rounded-xl p-6 text-white">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
@@ -217,15 +217,15 @@ const FlashSales = () => {
             <Clock className="w-4 h-4" />
             <span className="font-medium text-sm">Se termine dans:</span>
             <div className="flex space-x-1">
-              <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
+              <span className="bg-white text-jomiastore-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
                 {String(timeLeft.hours).padStart(2, "0")}
               </span>
               <span className="text-sm">:</span>
-              <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
+              <span className="bg-white text-jomiastore-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
                 {String(timeLeft.minutes).padStart(2, "0")}
               </span>
               <span className="text-sm">:</span>
-              <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
+              <span className="bg-white text-jomiastore-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
                 {String(timeLeft.seconds).padStart(2, "0")}
               </span>
             </div>
@@ -235,7 +235,7 @@ const FlashSales = () => {
         <Link href="/flash-sales">
           <Button
             variant="secondary"
-            className="bg-white text-beshop-secondary hover:bg-gray-100 text-sm"
+            className="bg-white text-jomiastore-secondary hover:bg-gray-100 text-sm"
           >
             Voir tout
           </Button>
@@ -303,7 +303,7 @@ const FlashSales = () => {
                     <div className="space-y-2 md:space-y-3 flex-grow">
                       {/* Product Name */}
                       <Link href={`/product/${product.slug}`}>
-                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-beshop-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
+                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-jomiastore-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
                           {product.name}
                         </h3>
                       </Link>
@@ -330,7 +330,7 @@ const FlashSales = () => {
                       {/* Prices */}
                       <div className="space-y-1">
                         <div className="flex flex-col md:flex-row items-start md:items-center space-y-1 md:space-y-0 md:space-x-2">
-                          <span className="font-bold text-beshop-primary text-sm md:text-lg">
+                          <span className="font-bold text-jomiastore-primary text-sm md:text-lg">
                             {formatPrice(product.salePrice)}
                           </span>
                           <span className="text-xs md:text-sm text-gray-500 line-through">

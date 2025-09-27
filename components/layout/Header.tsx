@@ -39,7 +39,7 @@ const Header = () => {
       title: 'Super Soldes du Week-end',
       subtitle: 'Jusqu\'à -30% sur électronique',
       href: '/category/electronique',
-      bg: 'from-beshop-primary to-blue-600',
+      bg: 'from-jomiastore-primary to-blue-600',
     },
     {
       id: 'a2',
@@ -99,7 +99,7 @@ const Header = () => {
       }`}
     >
       {/* Announcement Bar */}
-      <div className="bg-gradient-to-r from-beshop-primary to-blue-600 text-white py-2">
+      <div className="bg-gradient-to-r from-jomiastore-primary to-blue-600 text-white py-2">
         <div className="container relative">
           <Carousel setApi={setAnnApi} opts={{ align: "start", loop: true }}>
             <CarouselContent>
@@ -131,8 +131,8 @@ const Header = () => {
               <span className="text-white font-bold text-lg">B</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-beshop-primary">
-                Be Shop
+              <h1 className="text-2xl font-bold text-jomiastore-primary">
+                JomiaStore
               </h1>
               <p className="text-xs text-gray-500 -mt-1">
                 Elite Shopping Experience
@@ -151,12 +151,12 @@ const Header = () => {
                 placeholder="Rechercher des produits, marques et catégories..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pr-12 h-12 text-base border-2 border-gray-200 focus:border-beshop-primary"
+                className="pr-12 h-12 text-base border-2 border-gray-200 focus:border-jomiastore-primary"
               />
               <Button
                 type="submit"
                 size="sm"
-                className="absolute right-1 top-1 h-10 px-4 bg-beshop-secondary hover:bg-orange-600"
+                className="absolute right-1 top-1 h-10 px-4 bg-jomiastore-secondary hover:bg-orange-600"
               >
                 <Search className="w-4 h-4" />
               </Button>
@@ -185,7 +185,7 @@ const Header = () => {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="flex items-center space-x-2 text-gray-700 hover:text-beshop-primary"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-jomiastore-primary"
                     >
                       <User className="w-5 h-5" />
                       <div className="hidden lg:block text-left">
@@ -236,7 +236,7 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-700 hover:text-beshop-primary"
+                  className="text-gray-700 hover:text-jomiastore-primary"
                 >
                   <Heart className="w-6 h-6" />
                 </Button>
@@ -248,12 +248,12 @@ const Header = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-gray-700 hover:text-beshop-primary"
+                className="text-gray-700 hover:text-jomiastore-primary"
               >
                 <ShoppingCart className="w-6 h-6" />
                 <ClientSafe>
                   {cartItemsCount > 0 && (
-                    <Badge className="absolute -top-2 -right-2 bg-beshop-secondary text-white text-xs px-2 py-1">
+                    <Badge className="absolute -top-2 -right-2 bg-jomiastore-secondary text-white text-xs px-2 py-1">
                       {cartItemsCount}
                     </Badge>
                   )}
@@ -286,12 +286,12 @@ const Header = () => {
               placeholder="Rechercher..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pr-12 h-10 border-2 border-gray-200 focus:border-beshop-primary"
+              className="pr-12 h-10 border-2 border-gray-200 focus:border-jomiastore-primary"
             />
             <Button
               type="submit"
               size="sm"
-              className="absolute right-1 top-1 h-8 px-3 bg-beshop-secondary hover:bg-orange-600"
+              className="absolute right-1 top-1 h-8 px-3 bg-jomiastore-secondary hover:bg-orange-600"
             >
               <Search className="w-4 h-4" />
             </Button>
@@ -308,7 +308,7 @@ const MobileMenu = () => {
   return (
     <div className="flex flex-col space-y-4 p-4">
       <div className="flex items-center space-x-2 pb-4 border-b">
-        <User className="w-8 h-8 text-beshop-primary" />
+        <User className="w-8 h-8 text-jomiastore-primary" />
         <div>
           <div className="font-medium">
             {user ? `${user.user_metadata?.first_name || 'Mon compte'}` : 'Se connecter'}
@@ -321,13 +321,13 @@ const MobileMenu = () => {
 
       {user ? (
         <>
-          <Link href="/account" className="py-2 text-gray-700 hover:text-beshop-primary">
+          <Link href="/account" className="py-2 text-gray-700 hover:text-jomiastore-primary">
             Mon profil
           </Link>
-          <Link href="/account/orders" className="py-2 text-gray-700 hover:text-beshop-primary">
+          <Link href="/account/orders" className="py-2 text-gray-700 hover:text-jomiastore-primary">
             Mes commandes
           </Link>
-          <Link href="/account/wishlist" className="py-2 text-gray-700 hover:text-beshop-primary">
+          <Link href="/account/wishlist" className="py-2 text-gray-700 hover:text-jomiastore-primary">
             Ma liste de souhaits
           </Link>
           <Button onClick={() => signOut()} variant="outline" className="mt-4">
@@ -346,13 +346,13 @@ const MobileMenu = () => {
       )}
 
       <div className="pt-4 border-t">
-        <Link href="/help" className="py-2 text-gray-700 hover:text-beshop-primary block">
+        <Link href="/help" className="py-2 text-gray-700 hover:text-jomiastore-primary block">
           Centre d'aide
         </Link>
-        <Link href="/about" className="py-2 text-gray-700 hover:text-beshop-primary block">
+        <Link href="/about" className="py-2 text-gray-700 hover:text-jomiastore-primary block">
           À propos
         </Link>
-        <Link href="/contact" className="py-2 text-gray-700 hover:text-beshop-primary block">
+        <Link href="/contact" className="py-2 text-gray-700 hover:text-jomiastore-primary block">
           Contact
         </Link>
       </div>

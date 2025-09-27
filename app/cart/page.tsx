@@ -79,20 +79,20 @@ export default function CartPage() {
   const total = cartSummary?.total_amount || (subtotal + taxAmount + shipping - promoDiscount);
 
   const applyPromoCode = () => {
-    if (promoCode.toLowerCase() === "beshop5") {
+    if (promoCode.toLowerCase() === "jomiastore5") {
       setPromoApplied(true);
     }
   };
 
   return (
-    <div className="min-h-screen bg-beshop-background">
+    <div className="min-h-screen bg-jomiastore-background">
       <Header />
       <CategoryMenu />
 
       <div className="container py-4 md:py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-          <Link href="/" className="hover:text-beshop-primary">
+          <Link href="/" className="hover:text-jomiastore-primary">
             Accueil
           </Link>
           <span>/</span>
@@ -178,7 +178,7 @@ export default function CartPage() {
         {loading && cartItems.length === 0 ? (
           /* Loading State */
           <div className="text-center py-12">
-            <div className="w-16 h-16 animate-spin rounded-full border-4 border-beshop-primary border-t-transparent mx-auto mb-4" />
+            <div className="w-16 h-16 animate-spin rounded-full border-4 border-jomiastore-primary border-t-transparent mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-700">
               Chargement de votre panier...
             </h2>
@@ -194,7 +194,7 @@ export default function CartPage() {
               Découvrez nos produits et ajoutez-les à votre panier
             </p>
             <Link href="/">
-              <Button className="bg-beshop-primary hover:bg-blue-700">
+              <Button className="bg-jomiastore-primary hover:bg-blue-700">
                 Continuer mes achats
               </Button>
             </Link>
@@ -235,7 +235,7 @@ export default function CartPage() {
                               />
                               {(isUpdating || isRemoving) && (
                                 <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
-                                  <div className="w-6 h-6 animate-spin rounded-full border-2 border-beshop-primary border-t-transparent" />
+                                  <div className="w-6 h-6 animate-spin rounded-full border-2 border-jomiastore-primary border-t-transparent" />
                                 </div>
                               )}
                             </div>
@@ -249,7 +249,7 @@ export default function CartPage() {
                                   </h3>
                                   <p className="text-sm text-gray-500">
                                     Vendu par{" "}
-                                    {item.product?.vendor?.name || "Be Shop"}
+                                    {item.product?.vendor?.name || "JomiaStore"}
                                   </p>
                                   {!item.product && (
                                     <p className="text-xs text-red-500 mt-1">
@@ -294,7 +294,7 @@ export default function CartPage() {
                                 {/* Price */}
                                 <div className="space-y-1">
                                   <div className="flex items-center space-x-2">
-                                    <span className="font-bold text-lg text-beshop-primary">
+                                    <span className="font-bold text-lg text-jomiastore-primary">
                                       {formatPrice(item.product?.price || 0)}
                                     </span>
                                     {item.product?.compare_price && item.product.compare_price > item.product.price && (
@@ -321,7 +321,7 @@ export default function CartPage() {
                                       {item.quantity}
                                       {isUpdating && (
                                         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75">
-                                          <div className="w-3 h-3 animate-spin rounded-full border border-beshop-primary border-t-transparent" />
+                                          <div className="w-3 h-3 animate-spin rounded-full border border-jomiastore-primary border-t-transparent" />
                                         </div>
                                       )}
                                     </span>
@@ -377,7 +377,7 @@ export default function CartPage() {
                   {promoApplied && (
                     <div className="flex items-center text-green-600 text-sm">
                       <Tag className="w-4 h-4 mr-1" />
-                      Code BESHOP5 appliqué (-5%)
+                      Code JOMIASTORE5 appliqué (-5%)
                     </div>
                   )}
                 </CardContent>
@@ -438,7 +438,7 @@ export default function CartPage() {
 
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
-                        <span className={`text-beshop-primary ${loading || syncing ? 'opacity-50' : ''}`}>
+                        <span className={`text-jomiastore-primary ${loading || syncing ? 'opacity-50' : ''}`}>
                           {loading || syncing ? (
                             <div className="w-20 h-6 bg-gray-200 animate-pulse rounded" />
                           ) : (
@@ -457,7 +457,7 @@ export default function CartPage() {
 
                   <Link href="/checkout">
                         <Button
-                          className="w-full bg-beshop-primary hover:bg-blue-700 h-12 text-lg"
+                          className="w-full bg-jomiastore-primary hover:bg-blue-700 h-12 text-lg"
                           disabled={loading || syncing || cartItems.length === 0 || error?.type === 'conflict'}
                         >
                           {loading || syncing ? (
@@ -474,11 +474,11 @@ export default function CartPage() {
                   {/* Trust Badges */}
                   <div className="grid grid-cols-2 gap-4 pt-4 border-t">
                     <div className="flex items-center text-sm text-gray-600">
-                      <Truck className="w-4 h-4 mr-2 text-beshop-secondary" />
+                      <Truck className="w-4 h-4 mr-2 text-jomiastore-secondary" />
                       <span>Livraison rapide</span>
                     </div>
                     <div className="flex items-center text-sm text-gray-600">
-                      <Shield className="w-4 h-4 mr-2 text-beshop-secondary" />
+                      <Shield className="w-4 h-4 mr-2 text-jomiastore-secondary" />
                       <span>Paiement sécurisé</span>
                     </div>
                   </div>

@@ -161,7 +161,7 @@ export default function CategoriesConnected() {
         {/* View All Categories Button */}
         <div className="text-center">
           <Link href="/categories">
-            <button className="bg-beshop-primary text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            <button className="bg-jomiastore-primary text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
               Voir toutes les catégories
             </button>
           </Link>

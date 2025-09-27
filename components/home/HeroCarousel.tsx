@@ -9,13 +9,13 @@ import Image from 'next/image';
 const slides = [
   {
     id: 1,
-    title: 'Découvrez Be Shop',
+    title: 'Découvrez JomiaStore',
     subtitle: 'La nouvelle expérience shopping premium du Bénin',
     description: 'Des milliers de produits authentiques, une livraison rapide et un service client exceptionnel.',
     cta: 'Découvrir maintenant',
     link: '/products',
     image: 'https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    gradient: 'from-beshop-primary to-blue-600',
+    gradient: 'from-jomiastore-primary to-blue-600',
   },
   {
     id: 2,
@@ -25,7 +25,7 @@ const slides = [
     cta: 'Voir la collection',
     link: '/category/electronique',
     image: 'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    gradient: 'from-beshop-secondary to-orange-600',
+    gradient: 'from-jomiastore-secondary to-orange-600',
   },
   {
     id: 3,

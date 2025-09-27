@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 :root {
-  /* Be Shop Custom Variables */
-  --beshop-primary: #1E40AF;
-  --beshop-secondary: #EA580C;
-  --beshop-accent: #7C2D12;
-  --beshop-background: #F8FAFC;
-  --beshop-text: #0F172A;
+  /* JomiaStore Custom Variables */
+  --jomiastore-primary: #1E40AF;
+  --jomiastore-secondary: #EA580C;
+  --jomiastore-accent: #7C2D12;
+  --jomiastore-background: #F8FAFC;
+  --jomiastore-text: #0F172A;
   
   /* Header Layout Variables */
   --header-announcement-height: 40px;
@@ -51,7 +51,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-beshop-background text-beshop-text font-sans;
+    @apply bg-jomiastore-background text-jomiastore-text font-sans;
     scroll-behavior: smooth;
   }
 }
@@ -62,27 +62,27 @@
   }
   
   .btn-primary {
-    @apply bg-beshop-primary text-white hover:bg-blue-700 transition-colors duration-200 font-medium px-6 py-3 rounded-lg;
+    @apply bg-jomiastore-primary text-white hover:bg-blue-700 transition-colors duration-200 font-medium px-6 py-3 rounded-lg;
   }
   
   .btn-secondary {
-    @apply bg-beshop-secondary text-white hover:bg-orange-700 transition-colors duration-200 font-medium px-6 py-3 rounded-lg;
+    @apply bg-jomiastore-secondary text-white hover:bg-orange-700 transition-colors duration-200 font-medium px-6 py-3 rounded-lg;
   }
   
   .text-primary {
-    @apply text-beshop-primary;
+    @apply text-jomiastore-primary;
   }
   
   .text-secondary {
-    @apply text-beshop-secondary;
+    @apply text-jomiastore-secondary;
   }
   
   .bg-primary {
-    @apply bg-beshop-primary;
+    @apply bg-jomiastore-primary;
   }
   
   .bg-secondary {
-    @apply bg-beshop-secondary;
+    @apply bg-jomiastore-secondary;
   }
   
   .hover-lift {
@@ -94,11 +94,11 @@
   }
   
   .gradient-primary {
-    @apply bg-gradient-to-r from-beshop-primary to-blue-600;
+    @apply bg-gradient-to-r from-jomiastore-primary to-blue-600;
   }
   
   .gradient-secondary {
-    @apply bg-gradient-to-r from-beshop-secondary to-orange-600;
+    @apply bg-gradient-to-r from-jomiastore-secondary to-orange-600;
   }
 }
 
@@ -112,7 +112,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--beshop-primary);
+  background: var(--jomiastore-primary);
   border-radius: 3px;
 }
 

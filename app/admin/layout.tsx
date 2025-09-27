@@ -88,9 +88,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Afficher un loader pendant la vérification
   if (!hasChecked) {
     return (
-      <div className="min-h-screen bg-beshop-background flex items-center justify-center">
+      <div className="min-h-screen bg-jomiastore-background flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 bg-gradient-to-r from-beshop-primary to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+          <div className="w-8 h-8 bg-gradient-to-r from-jomiastore-primary to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-sm">B</span>
           </div>
           <p className="text-gray-600">Vérification des permissions...</p>
@@ -115,7 +115,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
 
   return (
-      <div className="min-h-screen bg-beshop-background">
+      <div className="min-h-screen bg-jomiastore-background">
         <header className="bg-white border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -131,7 +131,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <SheetTitle>Menu d'administration</SheetTitle>
                 </SheetHeader>
                   <div className="p-4 flex items-center gap-3 border-b">
-                    <div className="w-8 h-8 bg-gradient-to-r from-beshop-primary to-blue-600 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-gradient-to-r from-jomiastore-primary to-blue-600 rounded-lg flex items-center justify-center">
                       <span className="text-white font-bold text-sm">B</span>
                     </div>
                     <div>
@@ -180,7 +180,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Button variant="outline" size="sm">
                 <Bell className="w-4 h-4 mr-2" /> Notifications
               </Button>
-              <div className="w-8 h-8 bg-beshop-primary rounded-full flex items-center justify-center" title={adminName}>
+              <div className="w-8 h-8 bg-jomiastore-primary rounded-full flex items-center justify-center" title={adminName}>
                 <span className="text-white font-medium text-sm">{avatarInitial}</span>
               </div>
             </div>

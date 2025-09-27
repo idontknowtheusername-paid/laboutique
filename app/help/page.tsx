@@ -20,21 +20,21 @@ const topics = [
 
 export default function HelpCenterPage() {
   return (
-    <div className="min-h-screen bg-beshop-background">
+    <div className="min-h-screen bg-jomiastore-background">
       <Header />
       <CategoryMenu />
 
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-beshop-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Centre d'aide</span>
         </nav>
 
         {/* Hero */}
         <div className="text-center mb-10">
-          <Badge className="bg-beshop-primary/10 text-beshop-primary mb-3">Assistance</Badge>
+          <Badge className="bg-jomiastore-primary/10 text-jomiastore-primary mb-3">Assistance</Badge>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Comment pouvons-nous vous aider ?</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">Recherchez une question ou explorez les catégories pour trouver rapidement des réponses.</p>
         </div>
@@ -58,8 +58,8 @@ export default function HelpCenterPage() {
               <Link key={i} href={t.href}>
                 <Card className="hover-lift cursor-pointer">
                   <CardContent className="p-6 space-y-3">
-                    <div className="w-12 h-12 bg-beshop-primary/10 rounded-full flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-beshop-primary" />
+                    <div className="w-12 h-12 bg-jomiastore-primary/10 rounded-full flex items-center justify-center">
+                      <Icon className="w-6 h-6 text-jomiastore-primary" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900">{t.title}</h3>
@@ -112,7 +112,7 @@ export default function HelpCenterPage() {
         {/* Contact CTA */}
         <div className="mt-12 text-center">
           <Link href="/contact">
-            <Button className="bg-beshop-primary hover:bg-blue-700">
+            <Button className="bg-jomiastore-primary hover:bg-blue-700">
               <MessageCircle className="w-4 h-4 mr-2" /> Contacter le support
             </Button>
           </Link>

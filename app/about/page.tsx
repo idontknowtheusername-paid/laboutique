@@ -74,7 +74,7 @@ const team = [
 ];
 
 const milestones = [
-  { year: '2020', title: 'Création de Be Shop', description: 'Lancement de la plateforme avec 50 vendeurs partenaires' },
+  { year: '2020', title: 'Création de JomiaStore', description: 'Lancement de la plateforme avec 50 vendeurs partenaires' },
   { year: '2021', title: 'Expansion régionale', description: 'Extension à 5 villes du Bénin et 10,000 produits' },
   { year: '2022', title: 'Innovation technologique', description: 'Lancement de l\'app mobile et IA de recommandation' },
   { year: '2023', title: 'Leadership marché', description: 'N°1 du e-commerce au Bénin avec 500K clients' },
@@ -83,29 +83,29 @@ const milestones = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-beshop-background">
+    <div className="min-h-screen bg-jomiastore-background">
       <Header />
       <CategoryMenu />
       
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-beshop-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">À propos</span>
         </nav>
 
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <Badge className="bg-beshop-primary/10 text-beshop-primary mb-4">
-            À propos de Be Shop
+          <Badge className="bg-jomiastore-primary/10 text-jomiastore-primary mb-4">
+            À propos de JomiaStore
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
             L'avenir du shopping
-            <span className="block text-beshop-primary">au Bénin</span>
+            <span className="block text-jomiastore-primary">au Bénin</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Be Shop révolutionne l'expérience e-commerce en Afrique de l'Ouest en offrant 
+            JomiaStore révolutionne l'expérience e-commerce en Afrique de l'Ouest en offrant 
             une plateforme premium qui connecte les meilleurs vendeurs avec des millions de clients.
           </p>
         </div>
@@ -117,11 +117,11 @@ export default function AboutPage() {
             return (
               <Card key={index} className="text-center p-6 hover-lift">
                 <CardContent className="space-y-4">
-                  <div className="w-16 h-16 bg-beshop-primary/10 rounded-full flex items-center justify-center mx-auto">
-                    <IconComponent className="w-8 h-8 text-beshop-primary" />
+                  <div className="w-16 h-16 bg-jomiastore-primary/10 rounded-full flex items-center justify-center mx-auto">
+                    <IconComponent className="w-8 h-8 text-jomiastore-primary" />
                   </div>
                   <div>
-                    <div className="text-3xl font-bold text-beshop-primary mb-1">
+                    <div className="text-3xl font-bold text-jomiastore-primary mb-1">
                       {stat.value}
                     </div>
                     <div className="text-sm text-gray-600">{stat.label}</div>
@@ -136,8 +136,8 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           <Card className="p-8">
             <CardContent className="space-y-6">
-              <div className="w-16 h-16 bg-beshop-secondary/10 rounded-full flex items-center justify-center">
-                <Target className="w-8 h-8 text-beshop-secondary" />
+              <div className="w-16 h-16 bg-jomiastore-secondary/10 rounded-full flex items-center justify-center">
+                <Target className="w-8 h-8 text-jomiastore-secondary" />
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Notre Mission</h2>
@@ -152,8 +152,8 @@ export default function AboutPage() {
 
           <Card className="p-8">
             <CardContent className="space-y-6">
-              <div className="w-16 h-16 bg-beshop-accent/10 rounded-full flex items-center justify-center">
-                <Globe className="w-8 h-8 text-beshop-accent" />
+              <div className="w-16 h-16 bg-jomiastore-accent/10 rounded-full flex items-center justify-center">
+                <Globe className="w-8 h-8 text-jomiastore-accent" />
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Notre Vision</h2>
@@ -182,8 +182,8 @@ export default function AboutPage() {
               return (
                 <Card key={index} className="text-center p-6 hover-lift">
                   <CardContent className="space-y-4">
-                    <div className="w-16 h-16 bg-beshop-primary/10 rounded-full flex items-center justify-center mx-auto">
-                      <IconComponent className="w-8 h-8 text-beshop-primary" />
+                    <div className="w-16 h-16 bg-jomiastore-primary/10 rounded-full flex items-center justify-center mx-auto">
+                      <IconComponent className="w-8 h-8 text-jomiastore-primary" />
                     </div>
                     <div>
                       <h3 className="font-bold text-gray-900 mb-2">{value.title}</h3>
@@ -206,7 +206,7 @@ export default function AboutPage() {
           </div>
 
           <div className="relative">
-            <div className="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 h-full w-0.5 bg-beshop-primary/20"></div>
+            <div className="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 h-full w-0.5 bg-jomiastore-primary/20"></div>
             
             <div className="space-y-8">
               {milestones.map((milestone, index) => (
@@ -214,7 +214,7 @@ export default function AboutPage() {
                   <div className={`flex-1 ${index % 2 === 0 ? 'md:text-right md:pr-8' : 'md:text-left md:pl-8'}`}>
                     <Card className="p-6 hover-lift">
                       <CardContent>
-                        <Badge className="bg-beshop-primary text-white mb-3">
+                        <Badge className="bg-jomiastore-primary text-white mb-3">
                           {milestone.year}
                         </Badge>
                         <h3 className="font-bold text-gray-900 mb-2">{milestone.title}</h3>
@@ -223,7 +223,7 @@ export default function AboutPage() {
                     </Card>
                   </div>
                   
-                  <div className="relative z-10 w-8 h-8 bg-beshop-primary rounded-full flex items-center justify-center mx-4">
+                  <div className="relative z-10 w-8 h-8 bg-jomiastore-primary rounded-full flex items-center justify-center mx-4">
                     <CheckCircle className="w-4 h-4 text-white" />
                   </div>
                   
@@ -258,7 +258,7 @@ export default function AboutPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900 mb-1">{member.name}</h3>
-                    <p className="text-beshop-primary font-medium mb-3">{member.role}</p>
+                    <p className="text-jomiastore-primary font-medium mb-3">{member.role}</p>
                     <p className="text-sm text-gray-600">{member.description}</p>
                   </div>
                 </CardContent>
@@ -268,22 +268,22 @@ export default function AboutPage() {
         </div>
 
         {/* CTA Section */}
-        <div className="bg-gradient-to-r from-beshop-primary to-blue-600 rounded-xl p-8 md:p-12 text-white text-center">
+        <div className="bg-gradient-to-r from-jomiastore-primary to-blue-600 rounded-xl p-8 md:p-12 text-white text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Rejoignez l'aventure Be Shop
+            Rejoignez l'aventure JomiaStore
           </h2>
           <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
             Que vous soyez client ou vendeur, découvrez une nouvelle façon de faire du commerce en ligne
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/vendor/register">
-              <Button className="bg-white text-beshop-primary hover:bg-gray-100 font-bold py-4 px-8 rounded-lg">
+              <Button className="bg-white text-jomiastore-primary hover:bg-gray-100 font-bold py-4 px-8 rounded-lg">
                 Devenir vendeur
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
             <Link href="/contact">
-              <Button className="border-2 border-white hover:bg-white hover:text-beshop-primary font-bold py-4 px-8 rounded-lg transition-colors">
+              <Button className="border-2 border-white hover:bg-white hover:text-jomiastore-primary font-bold py-4 px-8 rounded-lg transition-colors">
                 Nous contacter
               </Button>
             </Link>

@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export default function CheckoutSuccessPage() {
   return (
-    <div className="min-h-screen bg-beshop-background flex items-center">
+    <div className="min-h-screen bg-jomiastore-background flex items-center">
       <div className="container py-8">
         <div className="max-w-lg mx-auto text-center">
           <Card>
@@ -18,8 +18,8 @@ export default function CheckoutSuccessPage() {
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
               <p className="text-gray-700 mb-4">Merci pour votre achat. Un email de confirmation vous a été envoyé.</p>
               <div className="space-x-4">
-                <Link href="/account/orders" className="text-beshop-primary hover:underline">Voir mes commandes</Link>
-                <Link href="/" className="text-beshop-primary hover:underline">Continuer mes achats</Link>
+                <Link href="/account/orders" className="text-jomiastore-primary hover:underline">Voir mes commandes</Link>
+                <Link href="/" className="text-jomiastore-primary hover:underline">Continuer mes achats</Link>
               </div>
             </CardContent>
           </Card>

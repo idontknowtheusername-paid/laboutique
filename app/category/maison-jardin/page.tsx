@@ -246,14 +246,14 @@ export default function HomeGardenPage() {
   };
 
   return (
-    <div className="min-h-screen bg-beshop-background">
+    <div className="min-h-screen bg-jomiastore-background">
       <Header />
       <CategoryMenu />
       
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-          <Link href="/" className="hover:text-beshop-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Maison & Jardin</span>
         </nav>
@@ -435,7 +435,7 @@ export default function HomeGardenPage() {
             {/* Pagination */}
             <div className="flex items-center justify-center mt-12 space-x-2">
               <Button variant="outline" disabled>Précédent</Button>
-              <Button className="bg-beshop-primary">1</Button>
+              <Button className="bg-jomiastore-primary">1</Button>
               <Button variant="outline">2</Button>
               <Button variant="outline">3</Button>
               <Button variant="outline">...</Button>

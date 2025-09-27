@@ -98,12 +98,12 @@ export default function Home() {
 
   if (state.loading) {
     return (
-      <main className="min-h-screen bg-beshop-background">
+      <main className="min-h-screen bg-jomiastore-background">
         <Header />
         <CategoryMenu />
         <div className="container py-16">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-beshop-primary mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-jomiastore-primary mx-auto mb-4"></div>
             <p className="text-gray-600">Chargement des produits...</p>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function Home() {
 
   if (state.error) {
     return (
-      <main className="min-h-screen bg-beshop-background">
+      <main className="min-h-screen bg-jomiastore-background">
         <Header />
         <CategoryMenu />
         <div className="container py-16">
@@ -122,7 +122,7 @@ export default function Home() {
             <p className="text-red-600 mb-4">Erreur: {state.error}</p>
             <button 
               onClick={() => window.location.reload()} 
-              className="bg-beshop-primary text-white px-6 py-2 rounded hover:bg-blue-700"
+              className="bg-jomiastore-primary text-white px-6 py-2 rounded hover:bg-blue-700"
             >
               Recharger
             </button>
@@ -141,7 +141,7 @@ export default function Home() {
   const newProducts = getNewProducts();
 
   return (
-    <main className="min-h-screen bg-beshop-background">
+    <main className="min-h-screen bg-jomiastore-background">
       <Header />
       <CategoryMenu />
 
@@ -199,14 +199,14 @@ export default function Home() {
         )}
 
         <section className="container my-12">
-          <div className="bg-gradient-to-r from-beshop-accent to-amber-700 rounded-xl p-8 md:p-12 text-white text-center">
+          <div className="bg-gradient-to-r from-jomiastore-accent to-amber-700 rounded-xl p-8 md:p-12 text-white text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Devenez vendeur sur Be Shop
+              Devenez vendeur sur JomiaStore
             </h2>
             <p className="mb-6 text-lg md:text-2xl">
               Rejoignez notre marketplace !
             </p>
-            <a href="/vendor/register" className="inline-block bg-white text-beshop-accent font-semibold px-8 py-3 rounded-lg shadow hover:bg-gray-100 transition">
+            <a href="/vendor/register" className="inline-block bg-white text-jomiastore-accent font-semibold px-8 py-3 rounded-lg shadow hover:bg-gray-100 transition">
               S'inscrire comme vendeur
             </a>
           </div>

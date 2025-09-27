@@ -1,4 +1,4 @@
-# Audit Complet de l'Authentification - Be Shop
+# Audit Complet de l'Authentification - JomiaStore
 
 ## 🔍 Problèmes Identifiés et Corrigés
 

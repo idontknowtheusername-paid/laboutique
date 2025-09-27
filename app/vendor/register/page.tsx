@@ -22,23 +22,23 @@ export default function VendorRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-beshop-background">
+    <div className="min-h-screen bg-jomiastore-background">
       <Header />
       <CategoryMenu />
 
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-beshop-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Devenir vendeur</span>
         </nav>
 
         {/* Hero */}
         <div className="text-center mb-10">
-          <Badge className="bg-beshop-primary/10 text-beshop-primary mb-3">Marketplace</Badge>
+          <Badge className="bg-jomiastore-primary/10 text-jomiastore-primary mb-3">Marketplace</Badge>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Ouvrez votre boutique</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">Rejoignez des milliers de vendeurs et développez votre activité sur Be Shop.</p>
+          <p className="text-gray-600 max-w-2xl mx-auto">Rejoignez des milliers de vendeurs et développez votre activité sur JomiaStore.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -104,7 +104,7 @@ export default function VendorRegisterPage() {
                     <textarea className="w-full p-3 border rounded-lg" rows={4} placeholder="Présentez votre boutique..." />
                   </div>
 
-                  <Button type="submit" className="w-full bg-beshop-primary hover:bg-blue-700 h-12">Soumettre ma demande</Button>
+                  <Button type="submit" className="w-full bg-jomiastore-primary hover:bg-blue-700 h-12">Soumettre ma demande</Button>
                 </form>
               )}
             </CardContent>
@@ -115,15 +115,15 @@ export default function VendorRegisterPage() {
             <Card>
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-center space-x-3">
-                  <Store className="w-5 h-5 text-beshop-primary" />
+                  <Store className="w-5 h-5 text-jomiastore-primary" />
                   <p className="text-sm text-gray-700">Boutique personnalisée et outils professionnels</p>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <TrendingUp className="w-5 h-5 text-beshop-primary" />
+                  <TrendingUp className="w-5 h-5 text-jomiastore-primary" />
                   <p className="text-sm text-gray-700">Accès à 500K+ clients potentiels</p>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Shield className="w-5 h-5 text-beshop-primary" />
+                  <Shield className="w-5 h-5 text-jomiastore-primary" />
                   <p className="text-sm text-gray-700">Paiements sécurisés et protection vendeur</p>
                 </div>
               </CardContent>

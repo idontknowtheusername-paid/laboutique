@@ -9,15 +9,15 @@ import Link from 'next/link';
 
 export default function VendorTermsPage() {
   return (
-    <div className="min-h-screen bg-beshop-background">
+    <div className="min-h-screen bg-jomiastore-background">
       <Header />
       <CategoryMenu />
 
       <div className="container py-8">
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-beshop-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
           <span>/</span>
-          <Link href="/vendor/register" className="hover:text-beshop-primary">Vendeur</Link>
+          <Link href="/vendor/register" className="hover:text-jomiastore-primary">Vendeur</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Conditions vendeurs</span>
         </nav>

@@ -88,9 +88,9 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-beshop-background flex items-center justify-center">
+      <div className="min-h-screen bg-jomiastore-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-beshop-primary mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-jomiastore-primary mx-auto mb-4"></div>
           <p className="text-gray-600">Chargement des données...</p>
         </div>
       </div>
@@ -98,7 +98,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-beshop-background">
+    <div className="min-h-screen bg-jomiastore-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
                   {topVendors.map((vendor, index) => (
                     <div key={vendor.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-beshop-primary rounded-full flex items-center justify-center">
+                        <div className="w-8 h-8 bg-jomiastore-primary rounded-full flex items-center justify-center">
                           <span className="text-white font-bold text-sm">{index + 1}</span>
                         </div>
                         <div>

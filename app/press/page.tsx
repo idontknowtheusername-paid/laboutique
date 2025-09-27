@@ -30,7 +30,7 @@ import Link from 'next/link';
 const pressReleases = [
   {
     id: 1,
-    title: 'Be Shop lève 5M€ en Série A pour accélérer son expansion en Afrique de l\'Ouest',
+    title: 'JomiaStore lève 5M€ en Série A pour accélérer son expansion en Afrique de l\'Ouest',
     date: '2024-01-15',
     category: 'Financement',
     summary: 'La plateforme e-commerce béninoise annonce une levée de fonds majeure pour conquérir de nouveaux marchés.',
@@ -39,7 +39,7 @@ const pressReleases = [
   },
   {
     id: 2,
-    title: 'Be Shop dépasse 500 000 utilisateurs actifs au Bénin',
+    title: 'JomiaStore dépasse 500 000 utilisateurs actifs au Bénin',
     date: '2024-01-10',
     category: 'Croissance',
     summary: 'La plateforme enregistre une croissance exceptionnelle avec plus de 500K utilisateurs actifs mensuels.',
@@ -51,7 +51,7 @@ const pressReleases = [
     title: 'Partenariat stratégique avec Orange Money pour les paiements digitaux',
     date: '2024-01-05',
     category: 'Partenariat',
-    summary: 'Be Shop s\'associe à Orange Money pour faciliter les transactions sur sa plateforme.',
+    summary: 'JomiaStore s\'associe à Orange Money pour faciliter les transactions sur sa plateforme.',
     content: 'Contenu complet du communiqué...',
     featured: false
   },
@@ -60,7 +60,7 @@ const pressReleases = [
     title: 'Lancement de la livraison express à Cotonou',
     date: '2023-12-20',
     category: 'Service',
-    summary: 'Be Shop révolutionne la logistique avec des livraisons en moins de 2 heures à Cotonou.',
+    summary: 'JomiaStore révolutionne la logistique avec des livraisons en moins de 2 heures à Cotonou.',
     content: 'Contenu complet du communiqué...',
     featured: false
   }
@@ -69,7 +69,7 @@ const pressReleases = [
 const mediaCoverage = [
   {
     id: 1,
-    title: 'Be Shop : La success story du e-commerce au Bénin',
+    title: 'JomiaStore : La success story du e-commerce au Bénin',
     outlet: 'Jeune Afrique',
     date: '2024-01-12',
     type: 'Article',
@@ -83,11 +83,11 @@ const mediaCoverage = [
     date: '2024-01-08',
     type: 'Interview',
     url: '#',
-    summary: 'Entretien exclusif avec le fondateur de Be Shop sur les défis du e-commerce en Afrique.'
+    summary: 'Entretien exclusif avec le fondateur de JomiaStore sur les défis du e-commerce en Afrique.'
   },
   {
     id: 3,
-    title: 'Be Shop dans le top 10 des startups africaines à suivre',
+    title: 'JomiaStore dans le top 10 des startups africaines à suivre',
     outlet: 'TechCrunch',
     date: '2024-01-03',
     type: 'Article',
@@ -96,12 +96,12 @@ const mediaCoverage = [
   },
   {
     id: 4,
-    title: 'Reportage : Comment Be Shop transforme le commerce au Bénin',
+    title: 'Reportage : Comment JomiaStore transforme le commerce au Bénin',
     outlet: 'France 24',
     date: '2023-12-15',
     type: 'Reportage',
     url: '#',
-    summary: 'Reportage vidéo sur l\'impact de Be Shop sur l\'économie locale.'
+    summary: 'Reportage vidéo sur l\'impact de JomiaStore sur l\'économie locale.'
   }
 ];
 
@@ -110,7 +110,7 @@ const teamMembers = [
     name: 'Jean-Baptiste K.',
     role: 'CEO & Co-fondateur',
     bio: 'Ancien consultant McKinsey, expert en stratégie digitale et e-commerce.',
-    email: 'jean-baptiste@beshop.bj',
+    email: 'jean-baptiste@jomiastore.com',
     phone: '+229 97 12 34 56',
     photo: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=200'
   },
@@ -118,7 +118,7 @@ const teamMembers = [
     name: 'Marie S.',
     role: 'CTO & Co-fondatrice',
     bio: 'Ingénieure logiciel avec 10 ans d\'expérience dans les fintechs africaines.',
-    email: 'marie@beshop.bj',
+    email: 'marie@jomiastore.com',
     phone: '+229 97 12 34 57',
     photo: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=200'
   },
@@ -126,7 +126,7 @@ const teamMembers = [
     name: 'Koffi A.',
     role: 'CMO',
     bio: 'Spécialiste du marketing digital et de la croissance en Afrique.',
-    email: 'koffi@beshop.bj',
+    email: 'koffi@jomiastore.com',
     phone: '+229 97 12 34 58',
     photo: 'https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg?auto=compress&cs=tinysrgb&w=200'
   }
@@ -134,7 +134,7 @@ const teamMembers = [
 
 const pressAssets = [
   {
-    title: 'Logo Be Shop',
+    title: 'Logo JomiaStore',
     type: 'Logo',
     format: 'PNG, SVG',
     description: 'Logo principal en différentes tailles et formats'
@@ -163,7 +163,7 @@ const companyFacts = [
   {
     title: 'Fondation',
     value: '2022',
-    description: 'Création de Be Shop'
+    description: 'Création de JomiaStore'
   },
   {
     title: 'Siège social',
@@ -197,29 +197,29 @@ export default function PressPage() {
   );
 
   return (
-    <div className="min-h-screen bg-beshop-background">
+    <div className="min-h-screen bg-jomiastore-background">
       <Header />
       <CategoryMenu />
 
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-beshop-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Presse</span>
         </nav>
 
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <Badge className="bg-beshop-primary/10 text-beshop-primary mb-4 px-4 py-2">
+          <Badge className="bg-jomiastore-primary/10 text-jomiastore-primary mb-4 px-4 py-2">
             Centre Presse
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
             Centre de
-            <span className="text-beshop-primary"> Presse</span>
+            <span className="text-jomiastore-primary"> Presse</span>
           </h1>
           <p className="text-gray-600 max-w-3xl mx-auto text-xl">
-            Découvrez les dernières actualités de Be Shop, téléchargez nos ressources presse 
+            Découvrez les dernières actualités de JomiaStore, téléchargez nos ressources presse 
             et contactez notre équipe pour vos demandes médiatiques.
           </p>
         </div>
@@ -229,7 +229,7 @@ export default function PressPage() {
           {companyFacts.map((fact, index) => (
             <Card key={index} className="text-center">
               <CardContent className="p-6">
-                <div className="text-3xl font-bold text-beshop-primary mb-2">{fact.value}</div>
+                <div className="text-3xl font-bold text-jomiastore-primary mb-2">{fact.value}</div>
                 <div className="text-sm text-gray-600 mb-1">{fact.title}</div>
                 <div className="text-xs text-gray-500">{fact.description}</div>
               </CardContent>
@@ -262,12 +262,12 @@ export default function PressPage() {
           <TabsContent value="releases" className="space-y-6">
             {/* Featured Release */}
             {filteredReleases.find(r => r.featured) && (
-              <Card className="border-2 border-beshop-primary">
+              <Card className="border-2 border-jomiastore-primary">
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
-                        <Badge className="bg-beshop-primary text-white">À la une</Badge>
+                        <Badge className="bg-jomiastore-primary text-white">À la une</Badge>
                         <Badge variant="outline">
                           {filteredReleases.find(r => r.featured)?.category}
                         </Badge>
@@ -287,7 +287,7 @@ export default function PressPage() {
                     </div>
                   </div>
                   <div className="flex space-x-3">
-                    <Button className="bg-beshop-primary hover:bg-blue-700">
+                    <Button className="bg-jomiastore-primary hover:bg-blue-700">
                       Lire le communiqué
                     </Button>
                     <Button variant="outline">
@@ -374,7 +374,7 @@ export default function PressPage() {
                       />
                     </div>
                     <h3 className="font-bold text-gray-900 mb-1">{member.name}</h3>
-                    <p className="text-sm text-beshop-primary mb-3">{member.role}</p>
+                    <p className="text-sm text-jomiastore-primary mb-3">{member.role}</p>
                     <p className="text-sm text-gray-700 mb-4">{member.bio}</p>
                     <div className="space-y-2">
                       <Button size="sm" variant="outline" className="w-full">
@@ -398,11 +398,11 @@ export default function PressPage() {
                 <Card key={index} className="hover-lift">
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-beshop-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        {asset.type === 'Logo' && <FileText className="w-6 h-6 text-beshop-primary" />}
-                        {asset.type === 'Photos' && <ImageIcon className="w-6 h-6 text-beshop-primary" />}
-                        {asset.type === 'Images' && <ImageIcon className="w-6 h-6 text-beshop-primary" />}
-                        {asset.type === 'Vidéo' && <Video className="w-6 h-6 text-beshop-primary" />}
+                      <div className="w-12 h-12 bg-jomiastore-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        {asset.type === 'Logo' && <FileText className="w-6 h-6 text-jomiastore-primary" />}
+                        {asset.type === 'Photos' && <ImageIcon className="w-6 h-6 text-jomiastore-primary" />}
+                        {asset.type === 'Images' && <ImageIcon className="w-6 h-6 text-jomiastore-primary" />}
+                        {asset.type === 'Vidéo' && <Video className="w-6 h-6 text-jomiastore-primary" />}
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900 mb-1">{asset.title}</h3>
@@ -424,7 +424,7 @@ export default function PressPage() {
         </Tabs>
 
         {/* Contact Press */}
-        <Card className="mt-16 bg-gradient-to-r from-beshop-primary to-blue-600 text-white">
+        <Card className="mt-16 bg-gradient-to-r from-jomiastore-primary to-blue-600 text-white">
           <CardContent className="p-8 text-center">
             <h3 className="text-2xl font-bold mb-4">
               Contact Presse
@@ -433,11 +433,11 @@ export default function PressPage() {
               Pour toute demande d'interview, d'information ou de ressources presse
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-white text-beshop-primary hover:bg-gray-100">
+              <Button className="bg-white text-jomiastore-primary hover:bg-gray-100">
                 <Mail className="w-4 h-4 mr-2" />
-                presse@beshop.bj
+                presse@jomiastore.com
               </Button>
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-beshop-primary">
+              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-jomiastore-primary">
                 <Phone className="w-4 h-4 mr-2" />
                 +229 97 12 34 56
               </Button>

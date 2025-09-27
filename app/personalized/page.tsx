@@ -8,7 +8,7 @@ import PersonalizedOffers from '@/components/home/PersonalizedOffers';
 
 export default function PersonalizedPage() {
   return (
-    <main className="min-h-screen bg-beshop-background">
+    <main className="min-h-screen bg-jomiastore-background">
       <Header />
       <CategoryMenu />
       <div className="container py-8">
