@@ -35,7 +35,8 @@ function generateSKU(name: string, categoryId?: string): string {
     .replace(/[^A-Z0-9]/g, '') // Garder seulement lettres et chiffres
     .slice(0, 4); // Max 4 caractères
   
-  const categoryPrefix = categoryId ? categoryId.slice(-2).toUpperCase() : 'PRD';
+  // Utiliser un préfixe simple basé sur les premières lettres du nom
+  const categoryPrefix = 'PRD';
   
   return `${categoryPrefix}-${namePrefix}-${timestamp}`;
 }
@@ -306,10 +307,7 @@ export default function AdminNewProductPage() {
                     value={form.slug || ''} 
                     onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ slug: e.target.value })} 
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Partie de l'URL qui identifie votre produit (ex: laboutique.bj/produits/iphone-15-pro-max-256gb). 
-                    <span className="font-medium text-green-600">Généré automatiquement</span> à partir du nom si laissé vide.
-                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Généré automatiquement à partir du nom</p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">Description complète du produit</label>
@@ -319,7 +317,7 @@ export default function AdminNewProductPage() {
                     value={form.description || ''} 
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ description: e.target.value })} 
                   />
-                  <p className="text-xs text-gray-500 mt-1">Description détaillée qui apparaîtra sur la page produit complète</p>
+                  <p className="text-xs text-gray-500 mt-1">Description détaillée du produit</p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">Aperçu du produit</label>
@@ -330,7 +328,7 @@ export default function AdminNewProductPage() {
                     value={form.short_description || ''} 
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ short_description: e.target.value })} 
                   />
-                  <p className="text-xs text-gray-500 mt-1">{form.short_description?.length || 0}/150 caractères - Utilisé dans les listes et aperçus</p>
+                  <p className="text-xs text-gray-500 mt-1">{form.short_description?.length || 0}/150 caractères</p>
                 </div>
                 <div className="md:col-span-2">
                   <ImageUploader
@@ -344,7 +342,7 @@ export default function AdminNewProductPage() {
                       update({ images: urls });
                     }}
                   />
-                  <p className="text-xs text-gray-500 mt-1">Glissez-déposez plusieurs images ou cliquez pour sélectionner. La première image sera l'image principale.</p>
+                  <p className="text-xs text-gray-500 mt-1">Glissez-déposez ou cliquez pour sélectionner</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
