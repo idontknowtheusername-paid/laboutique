@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
                   slug: 'produits-importes',
                   description: 'Catégorie par défaut pour les produits importés',
                   status: 'active'
-                }])
+                }] as any)
                 .select('id')
                 .single();
 
@@ -385,7 +385,7 @@ export async function POST(request: NextRequest) {
           // Mapper le prix original en compare_price pour la base de données
           compare_price: productData.original_price,
           images: fixedImages,
-          category_id: selectedCategoryId,
+          category_id: selectedCategoryId || undefined, // Convert null to undefined
           vendor_id: defaultVendor.id,
           sku: productData.sku || `IMPORT-${Date.now()}`,
           quantity: productData.stock_quantity || 0,
