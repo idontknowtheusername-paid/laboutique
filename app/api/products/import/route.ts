@@ -97,6 +97,18 @@ export async function POST(request: NextRequest) {
     
     // Si import direct, créer le produit
     if (importDirectly) {
+      // Vérification préalable: clé admin Supabase requise pour créer des lignes côté serveur
+      if (!isSupabaseAdminConfigured()) {
+        console.error('[IMPORT] ❌ Supabase admin non configuré: définir SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY');
+        return NextResponse.json(
+          {
+            error: 'Configuration Supabase manquante',
+            details: 'Définissez SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY sur le serveur',
+            hint: 'Ajoutez les variables d\'environnement puis redémarrez le serveur',
+          },
+          { status: 500 }
+        );
+      }
       try {
         console.log('[IMPORT] Import direct activé');
         console.log('[IMPORT] Supabase admin configured:', isSupabaseAdminConfigured());

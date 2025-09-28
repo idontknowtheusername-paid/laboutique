@@ -6,13 +6,19 @@ import CategoryMenu from '@/components/layout/CategoryMenu';
 import Footer from '@/components/layout/Footer';
 import ProductGrid from '@/components/home/ProductGrid';
 import { ProductsService, Product } from '@/lib/services/products.service';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export default function ProductsListingPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalSiteCount, setTotalSiteCount] = useState<number>(0);
+  const [localSearch, setLocalSearch] = useState<string>(searchParams.get('search') || '');
 
   const filters = useMemo(() => {
     const featured = searchParams.get('featured') === 'true';
@@ -60,6 +66,32 @@ export default function ProductsListingPage() {
     load();
   }, [filters, sortParam, saleOnly]);
 
+  // Charger le nombre total de produits actifs (site entier)
+  useEffect(() => {
+    const loadTotal = async () => {
+      try {
+        const res = await ProductsService.getAll({}, { limit: 1 }, { field: 'created_at', direction: 'desc' });
+        if (res.success) {
+          setTotalSiteCount(res.pagination.total);
+        }
+      } catch (_) {
+        // ignorer silencieusement
+      }
+    };
+    loadTotal();
+  }, []);
+
+  const onSubmitSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    if (localSearch.trim()) {
+      params.set('search', localSearch.trim());
+    } else {
+      params.delete('search');
+    }
+    router.push(`/products?${params.toString()}`);
+  };
+
   const title = useMemo(() => {
     if (filters.featured) return 'Produits en Vedette';
     if (saleOnly) return 'Offres en Promotion';
@@ -72,6 +104,23 @@ export default function ProductsListingPage() {
       <Header />
       <CategoryMenu />
       <div className="container py-6">
+        {/* Barre de recherche locale + compteur total */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 mb-4">
+          <form onSubmit={onSubmitSearch} className="flex-1">
+            <div className="relative">
+              <Input
+                placeholder="Rechercher des produits..."
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
+                className="pr-28 h-11"
+              />
+              <Button type="submit" className="absolute right-1 top-1 h-9">Rechercher</Button>
+            </div>
+          </form>
+          <div className="flex items-center md:justify-end">
+            <Badge className="text-sm">{totalSiteCount.toLocaleString('fr-FR')} produits</Badge>
+          </div>
+        </div>
         <ProductGrid
           title={title}
           products={products}
