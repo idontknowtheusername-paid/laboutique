@@ -197,9 +197,9 @@ export default function ImportedProductsPreview() {
                         <span className="text-lg font-bold text-jomiastore-primary">
                           {formatPrice(product.price)}
                         </span>
-                        {product.original_price && product.original_price > product.price && (
+                        {product.compare_price && product.compare_price > product.price && (
                           <span className="text-xs text-gray-500 line-through">
-                            {formatPrice(product.original_price)}
+                            {formatPrice(product.compare_price as number)}
                           </span>
                         )}
                       </div>

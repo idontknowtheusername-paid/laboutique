@@ -240,13 +240,13 @@ export default function AdminImportProductPage() {
                         minimumFractionDigits: 0 
                       }).format(previewData.price)}
                     </span>
-                    {previewData.original_price && (
+                    {(previewData as any).compare_price && (
                       <span className="text-sm text-gray-500 line-through ml-2">
                         {new Intl.NumberFormat('fr-BJ', { 
                           style: 'currency', 
                           currency: 'XOF', 
                           minimumFractionDigits: 0 
-                        }).format(previewData.original_price)}
+                        }).format((previewData as any).compare_price)}
                       </span>
                     )}
                   </div>
