@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
 import Footer from '@/components/layout/Footer';
@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { CreditCard, Truck, ShieldCheck, CheckCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 
 const cartSummary = [
@@ -21,14 +23,54 @@ const formatPrice = (price: number) => new Intl.NumberFormat('fr-BJ', { style: '
 
 export default function CheckoutPage() {
   const [placed, setPlaced] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const router = useRouter();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    // Protéger la page checkout si non connecté
+    if (typeof window !== 'undefined' && !user) {
+      router.replace('/auth/login?redirect=/checkout');
+    }
+  }, [user, router]);
 
   const subtotal = cartSummary.reduce((s, i) => s + i.price * i.qty, 0);
   const shipping = subtotal > 50000 ? 0 : 2000;
   const total = subtotal + shipping;
 
-  const placeOrder = (e: React.FormEvent) => {
+  const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    setPlaced(true);
+    try {
+      setLoading(true);
+      setErrorMsg(null);
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user?.id,
+          items: cartSummary.map(i => ({ product_id: i.id, vendor_id: 'default', quantity: i.qty, price: i.price })),
+          customer: {
+            name: 'Client',
+            email: 'client@example.com',
+            phone: '+22900000000',
+            shipping_address: {},
+          }
+        })
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Checkout failed');
+      if (json.payment_url) {
+        window.location.href = json.payment_url;
+        return;
+      }
+      setPlaced(true);
+    } catch (err) {
+      console.error(err);
+      setErrorMsg((err as Error)?.message || 'Le paiement a échoué. Réessayez.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -77,23 +119,25 @@ export default function CheckoutPage() {
                 </CardContent>
               </Card>
 
-              {/* Payment */}
+              {/* Payment (hosted by FedaPay) */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center"><CreditCard className="w-5 h-5 mr-2" /> Paiement</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input placeholder="Titulaire de la carte" />
-                  <Input placeholder="Numéro de carte" />
-                  <Input placeholder="MM/AA" />
-                  <Input placeholder="CVC" />
-                  <div className="md:col-span-2 text-sm text-gray-600 flex items-center">
+                <CardContent className="space-y-3">
+                  <div className="text-sm text-gray-700">
+                    Vous serez redirigé vers la page sécurisée de FedaPay pour renseigner vos informations et finaliser le paiement.
+                  </div>
+                  <div className="text-sm text-gray-600 flex items-center">
                     <ShieldCheck className="w-4 h-4 mr-2 text-beshop-secondary" /> Paiement sécurisé • Chiffré
                   </div>
+                  {errorMsg ? (
+                    <div className="text-sm text-red-600">{errorMsg}</div>
+                  ) : null}
                 </CardContent>
               </Card>
 
-              <Button onClick={placeOrder} className="w-full bg-beshop-primary hover:bg-blue-700 h-12">Confirmer et payer</Button>
+              <Button disabled={loading} onClick={placeOrder} className="w-full bg-beshop-primary hover:bg-blue-700 h-12">{loading ? 'Redirection...' : 'Confirmer et payer'}</Button>
             </div>
 
             {/* Right: Summary */}

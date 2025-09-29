@@ -1,3 +1,4 @@
+export const revalidate = 300;
 'use client';
 
 import React, { useState } from 'react';
