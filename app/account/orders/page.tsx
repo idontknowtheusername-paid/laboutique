@@ -36,6 +36,9 @@ export default function OrdersPage() {
   );
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [search, setSearch] = useState("");
+  const [dateFrom, setDateFrom] = useState<string | undefined>(undefined);
+  const [dateTo, setDateTo] = useState<string | undefined>(undefined);
 
   // Fetch orders
   useEffect(() => {
@@ -45,13 +48,22 @@ export default function OrdersPage() {
         const pagination = { page, limit: 10 };
         // OrdersService.getByUser only takes userId and pagination
         let pag = { ...pagination };
-        let res: PaginatedResponse<Order>;
+        let res: PaginatedResponse<Order> = await OrdersService.getByUser(user.id, pag);
+        // Client-side refine (status/search/date) for now
         if (statusFilter) {
-          // getAll allows filters, but getByUser only userId and pagination, so filter after fetch
-          res = await OrdersService.getByUser(user.id, pag);
-          res.data = res.data.filter((order) => order.status === statusFilter);
-        } else {
-          res = await OrdersService.getByUser(user.id, pag);
+          res.data = res.data.filter((o) => o.status === statusFilter);
+        }
+        if (search.trim()) {
+          const q = search.trim().toLowerCase();
+          res.data = res.data.filter((o) => o.order_number?.toLowerCase().includes(q));
+        }
+        if (dateFrom) {
+          const from = new Date(dateFrom).getTime();
+          res.data = res.data.filter((o) => new Date(o.created_at).getTime() >= from);
+        }
+        if (dateTo) {
+          const to = new Date(dateTo).getTime();
+          res.data = res.data.filter((o) => new Date(o.created_at).getTime() <= to);
         }
         setOrders(res.data);
         setTotalPages(res.pagination?.totalPages || 1);
@@ -61,7 +73,7 @@ export default function OrdersPage() {
       }
     };
     fetchOrders();
-  }, [user, statusFilter, page]);
+  }, [user, statusFilter, page, search, dateFrom, dateTo]);
 
   // Handlers
   const handleStatusFilter = (status: string | undefined) => {
@@ -173,7 +185,7 @@ export default function OrdersPage() {
             </CardHeader>
             <CardContent>
               {/* Filtres de statut */}
-              <div className="mb-4 flex flex-wrap gap-2">
+            <div className="mb-4 flex flex-wrap gap-2">
                 <Button
                   variant={statusFilter === undefined ? "default" : "outline"}
                   size="sm"
@@ -226,6 +238,30 @@ export default function OrdersPage() {
                   Annulées
                 </Button>
               </div>
+            {/* Recherche et dates */}
+            <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-3">
+              <input
+                className="border rounded-md px-3 py-2 text-sm"
+                placeholder="Recherche par numéro"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <input
+                type="date"
+                className="border rounded-md px-3 py-2 text-sm"
+                value={dateFrom || ''}
+                onChange={(e) => setDateFrom(e.target.value || undefined)}
+              />
+              <input
+                type="date"
+                className="border rounded-md px-3 py-2 text-sm"
+                value={dateTo || ''}
+                onChange={(e) => setDateTo(e.target.value || undefined)}
+              />
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => { setSearch(''); setDateFrom(undefined); setDateTo(undefined); }}>Réinitialiser</Button>
+              </div>
+            </div>
               {orders.length === 0 ? (
                 <div className="text-center py-12">
                   <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -321,10 +357,12 @@ export default function OrdersPage() {
                                     <Star className="w-4 h-4 mr-2" />
                                     Noter
                                   </Button>
-                                  <Button variant="outline" size="sm">
-                                    <RotateCcw className="w-4 h-4 mr-2" />
-                                    Retourner
-                                  </Button>
+                                  <Link href={`/account/returns?order=${order.id}`}>
+                                    <Button variant="outline" size="sm">
+                                      <RotateCcw className="w-4 h-4 mr-2" />
+                                      Ouvrir un retour
+                                    </Button>
+                                  </Link>
                                 </>
                               )}
                               {order.status === "shipped" && (

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { OrdersService, Order } from "@/lib/services";
-import { DeliveryService, DeliveryUpdate } from "@/lib/services/delivery.service";
+import { DeliveryService, DeliveryUpdate, Carrier } from "@/lib/services/delivery.service";
 import { useCart } from "@/contexts/CartContext";
 import { Download } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,6 +27,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { addToCart } = useCart();
+  const [carriers, setCarriers] = useState<Carrier[]>([]);
 
   useEffect(() => {
     if (params.id) {
@@ -34,6 +35,13 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
     }
     // eslint-disable-next-line
   }, [params.id]);
+
+  useEffect(() => {
+    (async () => {
+      const c = await DeliveryService.getCarriers();
+      if (c.success && c.data) setCarriers(c.data);
+    })();
+  }, []);
 
   const fetchOrder = async () => {
     setLoading(true);
@@ -67,6 +75,17 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
     }
     // Redirect to cart
     router.push('/cart');
+  };
+
+  const getTrackingExternalUrl = () => {
+    if (!tracking?.tracking_number || !tracking?.carrier) return null;
+    const match = carriers.find(c => c.name.toLowerCase() === (tracking.carrier || '').toLowerCase() || c.code.toLowerCase() === (tracking.carrier || '').toLowerCase());
+    if (!match?.tracking_url_template) return null;
+    const t = tracking.tracking_number;
+    return match.tracking_url_template
+      .replace('{trackingNumber}', t)
+      .replace('{tracking_number}', t)
+      .replace('{TRACKING_NUMBER}', t);
   };
 
   const [updating, setUpdating] = useState(false);
@@ -179,9 +198,16 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                   </div>
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={handleReorder}>Commander à nouveau</Button>
-                    <Button variant="outline" size="sm">
-                      <Download className="w-4 h-4 mr-2" /> Facture
-                    </Button>
+                    <a href={`/api/orders/${order.id}/invoice`} target="_blank" rel="noreferrer">
+                      <Button variant="outline" size="sm">
+                        <Download className="w-4 h-4 mr-2" /> Facture
+                      </Button>
+                    </a>
+                    {getTrackingExternalUrl() && (
+                      <a href={getTrackingExternalUrl() as string} target="_blank" rel="noreferrer">
+                        <Button variant="outline" size="sm">Suivi transporteur</Button>
+                      </a>
+                    )}
                   </div>
                 </div>
                 {updates.length > 0 && (
