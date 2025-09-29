@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { uploadToStorage, removeFromStorage } from '@/lib/storage';
+import { removeFromStorage } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -62,17 +62,21 @@ export function ImageUploader({
     setUploadProgress({ current: 0, total: newFiles.length });
     const next: UploadedItem[] = [...items];
     
-    // Upload all files in parallel for better performance
+    // Upload all files via server API route (service key) in parallel
     const uploadPromises = newFiles.map(async (file) => {
       try {
-        const res = await uploadToStorage(bucket, file, folder);
+        const form = new FormData();
+        form.append('file', file);
+        form.append('bucket', bucket);
+        if (folder) form.append('folder', folder);
+        const res = await fetch('/api/upload', { method: 'POST', body: form });
+        const json = await res.json();
         setUploadProgress(prev => ({ ...prev, current: prev.current + 1 }));
-        if (res.success && res.url) {
-          return { url: res.url, path: res.path };
-        } else {
-          console.error('Upload failed for', file.name, res.error);
+        if (!res.ok) {
+          console.error('Upload failed for', file.name, json.error);
           return null;
         }
+        return { url: json.url, path: json.path } as UploadedItem;
       } catch (error) {
         console.error('Upload error for', file.name, error);
         setUploadProgress(prev => ({ ...prev, current: prev.current + 1 }));
