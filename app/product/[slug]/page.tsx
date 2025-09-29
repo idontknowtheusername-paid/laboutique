@@ -87,6 +87,16 @@ export default function ProductDetailPage() {
         if (!isMounted) return;
         if (res.success && res.data) {
           setProduct(res.data);
+          // Record as recently viewed (store minimal snapshot)
+          try {
+            const key = 'recently_viewed';
+            const raw = localStorage.getItem(key);
+            const arr = raw ? JSON.parse(raw) as any[] : [];
+            const snapshot = { id: res.data.id, name: res.data.name, slug: res.data.slug, price: res.data.price, images: res.data.images };
+            const filtered = arr.filter((p: any) => p && p.id !== snapshot.id);
+            const updated = [snapshot, ...filtered].slice(0, 50);
+            localStorage.setItem(key, JSON.stringify(updated));
+          } catch {}
           // Load similar and new products for sliders
           const [similarRes, newRes] = await Promise.all([
             ProductsService.getSimilar(res.data.id, 10),
