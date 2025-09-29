@@ -1,9 +1,6 @@
 'use client';
 
 import React from 'react';
-import Header from '@/components/layout/Header';
-import CategoryMenu from '@/components/layout/CategoryMenu';
-import Footer from '@/components/layout/Footer';
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
 // TODO: Import or define refreshUserStats if not present
@@ -180,11 +177,7 @@ export default function AccountPage() {
 
   return (
     <ProtectedRoute requireAuth={true} redirectTo="/auth/login">
-      <div className="min-h-screen bg-jomiastore-background">
-        <Header />
-        <CategoryMenu />
-
-        <div className="container py-8">
+      <div>
           {/* Breadcrumb */}
           <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
             <Link href="/" className="hover:text-jomiastore-primary">
@@ -512,9 +505,6 @@ export default function AccountPage() {
               </Card>
             </div>
           </div>
-        </div>
-
-        <Footer />
       </div>
     </ProtectedRoute>
   );

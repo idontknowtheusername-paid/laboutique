@@ -1,10 +1,7 @@
-'use client';
+"use client";
 
 import React from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import Header from '@/components/layout/Header';
-import CategoryMenu from '@/components/layout/CategoryMenu';
-import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,10 +25,8 @@ export default function AddressesPage() {
   }, [user?.id]);
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-jomiastore-background">
-        <Header />
-        <CategoryMenu />
-        <div className="container py-8">
+      <div>
+        <div className="py-2">
           <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
             <a href="/" className="hover:text-jomiastore-primary">Accueil</a>
             <span>/</span>
@@ -132,7 +127,6 @@ export default function AddressesPage() {
             </div>
           </div>
         </div>
-        <Footer />
       </div>
     </ProtectedRoute>
   );
