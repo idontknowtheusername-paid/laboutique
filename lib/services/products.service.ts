@@ -128,6 +128,7 @@ export class ProductsService extends BaseService {
           price,
           compare_price,
           cost_price,
+          original_price,
           track_quantity,
           quantity,
           weight,
@@ -141,6 +142,8 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
+          source_url,
+          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),
@@ -227,6 +230,7 @@ export class ProductsService extends BaseService {
           price,
           compare_price,
           cost_price,
+          original_price,
           track_quantity,
           quantity,
           weight,
@@ -309,6 +313,7 @@ export class ProductsService extends BaseService {
           price,
           compare_price,
           cost_price,
+          original_price,
           track_quantity,
           quantity,
           weight,
@@ -360,6 +365,7 @@ export class ProductsService extends BaseService {
           price,
           compare_price,
           cost_price,
+          original_price,
           track_quantity,
           quantity,
           weight,
@@ -373,6 +379,8 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
+          source_url,
+          source_platform,
           created_at,
           updated_at,
           category:categories(id, name, slug),
@@ -566,15 +574,12 @@ export class ProductsService extends BaseService {
    */
   static async create(productData: CreateProductData): Promise<ServiceResponse<Product | null>> {
     try {
-      // Générer le slug automatiquement si pas fourni
       const slug = productData.slug?.trim() || this.generateSlug(productData.name);
-      
-      // Filtrer les champs qui n'existent pas dans la base de données et mapper les champs affichés côté UI
-      // Retirer explicitement les champs runtime-only: specifications
-      const { specifications, original_price, ...rest } = productData;
+
+      // Filtrer les champs qui n'existent pas dans la base de données et mapper certains champs d'import
+      const { specifications, original_price, ...rest } = productData as any;
       const validProductData = {
         ...rest,
-        // S'assurer que compare_price est renseigné si original_price est fourni par l'import
         compare_price: rest.compare_price ?? original_price,
       } as any;
       
@@ -661,6 +666,7 @@ export class ProductsService extends BaseService {
           price,
           compare_price,
           cost_price,
+          original_price,
           track_quantity,
           quantity,
           weight,

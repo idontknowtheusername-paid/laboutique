@@ -402,7 +402,7 @@ export async function POST(request: NextRequest) {
           sku: productData.sku || `IMPORT-${Date.now()}`,
           quantity: productData.stock_quantity || 0,
           track_quantity: true,
-          status: (publishDirectly ? 'active' : 'draft') as 'active' | 'draft', // Use publishDirectly from UI
+          status: (publishDirectly ? 'active' : 'draft') as 'active' | 'draft',
           featured: false,
           meta_title: `${productData.name} - La Boutique B`,
           meta_description: productData.short_description,
