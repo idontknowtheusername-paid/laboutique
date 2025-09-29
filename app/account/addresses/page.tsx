@@ -14,6 +14,7 @@ export default function AddressesPage() {
   const [adding, setAdding] = React.useState(false);
   const [addresses, setAddresses] = React.useState<AddressRecord[]>([]);
   const [form, setForm] = React.useState({ full_name: '', phone: '', address_line: '', city: '', country: 'Bénin' });
+  const [deliveryPrefs, setDeliveryPrefs] = React.useState<{ method: 'standard' | 'express'; instructions: string }>({ method: 'standard', instructions: '' });
   const [editingId, setEditingId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -67,14 +68,32 @@ export default function AddressesPage() {
                         <label className="block text-sm mb-2">Pays</label>
                         <Input placeholder="Bénin" value={form.country} onChange={(e)=>setForm(f=>({...f, country: e.target.value}))} />
                       </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm mb-2">Préférences de livraison</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex items-center gap-3">
+                            <input type="radio" id="m-standard" name="delivery-method" checked={deliveryPrefs.method==='standard'} onChange={()=>setDeliveryPrefs(p=>({...p, method:'standard'}))} />
+                            <label htmlFor="m-standard" className="text-sm">Standard (2-5 jours)</label>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <input type="radio" id="m-express" name="delivery-method" checked={deliveryPrefs.method==='express'} onChange={()=>setDeliveryPrefs(p=>({...p, method:'express'}))} />
+                            <label htmlFor="m-express" className="text-sm">Express (1-2 jours)</label>
+                          </div>
+                        </div>
+                        <div className="mt-3">
+                          <label className="block text-sm mb-2">Instructions</label>
+                          <Input placeholder="Ex: Sonner à gauche, laisser au gardien..." value={deliveryPrefs.instructions} onChange={(e)=>setDeliveryPrefs(p=>({...p, instructions: e.target.value}))} />
+                        </div>
+                      </div>
                       <div className="md:col-span-2 flex gap-3">
                         <Button className="bg-jomiastore-primary hover:bg-blue-700" onClick={async ()=>{
                           if (!user?.id) return;
-                          const res = await AccountService.addAddress(user.id, form as any);
+                          const res = await AccountService.addAddress(user.id, { ...form, delivery_method: deliveryPrefs.method, delivery_instructions: deliveryPrefs.instructions } as any);
                           if (res.success && res.data) {
                             setAddresses(a => [res.data as AddressRecord, ...a]);
                             setAdding(false);
                             setForm({ full_name: '', phone: '', address_line: '', city: '', country: 'Bénin' });
+                            setDeliveryPrefs({ method: 'standard', instructions: '' });
                           }
                         }}>Enregistrer</Button>
                         <Button variant="outline" onClick={() => setAdding(false)}>Annuler</Button>
@@ -91,6 +110,12 @@ export default function AddressesPage() {
                             <div>
                               <div className="font-medium">{addr.full_name}</div>
                               <div className="text-xs text-gray-600">{addr.address_line}, {addr.city}, {addr.country}</div>
+                              {'delivery_method' in addr && (
+                                <div className="text-xs text-gray-500 mt-1">Préférence: {(addr as any).delivery_method === 'express' ? 'Express' : 'Standard'}</div>
+                              )}
+                              {'delivery_instructions' in addr && (addr as any).delivery_instructions && (
+                                <div className="text-xs text-gray-500 mt-1">Instructions: {(addr as any).delivery_instructions}</div>
+                              )}
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
