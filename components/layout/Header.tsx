@@ -8,6 +8,13 @@ import { Search, User, Heart, ShoppingCart, Menu, X, Crown, Package, CreditCard,
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { 
+  TouchButton, 
+  MobileInput, 
+  useMobileViewport, 
+  useTouchGestures,
+  MobileSpacing 
+} from '@/components/mobile/MobileOptimizations';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,6 +39,10 @@ const Header = () => {
   const isHome = pathname === '/';
   const [annApi, setAnnApi] = useState<CarouselApi | null>(null);
   const router = useRouter();
+  
+  // Mobile optimizations
+  const { isMobile, isTablet } = useMobileViewport();
+  const { handleTouchStart, handleTouchMove, handleTouchEnd } = useTouchGestures();
 
   // Memoize announcements to prevent re-renders
   const announcements = useMemo(() => [
@@ -154,20 +165,19 @@ const Header = () => {
             className="hidden md:flex flex-1 max-w-2xl mx-8"
           >
             <div className="relative w-full">
-              <Input
+              <MobileInput
                 type="text"
                 placeholder="Rechercher des produits, marques et catégories..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pr-12 h-12 text-base border-2 border-gray-200 focus:border-jomiastore-primary"
               />
-              <Button
+              <TouchButton
                 type="submit"
-                size="sm"
-                className="absolute right-1 top-1 h-10 px-4 bg-jomiastore-secondary hover:bg-orange-600"
+                className="absolute right-1 top-1 h-10 px-4 bg-jomiastore-secondary hover:bg-orange-600 min-h-[40px] min-w-[40px]"
               >
                 <Search className="w-4 h-4" />
-              </Button>
+              </TouchButton>
             </div>
           </form>
 
