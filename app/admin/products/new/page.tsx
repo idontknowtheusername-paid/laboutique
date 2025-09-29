@@ -218,9 +218,13 @@ export default function AdminNewProductPage() {
         images: form.images || []
       };
       
-      const res = await ProductsService.create(payload);
-      
-      if (res.success && res.data) {
+      const resp = await fetch('/api/products/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const res = await resp.json();
+      if (resp.ok && res.success && res.data) {
         setMessage('Produit créé avec succès !');
         // Rediriger vers la liste des produits après 2 secondes
         setTimeout(() => {

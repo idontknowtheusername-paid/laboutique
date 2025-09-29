@@ -63,21 +63,27 @@ export function ImageUploader({
     const next: UploadedItem[] = [...items];
     
     try {
-      const form = new FormData();
-      newFiles.forEach((file) => form.append('file', file));
-      form.append('bucket', bucket);
-      if (folder) form.append('folder', folder);
-      const res = await fetch('/api/upload', { method: 'POST', body: form });
-      const json = await res.json();
-      if (!res.ok || !json?.success) {
-        throw new Error(json?.error || 'Upload failed');
+      // Fallback robuste: uploader séquentiellement chaque fichier
+      const successfulUploads: UploadedItem[] = [];
+      for (const file of newFiles) {
+        const form = new FormData();
+        form.append('file', file);
+        form.append('bucket', bucket);
+        if (folder) form.append('folder', folder);
+        const res = await fetch('/api/upload', { method: 'POST', body: form });
+        const json = await res.json();
+        if (res.ok && json?.success && json?.url) {
+          successfulUploads.push({ url: json.url, path: json.path });
+        } else if (res.ok && Array.isArray(json?.results)) {
+          const okOnes = json.results.filter((r: any) => r.success && r.url).map((r: any) => ({ url: r.url, path: r.path }));
+          successfulUploads.push(...okOnes);
+        } else {
+          console.error('Upload failed for', file.name, json?.error);
+        }
+        setUploadProgress(prev => ({ current: Math.min(prev.current + 1, newFiles.length), total: newFiles.length }));
       }
-      const successfulUploads = (json.results || [])
-        .filter((r: any) => r.success && r.url)
-        .map((r: any) => ({ url: r.url, path: r.path })) as UploadedItem[];
-      setUploadProgress({ current: newFiles.length, total: newFiles.length });
+
       next.push(...successfulUploads);
-      
       if (successfulUploads.length < newFiles.length) {
         const failedCount = newFiles.length - successfulUploads.length;
         alert(`${failedCount} image(s) n'ont pas pu être uploadées. Vérifiez la configuration Supabase.`);
