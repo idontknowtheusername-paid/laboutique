@@ -313,14 +313,19 @@ const Header = () => {
 const MobileMenu = () => {
   const { user, signOut } = useAuth();
 
-  // Navigation items - Essential sections only for mobile menu
+  // Navigation items from account layout
   const accountNavItems = [
     { href: '/account', label: 'Tableau de bord', icon: Settings },
-    { href: '/account/orders', label: 'Mes commandes', icon: Package },
-    { href: '/account/wishlist', label: 'Ma liste de souhaits', icon: Heart },
+    { href: '/account/orders', label: 'Commandes', icon: Package },
+    { href: '/account/returns', label: 'Retours', icon: FileText },
+    { href: '/account/coupons', label: 'Coupons', icon: TicketPercent },
+    { href: '/account/wallet', label: 'Wallet', icon: Wallet },
+    { href: '/account/points', label: 'Points', icon: Shield },
+    { href: '/account/wishlist', label: 'Wishlist', icon: Heart },
     { href: '/account/payment-methods', label: 'Paiements', icon: CreditCard },
     { href: '/account/addresses', label: 'Adresses', icon: MapPin },
     { href: '/account/notifications', label: 'Notifications', icon: Bell },
+    { href: '/account/invoices', label: 'Factures', icon: FileText },
   ];
 
   return (
@@ -339,7 +344,7 @@ const MobileMenu = () => {
 
       {user ? (
         <>
-          {/* Account Navigation - Essential sections */}
+          {/* Account Navigation - Same as dashboard */}
           <div className="space-y-2">
             <h3 className="text-sm font-semibold text-gray-900 mb-3">Mon compte</h3>
             {accountNavItems.map((item) => {
@@ -355,15 +360,6 @@ const MobileMenu = () => {
                 </Link>
               );
             })}
-            
-            {/* Link to full dashboard */}
-            <Link 
-              href="/account" 
-              className="flex items-center gap-3 py-2 px-3 text-jomiastore-primary hover:bg-jomiastore-primary/5 rounded-md border border-jomiastore-primary/20"
-            >
-              <Settings className="w-4 h-4" />
-              <span className="text-sm font-medium">Voir toutes les sections</span>
-            </Link>
           </div>
           
           <div className="pt-4 border-t">
