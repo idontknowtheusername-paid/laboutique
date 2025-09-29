@@ -5,7 +5,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+// import { Progress } from '@/components/ui/progress'; // Temporarily disabled due to build issue
 import { Shield, Star, Gift, Crown, Trophy, Zap } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -168,10 +168,14 @@ export default function PointsPage() {
                           <span>Progression vers {points.nextLevel}</span>
                           <span>{points.pointsToNext} points restants</span>
                         </div>
-                        <Progress 
-                          value={points.pointsToNext > 0 ? (points.current / (points.current + points.pointsToNext)) * 100 : 100} 
-                          className="h-2"
-                        />
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-jomiastore-primary h-2 rounded-full transition-all duration-300"
+                            style={{ 
+                              width: `${points.pointsToNext > 0 ? (points.current / (points.current + points.pointsToNext)) * 100 : 100}%` 
+                            }}
+                          />
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4 pt-4 border-t">
