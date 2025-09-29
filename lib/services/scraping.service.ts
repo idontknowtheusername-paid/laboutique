@@ -181,6 +181,9 @@ export class ScrapingService {
       if (priceText) price = priceText[1];
     }
 
+    // Prepare description holder early (used in JSON-LD parsing too)
+    let description = '';
+
     // Images via JSON-LD, og:image and <img>
     const images = new Set<string>();
     try {
@@ -220,7 +223,9 @@ export class ScrapingService {
     }
 
     // Description via og:description or meta description
-    const description = getMeta('og:description') || (html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["'][^>]*>/i)?.[1] || '');
+    if (!description) {
+      description = getMeta('og:description') || (html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["'][^>]*>/i)?.[1] || '');
+    }
 
     return { name, price, images: Array.from(images), description };
   }
