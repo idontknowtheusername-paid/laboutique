@@ -394,7 +394,7 @@ export async function POST(request: NextRequest) {
           description: productData.description,
           short_description: productData.short_description,
           price: productData.price,
-          // Mapper le prix original en compare_price pour la base de données
+          // Mapper le prix original en compare_price (colonne existante)
           compare_price: productData.original_price,
           images: fixedImages,
           category_id: selectedCategoryId || undefined, // Convert null to undefined
