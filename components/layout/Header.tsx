@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, User, Heart, ShoppingCart, Menu, X, Crown } from 'lucide-react';
+import { Search, User, Heart, ShoppingCart, Menu, X, Crown, Package, CreditCard, MapPin, Bell, Settings, TicketPercent, Wallet, Shield, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -313,6 +313,21 @@ const Header = () => {
 const MobileMenu = () => {
   const { user, signOut } = useAuth();
 
+  // Navigation items from account layout
+  const accountNavItems = [
+    { href: '/account', label: 'Tableau de bord', icon: Settings },
+    { href: '/account/orders', label: 'Commandes', icon: Package },
+    { href: '/account/returns', label: 'Retours', icon: FileText },
+    { href: '/account/coupons', label: 'Coupons', icon: TicketPercent },
+    { href: '/account/wallet', label: 'Wallet', icon: Wallet },
+    { href: '/account/points', label: 'Points', icon: Shield },
+    { href: '/account/wishlist', label: 'Wishlist', icon: Heart },
+    { href: '/account/payment-methods', label: 'Paiements', icon: CreditCard },
+    { href: '/account/addresses', label: 'Adresses', icon: MapPin },
+    { href: '/account/notifications', label: 'Notifications', icon: Bell },
+    { href: '/account/invoices', label: 'Factures', icon: FileText },
+  ];
+
   return (
     <div className="flex flex-col space-y-4 p-4">
       <div className="flex items-center space-x-2 pb-4 border-b">
@@ -329,18 +344,29 @@ const MobileMenu = () => {
 
       {user ? (
         <>
-          <Link href="/account" className="py-2 text-gray-700 hover:text-jomiastore-primary">
-            Mon profil
-          </Link>
-          <Link href="/account/orders" className="py-2 text-gray-700 hover:text-jomiastore-primary">
-            Mes commandes
-          </Link>
-          <Link href="/account/wishlist" className="py-2 text-gray-700 hover:text-jomiastore-primary">
-            Ma liste de souhaits
-          </Link>
-          <Button onClick={() => signOut()} variant="outline" className="mt-4">
-            Se déconnecter
-          </Button>
+          {/* Account Navigation - Same as dashboard */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">Mon compte</h3>
+            {accountNavItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link 
+                  key={item.href}
+                  href={item.href} 
+                  className="flex items-center gap-3 py-2 px-3 text-gray-700 hover:text-jomiastore-primary hover:bg-gray-50 rounded-md"
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="text-sm">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+          
+          <div className="pt-4 border-t">
+            <Button onClick={() => signOut()} variant="outline" className="w-full">
+              Se déconnecter
+            </Button>
+          </div>
         </>
       ) : (
         <>
