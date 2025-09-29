@@ -20,12 +20,14 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { OrdersService, Order, PaginatedResponse } from "@/lib/services";
+import { useCart } from "@/contexts/CartContext";
 import Link from "next/link";
 import NextImage from "next/image";
 
 export default function OrdersPage() {
   const { user } = useAuth();
   useSessionManager();
+  const { addToCart } = useCart();
 
   // State
   const [orders, setOrders] = useState<Order[]>([]);
@@ -65,6 +67,14 @@ export default function OrdersPage() {
   const handleStatusFilter = (status: string | undefined) => {
     setStatusFilter(status);
     setPage(1);
+  };
+
+  const handleReorder = async (order: Order) => {
+    for (const item of order.order_items || []) {
+      if (item.product) {
+        await addToCart(item.product.id, item.product.name, item.price, item.quantity);
+      }
+    }
   };
 
   // Utils
@@ -299,10 +309,12 @@ export default function OrdersPage() {
                           {/* Order Actions */}
                           <div className="flex items-center justify-between pt-4 border-t">
                             <div className="flex space-x-3">
-                              <Button variant="outline" size="sm">
+                              <Link href={`/account/orders/${order.id}`}>
+                                <Button variant="outline" size="sm">
                                 <Eye className="w-4 h-4 mr-2" />
                                 Voir les détails
-                              </Button>
+                                </Button>
+                              </Link>
                               {order.status === "delivered" && (
                                 <>
                                   <Button variant="outline" size="sm">
@@ -322,7 +334,7 @@ export default function OrdersPage() {
                                 </Button>
                               )}
                             </div>
-                            <Button className="bg-blue-600 hover:bg-blue-700">
+                            <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => handleReorder(order)}>
                               Commander à nouveau
                             </Button>
                           </div>

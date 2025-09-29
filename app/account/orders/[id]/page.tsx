@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { OrdersService, Order } from "@/lib/services";
+import { DeliveryService, DeliveryUpdate } from "@/lib/services/delivery.service";
+import { useCart } from "@/contexts/CartContext";
+import { Download } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,9 +21,12 @@ import NextImage from "next/image";
 
 export default function OrderDetailPage({ params }: { params: { id: string } }) {
   const [order, setOrder] = useState<Order | null>(null);
+  const [tracking, setTracking] = useState<{ tracking_number?: string; carrier?: string; estimated_delivery?: string } | null>(null);
+  const [updates, setUpdates] = useState<DeliveryUpdate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     if (params.id) {
@@ -36,6 +42,12 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       const response = await OrdersService.getById(params.id);
       if (response.success && response.data) {
         setOrder(response.data);
+        const deliveryRes = await DeliveryService.getByOrderId(response.data.id);
+        if (deliveryRes.success && deliveryRes.data) {
+          const d = deliveryRes.data.delivery;
+          setTracking({ tracking_number: d.tracking_number, carrier: d.carrier, estimated_delivery: d.estimated_delivery });
+          setUpdates(deliveryRes.data.updates || []);
+        }
       } else {
         setError(response.error || "Commande introuvable");
       }
@@ -44,6 +56,17 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleReorder = async () => {
+    if (!order) return;
+    for (const item of order.order_items || []) {
+      if (item.product) {
+        await addToCart(item.product.id, item.product.name, item.price, item.quantity);
+      }
+    }
+    // Redirect to cart
+    router.push('/cart');
   };
 
   const [updating, setUpdating] = useState(false);
@@ -138,6 +161,45 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             </p>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Tracking info */}
+            {tracking && (
+              <div className="p-3 rounded-md border bg-white">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-600">Numéro de suivi</div>
+                    <div className="font-medium">{tracking.tracking_number}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-600">Transporteur</div>
+                    <div className="font-medium">{tracking.carrier}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-600">Livraison estimée</div>
+                    <div className="font-medium">{tracking.estimated_delivery ? new Date(tracking.estimated_delivery).toLocaleDateString('fr-FR') : '-'}</div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={handleReorder}>Commander à nouveau</Button>
+                    <Button variant="outline" size="sm">
+                      <Download className="w-4 h-4 mr-2" /> Facture
+                    </Button>
+                  </div>
+                </div>
+                {updates.length > 0 && (
+                  <div className="mt-4 space-y-3">
+                    {updates.map((u, idx) => (
+                      <div key={idx} className="flex items-start gap-3">
+                        <div className="w-2 h-2 mt-2 rounded-full bg-jomiastore-primary" />
+                        <div>
+                          <div className="text-sm font-medium">{u.status}</div>
+                          <div className="text-xs text-gray-600">{new Date(u.timestamp).toLocaleString('fr-FR')} {u.location ? `• ${u.location}` : ''}</div>
+                          {u.notes && <div className="text-xs text-gray-700 mt-1">{u.notes}</div>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             <div>
               <h3 className="font-semibold mb-2">Produits</h3>
               <div className="space-y-3">

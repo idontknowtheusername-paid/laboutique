@@ -173,6 +173,35 @@ export class DeliveryService extends BaseService {
   }
 
   /**
+   * Récupérer la livraison par ID de commande avec ses mises à jour
+   */
+  static async getByOrderId(orderId: string): Promise<ServiceResponse<{ delivery: Delivery; updates: DeliveryUpdate[] } | null>> {
+    try {
+      const { data: delivery, error } = await this.getSupabaseClient()
+        .from('deliveries')
+        .select('*')
+        .eq('order_id', orderId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error) throw error;
+
+      if (!delivery) return this.createResponse(null);
+
+      const { data: updates } = await this.getSupabaseClient()
+        .from('delivery_updates')
+        .select('*')
+        .eq('delivery_id', (delivery as any).id)
+        .order('timestamp', { ascending: true });
+
+      return this.createResponse({ delivery: delivery as Delivery, updates: (updates as DeliveryUpdate[]) || [] });
+    } catch (error) {
+      return this.createResponse(null, this.handleError(error));
+    }
+  }
+
+  /**
    * Récupérer les livraisons par statut
    */
   static async getDeliveriesByStatus(
