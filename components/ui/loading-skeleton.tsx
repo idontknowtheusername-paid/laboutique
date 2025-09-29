@@ -215,3 +215,58 @@ export const CartSkeleton = ({ count = 3 }: { count?: number }) => {
     </div>
   );
 };
+
+// Skeleton pour les sliders
+export const SliderSkeleton = ({ count = 4 }: { count?: number }) => {
+  return (
+    <div className="flex space-x-4 overflow-hidden">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="flex-shrink-0 w-64">
+          <div className="bg-white rounded-lg border p-4">
+            <Skeleton className="h-48 w-full mb-4" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-6 w-20" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// Skeleton pour les commandes
+export const OrderSkeleton = ({ count = 3 }: { count?: number }) => {
+  return (
+    <div className="space-y-4">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="bg-white rounded-lg border p-6">
+          <div className="flex justify-between items-start mb-4">
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+            <Skeleton className="h-6 w-20" />
+          </div>
+          <div className="space-y-3">
+            {Array.from({ length: 2 }).map((_, j) => (
+              <div key={j} className="flex items-center space-x-3">
+                <Skeleton className="w-12 h-12 rounded-lg" />
+                <div className="flex-1 space-y-1">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                </div>
+                <Skeleton className="h-4 w-16" />
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-between items-center mt-4 pt-4 border-t">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-8 w-24" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
