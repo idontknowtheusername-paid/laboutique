@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,11 +28,9 @@ const Footer = () => {
             {/* Brand */}
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
-                <img 
-                  src="/logo-mono.svg" 
-                  alt="JomiaStore Hub" 
-                  className="h-8 w-auto"
-                />
+                <span className="relative h-8 w-8">
+                  <Image src="/logo-mono.svg" alt="JomiaStore Hub" fill className="object-contain" sizes="32px" />
+                </span>
                 <span className="font-semibold">JomiaStore Hub</span>
               </div>
               <div className="space-y-2 text-gray-300 text-xs">

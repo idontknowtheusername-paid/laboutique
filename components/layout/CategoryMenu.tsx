@@ -119,6 +119,8 @@ const CategoryMenu = () => {
     loadCategories();
   }, [loadCategories]);
 
+  const topLevelCategories = useMemo(() => categories.slice(0, 12), [categories]);
+
   // Loading state
   if (loading) {
     return (
@@ -163,8 +165,6 @@ const CategoryMenu = () => {
       </div>
     );
   }
-
-  const topLevelCategories = useMemo(() => categories.slice(0, 12), [categories]);
 
   return (
     <div className={`bg-white border-b transition-all duration-300 z-40 ${
