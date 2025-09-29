@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { ChevronDown, Grid3X3, Smartphone, Shirt, Home, Sparkles, Dumbbell, ShoppingBag, RefreshCw, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -40,6 +41,7 @@ const CategoryMenu = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
   // Get icon for category
   const getCategoryIcon = (slug: string) => {
@@ -162,11 +164,66 @@ const CategoryMenu = () => {
     );
   }
 
+  const topLevelCategories = useMemo(() => categories.slice(0, 12), [categories]);
+
   return (
     <div className={`bg-white border-b transition-all duration-300 z-40 ${
       isScrolled ? 'fixed top-0 left-0 right-0 py-1.5 shadow-md' : 'category-menu-offset py-2'
     }`}>
       <div className="container">
+        <div className="flex items-center gap-2 md:gap-4">
+          {/* Mobile drawer trigger */}
+          <div className="md:hidden">
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                <Button aria-label="Ouvrir les catégories" className="bg-jomiastore-primary text-white h-9 px-3">
+                  <Grid3X3 className="w-4 h-4 mr-2" /> Catégories
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[88vw] sm:w-[420px] p-0">
+                <SheetHeader className="p-4 border-b">
+                  <SheetTitle>Parcourir les catégories</SheetTitle>
+                </SheetHeader>
+                <nav className="p-4 space-y-3" role="navigation" aria-label="Catégories">
+                  {topLevelCategories.map((category) => {
+                    const Icon = getCategoryIcon(category.slug);
+                    return (
+                      <div key={category.id} className="">
+                        <Link
+                          href={`/category/${category.slug}`}
+                          className="flex items-center justify-between py-2.5"
+                          onClick={() => setOpen(false)}
+                        >
+                          <span className="flex items-center gap-2 font-medium text-gray-900">
+                            <Icon className="w-4 h-4" /> {category.name}
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-gray-400 rotate-[-90deg]" />
+                        </Link>
+                        {category.children && category.children.length > 0 && (
+                          <ul className="pl-6 pb-2 space-y-1">
+                            {category.children.slice(0, 6).map((child) => (
+                              <li key={child.id}>
+                                <Link
+                                  href={`/category/${child.slug}`}
+                                  className="block py-1 text-sm text-gray-600"
+                                  onClick={() => setOpen(false)}
+                                >
+                                  {child.name}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    );
+                  })}
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Desktop navigation */}
+          <div className="hidden md:block flex-1 min-w-0">
         <NavigationMenu>
           <NavigationMenuList className="flex flex-nowrap gap-1 overflow-x-auto no-scrollbar">
             {/* All Categories Button */}
@@ -222,7 +279,7 @@ const CategoryMenu = () => {
             </NavigationMenuItem>
 
             {/* Individual Category Links */}
-            {categories.slice(0, 8).map((category) => {
+            {topLevelCategories.slice(0, 8).map((category) => {
               const IconComponent = getCategoryIcon(category.slug);
               return (
                 <NavigationMenuItem key={category.id}>
@@ -263,6 +320,8 @@ const CategoryMenu = () => {
             })}
           </NavigationMenuList>
         </NavigationMenu>
+          </div>
+        </div>
       </div>
     </div>
   );
