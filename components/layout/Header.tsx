@@ -210,7 +210,7 @@ const Header = () => {
                     {user ? (
                       <>
                         <DropdownMenuItem asChild>
-                          <Link href="/account">Mon profil</Link>
+                          <Link href="/account/profile">Mon profil</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/account/orders">Mes commandes</Link>
