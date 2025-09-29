@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Shield, Star, Gift, Crown, Trophy, Zap } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { AccountService } from '@/lib/services/account.service';
 
 interface LoyaltyPoints {
   current: number;
@@ -170,7 +169,7 @@ export default function PointsPage() {
                           <span>{points.pointsToNext} points restants</span>
                         </div>
                         <Progress 
-                          value={(points.current / (points.current + points.pointsToNext)) * 100} 
+                          value={points.pointsToNext > 0 ? (points.current / (points.current + points.pointsToNext)) * 100 : 100} 
                           className="h-2"
                         />
                       </div>
