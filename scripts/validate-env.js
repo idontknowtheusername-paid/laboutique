@@ -1,4 +1,10 @@
 /* eslint-disable no-console */
+try {
+  // Load local environment variables before validation (supports local dev)
+  require('dotenv').config({ path: '.env.local' });
+} catch (_) {
+  // dotenv may not be installed yet; handled below
+}
 const { z } = require('zod');
 
 const EnvSchema = z.object({
