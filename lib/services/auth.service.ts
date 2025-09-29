@@ -8,6 +8,7 @@ export interface UserProfile {
   last_name?: string;
   avatar_url?: string;
   phone?: string;
+  bio?: string;
   date_of_birth?: string;
   gender?: 'male' | 'female' | 'other';
   language: string;

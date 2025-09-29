@@ -25,7 +25,7 @@ export default function SecurityPage() {
       const hasTotp = (factors || []).some((f: any) => f.factor_type === 'totp' && f.status === 'verified');
       setTwoFAEnabled(hasTotp);
     })();
-  }, [user?.id]);
+  }, [user?.id, mfaListFactors]);
 
   return (
     <ProtectedRoute>
