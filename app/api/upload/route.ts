@@ -7,7 +7,9 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const files = formData.getAll('file') as File[];
+    const filesFieldA = formData.getAll('file') as File[];
+    const filesFieldB = formData.getAll('files[]') as File[];
+    const files = [...filesFieldA, ...filesFieldB].filter(Boolean) as File[];
     const bucket = (formData.get('bucket') as string) || 'images';
     const folder = (formData.get('folder') as string) || 'products';
 
