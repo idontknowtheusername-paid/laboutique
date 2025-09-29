@@ -53,6 +53,11 @@ interface AuthContextType {
   refreshSession: () => Promise<void>;
   clearError: () => void;
   retry: () => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<{ success: boolean; error?: string }>;
+  mfaListFactors: () => Promise<{ factors: any[]; error?: string }>;
+  mfaEnrollTotp: () => Promise<{ factorId?: string; qrCode?: string; secret?: string; error?: string }>;
+  mfaVerifyEnrollment: (factorId: string, code: string) => Promise<{ success: boolean; error?: string }>;
+  mfaDisable: (factorId: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -546,6 +551,63 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     refreshSession,
     clearError,
     retry,
+    updatePassword: async (newPassword: string) => {
+      try {
+        const { error } = await supabase.auth.updateUser({ password: newPassword });
+        if (error) throw error;
+        return { success: true };
+      } catch (e: any) {
+        const err = handleAuthError(e);
+        return { success: false, error: err.message };
+      }
+    },
+    mfaListFactors: async () => {
+      try {
+        // @ts-ignore - mfa API available in supabase-js v2
+        const { data, error } = await (supabase.auth as any).mfa.listFactors();
+        if (error) throw error;
+        return { factors: data?.factors || [] };
+      } catch (e: any) {
+        const err = handleAuthError(e, false);
+        return { factors: [], error: err.message };
+      }
+    },
+    mfaEnrollTotp: async () => {
+      try {
+        // @ts-ignore
+        const { data, error } = await (supabase.auth as any).mfa.enroll({ factorType: 'totp' });
+        if (error) throw error;
+        const factorId = data?.id;
+        const qrCode = data?.totp?.qr_code; // base64 svg
+        const secret = data?.totp?.secret;
+        return { factorId, qrCode, secret };
+      } catch (e: any) {
+        const err = handleAuthError(e, false);
+        return { error: err.message };
+      }
+    },
+    mfaVerifyEnrollment: async (factorId: string, code: string) => {
+      try {
+        // @ts-ignore
+        const { data, error } = await (supabase.auth as any).mfa.verify({ factorId, code });
+        if (error) throw error;
+        return { success: true };
+      } catch (e: any) {
+        const err = handleAuthError(e, false);
+        return { success: false, error: err.message };
+      }
+    },
+    mfaDisable: async (factorId: string) => {
+      try {
+        // @ts-ignore
+        const { error } = await (supabase.auth as any).mfa.unenroll({ factorId });
+        if (error) throw error;
+        return { success: true };
+      } catch (e: any) {
+        const err = handleAuthError(e, false);
+        return { success: false, error: err.message };
+      }
+    }
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

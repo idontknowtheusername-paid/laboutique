@@ -9,12 +9,23 @@ import { Shield, Smartphone, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function SecurityPage() {
-  const { user, signOut } = useAuth();
+  const { user, updatePassword, mfaListFactors, mfaEnrollTotp, mfaVerifyEnrollment, mfaDisable } = useAuth();
   const [password, setPassword] = React.useState('');
+  const [pwdMsg, setPwdMsg] = React.useState<string | null>(null);
   const [twoFAEnabled, setTwoFAEnabled] = React.useState(false);
-  const [devices, setDevices] = React.useState<Array<{ id: string; device: string; lastActive: string }>>([
-    // Placeholder devices
-  ]);
+  const [enrollStep, setEnrollStep] = React.useState<'idle'|'qr'|'verify'>('idle');
+  const [qrCode, setQrCode] = React.useState<string | undefined>(undefined);
+  const [factorId, setFactorId] = React.useState<string | undefined>(undefined);
+  const [totpCode, setTotpCode] = React.useState('');
+  const [devices, setDevices] = React.useState<Array<{ id: string; device: string; lastActive: string }>>([]);
+
+  React.useEffect(() => {
+    (async () => {
+      const { factors } = await mfaListFactors();
+      const hasTotp = (factors || []).some((f: any) => f.factor_type === 'totp' && f.status === 'verified');
+      setTwoFAEnabled(hasTotp);
+    })();
+  }, [user?.id]);
 
   return (
     <ProtectedRoute>
@@ -37,8 +48,12 @@ export default function SecurityPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Input type="password" placeholder="Nouveau mot de passe" value={password} onChange={(e)=>setPassword(e.target.value)} />
-                  <Button disabled>Mettre à jour</Button>
-                  <div className="text-xs text-gray-500">Intégration backend à brancher (Supabase Auth update).</div>
+                  <Button onClick={async ()=>{
+                    setPwdMsg(null);
+                    const r = await updatePassword(password);
+                    setPwdMsg(r.success ? 'Mot de passe mis à jour' : r.error || 'Erreur');
+                  }}>Mettre à jour</Button>
+                  {pwdMsg && (<div className="text-xs text-gray-600">{pwdMsg}</div>)}
                 </CardContent>
               </Card>
 
@@ -48,11 +63,47 @@ export default function SecurityPage() {
                   <CardTitle className="flex items-center"><Shield className="w-5 h-5 mr-2"/>Authentification à deux facteurs</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <input type="checkbox" checked={twoFAEnabled} onChange={(e)=>setTwoFAEnabled(e.target.checked)} />
-                    <span>Activer 2FA (TOTP)</span>
-                  </div>
-                  <div className="text-xs text-gray-500">Interface prête; nécessite génération/validation TOTP côté serveur.</div>
+                  {!twoFAEnabled ? (
+                    <div className="space-y-3">
+                      {enrollStep === 'idle' && (
+                        <Button variant="outline" onClick={async ()=>{
+                          const r = await mfaEnrollTotp();
+                          if (r?.factorId) {
+                            setFactorId(r.factorId);
+                            setQrCode(r.qrCode);
+                            setEnrollStep('qr');
+                          }
+                        }}>Activer 2FA</Button>
+                      )}
+                      {enrollStep !== 'idle' && qrCode && (
+                        <div className="space-y-2">
+                          <div className="text-sm text-gray-600">Scannez ce QR Code dans Google Authenticator / Authy puis entrez le code à 6 chiffres.</div>
+                          <div className="bg-white border rounded p-2 inline-block" dangerouslySetInnerHTML={{ __html: atob(qrCode.split(',')[1] || '') }} />
+                          <Input placeholder="Code à 6 chiffres" value={totpCode} onChange={(e)=>setTotpCode(e.target.value)} />
+                          <Button onClick={async ()=>{
+                            if (!factorId) return;
+                            const vr = await mfaVerifyEnrollment(factorId, totpCode);
+                            if (vr.success) {
+                              setTwoFAEnabled(true);
+                              setEnrollStep('idle');
+                            }
+                          }}>Vérifier et activer</Button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="text-sm text-green-700">2FA activée sur ce compte.</div>
+                      <Button variant="outline" onClick={async ()=>{
+                        const { factors } = await mfaListFactors();
+                        const totp = (factors || []).find((f: any)=> f.factor_type==='totp' && f.status==='verified');
+                        if (totp?.id) {
+                          const r = await mfaDisable(totp.id);
+                          if (r.success) setTwoFAEnabled(false);
+                        }
+                      }}>Désactiver 2FA</Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
