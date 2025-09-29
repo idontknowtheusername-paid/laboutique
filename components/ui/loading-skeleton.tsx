@@ -1,280 +1,217 @@
 import React from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
 
-interface ProductSkeletonProps {
-    count?: number;
-    className?: string;
+interface SkeletonProps {
+  className?: string;
+  children?: React.ReactNode;
 }
 
-export const ProductSkeleton: React.FC<ProductSkeletonProps> = ({
-    count = 5,
-    className = ''
-}) => {
-    return (
-        <div className={`grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 ${className}`}>
-            {Array.from({ length: count }).map((_, index) => (
-                <div key={index} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                    {/* Image skeleton */}
-                    <Skeleton className="aspect-square w-full" />
+export const Skeleton = ({ className = '', children, ...props }: SkeletonProps & React.HTMLAttributes<HTMLDivElement>) => {
+  return (
+    <div
+      className={`animate-pulse bg-gray-200 rounded ${className}`}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
 
-                    {/* Content skeleton */}
-                    <div className="p-2 md:p-4 space-y-2">
-                        {/* Vendor */}
-                        <Skeleton className="h-3 w-16" />
+// Skeleton spécialisés
+export const ProductSkeleton = ({ count = 1 }: { count?: number }) => {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="bg-white rounded-lg border p-4">
+          <Skeleton className="h-48 w-full mb-4" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-6 w-20" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
-                        {/* Product name */}
-                        <div className="space-y-1">
-                            <Skeleton className="h-4 w-full" />
-                            <Skeleton className="h-4 w-3/4" />
-                        </div>
+export const CategorySkeleton = ({ count = 6 }: { count?: number }) => {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      {Array.from({ length: count }).map((_, i) => (
+        <Skeleton key={i} className="h-24 w-full" />
+      ))}
+    </div>
+  );
+};
 
-                        {/* Rating */}
-                        <div className="flex items-center space-x-2">
-                            <div className="flex space-x-1">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                    <Skeleton key={i} className="w-2.5 h-2.5 rounded-full" />
-                                ))}
-                            </div>
-                            <Skeleton className="h-3 w-8" />
-                        </div>
+export const HeaderSkeleton = () => {
+  return (
+    <div className="bg-white border-b">
+      <div className="container">
+        {/* Announcement Bar */}
+        <Skeleton className="h-10 w-full" />
+        
+        {/* Main Header */}
+        <div className="h-20 flex items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center space-x-4">
+            <Skeleton className="w-12 h-12 rounded-lg" />
+            <div className="hidden lg:block">
+              <Skeleton className="h-6 w-32 mb-2" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="hidden md:flex flex-1 max-w-lg mx-8">
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+          
+          {/* Actions */}
+          <div className="flex items-center space-x-4">
+            <Skeleton className="w-10 h-10 rounded-full" />
+            <Skeleton className="w-10 h-10 rounded-full" />
+            <Skeleton className="w-10 h-10 rounded-full" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-                        {/* Price */}
-                        <div className="space-y-1">
-                            <Skeleton className="h-5 w-20" />
-                            <Skeleton className="h-3 w-16" />
-                        </div>
+export const HeroSkeleton = () => {
+  return (
+    <div className="mb-8">
+      <Skeleton className="h-64 lg:h-96 w-full rounded-xl" />
+    </div>
+  );
+};
 
-                        {/* Button */}
-                        <Skeleton className="h-8 w-full rounded-md" />
-                    </div>
-                </div>
+export const CardSkeleton = ({ lines = 3 }: { lines?: number }) => {
+  return (
+    <div className="bg-white rounded-lg border p-4">
+      <Skeleton className="h-48 w-full mb-4" />
+      <div className="space-y-2">
+        {Array.from({ length: lines }).map((_, i) => (
+          <Skeleton key={i} className={`h-4 ${i === lines - 1 ? 'w-3/4' : 'w-full'}`} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export const TableSkeleton = ({ rows = 5, columns = 4 }: { rows?: number; columns?: number }) => {
+  return (
+    <div className="bg-white rounded-lg border overflow-hidden">
+      <div className="p-4 border-b">
+        <Skeleton className="h-6 w-48" />
+      </div>
+      <div className="divide-y">
+        {Array.from({ length: rows }).map((_, i) => (
+          <div key={i} className="p-4 flex space-x-4">
+            {Array.from({ length: columns }).map((_, j) => (
+              <Skeleton key={j} className="h-4 flex-1" />
             ))}
-        </div>
-    );
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
-export const SliderSkeleton: React.FC<ProductSkeletonProps> = ({
-    count = 5,
-    className = ''
-}) => {
-    return (
-        <div className={`flex space-x-4 ${className}`}>
-            {Array.from({ length: count }).map((_, index) => (
-                <div key={index} className="flex-shrink-0 w-48 bg-white rounded-lg border border-gray-200 overflow-hidden">
-                    {/* Image skeleton */}
-                    <Skeleton className="aspect-square w-full" />
-
-                    {/* Content skeleton */}
-                    <div className="p-3 space-y-2">
-                        {/* Vendor */}
-                        <Skeleton className="h-3 w-16" />
-
-                        {/* Product name */}
-                        <div className="space-y-1">
-                            <Skeleton className="h-4 w-full" />
-                            <Skeleton className="h-4 w-3/4" />
-                        </div>
-
-                        {/* Rating */}
-                        <div className="flex items-center space-x-2">
-                            <div className="flex space-x-1">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                    <Skeleton key={i} className="w-2.5 h-2.5 rounded-full" />
-                                ))}
-                            </div>
-                            <Skeleton className="h-3 w-8" />
-                        </div>
-
-                        {/* Price */}
-                        <Skeleton className="h-5 w-20" />
-
-                        {/* Button */}
-                        <Skeleton className="h-8 w-full rounded-md" />
-                    </div>
-                </div>
-            ))}
+export const ProfileSkeleton = () => {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center space-x-4">
+        <Skeleton className="w-16 h-16 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-24" />
         </div>
-    );
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+    </div>
+  );
 };
 
-export const HeaderSkeleton: React.FC = () => {
-    return (
-        <div className="flex items-center justify-between mb-8">
-            <div>
-                <Skeleton className="h-8 w-64 mb-2" />
-                <Skeleton className="h-4 w-48" />
-            </div>
-            <Skeleton className="h-10 w-24" />
-        </div>
-    );
+// Loading spinner réutilisable
+export const LoadingSpinner = ({ size = 'md', className = '' }: { size?: 'sm' | 'md' | 'lg'; className?: string }) => {
+  const sizeClasses = {
+    sm: 'w-4 h-4',
+    md: 'w-8 h-8',
+    lg: 'w-12 h-12'
+  };
+
+  return (
+    <div className={`animate-spin rounded-full border-2 border-gray-300 border-t-jomiastore-primary ${sizeClasses[size]} ${className}`} />
+  );
 };
 
-export const ProfileSkeleton: React.FC = () => {
-    return (
-        <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
-            {/* Profile Header */}
-            <div className="flex items-center space-x-4">
-                <Skeleton className="w-20 h-20 rounded-full" />
-                <div className="flex-1 space-y-2">
-                    <Skeleton className="h-6 w-48" />
-                    <Skeleton className="h-4 w-64" />
-                    <Skeleton className="h-4 w-32" />
-                </div>
-                <Skeleton className="h-10 w-24" />
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {Array.from({ length: 4 }).map((_, index) => (
-                    <div key={index} className="text-center p-4 bg-gray-50 rounded-lg">
-                        <Skeleton className="h-8 w-16 mx-auto mb-2" />
-                        <Skeleton className="h-4 w-20 mx-auto" />
-                    </div>
-                ))}
-            </div>
-
-            {/* Profile Details */}
-            <div className="space-y-4">
-                <Skeleton className="h-6 w-40" />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Array.from({ length: 6 }).map((_, index) => (
-                        <div key={index} className="space-y-2">
-                            <Skeleton className="h-4 w-24" />
-                            <Skeleton className="h-10 w-full" />
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex space-x-3">
-                <Skeleton className="h-10 w-32" />
-                <Skeleton className="h-10 w-28" />
-            </div>
+// Loading avec logo JomiaStore
+export const JomiaStoreLoading = ({ message = 'Chargement...' }: { message?: string }) => {
+  return (
+    <div className="flex flex-col items-center justify-center space-y-4">
+      <div className="relative">
+        <div className="w-16 h-16 bg-jomiastore-primary rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-white rounded animate-pulse"></div>
         </div>
-    );
+        <div className="absolute inset-0 rounded-lg border-2 border-jomiastore-primary/20 animate-ping"></div>
+      </div>
+      <div className="text-center">
+        <h3 className="text-lg font-semibold text-jomiastore-primary">JomiaStore</h3>
+        <p className="text-sm text-gray-600">{message}</p>
+      </div>
+    </div>
+  );
 };
 
-export const CartSkeleton: React.FC<{ itemCount?: number }> = ({ itemCount = 3 }) => {
-    return (
-        <div className="space-y-6">
-            {/* Cart Header */}
-            <div className="flex items-center justify-between">
-                <Skeleton className="h-8 w-48" />
-                <Skeleton className="h-6 w-24" />
+// Skeleton pour la wishlist
+export const WishlistSkeleton = ({ count = 4 }: { count?: number }) => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="bg-white rounded-lg border p-4">
+          <Skeleton className="h-48 w-full mb-4" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+            <div className="flex justify-between items-center">
+              <Skeleton className="h-6 w-20" />
+              <Skeleton className="h-8 w-24" />
             </div>
-
-            {/* Cart Items */}
-            <div className="space-y-4">
-                {Array.from({ length: itemCount }).map((_, index) => (
-                    <div key={index} className="bg-white rounded-lg border border-gray-200 p-4">
-                        <div className="flex items-center space-x-4">
-                            {/* Product Image */}
-                            <Skeleton className="w-20 h-20 rounded-lg" />
-
-                            {/* Product Info */}
-                            <div className="flex-1 space-y-2">
-                                <Skeleton className="h-5 w-64" />
-                                <Skeleton className="h-4 w-32" />
-                                <div className="flex items-center space-x-2">
-                                    <Skeleton className="h-4 w-16" />
-                                    <Skeleton className="h-4 w-20" />
-                                </div>
-                            </div>
-
-                            {/* Quantity Controls */}
-                            <div className="flex items-center space-x-2">
-                                <Skeleton className="w-8 h-8 rounded" />
-                                <Skeleton className="w-12 h-8" />
-                                <Skeleton className="w-8 h-8 rounded" />
-                            </div>
-
-                            {/* Price */}
-                            <div className="text-right space-y-1">
-                                <Skeleton className="h-5 w-20" />
-                                <Skeleton className="h-4 w-16" />
-                            </div>
-
-                            {/* Remove Button */}
-                            <Skeleton className="w-8 h-8 rounded" />
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Cart Summary */}
-            <div className="bg-gray-50 rounded-lg p-6 space-y-4">
-                <Skeleton className="h-6 w-32" />
-
-                <div className="space-y-3">
-                    {Array.from({ length: 3 }).map((_, index) => (
-                        <div key={index} className="flex justify-between">
-                            <Skeleton className="h-4 w-24" />
-                            <Skeleton className="h-4 w-20" />
-                        </div>
-                    ))}
-                </div>
-
-                <div className="border-t pt-3">
-                    <div className="flex justify-between items-center">
-                        <Skeleton className="h-6 w-20" />
-                        <Skeleton className="h-6 w-24" />
-                    </div>
-                </div>
-
-                <Skeleton className="h-12 w-full rounded-lg" />
-            </div>
+          </div>
         </div>
-    );
+      ))}
+    </div>
+  );
 };
 
-export const OrderSkeleton: React.FC<{ orderCount?: number }> = ({ orderCount = 5 }) => {
-    return (
-        <div className="space-y-4">
-            {Array.from({ length: orderCount }).map((_, index) => (
-                <div key={index} className="bg-white rounded-lg border border-gray-200 p-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="space-y-2">
-                            <Skeleton className="h-5 w-32" />
-                            <Skeleton className="h-4 w-24" />
-                        </div>
-                        <div className="text-right space-y-2">
-                            <Skeleton className="h-6 w-20" />
-                            <Skeleton className="h-4 w-16" />
-                        </div>
-                    </div>
-
-                    <div className="flex items-center space-x-4">
-                        <Skeleton className="w-16 h-16 rounded-lg" />
-                        <div className="flex-1 space-y-2">
-                            <Skeleton className="h-4 w-48" />
-                            <Skeleton className="h-4 w-32" />
-                        </div>
-                        <Skeleton className="h-8 w-24 rounded-full" />
-                    </div>
-                </div>
-            ))}
+// Skeleton pour le panier
+export const CartSkeleton = ({ count = 3 }: { count?: number }) => {
+  return (
+    <div className="space-y-4">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="flex items-center space-x-4 p-4 border rounded-lg">
+          <Skeleton className="w-16 h-16 rounded-lg" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-1/2" />
+            <div className="flex justify-between items-center">
+              <Skeleton className="h-6 w-20" />
+              <div className="flex items-center space-x-2">
+                <Skeleton className="w-8 h-8 rounded" />
+                <Skeleton className="w-8 h-8 rounded" />
+                <Skeleton className="w-8 h-8 rounded" />
+              </div>
+            </div>
+          </div>
         </div>
-    );
-};
-
-export const WishlistSkeleton: React.FC<{ itemCount?: number }> = ({ itemCount = 6 }) => {
-    return (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {Array.from({ length: itemCount }).map((_, index) => (
-                <div key={index} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                    <Skeleton className="aspect-square w-full" />
-                    <div className="p-4 space-y-2">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-3/4" />
-                        <div className="flex items-center justify-between">
-                            <Skeleton className="h-5 w-20" />
-                            <Skeleton className="w-8 h-8 rounded" />
-                        </div>
-                        <Skeleton className="h-8 w-full rounded" />
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
+      ))}
+    </div>
+  );
 };

@@ -195,7 +195,7 @@ export const ErrorHandlingExample: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="font-medium mb-2">Cart Skeleton</h4>
-                  <CartSkeleton itemCount={2} />
+                  <CartSkeleton count={2} />
                 </div>
               </div>
             )}

@@ -254,7 +254,7 @@ export default function WishlistPage() {
 
             {/* Loading State */}
             {wishlistLoading && wishlistItems.length === 0 && (
-              <WishlistSkeleton itemCount={8} />
+              <WishlistSkeleton count={8} />
             )}
 
             {/* Empty State */}
