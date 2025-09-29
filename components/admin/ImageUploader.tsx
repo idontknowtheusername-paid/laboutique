@@ -62,31 +62,20 @@ export function ImageUploader({
     setUploadProgress({ current: 0, total: newFiles.length });
     const next: UploadedItem[] = [...items];
     
-    // Upload all files via server API route (service key) in parallel
-    const uploadPromises = newFiles.map(async (file) => {
-      try {
-        const form = new FormData();
-        form.append('file', file);
-        form.append('bucket', bucket);
-        if (folder) form.append('folder', folder);
-        const res = await fetch('/api/upload', { method: 'POST', body: form });
-        const json = await res.json();
-        setUploadProgress(prev => ({ ...prev, current: prev.current + 1 }));
-        if (!res.ok) {
-          console.error('Upload failed for', file.name, json.error);
-          return null;
-        }
-        return { url: json.url, path: json.path } as UploadedItem;
-      } catch (error) {
-        console.error('Upload error for', file.name, error);
-        setUploadProgress(prev => ({ ...prev, current: prev.current + 1 }));
-        return null;
-      }
-    });
-    
     try {
-      const results = await Promise.all(uploadPromises);
-      const successfulUploads = results.filter((item) => item !== null) as UploadedItem[];
+      const form = new FormData();
+      newFiles.forEach((file) => form.append('file', file));
+      form.append('bucket', bucket);
+      if (folder) form.append('folder', folder);
+      const res = await fetch('/api/upload', { method: 'POST', body: form });
+      const json = await res.json();
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.error || 'Upload failed');
+      }
+      const successfulUploads = (json.results || [])
+        .filter((r: any) => r.success && r.url)
+        .map((r: any) => ({ url: r.url, path: r.path })) as UploadedItem[];
+      setUploadProgress({ current: newFiles.length, total: newFiles.length });
       next.push(...successfulUploads);
       
       if (successfulUploads.length < newFiles.length) {

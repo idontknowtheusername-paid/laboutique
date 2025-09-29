@@ -7,11 +7,11 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const file = formData.get('file') as File | null;
+    const files = formData.getAll('file') as File[];
     const bucket = (formData.get('bucket') as string) || 'images';
     const folder = (formData.get('folder') as string) || 'products';
 
-    if (!file) {
+    if (!files || files.length === 0) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
@@ -23,22 +23,29 @@ export async function POST(req: NextRequest) {
 
     const supabase = createClient(url, serviceKey);
 
-    const ext = file.name.split('.').pop()?.toLowerCase() || 'bin';
-    const key = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const results: { success: boolean; url?: string; path?: string; error?: string }[] = [];
 
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    const { error } = await supabase.storage
-      .from(bucket)
-      .upload(key, buffer, { contentType: file.type || 'application/octet-stream', upsert: false });
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    for (const file of files) {
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'bin';
+      const key = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const { error } = await supabase.storage
+          .from(bucket)
+          .upload(key, buffer, { contentType: file.type || 'application/octet-stream', upsert: false });
+        if (error) {
+          results.push({ success: false, error: error.message });
+          continue;
+        }
+        const { data } = supabase.storage.from(bucket).getPublicUrl(key);
+        results.push({ success: true, url: data.publicUrl, path: key });
+      } catch (e: any) {
+        results.push({ success: false, error: e?.message || 'Upload failed' });
+      }
     }
 
-    const { data } = supabase.storage.from(bucket).getPublicUrl(key);
-    return NextResponse.json({ success: true, url: data.publicUrl, path: key });
+    return NextResponse.json({ success: true, results });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || 'Upload failed' }, { status: 500 });
   }
