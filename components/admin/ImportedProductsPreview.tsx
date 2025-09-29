@@ -168,7 +168,7 @@ export default function ImportedProductsPreview() {
                 <CardContent className="p-0">
                   <div className="relative">
                     {product.images && product.images.length > 0 ? (
-                      <div className="relative w-full h-40 bg-gray-100">
+                      <div className="relative w-full h-20 bg-gray-100">
                         <Image
                           src={product.images[0]}
                           alt={product.name}
@@ -177,7 +177,7 @@ export default function ImportedProductsPreview() {
                         />
                       </div>
                     ) : (
-                      <div className="w-full h-40 bg-gray-200 rounded-t-lg flex items-center justify-center">
+                      <div className="w-full h-20 bg-gray-200 rounded-t-lg flex items-center justify-center">
                         <span className="text-gray-400 text-sm">Aucune image</span>
                       </div>
                     )}
