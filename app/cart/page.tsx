@@ -13,6 +13,8 @@ import { Separator } from '@/components/ui/separator';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, Tag, Truck, Shield, AlertCircle, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { CartService } from '@/lib/services/cart.service';
 
 export default function CartPage() {
   const {
@@ -27,10 +29,12 @@ export default function CartPage() {
     retryLastOperation,
     resolveConflict
   } = useCart();
+  const { user } = useAuth();
   const [promoCode, setPromoCode] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
   const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set());
   const [removingItems, setRemovingItems] = useState<Set<string>>(new Set());
+  const [couponMsg, setCouponMsg] = useState<string | null>(null);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-BJ', {
@@ -78,9 +82,15 @@ export default function CartPage() {
   const promoDiscount = promoApplied ? subtotal * 0.05 : 0;
   const total = cartSummary?.total_amount || (subtotal + taxAmount + shipping - promoDiscount);
 
-  const applyPromoCode = () => {
-    if (promoCode.toLowerCase() === "jomiastore5") {
+  const applyPromoCode = async () => {
+    setCouponMsg(null);
+    if (!user?.id) return;
+    const res = await CartService.applyCoupon(user.id, promoCode.trim());
+    if (res.success && res.data) {
       setPromoApplied(true);
+      setCouponMsg(`Coupon appliqué: -${res.data.discountAmount} FCFA`);
+    } else {
+      setCouponMsg(res.error || 'Coupon invalide');
     }
   };
 
@@ -374,10 +384,10 @@ export default function CartPage() {
                       Appliquer
                     </Button>
                   </div>
-                  {promoApplied && (
-                    <div className="flex items-center text-green-600 text-sm">
+                  {couponMsg && (
+                    <div className={`flex items-center text-sm ${promoApplied ? 'text-green-600' : 'text-red-600'}`}>
                       <Tag className="w-4 h-4 mr-1" />
-                      Code JOMIASTORE5 appliqué (-5%)
+                      {couponMsg}
                     </div>
                   )}
                 </CardContent>

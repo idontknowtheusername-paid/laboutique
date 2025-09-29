@@ -45,6 +45,22 @@ export interface ReturnRequest {
   created_at?: string;
 }
 
+export interface WalletTransaction {
+  id: string;
+  user_id: string;
+  type: 'topup' | 'purchase' | 'refund';
+  amount: number;
+  currency: string;
+  reference?: string;
+  created_at?: string;
+}
+
+export interface WalletInfo {
+  balance: number;
+  currency: string;
+  transactions: WalletTransaction[];
+}
+
 export class AccountService extends BaseService {
   // Payment Methods
   static async getPaymentMethods(userId: string): Promise<ServiceResponse<PaymentMethod[]>> {
@@ -222,6 +238,29 @@ export class AccountService extends BaseService {
       return this.createResponse(data as ReturnRequest);
     } catch (error) {
       return this.createResponse(null, this.handleError(error));
+    }
+  }
+
+  // Wallet
+  static async getWallet(userId: string): Promise<ServiceResponse<WalletInfo>> {
+    try {
+      const client = this.getSupabaseClient() as any;
+      // Balance
+      const { data: balData } = await client.rpc('get_wallet_balance', { p_user_id: userId });
+      const balance = (balData && typeof balData.balance === 'number') ? balData.balance : 0;
+
+      // Transactions
+      const { data: txData, error: txError } = await client
+        .from('wallet_transactions')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      if (txError) throw txError;
+
+      return this.createResponse({ balance, currency: 'XOF', transactions: (txData as WalletTransaction[]) || [] });
+    } catch (error) {
+      return this.createResponse({ balance: 0, currency: 'XOF', transactions: [] }, this.handleError(error));
     }
   }
 }
