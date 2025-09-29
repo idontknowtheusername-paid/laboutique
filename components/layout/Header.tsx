@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Search, User, Heart, ShoppingCart, Menu, X, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -127,11 +128,16 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <img 
-              src="/logo.svg" 
-              alt="JomiaStore Hub" 
-              className="h-10 w-auto"
-            />
+            <span className="inline-block h-10 w-10 relative">
+              <Image
+                src="/logo.svg"
+                alt="JomiaStore Hub"
+                fill
+                className="object-contain"
+                sizes="40px"
+                priority
+              />
+            </span>
             <div>
               <h1 className="text-2xl font-bold text-jomiastore-primary">
                 JomiaStore Hub
