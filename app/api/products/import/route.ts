@@ -529,20 +529,22 @@ export async function POST(request: NextRequest) {
         suggestedCategoryId = findBestCategory(productData.name, available) || findBestCategoryByKeywords(productData.name, available) || undefined;
 
         // Trouver/Créer un vendeur par défaut
-        const { data: anyVendor } = await db
+        const vendRes = await db
           .from('vendors')
           .select('id')
           .limit(1)
           .single();
-        if (anyVendor?.id) {
-          suggestedVendorId = anyVendor.id as string;
+        const anyVendor = (vendRes as any)?.data as { id: string } | null;
+        if (anyVendor && anyVendor.id) {
+          suggestedVendorId = anyVendor.id;
         } else {
-          const { data: newVendor } = await db
+          const createRes = await db
             .from('vendors')
             .insert([{ name: 'Vendeur par défaut', slug: 'vendeur-defaut-' + Date.now(), email: 'default@laboutique.bj', status: 'active' }] as any)
             .select('id')
             .single();
-          if (newVendor?.id) suggestedVendorId = newVendor.id as string;
+          const newVendor = (createRes as any)?.data as { id: string } | null;
+          if (newVendor && newVendor.id) suggestedVendorId = newVendor.id;
         }
       }
     } catch (e) {
