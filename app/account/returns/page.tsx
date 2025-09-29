@@ -1,10 +1,7 @@
-'use client';
+"use client";
 
 import React from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import Header from '@/components/layout/Header';
-import CategoryMenu from '@/components/layout/CategoryMenu';
-import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,12 +9,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Package, Upload, FileText } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { AccountService, ReturnRequest } from '@/lib/services/account.service';
+import { useSearchParams } from 'next/navigation';
 
 export default function ReturnsPage() {
   const { user } = useAuth();
   const [creating, setCreating] = React.useState(false);
   const [returns, setReturns] = React.useState<ReturnRequest[]>([]);
-  const [form, setForm] = React.useState({ order_id: '', product_name: '', reason: '' });
+  const searchParams = useSearchParams();
+  const initialOrderId = searchParams?.get('order') || '';
+  const [form, setForm] = React.useState({ order_id: initialOrderId, product_name: '', reason: '' });
+  const [expandedId, setExpandedId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     (async () => {
@@ -28,10 +29,8 @@ export default function ReturnsPage() {
   }, [user?.id]);
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-jomiastore-background">
-        <Header />
-        <CategoryMenu />
-        <div className="container py-8">
+      <div>
+        <div className="py-2">
           <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
             <a href="/" className="hover:text-jomiastore-primary">Accueil</a>
             <span>/</span>
@@ -53,8 +52,8 @@ export default function ReturnsPage() {
                   {creating && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg">
                       <div>
-                        <label className="block text-sm mb-2">Numéro de commande</label>
-                        <Input placeholder="#ORD-..." value={form.order_id} onChange={(e)=>setForm(f=>({...f, order_id: e.target.value}))} />
+                        <label className="block text-sm mb-2">ID de commande</label>
+                        <Input placeholder="id de la commande" value={form.order_id} onChange={(e)=>setForm(f=>({...f, order_id: e.target.value}))} />
                       </div>
                       <div>
                         <label className="block text-sm mb-2">Produit</label>
@@ -78,7 +77,7 @@ export default function ReturnsPage() {
                           if (res.success && res.data) {
                             setReturns(r => [res.data as ReturnRequest, ...r]);
                             setCreating(false);
-                            setForm({ order_id: '', product_name: '', reason: '' });
+                            setForm({ order_id: initialOrderId, product_name: '', reason: '' });
                           }
                         }}>Soumettre</Button>
                         <Button variant="outline" onClick={() => setCreating(false)}>Annuler</Button>
@@ -88,15 +87,26 @@ export default function ReturnsPage() {
 
                   <div className="space-y-3">
                     {returns.map(rr => (
-                      <div key={rr.id} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded bg-jomiastore-primary text-white flex items-center justify-center"><Package className="w-5 h-5"/></div>
-                          <div>
-                            <div className="font-medium">Retour #{rr.id}</div>
-                            <div className="text-xs text-gray-600">Commande {rr.order_id} • Statut: {rr.status}</div>
+                      <div key={rr.id} className="p-4 border rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded bg-jomiastore-primary text-white flex items-center justify-center"><Package className="w-5 h-5"/></div>
+                            <div>
+                              <div className="font-medium">Retour #{rr.id}</div>
+                              <div className="text-xs text-gray-600">Commande {rr.order_id} • Statut: {rr.status}</div>
+                            </div>
                           </div>
+                          <Button variant="outline" onClick={()=> setExpandedId(expandedId === rr.id ? null : rr.id)}>
+                            <FileText className="w-4 h-4 mr-2"/>Détails
+                          </Button>
                         </div>
-                        <Button variant="outline"><FileText className="w-4 h-4 mr-2"/>Détails</Button>
+                        {expandedId === rr.id && (
+                          <div className="mt-3 text-sm text-gray-700">
+                            {rr.product_name && <div><span className="text-gray-500">Produit:</span> {rr.product_name}</div>}
+                            {rr.reason && <div className="mt-1"><span className="text-gray-500">Motif:</span> {rr.reason}</div>}
+                            <div className="mt-1"><span className="text-gray-500">Créé le:</span> {rr.created_at ? new Date(rr.created_at).toLocaleString('fr-FR') : '-'}</div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -115,7 +125,6 @@ export default function ReturnsPage() {
             </div>
           </div>
         </div>
-        <Footer />
       </div>
     </ProtectedRoute>
   );
