@@ -17,9 +17,7 @@ const FlashSalesConnected = dynamic(() => import('@/components/home/FlashSalesCo
   loading: () => <ProductSkeleton count={4} />
 });
 
-const TrendingProducts = dynamic(() => import('@/components/home/TrendingProducts'), {
-  loading: () => <ProductSkeleton count={4} />
-});
+// Trending will be rendered as a ProductGrid using popular products
 
 // "À découvrir" section will reuse ProductGrid with newest products
 
@@ -48,6 +46,7 @@ const TrustElements = dynamic(() => import('@/components/home/TrustElements'), {
 interface HomeState {
   products: Product[];
   categories: Category[];
+  trending: Product[];
   loading: boolean;
   error: string | null;
 }
@@ -56,6 +55,7 @@ export default function Home() {
   const [state, setState] = useState<HomeState>({
     products: [],
     categories: [],
+    trending: [],
     loading: true,
     error: null
   });
@@ -65,13 +65,15 @@ export default function Home() {
       try {
         setState(prev => ({ ...prev, loading: true, error: null }));
 
-        const [productsResponse, categoriesResponse] = await Promise.all([
+        const [productsResponse, categoriesResponse, trendingResponse] = await Promise.all([
           ProductsService.getAll({}, { limit: 50 }),
-          CategoriesService.getAll()
+          CategoriesService.getAll(),
+          ProductsService.getPopular(12)
         ]);
 
         let products: Product[] = [];
         let categories: Category[] = [];
+        let trending: Product[] = [];
 
         if (productsResponse.success && productsResponse.data) {
           products = productsResponse.data;
@@ -81,9 +83,14 @@ export default function Home() {
           categories = categoriesResponse.data;
         }
 
+        if (trendingResponse.success && trendingResponse.data) {
+          trending = trendingResponse.data;
+        }
+
         setState({
           products,
           categories,
+          trending,
           loading: false,
           error: null
         });
@@ -172,17 +179,26 @@ export default function Home() {
       <CategoryMenu />
 
       <div className="pt-2">
-        <section className="container mb-5">
+        <section className="container mb-4">
           <HeroCarousel />
         </section>
 
-        <div className="mb-3">
+        <div className="mb-2.5">
           <FlashSalesConnected />
         </div>
-        <div className="mb-3">
-          <TrendingProducts />
-        </div>
-        <div className="mb-3">
+        {state.trending.length > 0 && (
+          <div className="mb-2.5">
+            <ProductGrid
+              title="Produits Tendance"
+              subtitle="Découvrez les produits les plus populaires du moment"
+              products={state.trending}
+              viewAllLink="/search?sort=popular"
+              backgroundColor="bg-white"
+              maxItems={8}
+            />
+          </div>
+        )}
+        <div className="mb-2.5">
           <ProductGrid
             title="À découvrir"
             subtitle="Produits que vous pourriez aimer"
@@ -194,7 +210,7 @@ export default function Home() {
         </div>
 
         {featuredProducts.length > 0 && (
-          <div className="mb-3">
+          <div className="mb-2.5">
             <ProductGrid
               title="Produits en Vedette"
               subtitle="Notre sélection de produits exceptionnels"
@@ -207,7 +223,7 @@ export default function Home() {
         )}
 
         {newProducts.length > 0 && (
-          <div className="mb-3">
+          <div className="mb-2.5">
             <ProductGrid
               title="Nouveaux Produits"
               subtitle="Découvrez nos dernières nouveautés"
@@ -220,7 +236,7 @@ export default function Home() {
         )}
 
         {electronicsProducts.length > 0 && (
-          <div className="mb-3">
+          <div className="mb-2.5">
             <ProductGrid
               title="Électronique & High-Tech"
               subtitle="Les dernières technologies"
@@ -233,7 +249,7 @@ export default function Home() {
         )}
 
         {fashionProducts.length > 0 && (
-          <div className="mb-3">
+          <div className="mb-2.5">
             <ProductGrid
               title="Mode & Beauté"
               subtitle="Collections tendance"
@@ -246,7 +262,7 @@ export default function Home() {
         )}
 
         {homeProducts.length > 0 && (
-          <div className="mb-3">
+          <div className="mb-2.5">
             <ProductGrid
               title="Maison & Jardin"
               subtitle="Tout pour votre intérieur"
@@ -259,7 +275,7 @@ export default function Home() {
         )}
 
         {sportsProducts.length > 0 && (
-          <div className="mb-3">
+          <div className="mb-2.5">
             <ProductGrid
               title="Sport & Loisirs"
               subtitle="Équipements sportifs"
@@ -271,17 +287,17 @@ export default function Home() {
           </div>
         )}
 
-        <div className="mb-3">
+        <div className="mb-2.5">
           <FeaturedBrands />
         </div>
         
         {/* Mobile App Section */}
-        <div className="mb-3">
+        <div className="mb-2.5">
           <MobileAppSection />
         </div>
         
         {/* Trust Elements */}
-        <div className="mb-3">
+        <div className="mb-2.5">
           <TrustElements />
         </div>
         
