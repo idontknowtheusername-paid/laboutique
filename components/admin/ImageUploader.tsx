@@ -31,6 +31,11 @@ export function ImageUploader({
   const [uploading, setUploading] = React.useState(false);
   const [uploadProgress, setUploadProgress] = React.useState<{ current: number; total: number }>({ current: 0, total: 0 });
   const inputRef = React.useRef<HTMLInputElement | null>(null);
+  React.useEffect(() => {
+    if (multiple && inputRef.current) {
+      try { inputRef.current.setAttribute('multiple', 'multiple'); } catch {}
+    }
+  }, [multiple]);
 
   const items: UploadedItem[] = React.useMemo(() => {
     if (!value) return [];
@@ -44,6 +49,10 @@ export function ImageUploader({
     const maxImages = 10;
     const currentCount = items.length;
     const newFiles = Array.from(files);
+    if (newFiles.length > 1 && !multiple) {
+      // Safety: if parent accidentally passed multiple=false, keep only first
+      newFiles.splice(1);
+    }
     
     if (currentCount + newFiles.length > maxImages) {
       alert(`Vous ne pouvez ajouter que ${maxImages} images maximum. Vous avez déjà ${currentCount} images.`);

@@ -338,7 +338,7 @@ export default function AdminNewProductPage() {
                     label="Photos du produit"
                     bucket="images"
                     folder="products"
-                    multiple
+                    multiple={true}
                     value={(form.images || []).map((url: any)=>({ url }))}
                     onChange={(next)=>{
                       const urls = Array.isArray(next) ? next.map((n:any)=>n.url) : (next ? [next.url] : []);
