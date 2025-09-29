@@ -99,6 +99,8 @@ export const useMobileViewport = () => {
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const checkViewport = () => {
       const width = window.innerWidth;
       setIsMobile(width < 768);
@@ -167,6 +169,8 @@ export const useMobilePerformance = () => {
   const [connectionType, setConnectionType] = useState<'slow' | 'fast' | 'unknown'>('unknown');
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     // Detect low-end devices
     const checkDevice = () => {
       const userAgent = navigator.userAgent;

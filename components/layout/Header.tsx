@@ -169,7 +169,7 @@ const Header = () => {
                 type="text"
                 placeholder="Rechercher des produits, marques et catégories..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 className="pr-12 h-12 text-base border-2 border-gray-200 focus:border-jomiastore-primary"
               />
               <TouchButton
