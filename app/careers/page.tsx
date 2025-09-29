@@ -1,5 +1,5 @@
-export const revalidate = 300;
 'use client';
+export const revalidate = 300;
 
 import React, { useState } from 'react';
 import Header from '@/components/layout/Header';
