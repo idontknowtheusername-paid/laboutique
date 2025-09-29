@@ -21,9 +21,7 @@ const TrendingProducts = dynamic(() => import('@/components/home/TrendingProduct
   loading: () => <ProductSkeleton count={4} />
 });
 
-const DiscoverySection = dynamic(() => import('@/components/home/DiscoverySection'), {
-  loading: () => <div className="h-48 bg-gray-100 animate-pulse rounded-xl" />
-});
+// "À découvrir" section will reuse ProductGrid with newest products
 
 const ProductGrid = dynamic(() => import('@/components/home/ProductGrid'), {
   loading: () => <ProductSkeleton count={8} />
@@ -185,7 +183,14 @@ export default function Home() {
           <TrendingProducts />
         </div>
         <div className="mb-3">
-          <DiscoverySection />
+          <ProductGrid
+            title="À découvrir"
+            subtitle="Produits que vous pourriez aimer"
+            products={newProducts}
+            viewAllLink="/products?sort=newest"
+            backgroundColor="bg-white"
+            maxItems={8}
+          />
         </div>
 
         {featuredProducts.length > 0 && (
