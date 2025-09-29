@@ -235,6 +235,26 @@ export class OrdersService extends BaseService {
   }
 
   /**
+   * Récupérer une commande par une référence présente dans les notes (utile pour idempotence via passerelles)
+   */
+  static async getByReferenceInNotes(reference: string): Promise<ServiceResponse<Order | null>> {
+    try {
+      const { data, error } = await (this.getSupabaseClient() as any)
+        .from('orders')
+        .select('*')
+        .ilike('notes', `%${reference}%`)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error) throw error;
+      return this.createResponse(data);
+    } catch (error) {
+      return this.createResponse(null, this.handleError(error));
+    }
+  }
+
+  /**
    * Récupérer les commandes d'un utilisateur
    */
   static async getByUser(
@@ -270,7 +290,7 @@ export class OrdersService extends BaseService {
 
       // Calculer les totaux
       const subtotal = orderData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      const taxAmount = subtotal * 0.18; // 18% de TVA (ajustable)
+      const taxAmount = subtotal * 0.02; // 2% de TVA (ajustable)
       const shippingAmount = 2000; // Frais de livraison fixes (ajustable)
       const discountAmount = 0; // À implémenter avec les coupons
       const totalAmount = subtotal + taxAmount + shippingAmount - discountAmount;
