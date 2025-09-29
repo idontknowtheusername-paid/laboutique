@@ -58,6 +58,8 @@ interface AuthContextType {
   mfaEnrollTotp: () => Promise<{ factorId?: string; qrCode?: string; secret?: string; error?: string }>;
   mfaVerifyEnrollment: (factorId: string, code: string) => Promise<{ success: boolean; error?: string }>;
   mfaDisable: (factorId: string) => Promise<{ success: boolean; error?: string }>;
+  signOutOthers: () => Promise<{ success: boolean; error?: string }>;
+  signOutAll: () => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -602,6 +604,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         // @ts-ignore
         const { error } = await (supabase.auth as any).mfa.unenroll({ factorId });
         if (error) throw error;
+        return { success: true };
+      } catch (e: any) {
+        const err = handleAuthError(e, false);
+        return { success: false, error: err.message };
+      }
+    },
+    signOutOthers: async () => {
+      try {
+        // @ts-ignore - scope option supported in supabase-js v2
+        await supabase.auth.signOut({ scope: 'others' });
+        return { success: true };
+      } catch (e: any) {
+        const err = handleAuthError(e, false);
+        return { success: false, error: err.message };
+      }
+    },
+    signOutAll: async () => {
+      try {
+        // @ts-ignore - scope option supported in supabase-js v2
+        await supabase.auth.signOut({ scope: 'global' });
+        setUser(null);
+        setSession(null);
+        setProfile(null);
+        setUserStats(null);
         return { success: true };
       } catch (e: any) {
         const err = handleAuthError(e, false);

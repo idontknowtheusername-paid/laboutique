@@ -9,7 +9,7 @@ import { Shield, Smartphone, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function SecurityPage() {
-  const { user, updatePassword, mfaListFactors, mfaEnrollTotp, mfaVerifyEnrollment, mfaDisable } = useAuth();
+  const { user, updatePassword, mfaListFactors, mfaEnrollTotp, mfaVerifyEnrollment, mfaDisable, signOutOthers, signOutAll } = useAuth();
   const [password, setPassword] = React.useState('');
   const [pwdMsg, setPwdMsg] = React.useState<string | null>(null);
   const [twoFAEnabled, setTwoFAEnabled] = React.useState(false);
@@ -113,21 +113,13 @@ export default function SecurityPage() {
                   <CardTitle className="flex items-center"><Smartphone className="w-5 h-5 mr-2"/>Appareils connectés</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {devices.length === 0 ? (
-                    <div className="text-sm text-gray-500">Aucun appareil listé.</div>
-                  ) : (
-                    <div className="space-y-3">
-                      {devices.map((d) => (
-                        <div key={d.id} className="flex items-center justify-between p-3 border rounded-md">
-                          <div>
-                            <div className="font-medium">{d.device}</div>
-                            <div className="text-xs text-gray-600">Dernière activité: {d.lastActive}</div>
-                          </div>
-                          <Button variant="outline" size="sm"><LogOut className="w-4 h-4 mr-2"/>Déconnecter</Button>
-                        </div>
-                      ))}
+                  <div className="space-y-3">
+                    <div className="text-sm text-gray-600">Gérez vos sessions actives sur d’autres appareils.</div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={async ()=>{ await signOutOthers(); }}>Déconnecter les autres sessions</Button>
+                      <Button variant="outline" size="sm" onClick={async ()=>{ await signOutAll(); }}>Déconnecter toutes les sessions</Button>
                     </div>
-                  )}
+                  </div>
                 </CardContent>
               </Card>
             </div>
