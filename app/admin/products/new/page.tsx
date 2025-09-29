@@ -253,21 +253,20 @@ export default function AdminNewProductPage() {
           </div>
         </div>
 
-        {/* IMPORT ALIEXPRESS/ALIBABA - TRÈS VISIBLE */}
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-6 shadow-lg">
-          <div className="flex items-center justify-between">
+        {/* IMPORT ALIEXPRESS/ALIBABA - version compacte (-60%) */}
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-md p-3 shadow-md">
+          <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-xl font-bold mb-2">🚀 Import Rapide</h2>
-              <p className="text-blue-100">Importez des produits depuis AliExpress ou AliBaba en un clic !</p>
+              <h2 className="text-base font-semibold mb-1">🚀 Import Rapide</h2>
+              <p className="text-blue-100 text-xs">Importez des produits depuis AliExpress ou AliBaba en un clic !</p>
             </div>
             <Button 
-              variant="secondary" 
-              size="lg"
-              className="flex items-center gap-3 bg-white text-blue-600 hover:bg-gray-100 font-semibold px-6 py-3"
+              variant="secondary"
+              className="flex items-center gap-2 bg-white text-blue-600 hover:bg-gray-100 font-medium h-9 px-4"
               onClick={() => window.location.href = '/admin/products/import'}
             >
-              <Download className="w-5 h-5" />
-              IMPORTER UN PRODUIT
+              <Download className="w-4 h-4" />
+              Importer
             </Button>
           </div>
         </div>
