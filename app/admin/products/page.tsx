@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { ProductsService } from '@/lib/services/products.service';
-import { Download, Search, Eye, Edit, RefreshCw } from 'lucide-react';
+import { Download, Search, Eye, Edit, RefreshCw, Plus } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
 import ImportedProductsPreview from '@/components/admin/ImportedProductsPreview';
@@ -74,7 +74,19 @@ export default function AdminProductsPage() {
         title="Produits"
         subtitle="Catalogue et statut de publication"
         actions={
-          <>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Bouton principal - Créer manuellement */}
+            <Button
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+              onClick={() => (window.location.href = "/admin/products/new")}
+            >
+              <Plus className="w-4 h-4 mr-2" /> Créer manuellement
+            </Button>
+            
+            {/* Séparateur visuel */}
+            <div className="w-px h-6 bg-gray-300 mx-1"></div>
+            
+            {/* Boutons secondaires */}
             <Button variant="outline" onClick={load} disabled={loading}>
               <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
             </Button>
@@ -82,7 +94,7 @@ export default function AdminProductsPage() {
               variant="outline"
               onClick={() => (window.location.href = "/admin/products/import")}
             >
-              <Download className="w-4 h-4 mr-2" /> Importer un article
+              <Download className="w-4 h-4 mr-2" /> Importer
             </Button>
             <Button
               className="bg-jomiastore-primary hover:bg-blue-700"
@@ -90,9 +102,9 @@ export default function AdminProductsPage() {
                 (window.location.href = "/admin/products/bulk-import")
               }
             >
-              <Download className="w-4 h-4 mr-2" /> Import en masse
+              <Download className="w-4 h-4 mr-2" /> Import masse
             </Button>
-          </>
+          </div>
         }
       />
 

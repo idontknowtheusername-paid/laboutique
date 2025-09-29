@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { ProductsService } from '@/lib/services';
+import { ProductsService, CreateProductData } from '@/lib/services';
 
 export async function GET(request: NextRequest) {
   try {

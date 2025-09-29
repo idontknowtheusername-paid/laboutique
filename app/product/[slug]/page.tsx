@@ -191,6 +191,12 @@ export default function ProductDetailPage() {
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
+                onError={(e) => {
+                  // Fallback to placeholder if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/placeholder-product.jpg';
+                }}
+                unoptimized={product?.images?.[currentImageIndex]?.startsWith('http')}
               />
               
               {/* Navigation Arrows */}
@@ -232,6 +238,12 @@ export default function ProductDetailPage() {
                       fill
                       sizes="96px"
                       className="object-cover"
+                      onError={(e) => {
+                        // Fallback to placeholder if image fails to load
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/placeholder-product.jpg';
+                      }}
+                      unoptimized={image.startsWith('http')}
                     />
                   </div>
                 </button>

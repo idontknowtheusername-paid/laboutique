@@ -10,7 +10,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProductsService, CreateProductData } from '@/lib/services/products.service';
 import { Badge } from '@/components/ui/badge';
 import { ImageUploader } from '@/components/admin/ImageUploader';
-import { Download } from 'lucide-react';
+import { VendorSelector } from '@/components/admin/VendorSelector';
+import { CategorySelector } from '@/components/admin/CategorySelector';
+import { Download, AlertCircle, CheckCircle } from 'lucide-react';
 
 // Fonction utilitaire pour générer un slug
 function generateSlug(name: string): string {
@@ -25,9 +27,29 @@ function generateSlug(name: string): string {
     .replace(/^-+|-+$/g, ''); // Supprimer les tirets en début/fin
 }
 
+// Fonction utilitaire pour générer un SKU
+function generateSKU(name: string, categoryId?: string): string {
+  const timestamp = Date.now().toString().slice(-6); // 6 derniers chiffres du timestamp
+  const namePrefix = name
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '') // Garder seulement lettres et chiffres
+    .slice(0, 4); // Max 4 caractères
+  
+  // Utiliser un préfixe simple basé sur les premières lettres du nom
+  const categoryPrefix = 'PRD';
+  
+  return `${categoryPrefix}-${namePrefix}-${timestamp}`;
+}
+
+// Fonction utilitaire pour générer l'URL du produit
+function generateProductURL(slug: string): string {
+  return `${window.location.origin}/product/${slug}`;
+}
+
 export default function AdminNewProductPage() {
   const [saving, setSaving] = React.useState(false);
   const [message, setMessage] = React.useState<string>('');
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [form, setForm] = React.useState<Partial<CreateProductData>>({
     name: '', slug: '', sku: '', price: 0, vendor_id: '', category_id: '',
     status: 'draft', track_quantity: true, quantity: 0, featured: false,
@@ -41,6 +63,16 @@ export default function AdminNewProductPage() {
       // Générer automatiquement le slug si le nom change et que le slug est vide
       if (patch.name && !f.slug) {
         newForm.slug = generateSlug(patch.name);
+      }
+      
+      // Générer automatiquement le SKU si le nom change et que le SKU est vide
+      if (patch.name && !f.sku) {
+        newForm.sku = generateSKU(patch.name, newForm.category_id);
+      }
+      
+      // Régénérer le SKU si la catégorie change et qu'on a déjà un nom
+      if (patch.category_id && f.name && f.sku) {
+        newForm.sku = generateSKU(f.name, patch.category_id);
       }
       
       // Générer automatiquement le SEO si le nom change
@@ -62,6 +94,51 @@ export default function AdminNewProductPage() {
       
       return newForm;
     });
+    
+    // Effacer les erreurs quand l'utilisateur modifie le champ
+    if (patch.name && errors.name) {
+      setErrors(prev => ({ ...prev, name: '' }));
+    }
+    if (patch.price && errors.price) {
+      setErrors(prev => ({ ...prev, price: '' }));
+    }
+    if (patch.vendor_id && errors.vendor_id) {
+      setErrors(prev => ({ ...prev, vendor_id: '' }));
+    }
+    if (patch.category_id && errors.category_id) {
+      setErrors(prev => ({ ...prev, category_id: '' }));
+    }
+    if (patch.sku && errors.sku) {
+      setErrors(prev => ({ ...prev, sku: '' }));
+    }
+  };
+
+  // Fonction de validation
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!form.name?.trim()) {
+      newErrors.name = 'Le nom du produit est obligatoire';
+    }
+    
+    if (!form.sku?.trim()) {
+      newErrors.sku = 'Le code produit (SKU) est obligatoire';
+    }
+    
+    if (!form.price || form.price <= 0) {
+      newErrors.price = 'Le prix doit être supérieur à 0';
+    }
+    
+    if (!form.vendor_id) {
+      newErrors.vendor_id = 'Veuillez sélectionner un vendeur';
+    }
+    
+    if (!form.category_id) {
+      newErrors.category_id = 'Veuillez sélectionner une catégorie';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleImportClick = () => {
@@ -112,31 +189,50 @@ export default function AdminNewProductPage() {
   };
 
   async function handleSave(status: 'draft' | 'active') {
+    // Valider le formulaire avant de sauvegarder
+    if (!validateForm()) {
+      setMessage('Veuillez corriger les erreurs dans le formulaire');
+      return;
+    }
+
     setSaving(true);
     setMessage('');
-    const payload: CreateProductData = {
-      name: form.name || '',
-      slug: (form.slug || '').trim(),
-      sku: (form.sku || '').trim(),
-      price: Number(form.price || 0),
-      vendor_id: form.vendor_id || '',
-      category_id: form.category_id,
-      description: form.description,
-      short_description: form.short_description,
-      track_quantity: form.track_quantity ?? true,
-      quantity: Number(form.quantity || 0),
-      status,
-      featured: !!form.featured,
-      meta_title: form.meta_title,
-      meta_description: form.meta_description,
-      images: form.images || []
-    };
-    const res = await ProductsService.create(payload);
-    setSaving(false);
-    if (res.success && res.data) {
-      setMessage('Produit créé avec succès.');
-    } else {
-      setMessage(res.error || 'Erreur lors de la création');
+    setErrors({});
+    
+    try {
+      const payload: CreateProductData = {
+        name: form.name || '',
+        slug: (form.slug || '').trim(),
+        sku: (form.sku || '').trim(),
+        price: Number(form.price || 0),
+        vendor_id: form.vendor_id || '',
+        category_id: form.category_id,
+        description: form.description,
+        short_description: form.short_description,
+        track_quantity: form.track_quantity ?? true,
+        quantity: Number(form.quantity || 0),
+        status,
+        featured: !!form.featured,
+        meta_title: form.meta_title,
+        meta_description: form.meta_description,
+        images: form.images || []
+      };
+      
+      const res = await ProductsService.create(payload);
+      
+      if (res.success && res.data) {
+        setMessage('Produit créé avec succès !');
+        // Rediriger vers la liste des produits après 2 secondes
+        setTimeout(() => {
+          window.location.href = '/admin/products';
+        }, 2000);
+      } else {
+        setMessage(res.error || 'Erreur lors de la création');
+      }
+    } catch (error: any) {
+      setMessage(error.message || 'Erreur lors de la création');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -145,7 +241,15 @@ export default function AdminNewProductPage() {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Nouveau produit</h1>
           <div className="flex items-center gap-3">
-            {message && <Badge className="bg-blue-600">{message}</Badge>}
+            {message && (
+              <Badge className={message.includes('succès') ? 'bg-green-600' : 'bg-red-600'}>
+                {message.includes('succès') ? (
+                  <><CheckCircle className="w-3 h-3 mr-1" />{message}</>
+                ) : (
+                  <><AlertCircle className="w-3 h-3 mr-1" />{message}</>
+                )}
+              </Badge>
+            )}
           </div>
         </div>
 
@@ -180,11 +284,20 @@ export default function AdminNewProductPage() {
               <CardHeader><CardTitle>Informations du produit</CardTitle></CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Nom du produit *</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Nom du produit *
+                    {errors.name && (
+                      <span className="text-red-500 ml-2 text-xs">
+                        <AlertCircle className="inline w-3 h-3 mr-1" />
+                        {errors.name}
+                      </span>
+                    )}
+                  </label>
                   <Input 
                     placeholder="Ex: iPhone 15 Pro Max 256GB"
                     value={form.name || ''} 
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ name: e.target.value })} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ name: e.target.value })}
+                    className={errors.name ? 'border-red-500' : ''}
                   />
                 </div>
                 <div>
@@ -194,10 +307,7 @@ export default function AdminNewProductPage() {
                     value={form.slug || ''} 
                     onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ slug: e.target.value })} 
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Partie de l'URL qui identifie votre produit (ex: laboutique.bj/produits/iphone-15-pro-max-256gb). 
-                    <span className="font-medium text-green-600">Généré automatiquement</span> à partir du nom si laissé vide.
-                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Généré automatiquement à partir du nom</p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">Description complète du produit</label>
@@ -207,7 +317,7 @@ export default function AdminNewProductPage() {
                     value={form.description || ''} 
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ description: e.target.value })} 
                   />
-                  <p className="text-xs text-gray-500 mt-1">Description détaillée qui apparaîtra sur la page produit complète</p>
+                  <p className="text-xs text-gray-500 mt-1">Description détaillée du produit</p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">Aperçu du produit</label>
@@ -218,7 +328,7 @@ export default function AdminNewProductPage() {
                     value={form.short_description || ''} 
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ short_description: e.target.value })} 
                   />
-                  <p className="text-xs text-gray-500 mt-1">{form.short_description?.length || 0}/150 caractères - Utilisé dans les listes et aperçus</p>
+                  <p className="text-xs text-gray-500 mt-1">{form.short_description?.length || 0}/150 caractères</p>
                 </div>
                 <div className="md:col-span-2">
                   <ImageUploader
@@ -232,25 +342,41 @@ export default function AdminNewProductPage() {
                       update({ images: urls });
                     }}
                   />
-                  <p className="text-xs text-gray-500 mt-1">Glissez-déposez plusieurs images ou cliquez pour sélectionner. La première image sera l'image principale.</p>
+                  <p className="text-xs text-gray-500 mt-1">Glissez-déposez ou cliquez pour sélectionner</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Vendeur</label>
-                  <Input 
-                    placeholder="ID du vendeur (ex: 123)"
-                    value={form.vendor_id || ''} 
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ vendor_id: e.target.value })} 
+                  <label className="block text-sm font-medium mb-2">
+                    Vendeur *
+                    {errors.vendor_id && (
+                      <span className="text-red-500 ml-2 text-xs">
+                        <AlertCircle className="inline w-3 h-3 mr-1" />
+                        {errors.vendor_id}
+                      </span>
+                    )}
+                  </label>
+                  <VendorSelector
+                    value={form.vendor_id}
+                    onChange={(vendorId) => update({ vendor_id: vendorId })}
+                    placeholder="Sélectionner un vendeur"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Temporaire: sera remplacé par un sélecteur</p>
+                  <p className="text-xs text-gray-500 mt-1">Choisissez le vendeur responsable de ce produit</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Catégorie</label>
-                  <Input 
-                    placeholder="ID de la catégorie (ex: 456)"
-                    value={form.category_id || ''} 
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ category_id: e.target.value })} 
+                  <label className="block text-sm font-medium mb-2">
+                    Catégorie *
+                    {errors.category_id && (
+                      <span className="text-red-500 ml-2 text-xs">
+                        <AlertCircle className="inline w-3 h-3 mr-1" />
+                        {errors.category_id}
+                      </span>
+                    )}
+                  </label>
+                  <CategorySelector
+                    value={form.category_id}
+                    onChange={(categoryId) => update({ category_id: categoryId })}
+                    placeholder="Sélectionner une catégorie"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Temporaire: sera remplacé par un sélecteur</p>
+                  <p className="text-xs text-gray-500 mt-1">Choisissez la catégorie qui correspond le mieux à ce produit</p>
                 </div>
               </CardContent>
             </Card>
@@ -261,21 +387,86 @@ export default function AdminNewProductPage() {
               <CardHeader><CardTitle>Prix et gestion du stock</CardTitle></CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Code produit (SKU)</label>
-                  <Input 
-                    placeholder="Ex: IPH15PM-256-BLK"
-                    value={form.sku || ''} 
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ sku: e.target.value })} 
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Identifiant unique du produit</p>
+                  <label className="block text-sm font-medium mb-2">
+                    Code produit (SKU) *
+                    {errors.sku && (
+                      <span className="text-red-500 ml-2 text-xs">
+                        <AlertCircle className="inline w-3 h-3 mr-1" />
+                        {errors.sku}
+                      </span>
+                    )}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <Input 
+                      placeholder="Ex: IPH15PM-256-BLK"
+                      value={form.sku || ''} 
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ sku: e.target.value })}
+                      className={errors.sku ? 'border-red-500' : ''}
+                    />
+                    {form.sku && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(form.sku!);
+                          setMessage('SKU copié dans le presse-papiers !');
+                          setTimeout(() => setMessage(''), 3000);
+                        }}
+                      >
+                        Copier
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {form.name ? 'Généré automatiquement - Modifiable si nécessaire' : 'Identifiant unique du produit'}
+                  </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Prix de vente (FCFA) *</label>
+                  <label className="block text-sm font-medium mb-2">
+                    URL du produit
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <Input 
+                      value={form.slug ? generateProductURL(form.slug) : ''}
+                      readOnly
+                      className="bg-gray-50 text-gray-600"
+                      placeholder="L'URL sera générée automatiquement"
+                    />
+                    {form.slug && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const url = generateProductURL(form.slug!);
+                          navigator.clipboard.writeText(url);
+                          setMessage('URL copiée dans le presse-papiers !');
+                          setTimeout(() => setMessage(''), 3000);
+                        }}
+                      >
+                        Copier
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">URL publique du produit (générée automatiquement)</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Prix de vente (FCFA) *
+                    {errors.price && (
+                      <span className="text-red-500 ml-2 text-xs">
+                        <AlertCircle className="inline w-3 h-3 mr-1" />
+                        {errors.price}
+                      </span>
+                    )}
+                  </label>
                   <Input 
                     type="number" 
                     placeholder="Ex: 850000"
                     value={form.price ?? 0} 
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ price: Number(e.target.value) })} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>update({ price: Number(e.target.value) })}
+                    className={errors.price ? 'border-red-500' : ''}
                   />
                   <p className="text-xs text-gray-500 mt-1">Prix en francs CFA</p>
                 </div>
