@@ -108,8 +108,12 @@ export class ScrapingService {
     const priceValue = this.parsePrice(price);
     const finalPrice = priceValue > 0 ? Math.round(priceValue * 100) : this.getDefaultPrice(platform);
 
+    // Normaliser/rogner le nom selon la contrainte (<= 200)
+    const normalizedName = (name || '').trim().replace(/\s+/g, ' ');
+    const finalName = (normalizedName || 'Produit importé').slice(0, 200);
+
     return {
-      name: name || 'Produit sans nom',
+      name: finalName,
       price: finalPrice,
       original_price: Math.round(finalPrice * 1.2),
       images: images.slice(0, 5),
