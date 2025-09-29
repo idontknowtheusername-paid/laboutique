@@ -8,7 +8,7 @@ export const importedProductSchema = z.object({
     .max(200, 'Le nom ne peut pas dépasser 200 caractères'),
   
   description: z.string()
-    .min(20, 'La description doit contenir au moins 20 caractères')
+    .min(1, 'La description ne peut pas être vide')
     .max(5000, 'La description ne peut pas dépasser 5000 caractères'),
   
   short_description: z.string()

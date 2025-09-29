@@ -66,6 +66,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Enforce mandatory fields: name, price, image
+    if (!scrapedData.name || !scrapedData.price || !scrapedData.images || scrapedData.images.length === 0) {
+      return NextResponse.json(
+        { error: 'Les données importées sont incomplètes (nom, prix et au moins une image sont requis).' },
+        { status: 400 }
+      );
+    }
+
     // Valider les données avec notre schéma
     console.log('[IMPORT] ✅ Validation des données scrapées...');
     const validationResult = await validateImportedProduct(scrapedData);
