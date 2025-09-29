@@ -85,24 +85,46 @@ export class ScrapingService {
       throw new Error('SCRAPINGBEE_API_KEY manquant. Configurez la clé API pour activer l\'import.');
     }
 
-    const apiUrl = new URL('https://app.scrapingbee.com/api/v1/');
-    apiUrl.searchParams.set('api_key', apiKey);
-    apiUrl.searchParams.set('url', url);
-    apiUrl.searchParams.set('render_js', 'false');
-    apiUrl.searchParams.set('block_resources', 'true');
+    // Robust call: JS rendering, premium proxy, geo US, small wait and retries
+    const maxAttempts = 4;
+    let attempt = 0;
+    let lastStatus = 0;
+    let html = '';
+    while (attempt < maxAttempts) {
+      attempt += 1;
+      const apiUrl = new URL('https://app.scrapingbee.com/api/v1/');
+      apiUrl.searchParams.set('api_key', apiKey);
+      apiUrl.searchParams.set('url', url);
+      apiUrl.searchParams.set('render_js', 'true');
+      apiUrl.searchParams.set('premium_proxy', 'true');
+      apiUrl.searchParams.set('country_code', 'US');
+      apiUrl.searchParams.set('block_resources', 'true');
+      apiUrl.searchParams.set('wait', '2500');
 
-    const res = await fetch(apiUrl.toString(), {
-      method: 'GET',
-      headers: { 'Accept': 'text/html' },
-      cache: 'no-store'
-    } as any);
+      const res = await fetch(apiUrl.toString(), {
+        method: 'GET',
+        headers: { 'Accept': 'text/html' },
+        cache: 'no-store'
+      } as any);
 
-    if (!res.ok) {
+      lastStatus = res.status;
+      if (res.ok) {
+        html = await res.text();
+        break;
+      }
+      if (res.status === 429 || res.status >= 500) {
+        // exponential backoff
+        const backoff = 400 * Math.pow(2, attempt - 1);
+        await new Promise(r => setTimeout(r, backoff));
+        continue;
+      }
       const text = await res.text().catch(() => '');
       throw new Error(`ScrapingBee a retourné ${res.status}. Détails: ${text?.slice(0, 200)}`);
     }
 
-    const html = await res.text();
+    if (!html) {
+      throw new Error(`ScrapingBee a retourné ${lastStatus}. Détails: (après ${maxAttempts} tentatives)`);
+    }
     const { name, price, images, description } = this.parseHtml(html);
 
     const priceValue = this.parsePrice(price);
