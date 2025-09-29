@@ -143,6 +143,8 @@ export function ImageUploader({
           onClick={() => !uploading && inputRef.current?.click()}
           onDrop={onDrop}
           onDragOver={onDragOver}
+          role="button"
+          aria-label="Ajouter des images"
         >
           <Upload className={`w-8 h-8 mx-auto mb-3 ${uploading ? 'text-blue-500 animate-pulse' : 'text-gray-500'}`} />
           <p className={`text-sm ${uploading ? 'text-blue-600' : 'text-gray-600'}`}>

@@ -39,7 +39,7 @@ export function VendorSelector({ value, onChange, placeholder = "Sélectionner u
   if (loading) {
     return (
       <Select disabled>
-        <SelectTrigger>
+        <SelectTrigger className="cursor-not-allowed">
           <SelectValue placeholder="Chargement des vendeurs..." />
         </SelectTrigger>
       </Select>
@@ -55,11 +55,11 @@ export function VendorSelector({ value, onChange, placeholder = "Sélectionner u
   }
 
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger>
+    <Select value={value} onValueChange={onChange} aria-label="Sélectionner un vendeur">
+      <SelectTrigger className="cursor-pointer">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="cursor-pointer">
         {vendors.length === 0 ? (
           <SelectItem value="" disabled>
             Aucun vendeur disponible

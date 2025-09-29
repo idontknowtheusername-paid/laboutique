@@ -39,7 +39,7 @@ export function CategorySelector({ value, onChange, placeholder = "Sélectionner
   if (loading) {
     return (
       <Select disabled>
-        <SelectTrigger>
+        <SelectTrigger className="cursor-not-allowed">
           <SelectValue placeholder="Chargement des catégories..." />
         </SelectTrigger>
       </Select>
@@ -55,11 +55,11 @@ export function CategorySelector({ value, onChange, placeholder = "Sélectionner
   }
 
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger>
+    <Select value={value} onValueChange={onChange} aria-label="Sélectionner une catégorie">
+      <SelectTrigger className="cursor-pointer">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="cursor-pointer">
         {categories.length === 0 ? (
           <SelectItem value="" disabled>
             Aucune catégorie disponible
