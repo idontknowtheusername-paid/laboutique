@@ -23,6 +23,7 @@ import { OrdersService, Order, PaginatedResponse } from "@/lib/services";
 import { useCart } from "@/contexts/CartContext";
 import Link from "next/link";
 import NextImage from "next/image";
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 
 export default function OrdersPage() {
   const { user } = useAuth();
@@ -138,7 +139,9 @@ export default function OrdersPage() {
 
   return (
     <ProtectedRoute>
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div>
+        <Breadcrumb items={[{ label: 'Commandes' }]} />
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar */}
         <div className="lg:col-span-1">
           <Card>
@@ -505,6 +508,7 @@ export default function OrdersPage() {
               </Button>
             </Link>
           </div>
+        </div>
         </div>
       </div>
     </ProtectedRoute>

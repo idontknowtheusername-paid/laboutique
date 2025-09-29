@@ -11,6 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Bell, Mail, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { AccountService, NotificationPrefs } from '@/lib/services/account.service';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 
 export default function NotificationsPage() {
   const { user } = useAuth();
@@ -30,13 +31,7 @@ export default function NotificationsPage() {
         <Header />
         <CategoryMenu />
         <div className="container py-8">
-          <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-            <a href="/" className="hover:text-jomiastore-primary">Accueil</a>
-            <span>/</span>
-            <a href="/account" className="hover:text-jomiastore-primary">Mon compte</a>
-            <span>/</span>
-            <span className="text-gray-900 font-medium">Notifications</span>
-          </nav>
+          <Breadcrumb items={[{ label: 'Notifications' }]} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">

@@ -11,6 +11,7 @@ import { useSessionManager } from "@/hooks/useSessionManager";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { 
   User, 
   Package, 
@@ -179,13 +180,7 @@ export default function AccountPage() {
     <ProtectedRoute requireAuth={true} redirectTo="/auth/login">
       <div>
           {/* Breadcrumb */}
-          <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-            <Link href="/" className="hover:text-jomiastore-primary">
-              Accueil
-            </Link>
-            <span>/</span>
-            <span className="text-gray-900 font-medium">Mon compte</span>
-          </nav>
+          <Breadcrumb items={[{ label: 'Mon compte' }]} />
 
           {error && (
             <div className="mb-4 flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded px-4 py-2">

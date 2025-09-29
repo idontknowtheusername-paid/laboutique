@@ -10,6 +10,7 @@ import { Package, Upload, FileText } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { AccountService, ReturnRequest } from '@/lib/services/account.service';
 import { useSearchParams } from 'next/navigation';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 
 export default function ReturnsPage() {
   const { user } = useAuth();
@@ -31,13 +32,7 @@ export default function ReturnsPage() {
     <ProtectedRoute>
       <div>
         <div className="py-2">
-          <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-            <a href="/" className="hover:text-jomiastore-primary">Accueil</a>
-            <span>/</span>
-            <a href="/account" className="hover:text-jomiastore-primary">Mon compte</a>
-            <span>/</span>
-            <span className="text-gray-900 font-medium">Retours & Remboursements</span>
-          </nav>
+          <Breadcrumb items={[{ label: 'Retours & Remboursements' }]} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
