@@ -511,11 +511,48 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // Retourner les données pour prévisualisation
+    // Retourner les données pour prévisualisation, avec suggestions de vendor/category
+    console.log('[IMPORT] ✅ Préparation des suggestions (catégorie & vendeur) pour prévisualisation');
+    let suggestedCategoryId: string | undefined = undefined;
+    let suggestedVendorId: string | undefined = undefined;
+
+    try {
+      if (isSupabaseAdminConfigured()) {
+        const db = supabaseAdmin;
+        // Récupérer catégories actives
+        const { data: cats } = await db
+          .from('categories')
+          .select('id, name, slug')
+          .eq('status', 'active');
+        const available = cats || [];
+        // Matcher selon le nom
+        suggestedCategoryId = findBestCategory(productData.name, available) || findBestCategoryByKeywords(productData.name, available) || undefined;
+
+        // Trouver/Créer un vendeur par défaut
+        const { data: anyVendor } = await db
+          .from('vendors')
+          .select('id')
+          .limit(1)
+          .single();
+        if (anyVendor?.id) {
+          suggestedVendorId = anyVendor.id as string;
+        } else {
+          const { data: newVendor } = await db
+            .from('vendors')
+            .insert([{ name: 'Vendeur par défaut', slug: 'vendeur-defaut-' + Date.now(), email: 'default@laboutique.bj', status: 'active' }] as any)
+            .select('id')
+            .single();
+          if (newVendor?.id) suggestedVendorId = newVendor.id as string;
+        }
+      }
+    } catch (e) {
+      console.warn('[IMPORT] ⚠️ Impossible de proposer catégorie/vendeur par défaut:', e);
+    }
+
     console.log('[IMPORT] ✅ Retour des données pour prévisualisation');
     return NextResponse.json({
       success: true,
-      data: productData,
+      data: { ...productData, category_id: suggestedCategoryId, vendor_id: suggestedVendorId },
       message: 'Données récupérées avec succès'
     });
     
