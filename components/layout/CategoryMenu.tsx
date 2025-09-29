@@ -167,7 +167,7 @@ const CategoryMenu = () => {
   }
 
   return (
-    <div className={`bg-white border-b transition-all duration-300 z-40 ${
+    <div className={`bg-gray-50 border-b transition-all duration-300 z-40 ${
       isScrolled ? 'fixed top-0 left-0 right-0 py-1.5 shadow-md' : 'category-menu-offset py-2'
     }`}>
       <div className="container">
@@ -224,6 +224,7 @@ const CategoryMenu = () => {
 
           {/* Desktop navigation */}
           <div className="hidden md:block flex-1 min-w-0">
+        <div className="bg-white rounded-xl border shadow-sm px-3 py-2">
         <NavigationMenu>
           <NavigationMenuList className="flex flex-nowrap gap-1 overflow-x-auto no-scrollbar">
             {/* All Categories Button */}
@@ -283,7 +284,7 @@ const CategoryMenu = () => {
               const IconComponent = getCategoryIcon(category.slug);
               return (
                 <NavigationMenuItem key={category.id}>
-                  <NavigationMenuTrigger className="text-gray-700 hover:text-jomiastore-primary px-4 py-2 h-auto bg-transparent rounded-md">
+                  <NavigationMenuTrigger className="text-gray-700 hover:text-jomiastore-primary px-4 py-2 h-auto bg-transparent rounded-md border border-transparent hover:border-jomiastore-primary/20">
                     <IconComponent className="w-4 h-4 mr-2" />
                     {category.name}
                   </NavigationMenuTrigger>
@@ -320,6 +321,7 @@ const CategoryMenu = () => {
             })}
           </NavigationMenuList>
         </NavigationMenu>
+        </div>
           </div>
         </div>
       </div>
