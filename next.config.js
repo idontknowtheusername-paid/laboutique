@@ -51,6 +51,8 @@ const nextConfig = {
       "lucide-react",
       "date-fns",
     ],
+    // Enable modern bundling
+    esmExternals: true,
   },
   webpack: (config, { isServer }) => {
     // Configuration pour les imports dynamiques

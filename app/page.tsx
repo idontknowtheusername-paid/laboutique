@@ -8,21 +8,20 @@ import Footer from '@/components/layout/Footer';
 import { ProductsService, CategoriesService, Product, Category } from '@/lib/services';
 import { ProductSkeleton } from '@/components/ui/loading-skeleton';
 
-// Lazy load heavy components with suspense
+// Optimized lazy loading components with better loading states
 const HeroCarousel = dynamic(() => import('@/components/home/HeroCarousel'), {
-  loading: () => <div className="h-[500px] lg:h-[600px] bg-gray-100 animate-pulse rounded-xl" />
+  loading: () => <div className="h-[500px] lg:h-[600px] bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
 });
 
 const FlashSalesConnected = dynamic(() => import('@/components/home/FlashSalesConnected'), {
-  loading: () => <ProductSkeleton count={4} />
+  loading: () => <ProductSkeleton count={4} />,
+  ssr: false
 });
 
-// Trending will be rendered as a ProductGrid using popular products
-
-// "À découvrir" section will reuse ProductGrid with newest products
-
 const ProductGrid = dynamic(() => import('@/components/home/ProductGrid'), {
-  loading: () => <ProductSkeleton count={8} />
+  loading: () => <ProductSkeleton count={8} />,
+  ssr: false
 });
 
 const FeaturedBrands = dynamic(() => import('@/components/home/FeaturedBrands'), {
@@ -36,11 +35,13 @@ const PersonalizedOffers = dynamic(() => import('@/components/home/PersonalizedO
 });
 
 const MobileAppSection = dynamic(() => import('@/components/home/MobileAppSection'), {
-  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
 });
 
 const TrustElements = dynamic(() => import('@/components/home/TrustElements'), {
-  loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-xl" />
+  loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
 });
 
 interface HomeState {
