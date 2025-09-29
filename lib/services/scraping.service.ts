@@ -166,7 +166,7 @@ export class ScrapingService {
     const getTitle = () => {
       const m = html.match(/<title[^>]*>([^<]+)<\/title>/i); return m ? m[1].trim() : '';
     };
-    const name = getMeta('og:title') || getTitle();
+    let name = getMeta('og:title') || getTitle();
 
     // Price via JSON-LD or meta tags
     let price = '';
@@ -181,8 +181,35 @@ export class ScrapingService {
       if (priceText) price = priceText[1];
     }
 
-    // Images via og:image and <img>
+    // Images via JSON-LD, og:image and <img>
     const images = new Set<string>();
+    try {
+      const ldBlocks = Array.from(html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi));
+      for (const m of ldBlocks) {
+        const txt = (m[1] || '').trim();
+        try {
+          const json = JSON.parse(txt);
+          const arr = Array.isArray(json) ? json : [json];
+          for (const node of arr) {
+            if (node && (node['@type'] === 'Product' || node['@context'])) {
+              if (!name && typeof node.name === 'string') name = node.name;
+              if (!price && node.offers && (node.offers.price || (node.offers[0]?.price))) {
+                price = String(node.offers.price || node.offers[0]?.price);
+              }
+              const imgList = node.image || node.images || [];
+              if (Array.isArray(imgList)) {
+                for (const u of imgList) {
+                  if (typeof u === 'string' && u.startsWith('http')) images.add(u);
+                }
+              } else if (typeof imgList === 'string' && imgList.startsWith('http')) {
+                images.add(imgList);
+              }
+              if (!description && typeof node.description === 'string') description = node.description;
+            }
+          }
+        } catch {}
+      }
+    } catch {}
     const ogImg = getMeta('og:image'); if (ogImg) images.add(ogImg);
     const imgRegex = /<img[^>]+src=["']([^"']+)["'][^>]*>/ig;
     let m: RegExpExecArray | null;
