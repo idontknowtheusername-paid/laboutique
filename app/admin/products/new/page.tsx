@@ -336,7 +336,7 @@ export default function AdminNewProductPage() {
           <Button variant="outline" onClick={()=>handleSave('draft')} disabled={saving}>
             {saving ? 'Enregistrement...' : 'Enregistrer comme brouillon'}
           </Button>
-          <Button className="bg-beshop-primary hover:bg-blue-700" onClick={()=>handleSave('active')} disabled={saving}>
+          <Button className="bg-jomiastore-primary hover:bg-blue-700" onClick={()=>handleSave('active')} disabled={saving}>
             {saving ? 'Publication...' : 'Publier le produit'}
           </Button>
         </div>

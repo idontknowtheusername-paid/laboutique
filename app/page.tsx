@@ -39,6 +39,14 @@ const PersonalizedOffers = dynamic(() => import('@/components/home/PersonalizedO
   ssr: false
 });
 
+const MobileAppSection = dynamic(() => import('@/components/home/MobileAppSection'), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />
+});
+
+const TrustElements = dynamic(() => import('@/components/home/TrustElements'), {
+  loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-xl" />
+});
+
 interface HomeState {
   products: Product[];
   categories: Category[];
@@ -118,12 +126,12 @@ export default function Home() {
 
   if (state.loading) {
     return (
-      <main className="min-h-screen bg-beshop-background">
+      <main className="min-h-screen bg-jomiastore-background">
         <Header />
         <CategoryMenu />
         <div className="container py-16">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-beshop-primary mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-jomiastore-primary mx-auto mb-4"></div>
             <p className="text-gray-600">Chargement des produits...</p>
           </div>
         </div>
@@ -134,7 +142,7 @@ export default function Home() {
 
   if (state.error) {
     return (
-      <main className="min-h-screen bg-beshop-background">
+      <main className="min-h-screen bg-jomiastore-background">
         <Header />
         <CategoryMenu />
         <div className="container py-16">
@@ -142,7 +150,7 @@ export default function Home() {
             <p className="text-red-600 mb-4">Erreur: {state.error}</p>
             <button 
               onClick={() => window.location.reload()} 
-              className="bg-beshop-primary text-white px-6 py-2 rounded hover:bg-blue-700"
+              className="bg-jomiastore-primary text-white px-6 py-2 rounded hover:bg-blue-700"
             >
               Recharger
             </button>
@@ -161,7 +169,7 @@ export default function Home() {
   const newProducts = getNewProducts();
 
   return (
-    <main className="min-h-screen bg-beshop-background">
+    <main className="min-h-screen bg-jomiastore-background">
       <Header />
       <CategoryMenu />
 
@@ -261,6 +269,17 @@ export default function Home() {
         <div className="mb-4">
           <FeaturedBrands />
         </div>
+        
+        {/* Mobile App Section */}
+        <div className="mb-4">
+          <MobileAppSection />
+        </div>
+        
+        {/* Trust Elements */}
+        <div className="mb-4">
+          <TrustElements />
+        </div>
+        
         <div>
           <PersonalizedOffers />
         </div>

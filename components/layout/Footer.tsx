@@ -8,14 +8,14 @@ const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white">
       {/* Compact Newsletter (2 cols on mobile) */}
-      <div className="bg-beshop-primary py-6">
+      <div className="bg-jomiastore-primary py-6">
         <div className="container">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 items-center">
             <h3 className="col-span-2 sm:col-span-1 text-lg font-semibold text-white">
               Recevez nos offres
             </h3>
             <Input type="email" placeholder="Email" className="bg-white text-gray-900 h-10" />
-            <Button className="bg-beshop-secondary hover:bg-orange-600 h-10">S'abonner</Button>
+            <Button className="bg-jomiastore-secondary hover:bg-orange-600 h-10">S'abonner</Button>
           </div>
         </div>
       </div>
@@ -27,36 +27,38 @@ const Footer = () => {
             {/* Brand */}
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold">B</span>
-                </div>
-                <span className="font-semibold">Be Shop</span>
+                <img 
+                  src="/logo-mono.svg" 
+                  alt="JomiaStore Hub" 
+                  className="h-8 w-auto"
+                />
+                <span className="font-semibold">JomiaStore Hub</span>
               </div>
               <div className="space-y-2 text-gray-300 text-xs">
                 <div className="flex items-center space-x-2">
-                  <MapPin className="w-4 h-4 text-beshop-secondary" />
+                  <MapPin className="w-4 h-4 text-jomiastore-secondary" />
                   <span>Cotonou, Bénin</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Phone className="w-4 h-4 text-beshop-secondary" />
+                  <Phone className="w-4 h-4 text-jomiastore-secondary" />
                   <span>+229 XX XX XX XX</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Mail className="w-4 h-4 text-beshop-secondary" />
-                  <span>contact@beshop.bj</span>
+                  <Mail className="w-4 h-4 text-jomiastore-secondary" />
+                  <span>contact@jomiastore.com</span>
                 </div>
               </div>
               <div className="flex space-x-2 pt-1">
-                <Button size="icon" variant="outline" className="border-gray-700 hover:border-beshop-secondary hover:text-beshop-secondary">
+                <Button size="icon" variant="outline" className="border-gray-700 hover:border-jomiastore-secondary hover:text-jomiastore-secondary">
                   <Facebook className="w-4 h-4" />
                 </Button>
-                <Button size="icon" variant="outline" className="border-gray-700 hover:border-beshop-secondary hover:text-beshop-secondary">
+                <Button size="icon" variant="outline" className="border-gray-700 hover:border-jomiastore-secondary hover:text-jomiastore-secondary">
                   <Twitter className="w-4 h-4" />
                 </Button>
-                <Button size="icon" variant="outline" className="border-gray-700 hover:border-beshop-secondary hover:text-beshop-secondary">
+                <Button size="icon" variant="outline" className="border-gray-700 hover:border-jomiastore-secondary hover:text-jomiastore-secondary">
                   <Instagram className="w-4 h-4" />
                 </Button>
-                <Button size="icon" variant="outline" className="border-gray-700 hover:border-beshop-secondary hover:text-beshop-secondary">
+                <Button size="icon" variant="outline" className="border-gray-700 hover:border-jomiastore-secondary hover:text-jomiastore-secondary">
                   <Youtube className="w-4 h-4" />
                 </Button>
               </div>
@@ -106,7 +108,7 @@ const Footer = () => {
         <div className="container py-5">
           <div className="grid grid-cols-2 md:grid-cols-3 items-center gap-3">
             <p className="col-span-2 md:col-span-1 text-xs text-gray-400">
-              © {new Date().getFullYear()} Be Shop • Fait avec ❤️ au Bénin
+              © {new Date().getFullYear()} JomiaStore • Fait avec ❤️ au Bénin
             </p>
             <div className="flex items-center gap-2 justify-start md:justify-center">
               <span className="text-xs text-gray-400">Nous acceptons</span>
@@ -118,7 +120,7 @@ const Footer = () => {
               </div>
             </div>
             <div className="hidden md:flex justify-end text-xs text-gray-500">
-              <span>© Be Shop</span>
+              <span>© JomiaStore</span>
             </div>
           </div>
         </div>

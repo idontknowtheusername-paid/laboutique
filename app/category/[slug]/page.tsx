@@ -312,7 +312,7 @@ export default function DynamicCategoryPage() {
   // Loading state
   if (isFetching && !category) {
     return (
-      <div className="min-h-screen bg-beshop-background">
+      <div className="min-h-screen bg-jomiastore-background">
         <Header />
         <CategoryMenu />
         <div className="container py-8">
@@ -334,7 +334,7 @@ export default function DynamicCategoryPage() {
   // Error state
   if ((queryError || isError) && !category) {
     return (
-      <div className="min-h-screen bg-beshop-background">
+      <div className="min-h-screen bg-jomiastore-background">
         <Header />
         <CategoryMenu />
         <div className="container py-8">
@@ -351,14 +351,14 @@ export default function DynamicCategoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-beshop-background">
+    <div className="min-h-screen bg-jomiastore-background">
       <Header />
       <CategoryMenu />
 
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-          <Link href="/" className="hover:text-beshop-primary">
+          <Link href="/" className="hover:text-jomiastore-primary">
             Accueil
           </Link>
           <span>/</span>
@@ -366,7 +366,7 @@ export default function DynamicCategoryPage() {
             <>
               <Link
                 href={`/category/${category.parent.slug}`}
-                className="hover:text-beshop-primary"
+                className="hover:text-jomiastore-primary"
               >
                 {category.parent.name}
               </Link>
@@ -506,7 +506,7 @@ export default function DynamicCategoryPage() {
                         <Link
                           key={child.id}
                           href={`/category/${child.slug}`}
-                          className="block text-sm text-gray-600 hover:text-beshop-primary transition-colors"
+                          className="block text-sm text-gray-600 hover:text-jomiastore-primary transition-colors"
                         >
                           {child.name}
                         </Link>

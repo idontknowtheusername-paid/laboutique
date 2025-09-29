@@ -404,7 +404,7 @@ function TrendingProductsContent() {
               key={i}
               aria-label={`Aller à l'élément ${i + 1}`}
               onClick={() => scrollToIndex(i)}
-              className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-beshop-primary' : 'w-2 bg-gray-300'}`}
+              className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-jomiastore-primary' : 'w-2 bg-gray-300'}`}
             />
           ))}
         </div>

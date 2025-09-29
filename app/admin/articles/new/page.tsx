@@ -109,7 +109,7 @@ export default function AdminNewArticlePage() {
 
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={()=>save('draft')} disabled={saving}>Enregistrer brouillon</Button>
-          <Button className="bg-beshop-primary hover:bg-blue-700" onClick={()=>save('published')} disabled={saving}>Publier</Button>
+          <Button className="bg-jomiastore-primary hover:bg-blue-700" onClick={()=>save('published')} disabled={saving}>Publier</Button>
         </div>
       </div>
   );

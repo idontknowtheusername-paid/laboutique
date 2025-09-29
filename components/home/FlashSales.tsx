@@ -208,38 +208,59 @@ const FlashSales = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-beshop-secondary to-orange-600 rounded-xl p-6 text-white">
+    <div className="bg-gradient-to-r from-red-500 to-orange-600 rounded-xl p-6 text-white relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full -translate-x-16 -translate-y-16"></div>
+        <div className="absolute bottom-0 right-0 w-24 h-24 bg-white rounded-full translate-x-12 translate-y-12"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white rounded-full"></div>
+      </div>
+      
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <h2 className="text-lg md:text-xl font-bold">Flash Sales</h2>
-          <div className="flex items-center space-x-2 bg-white/20 px-3 py-2 rounded-full">
+      <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between mb-6 space-y-4 md:space-y-0">
+        <div className="flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-4">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
+              <Clock className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold">⚡ Flash Sales</h2>
+              <p className="text-orange-100 text-sm">Offres limitées dans le temps</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2 bg-white/20 px-4 py-3 rounded-full backdrop-blur-sm">
             <Clock className="w-4 h-4" />
             <span className="font-medium text-sm">Se termine dans:</span>
             <div className="flex space-x-1">
-              <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
+              <div className="bg-white text-red-500 px-3 py-1 rounded font-bold min-w-[2.5rem] text-center text-sm shadow-lg">
                 {String(timeLeft.hours).padStart(2, "0")}
-              </span>
-              <span className="text-sm">:</span>
-              <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
+              </div>
+              <span className="text-sm font-bold">:</span>
+              <div className="bg-white text-red-500 px-3 py-1 rounded font-bold min-w-[2.5rem] text-center text-sm shadow-lg">
                 {String(timeLeft.minutes).padStart(2, "0")}
-              </span>
-              <span className="text-sm">:</span>
-              <span className="bg-white text-beshop-secondary px-2 py-1 rounded font-bold min-w-[2rem] text-center text-sm">
+              </div>
+              <span className="text-sm font-bold">:</span>
+              <div className="bg-white text-red-500 px-3 py-1 rounded font-bold min-w-[2.5rem] text-center text-sm shadow-lg">
                 {String(timeLeft.seconds).padStart(2, "0")}
-              </span>
+              </div>
             </div>
           </div>
         </div>
 
-        <Link href="/flash-sales">
-          <Button
-            variant="secondary"
-            className="bg-white text-beshop-secondary hover:bg-gray-100 text-sm"
-          >
-            Voir tout
-          </Button>
-        </Link>
+        <div className="flex items-center space-x-3">
+          <Badge className="bg-yellow-400 text-red-600 font-bold animate-bounce">
+            🔥 Jusqu'à -70%
+          </Badge>
+          <Link href="/flash-sales">
+            <Button
+              variant="secondary"
+              className="bg-white text-red-500 hover:bg-gray-100 text-sm font-semibold shadow-lg"
+            >
+              Voir toutes les offres
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Products Slider */}
@@ -303,7 +324,7 @@ const FlashSales = () => {
                     <div className="space-y-2 md:space-y-3 flex-grow">
                       {/* Product Name */}
                       <Link href={`/product/${product.slug}`}>
-                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-beshop-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
+                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-jomiastore-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
                           {product.name}
                         </h3>
                       </Link>
@@ -330,7 +351,7 @@ const FlashSales = () => {
                       {/* Prices */}
                       <div className="space-y-1">
                         <div className="flex flex-col md:flex-row items-start md:items-center space-y-1 md:space-y-0 md:space-x-2">
-                          <span className="font-bold text-beshop-primary text-sm md:text-lg">
+                          <span className="font-bold text-jomiastore-primary text-sm md:text-lg">
                             {formatPrice(product.salePrice)}
                           </span>
                           <span className="text-xs md:text-sm text-gray-500 line-through">

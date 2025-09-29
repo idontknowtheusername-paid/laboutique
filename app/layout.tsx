@@ -4,31 +4,31 @@ import Script from 'next/script';
 import { AppProviders } from "@/components/providers/AppProviders";
 
 export const metadata: Metadata = {
-  title: "Be Shop - Benin Elite Shopping Experience",
+  title: "JomiaStore - Benin Elite Shopping Experience",
   description:
-    "Be Shop est la première plateforme e-commerce du Bénin offrant une expérience d'achat premium avec des produits authentiques, une livraison rapide et un service client exceptionnel.",
+    "JomiaStore Hub - Le centre commercial digital du Bénin. Découvrez des milliers de produits authentiques avec une livraison rapide et un service client exceptionnel.",
   keywords:
-    "e-commerce Bénin, shopping en ligne, électronique, mode, maison, beauté, Be Shop",
-  authors: [{ name: "Be Shop Team" }],
+    "e-commerce Bénin, shopping en ligne, électronique, mode, maison, beauté, JomiaStore",
+  authors: [{ name: "JomiaStore Team" }],
   viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",
   openGraph: {
     type: "website",
     locale: "fr_BJ",
-    url: "https://beshop.bj",
-    siteName: "Be Shop",
-    title: "Be Shop - Benin Elite Shopping Experience",
-    description: "La première plateforme e-commerce premium du Bénin",
+    url: "https://www.jomiastore.com",
+    siteName: "JomiaStore",
+    title: "JomiaStore - Benin Elite Shopping Experience",
+    description: "JomiaStore Hub - Le centre commercial digital du Bénin",
     images: ["/images/og-image.jpg"],
   },
   twitter: {
     card: "summary_large_image",
-    site: "@BeShopBenin",
-    title: "Be Shop - Benin Elite Shopping Experience",
-    description: "La première plateforme e-commerce premium du Bénin",
+    site: "@JomiaStoreBenin",
+    title: "JomiaStore - Benin Elite Shopping Experience",
+    description: "JomiaStore Hub - Le centre commercial digital du Bénin",
     images: ["/images/twitter-image.jpg"],
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://beshop.bj'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.jomiastore.com'),
 };
 
 export default function RootLayout({
@@ -40,11 +40,14 @@ export default function RootLayout({
     <html lang="fr">
       <head>
         <link rel="icon" href="/favicon.ico" />
-        <link rel="canonical" href="https://beshop.bj" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="canonical" href="https://www.jomiastore.com" />
         <meta name="theme-color" content="#1E40AF" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Be Shop" />
+        <meta name="apple-mobile-web-app-title" content="JomiaStore" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://images.pexels.com" />

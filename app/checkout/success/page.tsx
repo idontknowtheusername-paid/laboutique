@@ -10,7 +10,7 @@ export default function CheckoutSuccessPage() {
   const params = useSearchParams();
   const ref = params.get('ref') || params.get('reference') || '';
   return (
-    <div className="min-h-screen bg-beshop-background flex items-center">
+    <div className="min-h-screen bg-jomiastore-background flex items-center">
       <div className="container py-8">
         <div className="max-w-lg mx-auto text-center">
           <Card>
@@ -24,8 +24,8 @@ export default function CheckoutSuccessPage() {
                 <p className="text-gray-600 mb-4 text-sm">Référence paiement: <span className="font-mono">{ref}</span></p>
               ) : null}
               <div className="space-x-4">
-                <Link href="/account/orders" className="text-beshop-primary hover:underline">Voir mes commandes</Link>
-                <Link href="/" className="text-beshop-primary hover:underline">Continuer mes achats</Link>
+                <Link href="/account/orders" className="text-jomiastore-primary hover:underline">Voir mes commandes</Link>
+                <Link href="/" className="text-jomiastore-primary hover:underline">Continuer mes achats</Link>
               </div>
             </CardContent>
           </Card>

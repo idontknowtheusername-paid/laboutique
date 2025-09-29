@@ -163,8 +163,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const loadLocalCart = () => {
     if (typeof window !== "undefined") {
       try {
-        const savedCart = localStorage.getItem("beshop-cart");
-        const savedMeta = localStorage.getItem("beshop-cart-meta");
+        const savedCart = localStorage.getItem("jomiastore-cart");
+        const savedMeta = localStorage.getItem("jomiastore-cart-meta");
 
         if (savedCart) {
           const localItems = JSON.parse(savedCart);
@@ -243,7 +243,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const recoverCorruptedCart = async () => {
     try {
-      const savedCart = localStorage.getItem("beshop-cart");
+      const savedCart = localStorage.getItem("jomiastore-cart");
       if (savedCart) {
         const rawItems = JSON.parse(savedCart);
         const sanitizedItems = sanitizeCartData(rawItems);
@@ -272,17 +272,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const clearLocalCart = () => {
     if (typeof window !== "undefined") {
-      localStorage.removeItem("beshop-cart");
-      localStorage.removeItem("beshop-cart-meta");
+      localStorage.removeItem("jomiastore-cart");
+      localStorage.removeItem("jomiastore-cart-meta");
     }
   };
 
   const saveLocalCart = (items: CartItem[], hasChanges: boolean = true) => {
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("beshop-cart", JSON.stringify(items));
+        localStorage.setItem("jomiastore-cart", JSON.stringify(items));
         localStorage.setItem(
-          "beshop-cart-meta",
+          "jomiastore-cart-meta",
           JSON.stringify({
             hasChanges,
             lastSync: cartState.lastSync?.toISOString(),
@@ -491,11 +491,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Clear local changes flag in storage
       if (typeof window !== "undefined") {
-        const savedMeta = localStorage.getItem("beshop-cart-meta");
+        const savedMeta = localStorage.getItem("jomiastore-cart-meta");
         if (savedMeta) {
           const meta = JSON.parse(savedMeta);
           localStorage.setItem(
-            "beshop-cart-meta",
+            "jomiastore-cart-meta",
             JSON.stringify({
               ...meta,
               hasChanges: false,
