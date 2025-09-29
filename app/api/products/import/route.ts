@@ -37,17 +37,26 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Scraper les données (simulation, aucune API key nécessaire)
-    // Scraper les données
+    // Scraper les données via ScrapingBee (exclusif)
     console.log('[IMPORT] 🕷️ Début du scraping pour:', url);
-    const scrapedData = await ScrapingService.scrapeProduct(url);
-    console.log('[IMPORT] 📊 Données scrapées:', scrapedData ? {
-      name: scrapedData.name,
-      price: scrapedData.price,
-      original_price: scrapedData.original_price,
-      source_platform: scrapedData.source_platform,
-      imagesCount: scrapedData.images?.length || 0
-    } : null);
+    let scrapedData: ScrapedProductData | null = null;
+    try {
+      scrapedData = await ScrapingService.scrapeProduct(url);
+      console.log('[IMPORT] 📊 Données scrapées:', scrapedData ? {
+        name: scrapedData.name,
+        price: scrapedData.price,
+        original_price: scrapedData.original_price,
+        source_platform: scrapedData.source_platform,
+        imagesCount: scrapedData.images?.length || 0
+      } : null);
+    } catch (err) {
+      console.error('[IMPORT] ❌ Aucune donnée scrapée');
+      return NextResponse.json(
+        { error: (err as any)?.message || 'Impossible de récupérer les données du produit (ScrapingBee)'
+        },
+        { status: 500 }
+      );
+    }
     
     if (!scrapedData) {
       console.error('[IMPORT] ❌ Aucune donnée scrapée');

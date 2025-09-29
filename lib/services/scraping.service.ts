@@ -72,219 +72,66 @@ export class ScrapingService {
   }
 
   /**
-   * Scraper un produit depuis une URL avec fallback intelligent
+   * Scraper un produit via l'API ScrapingBee (exclusif)
    */
   static async scrapeProduct(url: string): Promise<ScrapedProductData | null> {
     const platform = this.detectPlatform(url);
-    
     if (!platform) {
       throw new Error('Plateforme non supportée. Seuls AliExpress et AliBaba sont supportés.');
     }
 
-    console.log(`[SCRAPING] 🕷️ Début du scraping pour: ${url}`);
-
-    // Utiliser Puppeteer directement (plus fiable pour les sites modernes)
-    try {
-      console.log('[SCRAPING] 🔄 Tentative avec Puppeteer...');
-      const result = await this.scrapeWithPuppeteer(url, platform);
-      if (result) {
-        console.log('[SCRAPING] ✅ Succès avec Puppeteer');
-        return result;
-      }
-    } catch (error) {
-      console.log('[SCRAPING] ❌ Puppeteer échoué:', error);
+    const apiKey = process.env.SCRAPINGBEE_API_KEY;
+    if (!apiKey) {
+      throw new Error('SCRAPINGBEE_API_KEY manquant. Configurez la clé API pour activer l\'import.');
     }
 
-    console.log('[SCRAPING] ❌ Toutes les méthodes ont échoué');
-    throw new Error('Impossible de scraper ce produit. Veuillez vérifier l\'URL ou réessayer plus tard.');
+    const apiUrl = new URL('https://app.scrapingbee.com/api/v1/');
+    apiUrl.searchParams.set('api_key', apiKey);
+    apiUrl.searchParams.set('url', url);
+    apiUrl.searchParams.set('render_js', 'false');
+    apiUrl.searchParams.set('block_resources', 'true');
+
+    const res = await fetch(apiUrl.toString(), {
+      method: 'GET',
+      headers: { 'Accept': 'text/html' },
+      cache: 'no-store'
+    } as any);
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`ScrapingBee a retourné ${res.status}. Détails: ${text?.slice(0, 200)}`);
+    }
+
+    const html = await res.text();
+    const { name, price, images, description } = this.parseHtml(html);
+
+    const priceValue = this.parsePrice(price);
+    const finalPrice = priceValue > 0 ? Math.round(priceValue * 100) : this.getDefaultPrice(platform);
+
+    return {
+      name: name || 'Produit sans nom',
+      price: finalPrice,
+      original_price: Math.round(finalPrice * 1.2),
+      images: images.slice(0, 5),
+      description: description || 'Description non disponible',
+      short_description: (description || '').substring(0, 150) + ((description || '').length > 150 ? '...' : ''),
+      sku: `SCRAPED-${Date.now()}`,
+      specifications: {
+        'Source': 'ScrapingBee',
+        'Importé le': new Date().toLocaleDateString('fr-FR'),
+        'Plateforme': this.SUPPORTED_PLATFORMS[platform].name,
+        'URL originale': url
+      },
+      source_platform: platform,
+      source_url: url
+    };
   }
 
 
   /**
    * Scraper avec Puppeteer (fallback pour les sites avec JavaScript)
    */
-  private static async scrapeWithPuppeteer(url: string, platform: keyof typeof ScrapingService.SUPPORTED_PLATFORMS): Promise<ScrapedProductData | null> {
-    let browser: any = null;
-    
-    try {
-      const puppeteer = (await import('puppeteer')).default;
-      
-      console.log('[SCRAPING] 🤖 Lancement de Puppeteer...');
-      
-      // Configuration anti-détection et production
-      browser = await puppeteer.launch({
-        headless: true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-accelerated-2d-canvas',
-          '--no-first-run',
-          '--no-zygote',
-          '--disable-gpu',
-          '--disable-web-security',
-          '--disable-features=VizDisplayCompositor',
-          '--disable-blink-features=AutomationControlled',
-          '--disable-extensions',
-          '--disable-plugins',
-          '--disable-images', // Désactiver les images pour aller plus vite
-          '--memory-pressure-off',
-          '--max_old_space_size=4096'
-        ],
-        timeout: 30000, // 30 secondes timeout
-        protocolTimeout: 30000
-      });
-
-      const page = await browser.newPage();
-      
-      // Rotation d'user-agent
-      const userAgent = this.USER_AGENTS[Math.floor(Math.random() * this.USER_AGENTS.length)];
-      await page.setUserAgent(userAgent);
-      
-      // Configuration de la page
-      await page.setViewport({ width: 1366, height: 768 });
-      await page.setExtraHTTPHeaders({
-        'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1'
-      });
-
-      // Masquer les signes d'automatisation
-      await page.evaluateOnNewDocument(() => {
-        Object.defineProperty(navigator, 'webdriver', {
-          get: () => undefined,
-        });
-      });
-
-      console.log('[SCRAPING] 📄 Navigation vers la page...');
-      
-      // Navigation avec timeout
-      await page.goto(url, { 
-        waitUntil: 'networkidle2', 
-        timeout: 30000 
-      });
-
-      // Attendre que le contenu se charge
-      await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
-
-      console.log('[SCRAPING] 🔍 Extraction des données...');
-
-      // Extraire les données
-      const productData = await page.evaluate((platform: string) => {
-        const selectors = {
-          aliexpress: {
-            name: ['.product-title-text', 'h1', '.pdp-product-name', '.product-title'],
-            price: ['.price-current', '.price .notranslate', '[data-pl="price"]', '.price-current-single'],
-            images: ['.images-view-item img', '.gallery-image img', '.product-image img', '.detail-gallery img'],
-            description: ['.product-detail-description', '.product-description', '.detail-desc']
-          },
-          alibaba: {
-            name: ['.product-title', 'h1', '.product-name', '.title'],
-            price: ['.price', '.price-current', '.price-value', '.price-text'],
-            images: ['.product-image img', '.gallery img', '.detail-image img'],
-            description: ['.product-description', '.detail-description', '.description']
-          }
-        };
-
-        const platformSelectors = selectors[platform as keyof typeof selectors] || selectors.aliexpress;
-
-        // Extraction du nom
-        let name = '';
-        for (const selector of platformSelectors.name) {
-          const element = document.querySelector(selector);
-          if (element && element.textContent?.trim()) {
-            name = element.textContent.trim();
-            break;
-          }
-        }
-
-        // Extraction du prix
-        let priceText = '';
-        for (const selector of platformSelectors.price) {
-          const element = document.querySelector(selector);
-          if (element && element.textContent?.trim()) {
-            priceText = element.textContent.trim();
-            break;
-          }
-        }
-
-        // Extraction des images
-        const images: string[] = [];
-        for (const selector of platformSelectors.images) {
-          const elements = document.querySelectorAll(selector);
-          elements.forEach((img: any) => {
-            const src = img.src || img.getAttribute('data-src') || img.getAttribute('data-lazy');
-            if (src && src.startsWith('http') && !images.includes(src)) {
-              images.push(src);
-            }
-          });
-          if (images.length >= 5) break;
-        }
-
-        // Extraction de la description
-        let description = '';
-        for (const selector of platformSelectors.description) {
-          const element = document.querySelector(selector);
-          if (element && element.textContent?.trim()) {
-            description = element.textContent.trim();
-            break;
-          }
-        }
-
-        return {
-          name: name || 'Produit sans nom',
-          price: priceText || '0',
-          images: images,
-          description: description || 'Description non disponible'
-        };
-      }, platform);
-
-      // Traitement des données
-      const priceValue = this.parsePrice(productData.price);
-      const finalPrice = priceValue > 0 ? Math.round(priceValue * 100) : this.getDefaultPrice(platform);
-
-      console.log(`[SCRAPING] 📊 Données extraites: ${productData.name.substring(0, 50)}... - ${finalPrice/100}€ - ${productData.images.length} images`);
-
-      const result = {
-        name: productData.name,
-        price: finalPrice,
-        original_price: Math.round(finalPrice * 1.2),
-        images: productData.images.slice(0, 5),
-        description: productData.description,
-        short_description: productData.description.substring(0, 150) + (productData.description.length > 150 ? '...' : ''),
-        sku: `SCRAPED-${Date.now()}`,
-        specifications: {
-          'Source': 'Scraping Puppeteer',
-          'Importé le': new Date().toLocaleDateString('fr-FR'),
-          'Plateforme': this.SUPPORTED_PLATFORMS[platform].name,
-          'URL originale': url
-        },
-        source_platform: platform,
-        source_url: url
-      };
-
-      // Cleanup - fermer le navigateur
-      await browser.close();
-      
-      return result;
-
-    } catch (error) {
-      console.error('[SCRAPING] Erreur Puppeteer:', error);
-      
-      // Cleanup en cas d'erreur
-      try {
-        if (browser) {
-          await browser.close();
-        }
-      } catch (cleanupError) {
-        console.error('[SCRAPING] Erreur lors du cleanup:', cleanupError);
-      }
-      
-      throw error;
-    }
-  }
+  // SUPPRIMÉ: Implémentation Puppeteer remplacée par ScrapingBee
 
   /**
    * Obtenir les sélecteurs CSS pour chaque plateforme
@@ -306,6 +153,49 @@ export class ScrapingService {
     };
 
     return selectors[platform] || selectors.aliexpress;
+  }
+
+  /**
+   * Parsing HTML minimal (titre, prix, images, description)
+   */
+  private static parseHtml(html: string): { name: string; price: string; images: string[]; description: string } {
+    const getMeta = (prop: string) => {
+      const re = new RegExp(`<meta[^>]+property=["']${prop}["'][^>]+content=["']([^"']+)["'][^>]*>`, 'i');
+      const m = html.match(re); return m ? m[1] : '';
+    };
+    const getTitle = () => {
+      const m = html.match(/<title[^>]*>([^<]+)<\/title>/i); return m ? m[1].trim() : '';
+    };
+    const name = getMeta('og:title') || getTitle();
+
+    // Price via JSON-LD or meta tags
+    let price = '';
+    const jsonLdMatch = html.match(/\"price\"\s*:\s*\"?([0-9.,]+)\"?/i);
+    if (jsonLdMatch) price = jsonLdMatch[1];
+    if (!price) {
+      const metaPrice = html.match(/<meta[^>]+itemprop=["']price["'][^>]+content=["']([^"']+)["'][^>]*>/i);
+      if (metaPrice) price = metaPrice[1];
+    }
+    if (!price) {
+      const priceText = html.match(/(?:price|amount)[^\n]{0,40}([0-9][0-9.,]+)/i);
+      if (priceText) price = priceText[1];
+    }
+
+    // Images via og:image and <img>
+    const images = new Set<string>();
+    const ogImg = getMeta('og:image'); if (ogImg) images.add(ogImg);
+    const imgRegex = /<img[^>]+src=["']([^"']+)["'][^>]*>/ig;
+    let m: RegExpExecArray | null;
+    while ((m = imgRegex.exec(html)) !== null) {
+      const src = m[1];
+      if (src && src.startsWith('http')) images.add(src);
+      if (images.size >= 8) break;
+    }
+
+    // Description via og:description or meta description
+    const description = getMeta('og:description') || (html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["'][^>]*>/i)?.[1] || '');
+
+    return { name, price, images: Array.from(images), description };
   }
 
   /**
