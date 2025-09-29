@@ -198,28 +198,25 @@ const Header = () => {
                       <User className="w-5 h-5" />
                       <div className="hidden lg:block text-left">
                         <div className="text-xs text-gray-500">
-                          {user ? "Bonjour" : "Se connecter"}
+                          {user ? "Connecté" : "Se connecter"}
                         </div>
                         <div className="text-sm font-medium">
-                          {user ? user.user_metadata?.first_name || "Mon compte" : "Mon compte"}
+                          {user ? user.user_metadata?.first_name || "Mon profil" : "Mon compte"}
                         </div>
                       </div>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuContent align="end" className="w-48">
                     {user ? (
                       <>
                         <DropdownMenuItem asChild>
-                          <Link href="/account/profile">Mon profil</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href="/account/orders">Mes commandes</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href="/account/wishlist">Ma liste de souhaits</Link>
+                          <Link href="/account/profile" className="flex items-center gap-2">
+                            <User className="w-4 h-4" />
+                            Mon profil
+                          </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => signOut()}>
+                        <DropdownMenuItem onClick={() => signOut()} className="text-red-600 hover:text-red-700">
                           Se déconnecter
                         </DropdownMenuItem>
                       </>
