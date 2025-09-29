@@ -99,30 +99,20 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   }, [displayedProducts]);
 
   return (
-  <section className={`py-2 ${backgroundColor}`}>
+    <section className={`py-6 ${backgroundColor}`}>
       <div className="container">
         {/* Header */}
         {isLoading ? (
           <HeaderSkeleton />
         ) : (
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{title}</h2>
-              {subtitle && (
-                <p className="text-gray-600 text-sm md:text-base">{subtitle}</p>
-              )}
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{title}</h2>
+              {subtitle && <p className="text-gray-600 mt-1.5">{subtitle}</p>}
             </div>
 
             {viewAllLink && (
-              <Link href={viewAllLink}>
-                <Button
-                  variant="outline"
-                  className="border-jomiastore-primary text-jomiastore-primary hover:bg-jomiastore-primary hover:text-white text-sm md:text-base"
-                >
-                  <span className="md:hidden">Tout voir</span>
-                  <span className="hidden md:inline">Voir tout</span>
-                </Button>
-              </Link>
+              <Link href={viewAllLink} className="text-jomiastore-primary hover:text-blue-700 text-sm">Voir tout</Link>
             )}
           </div>
         )}

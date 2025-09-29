@@ -164,14 +164,14 @@ const CategoryMenu = () => {
 
   return (
     <div className={`bg-white border-b transition-all duration-300 z-40 ${
-      isScrolled ? 'fixed top-0 left-0 right-0 py-2 shadow-md' : 'category-menu-offset py-3'
+      isScrolled ? 'fixed top-0 left-0 right-0 py-1.5 shadow-md' : 'category-menu-offset py-2'
     }`}>
       <div className="container">
         <NavigationMenu>
-          <NavigationMenuList className="flex flex-wrap gap-1">
+          <NavigationMenuList className="flex flex-nowrap gap-1 overflow-x-auto no-scrollbar">
             {/* All Categories Button */}
             <NavigationMenuItem>
-              <NavigationMenuTrigger className="bg-jomiastore-primary text-white hover:bg-blue-700 px-6 py-2 h-auto">
+              <NavigationMenuTrigger className="bg-jomiastore-primary text-white hover:bg-blue-700 px-5 py-2 h-auto rounded-md">
                 <Grid3X3 className="w-4 h-4 mr-2" />
                 Toutes les catégories
               </NavigationMenuTrigger>
@@ -222,16 +222,16 @@ const CategoryMenu = () => {
             </NavigationMenuItem>
 
             {/* Individual Category Links */}
-            {categories.slice(0, 6).map((category) => {
+            {categories.slice(0, 8).map((category) => {
               const IconComponent = getCategoryIcon(category.slug);
               return (
                 <NavigationMenuItem key={category.id}>
-                  <NavigationMenuTrigger className="text-gray-700 hover:text-jomiastore-primary px-4 py-2 h-auto bg-transparent">
+                  <NavigationMenuTrigger className="text-gray-700 hover:text-jomiastore-primary px-4 py-2 h-auto bg-transparent rounded-md">
                     <IconComponent className="w-4 h-4 mr-2" />
                     {category.name}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="grid grid-cols-2 gap-6 p-6 w-[500px]">
+                    <div className="grid grid-cols-2 gap-5 p-5 w-[520px]">
                       {category.children?.map((child) => (
                         <div key={child.slug} className="space-y-2">
                           <Link

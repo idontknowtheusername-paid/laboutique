@@ -21,8 +21,8 @@ const TrendingProducts = dynamic(() => import('@/components/home/TrendingProduct
   loading: () => <ProductSkeleton count={4} />
 });
 
-const CategoriesConnected = dynamic(() => import('@/components/home/CategoriesConnected'), {
-  loading: () => <div className="h-32 bg-gray-100 animate-pulse rounded-xl" />
+const DiscoverySection = dynamic(() => import('@/components/home/DiscoverySection'), {
+  loading: () => <div className="h-48 bg-gray-100 animate-pulse rounded-xl" />
 });
 
 const ProductGrid = dynamic(() => import('@/components/home/ProductGrid'), {
@@ -173,23 +173,23 @@ export default function Home() {
       <Header />
       <CategoryMenu />
 
-      <div className="pt-4">
-        <section className="container mb-6">
+      <div className="pt-2">
+        <section className="container mb-5">
           <HeroCarousel />
         </section>
 
-        <div className="mb-4">
+        <div className="mb-3">
           <FlashSalesConnected />
         </div>
-        <div className="mb-4">
+        <div className="mb-3">
           <TrendingProducts />
         </div>
-        <div className="mb-4">
-          <CategoriesConnected />
+        <div className="mb-3">
+          <DiscoverySection />
         </div>
 
         {featuredProducts.length > 0 && (
-          <div className="mb-4">
+          <div className="mb-3">
             <ProductGrid
               title="Produits en Vedette"
               subtitle="Notre sélection de produits exceptionnels"
@@ -202,7 +202,7 @@ export default function Home() {
         )}
 
         {newProducts.length > 0 && (
-          <div className="mb-4">
+          <div className="mb-3">
             <ProductGrid
               title="Nouveaux Produits"
               subtitle="Découvrez nos dernières nouveautés"
@@ -215,7 +215,7 @@ export default function Home() {
         )}
 
         {electronicsProducts.length > 0 && (
-          <div className="mb-4">
+          <div className="mb-3">
             <ProductGrid
               title="Électronique & High-Tech"
               subtitle="Les dernières technologies"
@@ -228,7 +228,7 @@ export default function Home() {
         )}
 
         {fashionProducts.length > 0 && (
-          <div className="mb-4">
+          <div className="mb-3">
             <ProductGrid
               title="Mode & Beauté"
               subtitle="Collections tendance"
@@ -241,7 +241,7 @@ export default function Home() {
         )}
 
         {homeProducts.length > 0 && (
-          <div className="mb-4">
+          <div className="mb-3">
             <ProductGrid
               title="Maison & Jardin"
               subtitle="Tout pour votre intérieur"
@@ -254,7 +254,7 @@ export default function Home() {
         )}
 
         {sportsProducts.length > 0 && (
-          <div className="mb-4">
+          <div className="mb-3">
             <ProductGrid
               title="Sport & Loisirs"
               subtitle="Équipements sportifs"
@@ -266,17 +266,17 @@ export default function Home() {
           </div>
         )}
 
-        <div className="mb-4">
+        <div className="mb-3">
           <FeaturedBrands />
         </div>
         
         {/* Mobile App Section */}
-        <div className="mb-4">
+        <div className="mb-3">
           <MobileAppSection />
         </div>
         
         {/* Trust Elements */}
-        <div className="mb-4">
+        <div className="mb-3">
           <TrustElements />
         </div>
         
