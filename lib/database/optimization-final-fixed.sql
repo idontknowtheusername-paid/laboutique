@@ -198,14 +198,19 @@ ALTER TABLE payment_methods ENABLE ROW LEVEL SECURITY;
 ALTER TABLE wishlist ENABLE ROW LEVEL SECURITY;
 
 -- Politiques pour les produits (lecture publique)
+DROP POLICY IF EXISTS "Products are viewable by everyone" ON products;
 CREATE POLICY "Products are viewable by everyone" ON products
     FOR SELECT USING (true);
 
 -- Politiques pour les catégories (lecture publique)
+DROP POLICY IF EXISTS "Categories are viewable by everyone" ON categories;
 CREATE POLICY "Categories are viewable by everyone" ON categories
     FOR SELECT USING (true);
 
 -- Politiques pour les commandes (utilisateur propriétaire)
+DROP POLICY IF EXISTS "Users can view own orders" ON orders;
+DROP POLICY IF EXISTS "Users can insert own orders" ON orders;
+
 CREATE POLICY "Users can view own orders" ON orders
     FOR SELECT USING (auth.uid() = user_id);
 
@@ -213,22 +218,27 @@ CREATE POLICY "Users can insert own orders" ON orders
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Politiques pour le panier (utilisateur propriétaire)
+DROP POLICY IF EXISTS "Users can manage own cart" ON cart_items;
 CREATE POLICY "Users can manage own cart" ON cart_items
     FOR ALL USING (auth.uid() = user_id);
 
 -- Politiques pour les profils (utilisateur propriétaire) - CORRIGÉ
+DROP POLICY IF EXISTS "Users can manage own profile" ON profiles;
 CREATE POLICY "Users can manage own profile" ON profiles
     FOR ALL USING (auth.uid() = id);
 
 -- Politiques pour les adresses (utilisateur propriétaire)
+DROP POLICY IF EXISTS "Users can manage own addresses" ON addresses;
 CREATE POLICY "Users can manage own addresses" ON addresses
     FOR ALL USING (auth.uid() = user_id);
 
 -- Politiques pour les méthodes de paiement (utilisateur propriétaire)
+DROP POLICY IF EXISTS "Users can manage own payment methods" ON payment_methods;
 CREATE POLICY "Users can manage own payment methods" ON payment_methods
     FOR ALL USING (auth.uid() = user_id);
 
 -- Politiques pour la wishlist (utilisateur propriétaire)
+DROP POLICY IF EXISTS "Users can manage own wishlist" ON wishlist;
 CREATE POLICY "Users can manage own wishlist" ON wishlist
     FOR ALL USING (auth.uid() = user_id);
 
