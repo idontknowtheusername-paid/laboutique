@@ -7,90 +7,132 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Search, Edit, Trash2, Copy, Eye, Calendar, Percent, DollarSign, Users, Target } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Copy, Eye, Calendar, Percent, DollarSign, Users, Target, RefreshCw } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
+import { CouponsService, Coupon, CouponStats } from '@/lib/services/coupons.service';
+import { useToast } from '@/components/admin/Toast';
+import { useConfirmation } from '@/components/admin/ConfirmationDialog';
 
-interface Coupon {
-  id: string;
-  code: string;
-  name: string;
-  type: 'percentage' | 'fixed' | 'free_shipping';
-  value: number;
-  min_amount?: number;
-  max_discount?: number;
-  usage_limit?: number;
-  used_count: number;
-  status: 'active' | 'inactive' | 'expired';
-  start_date: string;
-  end_date: string;
-  created_at: string;
-}
 
 export default function AdminCouponsPage() {
   const [loading, setLoading] = React.useState(true);
   const [coupons, setCoupons] = React.useState<Coupon[]>([]);
+  const [stats, setStats] = React.useState<CouponStats | null>(null);
   const [search, setSearch] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState<string>('all');
   const [typeFilter, setTypeFilter] = React.useState<string>('all');
+  const { success, error, info } = useToast();
+  const { confirm, ConfirmationComponent } = useConfirmation();
+
+  const loadCoupons = React.useCallback(async () => {
+    setLoading(true);
+    try {
+      const result = await CouponsService.getAll({
+        status: statusFilter === 'all' ? undefined : statusFilter as any,
+        type: typeFilter === 'all' ? undefined : typeFilter as any,
+        search: search || undefined
+      }, { page: 1, limit: 100 });
+
+      if (result.success && result.data) {
+        setCoupons(result.data);
+        success('Données chargées', `${result.data.length} coupons chargés`);
+      } else {
+        error('Erreur de chargement', result.error || 'Impossible de charger les coupons');
+        setCoupons([]);
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement des coupons:', err);
+      error('Erreur inattendue', 'Une erreur est survenue lors du chargement des coupons');
+      setCoupons([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [search, statusFilter, typeFilter, success, error]);
 
   React.useEffect(() => {
     loadCoupons();
-  }, []);
+    loadStats();
+  }, [loadCoupons]);
 
-  const loadCoupons = async () => {
-    setLoading(true);
+  const loadStats = async () => {
     try {
-      // Simuler des coupons
-      const mockCoupons: Coupon[] = [
-        {
-          id: '1',
-          code: 'WELCOME10',
-          name: 'Bienvenue - 10%',
-          type: 'percentage',
-          value: 10,
-          min_amount: 5000,
-          usage_limit: 100,
-          used_count: 25,
-          status: 'active',
-          start_date: '2024-01-01',
-          end_date: '2024-12-31',
-          created_at: '2024-01-01T00:00:00Z'
-        },
-        {
-          id: '2',
-          code: 'SAVE50',
-          name: 'Économisez 50 FCFA',
-          type: 'fixed',
-          value: 50,
-          min_amount: 1000,
-          usage_limit: 50,
-          used_count: 12,
-          status: 'active',
-          start_date: '2024-01-15',
-          end_date: '2024-06-30',
-          created_at: '2024-01-15T00:00:00Z'
-        },
-        {
-          id: '3',
-          code: 'FREESHIP',
-          name: 'Livraison gratuite',
-          type: 'free_shipping',
-          value: 0,
-          min_amount: 10000,
-          usage_limit: 200,
-          used_count: 45,
-          status: 'active',
-          start_date: '2024-02-01',
-          end_date: '2024-12-31',
-          created_at: '2024-02-01T00:00:00Z'
+      const result = await CouponsService.getStats();
+      if (result.success && result.data) {
+        setStats(result.data);
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement des statistiques:', err);
+    }
+  };
+
+  const handleDeleteCoupon = async (couponId: string, couponCode: string) => {
+    confirm(
+      'Supprimer le coupon',
+      `Êtes-vous sûr de vouloir supprimer le coupon ${couponCode} ? Cette action est irréversible.`,
+      async () => {
+        try {
+          const result = await CouponsService.delete(couponId);
+          if (result.success) {
+            success('Coupon supprimé', `Le coupon ${couponCode} a été supprimé avec succès`);
+            loadCoupons();
+            loadStats();
+          } else {
+            error('Erreur de suppression', result.error || 'Impossible de supprimer le coupon');
+          }
+        } catch (err) {
+          error('Erreur inattendue', 'Une erreur est survenue lors de la suppression du coupon');
         }
-      ];
-      setCoupons(mockCoupons);
-    } catch (error) {
-      console.error('Erreur lors du chargement des coupons:', error);
-    } finally {
-      setLoading(false);
+      },
+      'destructive'
+    );
+  };
+
+  const handleDuplicateCoupon = async (coupon: Coupon) => {
+    try {
+      const duplicateData = {
+        code: `${coupon.code}_COPY`,
+        name: `${coupon.name} (Copie)`,
+        description: coupon.description,
+        type: coupon.type,
+        value: coupon.value,
+        min_amount: coupon.min_amount,
+        max_discount: coupon.max_discount,
+        usage_limit: coupon.usage_limit,
+        status: 'inactive' as const,
+        start_date: new Date().toISOString().split('T')[0],
+        end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      };
+
+      const result = await CouponsService.create(duplicateData);
+      if (result.success && result.data) {
+        success('Coupon dupliqué', `Le coupon ${duplicateData.code} a été créé avec succès`);
+        loadCoupons();
+        loadStats();
+      } else {
+        error('Erreur de duplication', result.error || 'Impossible de dupliquer le coupon');
+      }
+    } catch (err) {
+      error('Erreur inattendue', 'Une erreur est survenue lors de la duplication du coupon');
+    }
+  };
+
+  const handleCopyCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    success('Code copié', `Le code ${code} a été copié dans le presse-papiers`);
+  };
+
+  // Test de connexion à la base de données
+  const testDatabaseConnection = async () => {
+    try {
+      const result = await CouponsService.getStats();
+      if (result.success) {
+        success('Connexion réussie', 'La base de données est accessible');
+      } else {
+        error('Erreur de connexion', result.error || 'Impossible de se connecter à la base');
+      }
+    } catch (err) {
+      error('Erreur de connexion', 'Impossible de se connecter à la base de données');
     }
   };
 
@@ -140,11 +182,17 @@ export default function AdminCouponsPage() {
         subtitle="Gestion des codes de réduction et offres spéciales"
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline">
-              <Copy className="w-4 h-4 mr-2" />
-              Dupliquer
+            <Button variant="outline" onClick={testDatabaseConnection}>
+              🔍 Test DB
             </Button>
-            <Button className="bg-jomiastore-primary hover:bg-blue-700">
+            <Button variant="outline" onClick={loadCoupons} disabled={loading}>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Rafraîchir
+            </Button>
+            <Button 
+              className="bg-jomiastore-primary hover:bg-blue-700"
+              onClick={() => window.location.href = '/admin/coupons/new'}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Nouveau coupon
             </Button>
@@ -293,13 +341,37 @@ export default function AdminCouponsPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="sm">
-                              <Eye className="w-4 h-4" />
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleCopyCode(coupon.code)}
+                              title="Copier le code"
+                            >
+                              <Copy className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleDuplicateCoupon(coupon)}
+                              title="Dupliquer le coupon"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => window.location.href = `/admin/coupons/${coupon.id}/edit`}
+                              title="Modifier le coupon"
+                            >
                               <Edit className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-red-600">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-red-600"
+                              onClick={() => handleDeleteCoupon(coupon.id, coupon.code)}
+                              title="Supprimer le coupon"
+                            >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
@@ -332,17 +404,30 @@ export default function AdminCouponsPage() {
         </TabsContent>
 
         <TabsContent value="analytics">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="w-5 h-5" />
+                  Total coupons
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stats?.total_coupons || 0}</div>
+                <p className="text-sm text-gray-500">Coupons créés</p>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="w-5 h-5" />
-                  Coupons utilisés
+                  Coupons actifs
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">82</div>
-                <p className="text-sm text-gray-500">+12% ce mois</p>
+                <div className="text-3xl font-bold">{stats?.active_coupons || 0}</div>
+                <p className="text-sm text-gray-500">En cours d'utilisation</p>
               </CardContent>
             </Card>
 
@@ -354,8 +439,14 @@ export default function AdminCouponsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">125,000 FCFA</div>
-                <p className="text-sm text-gray-500">+8% ce mois</p>
+                <div className="text-3xl font-bold">
+                  {stats?.total_discount ? new Intl.NumberFormat('fr-BJ', {
+                    style: 'currency',
+                    currency: 'XOF',
+                    minimumFractionDigits: 0,
+                  }).format(stats.total_discount) : '0 FCFA'}
+                </div>
+                <p className="text-sm text-gray-500">Total des réductions</p>
               </CardContent>
             </Card>
 
@@ -367,13 +458,17 @@ export default function AdminCouponsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">68%</div>
-                <p className="text-sm text-gray-500">+5% ce mois</p>
+                <div className="text-3xl font-bold">
+                  {stats?.average_usage_rate ? Math.round(stats.average_usage_rate) : 0}%
+                </div>
+                <p className="text-sm text-gray-500">Utilisation moyenne</p>
               </CardContent>
             </Card>
           </div>
         </TabsContent>
       </Tabs>
+
+      <ConfirmationComponent />
     </div>
   );
 }
