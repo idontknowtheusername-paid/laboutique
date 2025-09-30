@@ -20,6 +20,9 @@ import { VendorsService, Vendor } from '@/lib/services/vendors.service';
 import { ProductsService } from '@/lib/services/products.service';
 import { OrdersService, Order } from '@/lib/services/orders.service';
 import { StatsService, DashboardStats, SalesData, CategoryData } from '@/lib/services/stats.service';
+import { NotificationsService, Alert, PendingTask } from '@/lib/services/notifications.service';
+import { InventoryService, StockAlert } from '@/lib/services/inventory.service';
+import { PaymentsService, PaymentAlert } from '@/lib/services/payments.service';
 
 type SalesDatum = { month: string; revenue: number };
 type CategoryDatum = { name: string; value: number; color: string };
@@ -31,8 +34,10 @@ export default function AdminDashboard() {
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [alerts, setAlerts] = useState<any[]>([]);
-  const [pendingTasks, setPendingTasks] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [pendingTasks, setPendingTasks] = useState<PendingTask[]>([]);
+  const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([]);
+  const [paymentAlerts, setPaymentAlerts] = useState<PaymentAlert[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -65,18 +70,35 @@ export default function AdminDashboard() {
         const ordersRes = await OrdersService.getRecent(10);
         if (ordersRes.success && ordersRes.data) setRecentOrders(ordersRes.data);
 
-        // Simuler des alertes et tâches en attente
-        setAlerts([
-          { id: 1, type: 'warning', message: '3 produits en rupture de stock', count: 3 },
-          { id: 2, type: 'info', message: '5 nouvelles commandes en attente', count: 5 },
-          { id: 3, type: 'error', message: '2 paiements échoués', count: 2 }
-        ]);
+        // Récupérer les alertes réelles
+        const alertsRes = await fetch('/api/admin/alerts');
+        if (alertsRes.ok) {
+          const alertsData = await alertsRes.json();
+          if (alertsData.success) {
+            setAlerts(alertsData.data);
+          }
+        }
 
-        setPendingTasks([
-          { id: 1, type: 'order', title: 'Commande #12345 en attente', priority: 'high' },
-          { id: 2, type: 'product', title: 'Approuver 3 nouveaux produits', priority: 'medium' },
-          { id: 3, type: 'vendor', title: '2 vendeurs en attente d\'approbation', priority: 'low' }
-        ]);
+        // Récupérer les tâches en attente réelles
+        const tasksRes = await fetch('/api/admin/tasks');
+        if (tasksRes.ok) {
+          const tasksData = await tasksRes.json();
+          if (tasksData.success) {
+            setPendingTasks(tasksData.data);
+          }
+        }
+
+        // Récupérer les alertes de stock
+        const stockAlertsRes = await InventoryService.getStockAlerts();
+        if (stockAlertsRes.success && stockAlertsRes.data) {
+          setStockAlerts(stockAlertsRes.data);
+        }
+
+        // Récupérer les alertes de paiement
+        const paymentAlertsRes = await PaymentsService.getPaymentAlerts();
+        if (paymentAlertsRes.success && paymentAlertsRes.data) {
+          setPaymentAlerts(paymentAlertsRes.data);
+        }
 
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error);
