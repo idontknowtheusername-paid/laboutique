@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
-import { Bell, LayoutGrid, Users, ShoppingCart, Package, Shield, Megaphone, Settings, Flag, Home } from 'lucide-react';
+import { Bell, LayoutGrid, Users, ShoppingCart, Package, Shield, Megaphone, Settings, Flag, Home, FileText, RotateCcw, BarChart3, Database } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import NotificationCenter from '@/components/admin/NotificationCenter';
 import { ThemeProvider } from '@/components/admin/ThemeProvider';
@@ -123,17 +123,24 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   }
 
   const nav = [
-    { href: '/admin/dashboard', label: "Dashboard", icon: LayoutGrid },
-    { href: '/admin/users', label: "Utilisateurs", icon: Users },
-    { href: '/admin/orders', label: "Commandes", icon: ShoppingCart },
-    { href: '/admin/products', label: "Produits", icon: Package },
-    { href: '/admin/coupons', label: "Coupons", icon: Megaphone },
-    { href: '/admin/returns', label: "Retours", icon: Flag },
-    { href: '/admin/analytics', label: "Analytics", icon: Settings },
-    { href: '/admin/backup', label: "Backup", icon: Shield },
-    { href: '/admin/moderation', label: "Modération", icon: Flag },
-    { href: '/admin/articles', label: "Articles", icon: Megaphone },
-    { href: '/admin/settings', label: "Paramètres", icon: Settings },
+    // SECTION PRINCIPALE - GESTION COMMERCIALE
+    { href: '/admin/dashboard', label: "Dashboard", icon: LayoutGrid, section: "main" },
+    { href: '/admin/orders', label: "Commandes", icon: ShoppingCart, section: "main" },
+    { href: '/admin/products', label: "Produits", icon: Package, section: "main" },
+    { href: '/admin/users', label: "Utilisateurs", icon: Users, section: "main" },
+    
+    // SECTION MARKETING & PROMOTIONS
+    { href: '/admin/coupons', label: "Coupons", icon: Megaphone, section: "marketing" },
+    { href: '/admin/articles', label: "Articles", icon: FileText, section: "marketing" },
+    
+    // SECTION SUPPORT & SERVICE CLIENT
+    { href: '/admin/returns', label: "Retours", icon: RotateCcw, section: "support" },
+    { href: '/admin/moderation', label: "Modération", icon: Shield, section: "support" },
+    
+    // SECTION ANALYTICS & TECHNIQUE
+    { href: '/admin/analytics', label: "Analytics", icon: BarChart3, section: "technical" },
+    { href: '/admin/backup', label: "Backup", icon: Database, section: "technical" },
+    { href: '/admin/settings', label: "Paramètres", icon: Settings, section: "technical" },
   ];
 
   const externalLinks = [
@@ -206,25 +213,44 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         {/* Desktop Sidebar */}
         <aside className="hidden lg:block w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 min-h-screen">
           <div className="p-4">
-            <nav className="space-y-2" role="navigation" aria-label="Navigation principale">
-              {nav.map((item) => {
+            <nav className="space-y-1" role="navigation" aria-label="Navigation principale">
+              {nav.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
+                const showSeparator = index > 0 && nav[index - 1].section !== item.section;
+                const sectionLabels = {
+                  main: "Gestion Commerciale",
+                  marketing: "Marketing & Promotions", 
+                  support: "Support Client",
+                  technical: "Analytics & Technique"
+                };
                 
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-jomiastore-primary text-white'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
-                    aria-current={isActive ? 'page' : undefined}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {item.label}
-                  </Link>
+                  <React.Fragment key={item.href}>
+                    {showSeparator && (
+                      <div className="my-4">
+                        <div className="px-3 py-1">
+                          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            {sectionLabels[item.section as keyof typeof sectionLabels]}
+                          </p>
+                        </div>
+                        <Separator />
+                      </div>
+                    )}
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'bg-jomiastore-primary text-white'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                      aria-current={isActive ? 'page' : undefined}
+                      title={item.label}
+                    >
+                      <Icon className="w-4 h-4" />
+                      {item.label}
+                    </Link>
+                  </React.Fragment>
                 );
               })}
             </nav>
