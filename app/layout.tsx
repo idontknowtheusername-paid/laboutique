@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { AppProviders } from "@/components/providers/AppProviders";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "JomiaStore - Benin Elite Shopping Experience",
@@ -56,6 +57,7 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased">
         <AppProviders>{children}</AppProviders>
+        <SpeedInsights />
         
         {/* Service Worker Registration */}
         <Script
