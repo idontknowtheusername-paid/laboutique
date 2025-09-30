@@ -23,31 +23,49 @@ export default function AdminUsersPage() {
 
   const load = React.useCallback(async () => {
     setLoading(true);
-    const client = (AuthService as any).getSupabaseClient();
-    let query = client.from('profiles').select('*', { count: 'exact' }).order('created_at', { ascending: false });
+    try {
+      const client = (AuthService as any).getSupabaseClient();
+      let query = client.from('profiles').select('*', { count: 'exact' }).order('created_at', { ascending: false });
 
-    if (search) {
-      // basic ilike on email, first_name, last_name
-      query = query.or(
-        `email.ilike.%${search}%,first_name.ilike.%${search}%,last_name.ilike.%${search}%`
-      );
+      if (search) {
+        // basic ilike on email, first_name, last_name
+        query = query.or(
+          `email.ilike.%${search}%,first_name.ilike.%${search}%,last_name.ilike.%${search}%`
+        );
+      }
+
+      if (roleFilter !== 'all') {
+        query = query.eq('role', roleFilter);
+      }
+
+      const limit = 12;
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+      const { data, error, count } = await query.range(from, to);
+
+      if (error) {
+        console.error('Erreur lors du chargement des utilisateurs:', error);
+        error('Erreur de chargement', `Impossible de charger les utilisateurs: ${error.message}`);
+        setUsers([]);
+        setTotalPages(1);
+      } else if (data) {
+        setUsers(data as UserProfile[]);
+        setTotalPages(count ? Math.max(1, Math.ceil(count / limit)) : 1);
+        success('Données chargées', `${data.length} utilisateurs chargés`);
+      } else {
+        setUsers([]);
+        setTotalPages(1);
+        info('Aucun utilisateur', 'Aucun utilisateur trouvé dans la base de données');
+      }
+    } catch (err) {
+      console.error('Erreur inattendue lors du chargement des utilisateurs:', err);
+      error('Erreur inattendue', 'Une erreur est survenue lors du chargement des utilisateurs');
+      setUsers([]);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
     }
-
-    if (roleFilter !== 'all') {
-      query = query.eq('role', roleFilter);
-    }
-
-    const limit = 12;
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
-    const { data, error, count } = await query.range(from, to);
-
-    setLoading(false);
-    if (!error && data) {
-      setUsers(data as UserProfile[]);
-      setTotalPages(count ? Math.max(1, Math.ceil(count / limit)) : 1);
-    }
-  }, [search, roleFilter, page]);
+  }, [search, roleFilter, page, success, error, info]);
 
   React.useEffect(() => { load(); }, [load]);
 
@@ -76,6 +94,22 @@ export default function AdminUsersPage() {
       success("Utilisateur supprimé", "L'utilisateur a bien été supprimé.");
     } else {
       error("Erreur", "Impossible de supprimer l'utilisateur.");
+    }
+  }
+
+  // Test de connexion à la base de données
+  async function testDatabaseConnection() {
+    try {
+      const client = (AuthService as any).getSupabaseClient();
+      const { data, error } = await client.from('profiles').select('count').limit(1);
+      
+      if (error) {
+        error('Erreur de connexion', `Impossible de se connecter à la base: ${error.message}`);
+      } else {
+        success('Connexion réussie', 'La base de données est accessible');
+      }
+    } catch (err) {
+      error('Erreur de connexion', 'Impossible de se connecter à la base de données');
     }
   }
 
@@ -126,6 +160,9 @@ export default function AdminUsersPage() {
         subtitle="Gestion des comptes et rôles"
         actions={
           <>
+            <Button variant="outline" onClick={testDatabaseConnection}>
+              🔍 Test DB
+            </Button>
             <Button variant="outline" onClick={load} disabled={loading}>
               <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
             </Button>

@@ -23,11 +23,11 @@ export class InventoryService extends BaseService {
   // Obtenir les alertes de stock
   static async getStockAlerts(): Promise<ServiceResponse<StockAlert[]>> {
     if (!isSupabaseConfigured()) {
-      return this.getMockResponse([]);
+      return this.createResponse([]);
     }
 
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await this.getSupabaseClient()
         .from('products')
         .select(`
           id,
@@ -41,7 +41,7 @@ export class InventoryService extends BaseService {
 
       if (error) throw error;
 
-      const alerts: StockAlert[] = (data || []).map(product => ({
+      const alerts: StockAlert[] = (data || []).map((product: any) => ({
         id: product.id,
         product_id: product.id,
         product_name: product.name,
@@ -52,16 +52,16 @@ export class InventoryService extends BaseService {
         created_at: new Date().toISOString()
       }));
 
-      return this.getSuccessResponse(alerts);
+      return this.createResponse(alerts);
     } catch (error) {
-      return this.getErrorResponse('Erreur lors de la récupération des alertes de stock', error);
+      return this.createResponse([], this.handleError(error));
     }
   }
 
   // Obtenir les statistiques d'inventaire
   static async getInventoryStats(): Promise<ServiceResponse<InventoryStats>> {
     if (!isSupabaseConfigured()) {
-      return this.getMockResponse({
+      return this.createResponse({
         total_products: 0,
         low_stock_count: 0,
         out_of_stock_count: 0,
@@ -71,13 +71,13 @@ export class InventoryService extends BaseService {
     }
 
     try {
-      const { data: products, error } = await this.supabase
+      const { data: products, error } = await this.getSupabaseClient()
         .from('products')
         .select('id, quantity, min_quantity, price');
 
       if (error) throw error;
 
-      const stats = (products || []).reduce((acc, product) => {
+      const stats = (products || []).reduce((acc: any, product: any) => {
         acc.total_products++;
         acc.total_value += (product.price || 0) * (product.quantity || 0);
         
@@ -98,29 +98,35 @@ export class InventoryService extends BaseService {
         total_value: 0
       });
 
-      return this.getSuccessResponse(stats);
+      return this.createResponse(stats);
     } catch (error) {
-      return this.getErrorResponse('Erreur lors de la récupération des statistiques', error);
+      return this.createResponse({
+        total_products: 0,
+        low_stock_count: 0,
+        out_of_stock_count: 0,
+        critical_stock_count: 0,
+        total_value: 0
+      }, this.handleError(error));
     }
   }
 
   // Mettre à jour le stock d'un produit
   static async updateStock(productId: string, newQuantity: number): Promise<ServiceResponse<boolean>> {
     if (!isSupabaseConfigured()) {
-      return this.getMockResponse(true);
+      return this.createResponse(true);
     }
 
     try {
-      const { error } = await this.supabase
+      const { error } = await this.getSupabaseClient()
         .from('products')
         .update({ quantity: newQuantity })
         .eq('id', productId);
 
       if (error) throw error;
 
-      return this.getSuccessResponse(true);
+      return this.createResponse(true);
     } catch (error) {
-      return this.getErrorResponse('Erreur lors de la mise à jour du stock', error);
+      return this.createResponse(false, this.handleError(error));
     }
   }
 }

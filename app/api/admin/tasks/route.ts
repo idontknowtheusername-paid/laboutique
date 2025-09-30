@@ -13,10 +13,10 @@ export async function GET(request: NextRequest) {
 
     // Tâches de commandes en attente
     if (!type || type === 'orders') {
-      const pendingOrders = await OrdersService.getAll({
-        status: 'pending',
-        limit: 10
-      });
+      const pendingOrders = await OrdersService.getAll(
+        { status: 'pending' },
+        { page: 1, limit: 10 }
+      );
       
       if (pendingOrders.success && pendingOrders.data) {
         tasks.push(...pendingOrders.data.map(order => ({
@@ -32,10 +32,10 @@ export async function GET(request: NextRequest) {
 
     // Tâches de produits à approuver
     if (!type || type === 'products') {
-      const pendingProducts = await ProductsService.getAll({ 
-        status: 'draft',
-        limit: 10 
-      });
+      const pendingProducts = await ProductsService.getAll(
+        { status: 'draft' },
+        { page: 1, limit: 10 }
+      );
       
       if (pendingProducts.success && pendingProducts.data) {
         tasks.push(...pendingProducts.data.map(product => ({

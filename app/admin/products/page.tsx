@@ -33,6 +33,22 @@ export default function AdminProductsPage() {
   const [totalCount, setTotalCount] = React.useState<number>(0);
   const { success, error, info } = useToast();
 
+  // Test de connexion à la base de données
+  async function testDatabaseConnection() {
+    try {
+      const client = (ProductsService as any).getSupabaseClient();
+      const { data, error } = await client.from('products').select('count').limit(1);
+      
+      if (error) {
+        error('Erreur de connexion', `Impossible de se connecter à la base: ${error.message}`);
+      } else {
+        success('Connexion réussie', 'La base de données est accessible');
+      }
+    } catch (err) {
+      error('Erreur de connexion', 'Impossible de se connecter à la base de données');
+    }
+  }
+
   const load = React.useCallback(async () => {
     setLoading(true);
     try {
@@ -60,6 +76,7 @@ export default function AdminProductsPage() {
         
         setItems(list);
         setTotalCount(res.pagination?.total || 0);
+        success('Données chargées', `${list.length} produits chargés`);
       } else {
         console.error('Erreur lors du chargement des produits:', res.error);
         error('Erreur de chargement', res.error || 'Impossible de charger les produits');
@@ -74,7 +91,7 @@ export default function AdminProductsPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, category, error]);
+  }, [search, category, error, success]);
 
   React.useEffect(() => { load(); }, [load]);
 
@@ -96,6 +113,11 @@ export default function AdminProductsPage() {
         subtitle="Catalogue et statut de publication"
         actions={
           <div className="flex flex-wrap items-center gap-2">
+            {/* Test de connexion */}
+            <Button variant="outline" onClick={testDatabaseConnection}>
+              🔍 Test DB
+            </Button>
+            
             {/* Bouton principal - Créer manuellement */}
             <Button
               className="bg-green-600 hover:bg-green-700 text-white font-semibold"

@@ -23,7 +23,7 @@ export class NotificationsService extends BaseService {
   // Obtenir toutes les alertes
   static async getAlerts(): Promise<ServiceResponse<Alert[]>> {
     if (!isSupabaseConfigured()) {
-      return this.getMockResponse([]);
+      return this.createResponse([]);
     }
 
     try {
@@ -44,7 +44,7 @@ export class NotificationsService extends BaseService {
   // Obtenir les tâches en attente
   static async getPendingTasks(): Promise<ServiceResponse<PendingTask[]>> {
     if (!isSupabaseConfigured()) {
-      return this.getMockResponse([]);
+      return this.createResponse([]);
     }
 
     try {
@@ -65,7 +65,7 @@ export class NotificationsService extends BaseService {
   // Créer une alerte
   static async createAlert(alert: Omit<Alert, 'id' | 'created_at'>): Promise<ServiceResponse<Alert>> {
     if (!isSupabaseConfigured()) {
-      return this.getMockResponse({} as Alert);
+      return this.createResponse({} as Alert);
     }
 
     try {
@@ -86,7 +86,7 @@ export class NotificationsService extends BaseService {
   // Résoudre une alerte
   static async resolveAlert(alertId: string): Promise<ServiceResponse<boolean>> {
     if (!isSupabaseConfigured()) {
-      return this.getMockResponse(true);
+      return this.createResponse(true);
     }
 
     try {
@@ -106,7 +106,7 @@ export class NotificationsService extends BaseService {
   // Compléter une tâche
   static async completeTask(taskId: string): Promise<ServiceResponse<boolean>> {
     if (!isSupabaseConfigured()) {
-      return this.getMockResponse(true);
+      return this.createResponse(true);
     }
 
     try {
