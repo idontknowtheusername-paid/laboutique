@@ -73,50 +73,57 @@ export default function GlobalLoading() {
         </div>
       </div>
 
-      {/* Loading Overlay with Logo and Animation */}
-      <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+      {/* Modern Loading Overlay */}
+      <div className="fixed inset-0 bg-gradient-to-br from-white via-blue-50 to-jomiastore-background flex items-center justify-center z-50">
         <div className="text-center">
-          {/* Logo Animation */}
-          <div className="mb-8">
+          {/* Modern Logo Animation */}
+          <div className="mb-12">
             <div className="relative">
-              {/* Logo Container */}
-              <div className="w-32 h-32 mx-auto mb-4 relative">
-                <Image
-                  src="/logo.svg"
-                  alt="JomiaStore"
-                  width={128}
-                  height={128}
-                  className="w-full h-full object-contain"
-                  priority
-                />
-                {/* Pulsing Ring */}
-                <div className="absolute inset-0 rounded-full border-4 border-jomiastore-primary/20 animate-ping"></div>
-                <div className="absolute inset-0 rounded-full border-2 border-jomiastore-primary animate-pulse"></div>
+              {/* Animated Logo Container */}
+              <div className="w-24 h-24 mx-auto mb-6 relative">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-jomiastore-primary to-blue-600 animate-spin-slow"></div>
+                <div className="absolute inset-1 rounded-xl bg-white flex items-center justify-center">
+                  <Image
+                    src="/logo.svg"
+                    alt="JomiaStore"
+                    width={64}
+                    height={64}
+                    className="w-12 h-12 object-contain"
+                    priority
+                  />
+                </div>
+                {/* Floating particles */}
+                <div className="absolute -top-2 -right-2 w-3 h-3 bg-jomiastore-secondary rounded-full animate-float"></div>
+                <div className="absolute -bottom-1 -left-2 w-2 h-2 bg-blue-400 rounded-full animate-float-delayed"></div>
               </div>
             </div>
           </div>
 
-          {/* Loading Text */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-jomiastore-primary">
-              JomiaStore Hub
-            </h2>
-            <p className="text-gray-600">
-              Chargement de votre expérience shopping...
-            </p>
+          {/* Modern Loading Content */}
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-jomiastore-primary to-blue-600 bg-clip-text text-transparent">
+                JomiaStore Hub
+              </h2>
+              <p className="text-gray-600 text-lg">
+                Préparation de votre expérience shopping...
+              </p>
+            </div>
             
-            {/* Progress Bar */}
-            <div className="w-64 mx-auto">
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-jomiastore-primary to-blue-600 rounded-full animate-pulse"></div>
+            {/* Modern Progress Bar */}
+            <div className="w-80 mx-auto">
+              <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-jomiastore-primary via-blue-500 to-jomiastore-secondary rounded-full animate-progress"></div>
               </div>
             </div>
 
-            {/* Loading Dots */}
-            <div className="flex justify-center space-x-2">
-              <div className="w-2 h-2 bg-jomiastore-primary rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-jomiastore-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-              <div className="w-2 h-2 bg-jomiastore-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            {/* Elegant Loading Animation */}
+            <div className="flex justify-center space-x-1">
+              <div className="w-2 h-2 bg-jomiastore-primary rounded-full animate-wave"></div>
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-wave" style={{ animationDelay: '0.1s' }}></div>
+              <div className="w-2 h-2 bg-jomiastore-secondary rounded-full animate-wave" style={{ animationDelay: '0.2s' }}></div>
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-wave" style={{ animationDelay: '0.3s' }}></div>
+              <div className="w-2 h-2 bg-jomiastore-primary rounded-full animate-wave" style={{ animationDelay: '0.4s' }}></div>
             </div>
           </div>
         </div>
