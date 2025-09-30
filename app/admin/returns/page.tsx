@@ -7,88 +7,97 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Package, DollarSign, Clock, CheckCircle, XCircle, AlertTriangle, FileText, Truck, CreditCard } from 'lucide-react';
+import { ArrowLeft, Package, DollarSign, Clock, CheckCircle, XCircle, AlertTriangle, FileText, Truck, CreditCard, RefreshCw, Eye, Edit, Trash2 } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
+import { ReturnsService, ReturnRequest, ReturnStats } from '@/lib/services/returns.service';
+import { useToast } from '@/components/admin/Toast';
+import { useConfirmation } from '@/components/admin/ConfirmationDialog';
 
-interface ReturnRequest {
-  id: string;
-  order_id: string;
-  customer_name: string;
-  customer_email: string;
-  product_name: string;
-  reason: string;
-  status: 'pending' | 'approved' | 'rejected' | 'processing' | 'completed';
-  refund_amount: number;
-  return_type: 'refund' | 'exchange' | 'store_credit';
-  created_at: string;
-  processed_at?: string;
-  tracking_number?: string;
-  notes?: string;
-}
 
 export default function AdminReturnsPage() {
   const [loading, setLoading] = React.useState(true);
   const [returns, setReturns] = React.useState<ReturnRequest[]>([]);
+  const [stats, setStats] = React.useState<ReturnStats | null>(null);
   const [search, setSearch] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState<string>('all');
   const [typeFilter, setTypeFilter] = React.useState<string>('all');
+  const { success, error, info } = useToast();
+  const { confirm, ConfirmationComponent } = useConfirmation();
 
   React.useEffect(() => {
     loadReturns();
-  }, []);
+    loadStats();
+  }, [search, statusFilter, typeFilter]);
 
-  const loadReturns = async () => {
+  const loadReturns = React.useCallback(async () => {
     setLoading(true);
     try {
-      // Simuler des demandes de retour
-      const mockReturns: ReturnRequest[] = [
-        {
-          id: '1',
-          order_id: 'ORD-12345',
-          customer_name: 'Jean Dupont',
-          customer_email: 'jean@example.com',
-          product_name: 'iPhone 15 Pro Max',
-          reason: 'Produit défectueux',
-          status: 'pending',
-          refund_amount: 850000,
-          return_type: 'refund',
-          created_at: '2024-01-15T10:30:00Z',
-          notes: 'Écran fissuré à la réception'
-        },
-        {
-          id: '2',
-          order_id: 'ORD-12346',
-          customer_name: 'Marie Martin',
-          customer_email: 'marie@example.com',
-          product_name: 'Samsung Galaxy S24',
-          reason: 'Mauvaise taille',
-          status: 'approved',
-          refund_amount: 750000,
-          return_type: 'exchange',
-          created_at: '2024-01-14T14:20:00Z',
-          processed_at: '2024-01-14T16:00:00Z',
-          tracking_number: 'RET-789456'
-        },
-        {
-          id: '3',
-          order_id: 'ORD-12347',
-          customer_name: 'Pierre Durand',
-          customer_email: 'pierre@example.com',
-          product_name: 'MacBook Pro M3',
-          reason: 'Changement d\'avis',
-          status: 'completed',
-          refund_amount: 2500000,
-          return_type: 'store_credit',
-          created_at: '2024-01-13T09:15:00Z',
-          processed_at: '2024-01-13T11:30:00Z'
-        }
-      ];
-      setReturns(mockReturns);
-    } catch (error) {
-      console.error('Erreur lors du chargement des retours:', error);
+      const result = await ReturnsService.getAll({
+        status: statusFilter === 'all' ? undefined : statusFilter as any,
+        return_type: typeFilter === 'all' ? undefined : typeFilter as any,
+        search: search || undefined
+      }, { page: 1, limit: 100 });
+
+      if (result.success && result.data) {
+        setReturns(result.data);
+        success('Données chargées', `${result.data.length} demandes de retour chargées`);
+      } else {
+        error('Erreur de chargement', result.error || 'Impossible de charger les demandes de retour');
+        setReturns([]);
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement des retours:', err);
+      error('Erreur inattendue', 'Une erreur est survenue lors du chargement des demandes');
+      setReturns([]);
     } finally {
       setLoading(false);
+    }
+  }, [search, statusFilter, typeFilter, success, error]);
+
+  const loadStats = async () => {
+    try {
+      const result = await ReturnsService.getStats();
+      if (result.success && result.data) {
+        setStats(result.data);
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement des statistiques:', err);
+    }
+  };
+
+  const handleDeleteReturn = async (returnId: string, orderId: string) => {
+    confirm(
+      'Supprimer la demande',
+      `Êtes-vous sûr de vouloir supprimer la demande de retour pour la commande ${orderId} ? Cette action est irréversible.`,
+      async () => {
+        try {
+          const result = await ReturnsService.delete(returnId);
+          if (result.success) {
+            success('Demande supprimée', 'La demande de retour a été supprimée avec succès');
+            loadReturns();
+            loadStats();
+          } else {
+            error('Erreur de suppression', result.error || 'Impossible de supprimer la demande');
+          }
+        } catch (err) {
+          error('Erreur inattendue', 'Une erreur est survenue lors de la suppression');
+        }
+      }
+    );
+  };
+
+  // Test de connexion à la base de données
+  const testDatabaseConnection = async () => {
+    try {
+      const result = await ReturnsService.getStats();
+      if (result.success) {
+        success('Connexion réussie', 'La base de données est accessible');
+      } else {
+        error('Erreur de connexion', result.error || 'Impossible de se connecter à la base');
+      }
+    } catch (err) {
+      error('Erreur de connexion', 'Impossible de se connecter à la base de données');
     }
   };
 
@@ -143,13 +152,16 @@ export default function AdminReturnsPage() {
         subtitle="Gestion des demandes de retour et remboursements"
         actions={
           <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={testDatabaseConnection}>
+              🔍 Test DB
+            </Button>
+            <Button variant="outline" onClick={loadReturns} disabled={loading}>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Rafraîchir
+            </Button>
             <Button variant="outline">
               <FileText className="w-4 h-4 mr-2" />
               Exporter
-            </Button>
-            <Button className="bg-jomiastore-primary hover:bg-blue-700">
-              <Package className="w-4 h-4 mr-2" />
-              Nouveau retour
             </Button>
           </div>
         }
@@ -289,14 +301,30 @@ export default function AdminReturnsPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="sm">
-                              <CheckCircle className="w-4 h-4" />
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => window.location.href = `/admin/returns/${returnRequest.id}`}
+                              title="Voir les détails"
+                            >
+                              <Eye className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm">
-                              <XCircle className="w-4 h-4" />
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => window.location.href = `/admin/returns/${returnRequest.id}`}
+                              title="Modifier la demande"
+                            >
+                              <Edit className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm">
-                              <FileText className="w-4 h-4" />
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-red-600"
+                              onClick={() => handleDeleteReturn(returnRequest.id, returnRequest.order_id)}
+                              title="Supprimer la demande"
+                            >
+                              <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </td>
@@ -310,17 +338,23 @@ export default function AdminReturnsPage() {
         </TabsContent>
 
         <TabsContent value="refunds">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <DollarSign className="w-5 h-5 text-green-500" />
-                  Remboursements ce mois
+                  Total remboursé
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">2,450,000 FCFA</div>
-                <p className="text-sm text-gray-500">+12% vs mois dernier</p>
+                <div className="text-3xl font-bold">
+                  {stats?.total_refunded ? new Intl.NumberFormat('fr-BJ', {
+                    style: 'currency',
+                    currency: 'XOF',
+                    minimumFractionDigits: 0,
+                  }).format(stats.total_refunded) : '0 FCFA'}
+                </div>
+                <p className="text-sm text-gray-500">Montant total remboursé</p>
               </CardContent>
             </Card>
 
@@ -332,8 +366,21 @@ export default function AdminReturnsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">8</div>
-                <p className="text-sm text-gray-500">-2 vs semaine dernière</p>
+                <div className="text-3xl font-bold">{stats?.pending_returns || 0}</div>
+                <p className="text-sm text-gray-500">En attente de traitement</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  Demandes terminées
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stats?.completed_returns || 0}</div>
+                <p className="text-sm text-gray-500">Traitement terminé</p>
               </CardContent>
             </Card>
 
@@ -345,8 +392,10 @@ export default function AdminReturnsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">3.2%</div>
-                <p className="text-sm text-gray-500">-0.5% vs mois dernier</p>
+                <div className="text-3xl font-bold">
+                  {stats?.return_rate ? Math.round(stats.return_rate * 100) / 100 : 0}%
+                </div>
+                <p className="text-sm text-gray-500">Pourcentage de retours</p>
               </CardContent>
             </Card>
           </div>
@@ -394,33 +443,31 @@ export default function AdminReturnsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span>Produit défectueux</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 bg-gray-200 rounded-full h-2">
-                        <div className="bg-red-500 h-2 rounded-full" style={{ width: '45%' }}></div>
+                  {stats?.top_reasons && stats.top_reasons.length > 0 ? (
+                    stats.top_reasons.map((reason, index) => (
+                      <div key={reason.reason} className="flex items-center justify-between">
+                        <span className="truncate">{reason.reason}</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-24 bg-gray-200 rounded-full h-2">
+                            <div 
+                              className={`h-2 rounded-full ${
+                                index === 0 ? 'bg-red-500' : 
+                                index === 1 ? 'bg-yellow-500' : 
+                                'bg-blue-500'
+                              }`}
+                              style={{ width: `${reason.percentage}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-sm font-medium">{Math.round(reason.percentage)}%</span>
+                        </div>
                       </div>
-                      <span className="text-sm font-medium">45%</span>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-gray-500">
+                      <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                      <p>Aucune donnée disponible</p>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Mauvaise taille</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 bg-gray-200 rounded-full h-2">
-                        <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '30%' }}></div>
-                      </div>
-                      <span className="text-sm font-medium">30%</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Changement d'avis</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 bg-gray-200 rounded-full h-2">
-                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: '25%' }}></div>
-                      </div>
-                      <span className="text-sm font-medium">25%</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -431,26 +478,65 @@ export default function AdminReturnsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <CreditCard className="w-4 h-4" />
-                      <span>Remboursement</span>
+                  {stats?.return_types && stats.return_types.length > 0 ? (
+                    stats.return_types.map((type, index) => (
+                      <div key={type.type} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {type.type === 'refund' && <CreditCard className="w-4 h-4" />}
+                          {type.type === 'exchange' && <ArrowLeft className="w-4 h-4" />}
+                          {type.type === 'store_credit' && <DollarSign className="w-4 h-4" />}
+                          <span className="capitalize">{type.type}</span>
+                        </div>
+                        <span className="font-medium">{Math.round(type.percentage)}%</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-gray-500">
+                      <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                      <p>Aucune donnée disponible</p>
                     </div>
-                    <span className="font-medium">60%</span>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Statistiques générales</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span>Total des demandes</span>
+                    <span className="font-bold text-lg">{stats?.total_returns || 0}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <ArrowLeft className="w-4 h-4" />
-                      <span>Échange</span>
-                    </div>
-                    <span className="font-medium">30%</span>
+                    <span>Temps de traitement moyen</span>
+                    <span className="font-bold text-lg">
+                      {stats?.average_processing_time ? Math.round(stats.average_processing_time) : 0} jours
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Performance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span>Taux de retour</span>
+                    <span className="font-bold text-lg">
+                      {stats?.return_rate ? Math.round(stats.return_rate * 100) / 100 : 0}%
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="w-4 h-4" />
-                      <span>Crédit magasin</span>
-                    </div>
-                    <span className="font-medium">10%</span>
+                    <span>Demandes en attente</span>
+                    <span className="font-bold text-lg text-yellow-600">{stats?.pending_returns || 0}</span>
                   </div>
                 </div>
               </CardContent>
@@ -458,6 +544,8 @@ export default function AdminReturnsPage() {
           </div>
         </TabsContent>
       </Tabs>
+
+      <ConfirmationComponent />
     </div>
   );
 }
