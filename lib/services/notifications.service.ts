@@ -27,7 +27,7 @@ export class NotificationsService extends BaseService {
     }
 
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await this.getSupabaseClient()
         .from('alerts')
         .select('*')
         .eq('resolved', false)
@@ -35,9 +35,9 @@ export class NotificationsService extends BaseService {
 
       if (error) throw error;
 
-      return this.getSuccessResponse(data || []);
+      return this.createResponse(data || []);
     } catch (error) {
-      return this.getErrorResponse('Erreur lors de la récupération des alertes', error);
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -48,7 +48,7 @@ export class NotificationsService extends BaseService {
     }
 
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await this.getSupabaseClient()
         .from('pending_tasks')
         .select('*')
         .eq('completed', false)
@@ -56,9 +56,9 @@ export class NotificationsService extends BaseService {
 
       if (error) throw error;
 
-      return this.getSuccessResponse(data || []);
+      return this.createResponse(data || []);
     } catch (error) {
-      return this.getErrorResponse('Erreur lors de la récupération des tâches', error);
+      return this.createResponse([], this.handleError(error));
     }
   }
 
@@ -69,7 +69,7 @@ export class NotificationsService extends BaseService {
     }
 
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await this.getSupabaseClient()
         .from('alerts')
         .insert([alert])
         .select()
@@ -77,9 +77,9 @@ export class NotificationsService extends BaseService {
 
       if (error) throw error;
 
-      return this.getSuccessResponse(data);
+      return this.createResponse(data);
     } catch (error) {
-      return this.getErrorResponse('Erreur lors de la création de l\'alerte', error);
+      return this.createResponse(null as any, this.handleError(error));
     }
   }
 
@@ -90,16 +90,16 @@ export class NotificationsService extends BaseService {
     }
 
     try {
-      const { error } = await this.supabase
+      const { error } = await this.getSupabaseClient()
         .from('alerts')
         .update({ resolved: true })
         .eq('id', alertId);
 
       if (error) throw error;
 
-      return this.getSuccessResponse(true);
+      return this.createResponse(true);
     } catch (error) {
-      return this.getErrorResponse('Erreur lors de la résolution de l\'alerte', error);
+      return this.createResponse(false, this.handleError(error));
     }
   }
 
@@ -110,16 +110,16 @@ export class NotificationsService extends BaseService {
     }
 
     try {
-      const { error } = await this.supabase
+      const { error } = await this.getSupabaseClient()
         .from('pending_tasks')
         .update({ completed: true })
         .eq('id', taskId);
 
       if (error) throw error;
 
-      return this.getSuccessResponse(true);
+      return this.createResponse(true);
     } catch (error) {
-      return this.getErrorResponse('Erreur lors de la completion de la tâche', error);
+      return this.createResponse(false, this.handleError(error));
     }
   }
 }

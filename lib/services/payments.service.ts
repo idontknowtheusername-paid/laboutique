@@ -26,11 +26,11 @@ export class PaymentsService extends BaseService {
   // Obtenir les alertes de paiement
   static async getPaymentAlerts(): Promise<ServiceResponse<PaymentAlert[]>> {
     if (!isSupabaseConfigured()) {
-      return this.getMockResponse([]);
+      return this.createResponse([]);
     }
 
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await this.getSupabaseClient()
         .from('orders')
         .select(`
           id,
@@ -49,7 +49,7 @@ export class PaymentsService extends BaseService {
 
       if (error) throw error;
 
-      const alerts: PaymentAlert[] = (data || []).map(order => ({
+      const alerts: PaymentAlert[] = (data || []).map((order: any) => ({
         id: order.id,
         order_id: order.id,
         order_number: order.order_number,
@@ -60,16 +60,16 @@ export class PaymentsService extends BaseService {
         customer_email: order.profiles?.email
       }));
 
-      return this.getSuccessResponse(alerts);
+      return this.createResponse(alerts);
     } catch (error) {
-      return this.getErrorResponse('Erreur lors de la récupération des alertes de paiement', error);
+      return this.createResponse([], this.handleError(error));
     }
   }
 
   // Obtenir les statistiques de paiement
   static async getPaymentStats(): Promise<ServiceResponse<PaymentStats>> {
     if (!isSupabaseConfigured()) {
-      return this.getMockResponse({
+      return this.createResponse({
         total_payments: 0,
         failed_payments: 0,
         pending_payments: 0,
@@ -80,14 +80,14 @@ export class PaymentsService extends BaseService {
     }
 
     try {
-      const { data: orders, error } = await this.supabase
+      const { data: orders, error } = await this.getSupabaseClient()
         .from('orders')
         .select('payment_status, total_amount')
         .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()); // 30 derniers jours
 
       if (error) throw error;
 
-      const stats = (orders || []).reduce((acc, order) => {
+      const stats = (orders || []).reduce((acc: any, order: any) => {
         acc.total_payments++;
         acc.total_amount += order.total_amount || 0;
 
@@ -112,20 +112,27 @@ export class PaymentsService extends BaseService {
       const successful_payments = stats.total_payments - stats.failed_payments - stats.pending_payments;
       stats.success_rate = stats.total_payments > 0 ? (successful_payments / stats.total_payments) * 100 : 0;
 
-      return this.getSuccessResponse(stats);
+      return this.createResponse(stats);
     } catch (error) {
-      return this.getErrorResponse('Erreur lors de la récupération des statistiques de paiement', error);
+      return this.createResponse({
+        total_payments: 0,
+        failed_payments: 0,
+        pending_payments: 0,
+        success_rate: 0,
+        total_amount: 0,
+        failed_amount: 0
+      }, this.handleError(error));
     }
   }
 
   // Retry un paiement échoué
   static async retryPayment(orderId: string): Promise<ServiceResponse<boolean>> {
     if (!isSupabaseConfigured()) {
-      return this.getMockResponse(true);
+      return this.createResponse(true);
     }
 
     try {
-      const { error } = await this.supabase
+      const { error } = await this.getSupabaseClient()
         .from('orders')
         .update({ 
           payment_status: 'pending',
@@ -135,9 +142,9 @@ export class PaymentsService extends BaseService {
 
       if (error) throw error;
 
-      return this.getSuccessResponse(true);
+      return this.createResponse(true);
     } catch (error) {
-      return this.getErrorResponse('Erreur lors de la nouvelle tentative de paiement', error);
+      return this.createResponse(false, this.handleError(error));
     }
   }
 }
