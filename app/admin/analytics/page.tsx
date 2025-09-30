@@ -34,18 +34,24 @@ import {
   Target,
   BarChart3,
   PieChart as PieChartIcon,
-  Download
+  Download,
+  RefreshCw
 } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import { AnalyticsService, AnalyticsMetrics, SalesData, TrafficData, ConversionData, DeviceData, TopProduct, FunnelData } from '@/lib/services/analytics.service';
+import { useToast } from '@/components/admin/Toast';
 
 export default function AdminAnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('30d');
-  const [salesData, setSalesData] = useState<any[]>([]);
-  const [trafficData, setTrafficData] = useState<any[]>([]);
-  const [conversionData, setConversionData] = useState<any[]>([]);
-  const [deviceData, setDeviceData] = useState<any[]>([]);
-  const [topProducts, setTopProducts] = useState<any[]>([]);
+  const [metrics, setMetrics] = useState<AnalyticsMetrics | null>(null);
+  const [salesData, setSalesData] = useState<SalesData[]>([]);
+  const [trafficData, setTrafficData] = useState<TrafficData[]>([]);
+  const [conversionData, setConversionData] = useState<ConversionData[]>([]);
+  const [deviceData, setDeviceData] = useState<DeviceData[]>([]);
+  const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
+  const [funnelData, setFunnelData] = useState<FunnelData[]>([]);
+  const { success, error } = useToast();
 
   useEffect(() => {
     loadAnalyticsData();
@@ -54,58 +60,97 @@ export default function AdminAnalyticsPage() {
   const loadAnalyticsData = async () => {
     setLoading(true);
     try {
-      // Simuler des données d'analytics
-      const mockSalesData = [
-        { date: '2024-01-01', revenue: 125000, orders: 15, customers: 12 },
-        { date: '2024-01-02', revenue: 98000, orders: 12, customers: 10 },
-        { date: '2024-01-03', revenue: 156000, orders: 18, customers: 15 },
-        { date: '2024-01-04', revenue: 203000, orders: 22, customers: 18 },
-        { date: '2024-01-05', revenue: 178000, orders: 20, customers: 16 },
-        { date: '2024-01-06', revenue: 145000, orders: 17, customers: 14 },
-        { date: '2024-01-07', revenue: 189000, orders: 21, customers: 17 }
-      ];
+      const filters = { time_range: timeRange as any };
+      
+      // Charger toutes les données en parallèle
+      const [
+        metricsResponse,
+        salesResponse,
+        trafficResponse,
+        conversionResponse,
+        deviceResponse,
+        productsResponse,
+        funnelResponse
+      ] = await Promise.all([
+        AnalyticsService.getMetrics(filters),
+        AnalyticsService.getSalesData(filters),
+        AnalyticsService.getTrafficData(filters),
+        AnalyticsService.getConversionData(filters),
+        AnalyticsService.getDeviceData(filters),
+        AnalyticsService.getTopProducts(filters, 10),
+        AnalyticsService.getFunnelData(filters)
+      ]);
 
-      const mockTrafficData = [
-        { date: '2024-01-01', visitors: 1250, pageviews: 3200, sessions: 1100 },
-        { date: '2024-01-02', visitors: 980, pageviews: 2800, sessions: 850 },
-        { date: '2024-01-03', visitors: 1560, pageviews: 4100, sessions: 1200 },
-        { date: '2024-01-04', visitors: 2030, pageviews: 5200, sessions: 1500 },
-        { date: '2024-01-05', visitors: 1780, pageviews: 4600, sessions: 1300 },
-        { date: '2024-01-06', visitors: 1450, pageviews: 3800, sessions: 1100 },
-        { date: '2024-01-07', visitors: 1890, pageviews: 4900, sessions: 1400 }
-      ];
+      if (metricsResponse.success && metricsResponse.data) {
+        setMetrics(metricsResponse.data);
+      }
 
-      const mockConversionData = [
-        { source: 'Google', visitors: 2500, conversions: 125, rate: 5.0 },
-        { source: 'Facebook', visitors: 1800, conversions: 72, rate: 4.0 },
-        { source: 'Instagram', visitors: 1200, conversions: 48, rate: 4.0 },
-        { source: 'Direct', visitors: 800, conversions: 40, rate: 5.0 },
-        { source: 'Email', visitors: 600, conversions: 36, rate: 6.0 }
-      ];
+      if (salesResponse.success && salesResponse.data) {
+        setSalesData(salesResponse.data);
+      }
 
-      const mockDeviceData = [
-        { name: 'Mobile', value: 65, color: '#3B82F6' },
-        { name: 'Desktop', value: 30, color: '#10B981' },
-        { name: 'Tablet', value: 5, color: '#F59E0B' }
-      ];
+      if (trafficResponse.success && trafficResponse.data) {
+        setTrafficData(trafficResponse.data);
+      }
 
-      const mockTopProducts = [
-        { name: 'iPhone 15 Pro Max', sales: 45, revenue: 38250000 },
-        { name: 'Samsung Galaxy S24', sales: 32, revenue: 24000000 },
-        { name: 'MacBook Pro M3', sales: 18, revenue: 45000000 },
-        { name: 'iPad Air', sales: 25, revenue: 12500000 },
-        { name: 'AirPods Pro', sales: 67, revenue: 6700000 }
-      ];
+      if (conversionResponse.success && conversionResponse.data) {
+        setConversionData(conversionResponse.data);
+      }
 
-      setSalesData(mockSalesData);
-      setTrafficData(mockTrafficData);
-      setConversionData(mockConversionData);
-      setDeviceData(mockDeviceData);
-      setTopProducts(mockTopProducts);
-    } catch (error) {
-      console.error('Erreur lors du chargement des analytics:', error);
+      if (deviceResponse.success && deviceResponse.data) {
+        setDeviceData(deviceResponse.data);
+      }
+
+      if (productsResponse.success && productsResponse.data) {
+        setTopProducts(productsResponse.data);
+      }
+
+      if (funnelResponse.success && funnelResponse.data) {
+        setFunnelData(funnelResponse.data);
+      }
+
+      success('Données chargées', 'Les analytics ont été mises à jour avec succès');
+    } catch (err) {
+      console.error('Erreur lors du chargement des analytics:', err);
+      error('Erreur de chargement', 'Impossible de charger les données analytics');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExport = async (format: 'csv' | 'json') => {
+    try {
+      const result = await AnalyticsService.exportData(format, { time_range: timeRange as any });
+      if (result.success && result.data) {
+        const blob = new Blob([result.data.data], { 
+          type: format === 'json' ? 'application/json' : 'text/csv' 
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = result.data.filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        success('Export réussi', `Le fichier ${result.data.filename} a été téléchargé`);
+      } else {
+        error('Erreur d\'export', result.error || 'Impossible d\'exporter les données');
+      }
+    } catch (err) {
+      error('Erreur d\'export', 'Une erreur est survenue lors de l\'export');
+    }
+  };
+
+  // Test de connexion à la base de données
+  const testDatabaseConnection = async () => {
+    try {
+      const result = await AnalyticsService.getMetrics({ time_range: '7d' });
+      if (result.success) {
+        success('Connexion réussie', 'La base de données est accessible');
+      } else {
+        error('Erreur de connexion', result.error || 'Impossible de se connecter à la base');
+      }
+    } catch (err) {
+      error('Erreur de connexion', 'Impossible de se connecter à la base de données');
     }
   };
 
@@ -131,6 +176,13 @@ export default function AdminAnalyticsPage() {
         subtitle="Tableaux de bord et métriques détaillées"
         actions={
           <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={testDatabaseConnection}>
+              🔍 Test DB
+            </Button>
+            <Button variant="outline" onClick={loadAnalyticsData} disabled={loading}>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Rafraîchir
+            </Button>
             <Select value={timeRange} onValueChange={setTimeRange}>
               <SelectTrigger className="w-40">
                 <SelectValue />
@@ -142,9 +194,13 @@ export default function AdminAnalyticsPage() {
                 <SelectItem value="1y">1 an</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => handleExport('csv')}>
               <Download className="w-4 h-4 mr-2" />
-              Exporter
+              CSV
+            </Button>
+            <Button variant="outline" onClick={() => handleExport('json')}>
+              <Download className="w-4 h-4 mr-2" />
+              JSON
             </Button>
           </div>
         }
@@ -158,10 +214,14 @@ export default function AdminAnalyticsPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatPrice(1250000)}</div>
-            <p className="text-xs text-green-600 flex items-center">
+            <div className="text-2xl font-bold">
+              {metrics ? formatPrice(metrics.revenue) : '0 FCFA'}
+            </div>
+            <p className={`text-xs flex items-center ${
+              metrics && metrics.revenue_growth >= 0 ? 'text-green-600' : 'text-red-600'
+            }`}>
               <TrendingUp className="w-3 h-3 mr-1" />
-              +12.5% par rapport au mois dernier
+              {metrics ? `${metrics.revenue_growth >= 0 ? '+' : ''}${metrics.revenue_growth.toFixed(1)}%` : '0%'} par rapport à la période précédente
             </p>
           </CardContent>
         </Card>
@@ -172,10 +232,12 @@ export default function AdminAnalyticsPage() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,247</div>
-            <p className="text-xs text-green-600 flex items-center">
+            <div className="text-2xl font-bold">{metrics?.orders || 0}</div>
+            <p className={`text-xs flex items-center ${
+              metrics && metrics.orders_growth >= 0 ? 'text-green-600' : 'text-red-600'
+            }`}>
               <TrendingUp className="w-3 h-3 mr-1" />
-              +8.2% par rapport au mois dernier
+              {metrics ? `${metrics.orders_growth >= 0 ? '+' : ''}${metrics.orders_growth.toFixed(1)}%` : '0%'} par rapport à la période précédente
             </p>
           </CardContent>
         </Card>
@@ -186,10 +248,12 @@ export default function AdminAnalyticsPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12,456</div>
-            <p className="text-xs text-green-600 flex items-center">
+            <div className="text-2xl font-bold">{metrics?.visitors || 0}</div>
+            <p className={`text-xs flex items-center ${
+              metrics && metrics.visitors_growth >= 0 ? 'text-green-600' : 'text-red-600'
+            }`}>
               <TrendingUp className="w-3 h-3 mr-1" />
-              +15.3% par rapport au mois dernier
+              {metrics ? `${metrics.visitors_growth >= 0 ? '+' : ''}${metrics.visitors_growth.toFixed(1)}%` : '0%'} par rapport à la période précédente
             </p>
           </CardContent>
         </Card>
@@ -200,10 +264,12 @@ export default function AdminAnalyticsPage() {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">4.8%</div>
-            <p className="text-xs text-green-600 flex items-center">
+            <div className="text-2xl font-bold">{metrics ? `${metrics.conversion_rate.toFixed(1)}%` : '0%'}</div>
+            <p className={`text-xs flex items-center ${
+              metrics && metrics.conversion_growth >= 0 ? 'text-green-600' : 'text-red-600'
+            }`}>
               <TrendingUp className="w-3 h-3 mr-1" />
-              +0.3% par rapport au mois dernier
+              {metrics ? `${metrics.conversion_growth >= 0 ? '+' : ''}${metrics.conversion_growth.toFixed(1)}%` : '0%'} par rapport à la période précédente
             </p>
           </CardContent>
         </Card>
@@ -391,8 +457,13 @@ export default function AdminAnalyticsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">45,230</div>
-                <p className="text-sm text-gray-500">+8.5% ce mois</p>
+                <div className="text-3xl font-bold">
+                  {trafficData.length > 0 
+                    ? trafficData.reduce((sum, day) => sum + day.pageviews, 0).toLocaleString()
+                    : '0'
+                  }
+                </div>
+                <p className="text-sm text-gray-500">Total sur la période</p>
               </CardContent>
             </Card>
 
@@ -400,12 +471,14 @@ export default function AdminAnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MousePointer className="w-5 h-5" />
-                  Taux de clic
+                  Taux de conversion
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">2.4%</div>
-                <p className="text-sm text-gray-500">+0.2% ce mois</p>
+                <div className="text-3xl font-bold">
+                  {metrics ? `${metrics.conversion_rate.toFixed(1)}%` : '0%'}
+                </div>
+                <p className="text-sm text-gray-500">Visiteurs vers commandes</p>
               </CardContent>
             </Card>
 
@@ -413,12 +486,14 @@ export default function AdminAnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="w-5 h-5" />
-                  Temps moyen
+                  AOV moyen
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">3m 24s</div>
-                <p className="text-sm text-gray-500">+12s ce mois</p>
+                <div className="text-3xl font-bold">
+                  {metrics ? formatPrice(metrics.average_order_value) : '0 FCFA'}
+                </div>
+                <p className="text-sm text-gray-500">Panier moyen</p>
               </CardContent>
             </Card>
           </div>
@@ -429,42 +504,32 @@ export default function AdminAnalyticsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-                  <span className="font-medium">Visiteurs</span>
-                  <div className="flex items-center gap-4">
-                    <div className="w-32 bg-gray-200 rounded-full h-2">
-                      <div className="bg-blue-500 h-2 rounded-full" style={{ width: '100%' }}></div>
+                {funnelData.length > 0 ? (
+                  funnelData.map((stage, index) => (
+                    <div key={stage.stage} className={`flex items-center justify-between p-4 rounded-lg`} 
+                         style={{ backgroundColor: `${stage.color}15` }}>
+                      <span className="font-medium">{stage.stage}</span>
+                      <div className="flex items-center gap-4">
+                        <div className="w-32 bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="h-2 rounded-full" 
+                            style={{ 
+                              width: `${stage.percentage}%`,
+                              backgroundColor: stage.color
+                            }}
+                          ></div>
+                        </div>
+                        <span className="font-bold">{stage.count.toLocaleString()}</span>
+                        <span className="text-sm text-gray-500">({stage.percentage.toFixed(1)}%)</span>
+                      </div>
                     </div>
-                    <span className="font-bold">12,456</span>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <Target className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                    <p>Aucune donnée de funnel disponible</p>
                   </div>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-                  <span className="font-medium">Ajouts au panier</span>
-                  <div className="flex items-center gap-4">
-                    <div className="w-32 bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-500 h-2 rounded-full" style={{ width: '15%' }}></div>
-                    </div>
-                    <span className="font-bold">1,868</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
-                  <span className="font-medium">Commandes</span>
-                  <div className="flex items-center gap-4">
-                    <div className="w-32 bg-gray-200 rounded-full h-2">
-                      <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '10%' }}></div>
-                    </div>
-                    <span className="font-bold">1,247</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
-                  <span className="font-medium">Paiements</span>
-                  <div className="flex items-center gap-4">
-                    <div className="w-32 bg-gray-200 rounded-full h-2">
-                      <div className="bg-purple-500 h-2 rounded-full" style={{ width: '8%' }}></div>
-                    </div>
-                    <span className="font-bold">998</span>
-                  </div>
-                </div>
+                )}
               </div>
             </CardContent>
           </Card>
