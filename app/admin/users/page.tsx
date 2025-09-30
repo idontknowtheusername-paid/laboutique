@@ -10,7 +10,7 @@ import { AuthService, UserProfile } from '@/lib/services/auth.service';
 import { Download, Search, Shield, Trash2, RefreshCw } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
-import { useToast } from "@/components/ui/toast";
+import { useToast } from '@/components/admin/Toast';
 
 export default function AdminUsersPage() {
   const [loading, setLoading] = React.useState(true);
@@ -19,7 +19,7 @@ export default function AdminUsersPage() {
   const [roleFilter, setRoleFilter] = React.useState<'all' | 'customer' | 'vendor' | 'admin'>('all');
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
-  const { addToast } = useToast();
+  const { success, error, info } = useToast();
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -59,17 +59,9 @@ export default function AdminUsersPage() {
       .eq('id', userId);
     if (!error) {
       await load();
-      addToast({
-        type: "success",
-        title: "Rôle modifié",
-        description: `Le rôle de l'utilisateur a été mis à jour.`,
-      });
+      success("Rôle modifié", "Le rôle de l'utilisateur a été mis à jour.");
     } else {
-      addToast({
-        type: "error",
-        title: "Erreur",
-        description: `Impossible de modifier le rôle.`,
-      });
+      error("Erreur", "Impossible de modifier le rôle.");
     }
   }
 
@@ -81,27 +73,16 @@ export default function AdminUsersPage() {
       .eq("id", userId);
     if (!error) {
       await load();
-      addToast({
-        type: "success",
-        title: "Utilisateur supprimé",
-        description: `L'utilisateur a bien été supprimé.`,
-      });
+      success("Utilisateur supprimé", "L'utilisateur a bien été supprimé.");
     } else {
-      addToast({
-        type: "error",
-        title: "Erreur",
-        description: `Impossible de supprimer l'utilisateur.`,
-      });
+      error("Erreur", "Impossible de supprimer l'utilisateur.");
     }
   }
 
   // Export CSV
   function handleExportCSV() {
     if (!users.length) {
-      addToast({
-        type: "info",
-        title: "Aucun utilisateur à exporter",
-      });
+      info("Aucun utilisateur à exporter");
       return;
     }
     const headers = [
@@ -135,11 +116,7 @@ export default function AdminUsersPage() {
     a.download = "utilisateurs.csv";
     a.click();
     URL.revokeObjectURL(url);
-    addToast({
-      type: "success",
-      title: "Export CSV",
-      description: "Le fichier CSV a été téléchargé.",
-    });
+    success("Export CSV", "Le fichier CSV a été téléchargé.");
   }
 
   return (

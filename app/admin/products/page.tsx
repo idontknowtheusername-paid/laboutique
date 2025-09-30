@@ -11,12 +11,15 @@ import { Download, Search, Eye, Edit, RefreshCw, Plus } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
 import ImportedProductsPreview from '@/components/admin/ImportedProductsPreview';
+import { useToast } from '@/components/admin/Toast';
 
 interface AdminProduct {
   id: string;
   name: string;
   price: number;
   slug?: string;
+  sku?: string;
+  brand?: string;
   status?: string;
   category?: { name: string };
   vendor?: { name: string };
@@ -28,35 +31,53 @@ export default function AdminProductsPage() {
   const [search, setSearch] = React.useState('');
   const [category, setCategory] = React.useState<string>('all');
   const [totalCount, setTotalCount] = React.useState<number>(0);
+  const { success, error, info } = useToast();
 
   const load = React.useCallback(async () => {
     setLoading(true);
-    const res = await ProductsService.getNew(200);
-    setLoading(false);
-    if (res.success && res.data) {
-      let list = res.data as any as AdminProduct[];
-      if (search) {
-        list = list.filter((p) => p.name?.toLowerCase().includes(search.toLowerCase()));
+    try {
+      // Récupérer tous les produits (pas seulement les actifs)
+      const res = await ProductsService.getAll(
+        { status: undefined }, // Pas de filtre de statut pour voir tous les produits
+        { page: 1, limit: 200 }
+      );
+      
+      if (res.success && res.data) {
+        let list = res.data as any as AdminProduct[];
+        
+        // Appliquer les filtres côté client
+        if (search) {
+          list = list.filter((p) => 
+            p.name?.toLowerCase().includes(search.toLowerCase()) ||
+            p.sku?.toLowerCase().includes(search.toLowerCase()) ||
+            p.brand?.toLowerCase().includes(search.toLowerCase())
+          );
+        }
+        
+        if (category !== 'all') {
+          list = list.filter((p) => p.category?.name?.toLowerCase() === category);
+        }
+        
+        setItems(list);
+        setTotalCount(res.pagination?.total || 0);
+      } else {
+        console.error('Erreur lors du chargement des produits:', res.error);
+        error('Erreur de chargement', res.error || 'Impossible de charger les produits');
+        setItems([]);
+        setTotalCount(0);
       }
-      if (category !== 'all') {
-        list = list.filter((p) => p.category?.name?.toLowerCase() === category);
-      }
-      setItems(list);
+    } catch (err) {
+      console.error('Erreur lors du chargement des produits:', err);
+      error('Erreur inattendue', 'Une erreur est survenue lors du chargement des produits');
+      setItems([]);
+      setTotalCount(0);
+    } finally {
+      setLoading(false);
     }
-  }, [search, category]);
+  }, [search, category, error]);
 
   React.useEffect(() => { load(); }, [load]);
 
-  // Fetch total products count (all active products) once
-  React.useEffect(() => {
-    (async () => {
-      try {
-        const res = await ProductsService.getAll({}, { page: 1, limit: 1 });
-        // getAll returns pagination with total
-        setTotalCount(res.pagination?.total || 0);
-      } catch {}
-    })();
-  }, []);
 
   function statusColor(s?: string) {
     switch (s) {
