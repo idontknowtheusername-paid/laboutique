@@ -102,8 +102,8 @@ ORDER BY order_date DESC;
 -- Fonction pour rechercher des produits avec pagination
 CREATE OR REPLACE FUNCTION search_products(
     search_term TEXT DEFAULT '',
-    cat_id UUID DEFAULT NULL,
-    vendor_id UUID DEFAULT NULL,
+    filter_category_id UUID DEFAULT NULL,
+    filter_vendor_id UUID DEFAULT NULL,
     min_price DECIMAL DEFAULT NULL,
     max_price DECIMAL DEFAULT NULL,
     status_filter TEXT DEFAULT 'active',
@@ -118,7 +118,7 @@ RETURNS TABLE (
     description TEXT,
     price DECIMAL,
     images TEXT[],
-    cat_id UUID,
+    category_id UUID,
     vendor_id UUID,
     brand TEXT,
     created_at TIMESTAMP WITH TIME ZONE,
@@ -131,8 +131,8 @@ BEGIN
         FROM products p
         WHERE 
             (search_term = '' OR to_tsvector('french', p.name || ' ' || COALESCE(p.description, '') || ' ' || COALESCE(p.short_description, '')) @@ plainto_tsquery('french', search_term))
-            AND (cat_id IS NULL OR p.category_id = cat_id)
-            AND (vendor_id IS NULL OR p.vendor_id = vendor_id)
+            AND (filter_category_id IS NULL OR p.category_id = filter_category_id)
+            AND (filter_vendor_id IS NULL OR p.vendor_id = filter_vendor_id)
             AND (min_price IS NULL OR p.price >= min_price)
             AND (max_price IS NULL OR p.price <= max_price)
             AND (status_filter = '' OR p.status = status_filter)
@@ -151,7 +151,7 @@ BEGIN
         fp.description,
         fp.price,
         fp.images,
-        fp.category_id as cat_id,
+        fp.category_id,
         fp.vendor_id,
         fp.brand,
         fp.created_at,
