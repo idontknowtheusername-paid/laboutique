@@ -246,12 +246,17 @@ CREATE POLICY "Users can manage own wishlist" ON wishlist
     FOR ALL USING (auth.uid() = user_id);
 
 -- 11. CONFIGURATION POUR PERFORMANCE
--- Augmenter les limites de connexion
-ALTER SYSTEM SET max_connections = 200;
-ALTER SYSTEM SET shared_buffers = '256MB';
-ALTER SYSTEM SET effective_cache_size = '1GB';
-ALTER SYSTEM SET work_mem = '4MB';
-ALTER SYSTEM SET maintenance_work_mem = '64MB';
+-- Note: Les paramètres ALTER SYSTEM nécessitent des privilèges superuser
+-- et ne peuvent pas être exécutés dans un bloc de transaction
+-- Ces paramètres doivent être configurés manuellement dans Supabase Dashboard
+-- ou par un administrateur de base de données
+
+-- Configuration recommandée pour Supabase:
+-- max_connections = 200
+-- shared_buffers = 256MB
+-- effective_cache_size = 1GB
+-- work_mem = 4MB
+-- maintenance_work_mem = 64MB
 
 -- 12. NETTOYAGE AUTOMATIQUE
 -- Fonction pour nettoyer les données anciennes
