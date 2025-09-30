@@ -1,0 +1,558 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - region [ref=e6]:
+        - generic [ref=e8]:
+          - group [ref=e9]:
+            - link "Super Soldes du Week-end•Jusqu'à -30% sur électroniqueVoir" [ref=e10] [cursor=pointer]:
+              - /url: /category/electronique
+              - generic [ref=e12] [cursor=pointer]:
+                - generic [ref=e13] [cursor=pointer]: Super Soldes du Week-end
+                - generic [ref=e14] [cursor=pointer]: •
+                - generic [ref=e15] [cursor=pointer]: Jusqu'à -30% sur électronique
+                - generic [ref=e16] [cursor=pointer]: Voir
+          - group [ref=e17]:
+            - link "Nouvelles Collections Mode•Tendances 2025 disponiblesVoir" [ref=e18] [cursor=pointer]:
+              - /url: /category/mode
+              - generic [ref=e20] [cursor=pointer]:
+                - generic [ref=e21] [cursor=pointer]: Nouvelles Collections Mode
+                - generic [ref=e22] [cursor=pointer]: •
+                - generic [ref=e23] [cursor=pointer]: Tendances 2025 disponibles
+                - generic [ref=e24] [cursor=pointer]: Voir
+          - group [ref=e25]:
+            - link "Maison & Jardin en promo•Équipez votre intérieurVoir" [ref=e26] [cursor=pointer]:
+              - /url: /category/maison-jardin
+              - generic [ref=e28] [cursor=pointer]:
+                - generic [ref=e29] [cursor=pointer]: Maison & Jardin en promo
+                - generic [ref=e30] [cursor=pointer]: •
+                - generic [ref=e31] [cursor=pointer]: Équipez votre intérieur
+                - generic [ref=e32] [cursor=pointer]: Voir
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - link "JomiaStore Hub JomiaStore Hub Centre commercial digital" [ref=e35] [cursor=pointer]:
+            - /url: /
+            - img "JomiaStore Hub" [ref=e37] [cursor=pointer]
+            - generic [ref=e38] [cursor=pointer]:
+              - heading "JomiaStore Hub" [level=1] [ref=e39] [cursor=pointer]
+              - paragraph [ref=e40] [cursor=pointer]: Centre commercial digital
+          - generic [ref=e41]:
+            - button [ref=e42] [cursor=pointer]:
+              - img [ref=e43] [cursor=pointer]
+            - link [ref=e46] [cursor=pointer]:
+              - /url: /wishlist
+              - button [ref=e47] [cursor=pointer]:
+                - img [ref=e48] [cursor=pointer]
+            - link [ref=e50] [cursor=pointer]:
+              - /url: /cart
+              - button [ref=e51] [cursor=pointer]:
+                - img [ref=e52] [cursor=pointer]
+            - button [ref=e56] [cursor=pointer]:
+              - img [ref=e57] [cursor=pointer]
+        - generic [ref=e59]:
+          - textbox "Rechercher..." [ref=e60]
+          - button [ref=e61] [cursor=pointer]:
+            - img [ref=e62] [cursor=pointer]
+    - generic [ref=e67]:
+      - generic [ref=e68]:
+        - img [ref=e69]
+        - generic [ref=e71]: Erreur de chargement des catégories
+      - button "Réessayer" [ref=e72] [cursor=pointer]:
+        - img [ref=e73] [cursor=pointer]
+        - text: Réessayer
+    - generic [ref=e78]:
+      - generic [ref=e80]:
+        - generic [ref=e81]:
+          - generic [ref=e82]:
+            - img "Découvrez JomiaStore Hub" [ref=e84]
+            - generic [ref=e88]:
+              - heading "Découvrez JomiaStore Hub" [level=2] [ref=e89]
+              - heading "Le centre commercial digital du Bénin" [level=3] [ref=e90]
+              - paragraph [ref=e91]: Des milliers de produits authentiques, une livraison rapide et un service client exceptionnel.
+              - link "Découvrir maintenant" [ref=e92] [cursor=pointer]:
+                - /url: /products
+                - button "Découvrir maintenant" [ref=e93] [cursor=pointer]
+          - generic [ref=e94]:
+            - img "Électronique Premium" [ref=e96]
+            - generic [ref=e100]:
+              - heading "Électronique Premium" [level=2] [ref=e101]
+              - heading "Les dernières technologies à votre portée" [level=3] [ref=e102]
+              - paragraph [ref=e103]: Smartphones, laptops, TV intelligentes et bien plus encore avec garantie officielle.
+              - link "Voir la collection" [ref=e104] [cursor=pointer]:
+                - /url: /category/electronique
+                - button "Voir la collection" [ref=e105] [cursor=pointer]
+          - generic [ref=e106]:
+            - img "Mode & Style" [ref=e108]
+            - generic [ref=e112]:
+              - heading "Mode & Style" [level=2] [ref=e113]
+              - heading "Express your unique style" [level=3] [ref=e114]
+              - paragraph [ref=e115]: Découvrez les dernières tendances mode pour homme, femme et enfant.
+              - link "Shopping mode" [ref=e116] [cursor=pointer]:
+                - /url: /category/mode
+                - button "Shopping mode" [ref=e117] [cursor=pointer]
+          - generic [ref=e118]:
+            - img "Livraison Gratuite" [ref=e120]
+            - generic [ref=e124]:
+              - heading "Livraison Gratuite" [level=2] [ref=e125]
+              - heading "À Cotonou et environs" [level=3] [ref=e126]
+              - paragraph [ref=e127]: Commandez maintenant et recevez gratuitement vos produits sous 24h.
+              - link "En savoir plus" [ref=e128] [cursor=pointer]:
+                - /url: /delivery-info
+                - button "En savoir plus" [ref=e129] [cursor=pointer]
+          - generic [ref=e130]:
+            - img "Paiement Sécurisé" [ref=e132]
+            - generic [ref=e136]:
+              - heading "Paiement Sécurisé" [level=2] [ref=e137]
+              - heading "Vos transactions sont protégées" [level=3] [ref=e138]
+              - paragraph [ref=e139]: Cartes bancaires, Mobile Money, virement. Toutes vos données sont chiffrées et sécurisées.
+              - link "Découvrir" [ref=e140] [cursor=pointer]:
+                - /url: /payment-info
+                - button "Découvrir" [ref=e141] [cursor=pointer]
+          - generic [ref=e142]:
+            - img "Offres Exclusives" [ref=e144]
+            - generic [ref=e148]:
+              - heading "Offres Exclusives" [level=2] [ref=e149]
+              - heading "Promotions réservées aux membres" [level=3] [ref=e150]
+              - paragraph [ref=e151]: Rejoignez notre communauté et bénéficiez de réductions exclusives et d'offres spéciales.
+              - link "Rejoindre" [ref=e152] [cursor=pointer]:
+                - /url: /register
+                - button "Rejoindre" [ref=e153] [cursor=pointer]
+          - generic [ref=e154]:
+            - img "Support 24/7" [ref=e156]
+            - generic [ref=e160]:
+              - heading "Support 24/7" [level=2] [ref=e161]
+              - heading "Assistance client disponible" [level=3] [ref=e162]
+              - paragraph [ref=e163]: Notre équipe est là pour vous aider 24h/24, 7j/7. Chat, email ou téléphone.
+              - link "Nous contacter" [ref=e164] [cursor=pointer]:
+                - /url: /contact
+                - button "Nous contacter" [ref=e165] [cursor=pointer]
+        - generic [ref=e166]:
+          - button [ref=e167] [cursor=pointer]
+          - button [ref=e168] [cursor=pointer]
+          - button [ref=e169] [cursor=pointer]
+          - button [ref=e170] [cursor=pointer]
+          - button [ref=e171] [cursor=pointer]
+          - button [ref=e172] [cursor=pointer]
+          - button [ref=e173] [cursor=pointer]
+      - generic [ref=e179]:
+        - heading "⚡ Ventes Flash" [level=2] [ref=e180]
+        - paragraph [ref=e181]: Aucune offre flash disponible pour le moment
+      - generic [ref=e184]:
+        - generic [ref=e185]:
+          - generic [ref=e186]:
+            - heading "À découvrir" [level=2] [ref=e187]
+            - paragraph [ref=e188]: Produits que vous pourriez aimer
+          - link "Voir tout" [ref=e189] [cursor=pointer]:
+            - /url: /products?sort=newest
+        - generic [ref=e192]:
+          - img [ref=e193]
+          - generic [ref=e196]:
+            - heading "Aucun produit disponible" [level=3] [ref=e197]
+            - paragraph [ref=e198]: Aucun produit n'est disponible dans cette catégorie pour le moment.
+      - generic [ref=e201]:
+        - generic [ref=e202]:
+          - heading "Marques Partenaires" [level=2] [ref=e203]
+          - paragraph [ref=e204]: Nous travaillons avec les meilleures marques mondiales pour vous offrir des produits authentiques et de qualité supérieure
+        - generic [ref=e205]:
+          - generic [ref=e207]:
+            - generic [ref=e209]:
+              - generic [ref=e211]:
+                - img "Samsung" [ref=e213]
+                - generic [ref=e214]:
+                  - heading "Samsung" [level=3] [ref=e215]
+                  - paragraph [ref=e216]: 2,100+ produits
+              - generic [ref=e218]:
+                - img "Apple" [ref=e220]
+                - generic [ref=e221]:
+                  - heading "Apple" [level=3] [ref=e222]
+                  - paragraph [ref=e223]: 1,250+ produits
+            - generic [ref=e225]:
+              - generic [ref=e227]:
+                - img "Tecno" [ref=e229]
+                - generic [ref=e230]:
+                  - heading "Tecno" [level=3] [ref=e231]
+                  - paragraph [ref=e232]: 1,800+ produits
+              - generic [ref=e234]:
+                - img "Infinix" [ref=e236]
+                - generic [ref=e237]:
+                  - heading "Infinix" [level=3] [ref=e238]
+                  - paragraph [ref=e239]: 1,500+ produits
+            - generic [ref=e241]:
+              - generic [ref=e243]:
+                - img "Itel" [ref=e245]
+                - generic [ref=e246]:
+                  - heading "Itel" [level=3] [ref=e247]
+                  - paragraph [ref=e248]: 1,200+ produits
+              - generic [ref=e250]:
+                - img "Huawei" [ref=e252]
+                - generic [ref=e253]:
+                  - heading "Huawei" [level=3] [ref=e254]
+                  - paragraph [ref=e255]: 950+ produits
+            - generic [ref=e257]:
+              - generic [ref=e259]:
+                - img "Xiaomi" [ref=e261]
+                - generic [ref=e262]:
+                  - heading "Xiaomi" [level=3] [ref=e263]
+                  - paragraph [ref=e264]: 1,100+ produits
+              - generic [ref=e266]:
+                - img "Oppo" [ref=e268]
+                - generic [ref=e269]:
+                  - heading "Oppo" [level=3] [ref=e270]
+                  - paragraph [ref=e271]: 800+ produits
+            - generic [ref=e273]:
+              - generic [ref=e275]:
+                - img "Vivo" [ref=e277]
+                - generic [ref=e278]:
+                  - heading "Vivo" [level=3] [ref=e279]
+                  - paragraph [ref=e280]: 750+ produits
+              - generic [ref=e282]:
+                - img "OnePlus" [ref=e284]
+                - generic [ref=e285]:
+                  - heading "OnePlus" [level=3] [ref=e286]
+                  - paragraph [ref=e287]: 450+ produits
+            - generic [ref=e289]:
+              - generic [ref=e291]:
+                - img "Realme" [ref=e293]
+                - generic [ref=e294]:
+                  - heading "Realme" [level=3] [ref=e295]
+                  - paragraph [ref=e296]: 600+ produits
+              - generic [ref=e298]:
+                - img "Nokia" [ref=e300]
+                - generic [ref=e301]:
+                  - heading "Nokia" [level=3] [ref=e302]
+                  - paragraph [ref=e303]: 400+ produits
+            - generic [ref=e305]:
+              - generic [ref=e307]:
+                - img "Sony" [ref=e309]
+                - generic [ref=e310]:
+                  - heading "Sony" [level=3] [ref=e311]
+                  - paragraph [ref=e312]: 650+ produits
+              - generic [ref=e314]:
+                - img "LG" [ref=e316]
+                - generic [ref=e317]:
+                  - heading "LG" [level=3] [ref=e318]
+                  - paragraph [ref=e319]: 890+ produits
+            - generic [ref=e321]:
+              - generic [ref=e323]:
+                - img "HP" [ref=e325]
+                - generic [ref=e326]:
+                  - heading "HP" [level=3] [ref=e327]
+                  - paragraph [ref=e328]: 380+ produits
+              - generic [ref=e330]:
+                - img "Dell" [ref=e332]
+                - generic [ref=e333]:
+                  - heading "Dell" [level=3] [ref=e334]
+                  - paragraph [ref=e335]: 450+ produits
+            - generic [ref=e337]:
+              - generic [ref=e339]:
+                - img "Lenovo" [ref=e341]
+                - generic [ref=e342]:
+                  - heading "Lenovo" [level=3] [ref=e343]
+                  - paragraph [ref=e344]: 520+ produits
+              - generic [ref=e346]:
+                - img "Asus" [ref=e348]
+                - generic [ref=e349]:
+                  - heading "Asus" [level=3] [ref=e350]
+                  - paragraph [ref=e351]: 350+ produits
+            - generic [ref=e353]:
+              - generic [ref=e355]:
+                - img "Canon" [ref=e357]
+                - generic [ref=e358]:
+                  - heading "Canon" [level=3] [ref=e359]
+                  - paragraph [ref=e360]: 320+ produits
+              - generic [ref=e362]:
+                - img "JBL" [ref=e364]
+                - generic [ref=e365]:
+                  - heading "JBL" [level=3] [ref=e366]
+                  - paragraph [ref=e367]: 280+ produits
+            - generic [ref=e369]:
+              - generic [ref=e371]:
+                - img "Bose" [ref=e373]
+                - generic [ref=e374]:
+                  - heading "Bose" [level=3] [ref=e375]
+                  - paragraph [ref=e376]: 180+ produits
+              - generic [ref=e378]:
+                - img "Panasonic" [ref=e380]
+                - generic [ref=e381]:
+                  - heading "Panasonic" [level=3] [ref=e382]
+                  - paragraph [ref=e383]: 420+ produits
+            - generic [ref=e385]:
+              - generic [ref=e387]:
+                - img "Philips" [ref=e389]
+                - generic [ref=e390]:
+                  - heading "Philips" [level=3] [ref=e391]
+                  - paragraph [ref=e392]: 380+ produits
+              - generic [ref=e394]:
+                - img "TCL" [ref=e396]
+                - generic [ref=e397]:
+                  - heading "TCL" [level=3] [ref=e398]
+                  - paragraph [ref=e399]: 320+ produits
+          - generic [ref=e400]:
+            - button "Aller à la slide 1" [ref=e401] [cursor=pointer]
+            - button "Aller à la slide 2" [ref=e402] [cursor=pointer]
+            - button "Aller à la slide 3" [ref=e403] [cursor=pointer]
+            - button "Aller à la slide 4" [ref=e404] [cursor=pointer]
+            - button "Aller à la slide 5" [ref=e405] [cursor=pointer]
+            - button "Aller à la slide 6" [ref=e406] [cursor=pointer]
+            - button "Aller à la slide 7" [ref=e407] [cursor=pointer]
+            - button "Aller à la slide 8" [ref=e408] [cursor=pointer]
+            - button "Aller à la slide 9" [ref=e409] [cursor=pointer]
+            - button "Aller à la slide 10" [ref=e410] [cursor=pointer]
+            - button "Aller à la slide 11" [ref=e411] [cursor=pointer]
+            - button "Aller à la slide 12" [ref=e412] [cursor=pointer]
+          - generic [ref=e414]:
+            - generic [ref=e416]: Lecture automatique
+            - generic [ref=e417]: •
+            - generic [ref=e418]: Glissez pour naviguer
+      - generic [ref=e422]:
+        - generic [ref=e423]:
+          - generic [ref=e424]:
+            - img [ref=e425]
+            - heading "Téléchargez l'app JomiaStore" [level=2] [ref=e427]
+          - paragraph [ref=e428]: Shopping plus rapide et plus facile
+        - generic [ref=e429]:
+          - generic [ref=e430]:
+            - img [ref=e431]
+            - generic [ref=e433]: Commandes express
+          - generic [ref=e434]:
+            - img [ref=e435]
+            - generic [ref=e437]: Offres exclusives
+          - generic [ref=e438]:
+            - img [ref=e439]
+            - generic [ref=e444]: Support prioritaire
+          - generic [ref=e445]:
+            - img [ref=e446]
+            - generic [ref=e452]: Paiement mobile
+        - generic [ref=e453]:
+          - button "Télécharger sur Google Play" [ref=e454] [cursor=pointer]:
+            - img [ref=e455] [cursor=pointer]
+            - generic [ref=e458] [cursor=pointer]: Télécharger sur Google Play
+          - button "Télécharger sur App Store" [ref=e459] [cursor=pointer]:
+            - img [ref=e460] [cursor=pointer]
+            - generic [ref=e463] [cursor=pointer]: Télécharger sur App Store
+        - generic [ref=e464]:
+          - img [ref=e466]
+          - generic [ref=e472]:
+            - paragraph [ref=e473]: Scannez pour télécharger
+            - paragraph [ref=e474]: iOS et Android
+      - generic [ref=e476]:
+        - generic [ref=e478]:
+          - generic [ref=e479]:
+            - heading "Pourquoi choisir JomiaStore Hub ?" [level=2] [ref=e480]
+            - paragraph [ref=e481]: Nous nous engageons à vous offrir la meilleure expérience d'achat en ligne au Bénin
+          - generic [ref=e482]:
+            - generic [ref=e485]:
+              - img [ref=e487]
+              - generic [ref=e489]:
+                - heading "Paiement sécurisé" [level=3] [ref=e490]
+                - paragraph [ref=e491]: SSL 256-bit
+                - paragraph [ref=e492]: Vos données sont protégées par un cryptage de niveau bancaire
+            - generic [ref=e495]:
+              - img [ref=e497]
+              - generic [ref=e502]:
+                - heading "Livraison rapide" [level=3] [ref=e503]
+                - paragraph [ref=e504]: 24h à Cotonou
+                - paragraph [ref=e505]: Livraison gratuite pour toute commande supérieure à 50,000 F
+            - generic [ref=e508]:
+              - img [ref=e510]
+              - generic [ref=e515]:
+                - heading "Retour facile" [level=3] [ref=e516]
+                - paragraph [ref=e517]: 30 jours
+                - paragraph [ref=e518]: Retour gratuit et remboursement sous 48h
+            - generic [ref=e521]:
+              - img [ref=e523]
+              - generic [ref=e525]:
+                - heading "Support 24/7" [level=3] [ref=e526]
+                - paragraph [ref=e527]: Chat en direct
+                - paragraph [ref=e528]: Notre équipe vous accompagne à tout moment
+            - generic [ref=e531]:
+              - img [ref=e533]
+              - generic [ref=e536]:
+                - heading "Produits authentiques" [level=3] [ref=e537]
+                - paragraph [ref=e538]: Garantie officielle
+                - paragraph [ref=e539]: Tous nos produits sont 100% authentiques avec garantie constructeur
+            - generic [ref=e542]:
+              - img [ref=e544]
+              - generic [ref=e549]:
+                - heading "500K+ clients" [level=3] [ref=e550]
+                - paragraph [ref=e551]: Satisfaits
+                - paragraph [ref=e552]: Rejoignez notre communauté de clients satisfaits
+          - generic [ref=e553]:
+            - generic [ref=e554]:
+              - heading "JomiaStore Hub en chiffres" [level=3] [ref=e555]
+              - paragraph [ref=e556]: Des résultats qui parlent d'eux-mêmes
+            - generic [ref=e557]:
+              - generic [ref=e558]:
+                - img [ref=e560]
+                - generic [ref=e565]: 500K+
+                - generic [ref=e566]: Clients satisfaits
+              - generic [ref=e567]:
+                - img [ref=e569]
+                - generic [ref=e572]: 50K+
+                - generic [ref=e573]: Produits disponibles
+              - generic [ref=e574]:
+                - img [ref=e576]
+                - generic [ref=e578]: 1,200+
+                - generic [ref=e579]: Vendeurs partenaires
+              - generic [ref=e580]:
+                - img [ref=e582]
+                - generic [ref=e587]: 15+
+                - generic [ref=e588]: Villes desservies
+        - generic [ref=e591]:
+          - generic [ref=e592]:
+            - heading "Certifications et Sécurité" [level=4] [ref=e593]
+            - paragraph [ref=e594]: Votre confiance est notre priorité
+          - generic [ref=e595]:
+            - generic [ref=e596]:
+              - img [ref=e598]
+              - generic [ref=e601]: SSL Certifié
+            - generic [ref=e602]:
+              - img [ref=e604]
+              - generic [ref=e606]: PCI DSS
+            - generic [ref=e607]:
+              - img [ref=e609]
+              - generic [ref=e612]: ISO 27001
+            - generic [ref=e613]:
+              - img [ref=e615]
+              - generic [ref=e617]: Trustpilot
+        - generic [ref=e619]:
+          - generic [ref=e620]:
+            - heading "Ce que disent nos clients" [level=3] [ref=e621]
+            - paragraph [ref=e622]: Plus de 10,000 avis clients vérifiés
+          - generic [ref=e623]:
+            - generic [ref=e625]:
+              - generic [ref=e627]:
+                - img [ref=e628]
+                - img [ref=e630]
+                - img [ref=e632]
+                - img [ref=e634]
+                - img [ref=e636]
+              - paragraph [ref=e638]: "\"Service exceptionnel ! Livraison rapide et produits de qualité. Je recommande vivement JomiaStore Hub.\""
+              - generic [ref=e639]:
+                - generic [ref=e641]: M
+                - generic [ref=e642]:
+                  - paragraph [ref=e643]: Marie K.
+                  - paragraph [ref=e644]: Cotonou
+            - generic [ref=e646]:
+              - generic [ref=e648]:
+                - img [ref=e649]
+                - img [ref=e651]
+                - img [ref=e653]
+                - img [ref=e655]
+                - img [ref=e657]
+              - paragraph [ref=e659]: "\"La meilleure plateforme e-commerce du Bénin. Interface intuitive et paiement sécurisé.\""
+              - generic [ref=e660]:
+                - generic [ref=e662]: J
+                - generic [ref=e663]:
+                  - paragraph [ref=e664]: Jean-Baptiste A.
+                  - paragraph [ref=e665]: Porto-Novo
+            - generic [ref=e667]:
+              - generic [ref=e669]:
+                - img [ref=e670]
+                - img [ref=e672]
+                - img [ref=e674]
+                - img [ref=e676]
+                - img [ref=e678]
+              - paragraph [ref=e680]: "\"Excellent rapport qualité-prix. Le support client est très réactif et professionnel.\""
+              - generic [ref=e681]:
+                - generic [ref=e683]: F
+                - generic [ref=e684]:
+                  - paragraph [ref=e685]: Fatou S.
+                  - paragraph [ref=e686]: Parakou
+      - generic [ref=e690]:
+        - generic [ref=e691]:
+          - generic [ref=e692]:
+            - img [ref=e693]
+            - heading "Recommandé pour vous" [level=2] [ref=e695]
+          - generic [ref=e696]:
+            - img [ref=e697]
+            - generic [ref=e699]: Gold
+        - link "Voir toutes les offres" [ref=e700] [cursor=pointer]:
+          - /url: /personalized
+          - button "Voir toutes les offres" [ref=e701] [cursor=pointer]
+    - generic [ref=e704]:
+      - generic [ref=e707]:
+        - heading "Recevez nos offres" [level=3] [ref=e708]
+        - textbox "Email" [ref=e709]
+        - button "S'abonner" [ref=e710] [cursor=pointer]
+      - generic [ref=e713]:
+        - generic [ref=e714]:
+          - generic [ref=e715]:
+            - img "JomiaStore Hub" [ref=e717]
+            - generic [ref=e718]: JomiaStore Hub
+          - generic [ref=e719]:
+            - generic [ref=e720]:
+              - img [ref=e721]
+              - generic [ref=e724]: Cotonou, Bénin
+            - generic [ref=e725]:
+              - img [ref=e726]
+              - generic [ref=e728]: +229 XX XX XX XX
+            - generic [ref=e729]:
+              - img [ref=e730]
+              - generic [ref=e733]: contact@jomiastore.com
+          - generic [ref=e734]:
+            - button [ref=e735] [cursor=pointer]:
+              - img [ref=e736] [cursor=pointer]
+            - button [ref=e738] [cursor=pointer]:
+              - img [ref=e739] [cursor=pointer]
+            - button [ref=e741] [cursor=pointer]:
+              - img [ref=e742] [cursor=pointer]
+            - button [ref=e745] [cursor=pointer]:
+              - img [ref=e746] [cursor=pointer]
+        - generic [ref=e749]:
+          - heading "Boutique" [level=4] [ref=e750]
+          - navigation [ref=e751]:
+            - link "Catégories" [ref=e752] [cursor=pointer]:
+              - /url: /categories
+            - link "Recherche" [ref=e753] [cursor=pointer]:
+              - /url: /search
+            - link "Aide" [ref=e754] [cursor=pointer]:
+              - /url: /help
+            - link "Livraison" [ref=e755] [cursor=pointer]:
+              - /url: /shipping-returns
+            - link "Suivi" [ref=e756] [cursor=pointer]:
+              - /url: /order-tracking
+            - link "Garantie" [ref=e757] [cursor=pointer]:
+              - /url: /warranty
+        - generic [ref=e758]:
+          - heading "Entreprise" [level=4] [ref=e759]
+          - navigation [ref=e760]:
+            - link "À propos" [ref=e761] [cursor=pointer]:
+              - /url: /about
+            - link "Presse" [ref=e762] [cursor=pointer]:
+              - /url: /press
+            - link "Carrières" [ref=e763] [cursor=pointer]:
+              - /url: /careers
+            - link "Blog" [ref=e764] [cursor=pointer]:
+              - /url: /blog
+            - link "Contact" [ref=e765] [cursor=pointer]:
+              - /url: /contact
+            - link "Investisseurs" [ref=e766] [cursor=pointer]:
+              - /url: /investors
+        - generic [ref=e767]:
+          - heading "Légal" [level=4] [ref=e768]
+          - navigation [ref=e769]:
+            - link "Conditions" [ref=e770] [cursor=pointer]:
+              - /url: /terms
+            - link "Confidentialité" [ref=e771] [cursor=pointer]:
+              - /url: /privacy
+            - link "Cookies" [ref=e772] [cursor=pointer]:
+              - /url: /cookies
+      - generic [ref=e775]:
+        - paragraph [ref=e776]: © 2025 JomiaStore • Fait avec ❤️ au Bénin
+        - generic [ref=e777]:
+          - generic [ref=e778]: Nous acceptons
+          - generic [ref=e779]:
+            - generic [ref=e780]: VISA
+            - generic [ref=e781]: MC
+            - generic [ref=e782]: MTN
+            - generic [ref=e783]: AIR
+  - alert [ref=e784]
+  - generic [ref=e787] [cursor=pointer]:
+    - img [ref=e788] [cursor=pointer]
+    - generic [ref=e790] [cursor=pointer]: 4 errors
+    - button "Hide Errors" [ref=e791] [cursor=pointer]:
+      - img [ref=e792] [cursor=pointer]
+```

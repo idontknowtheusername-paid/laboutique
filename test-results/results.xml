@@ -1,0 +1,860 @@
+<testsuites id="" name="" tests="20" failures="17" skipped="0" errors="0" time="102.960321">
+<testsuite name="homepage.spec.ts" timestamp="2025-09-30T00:29:44.361Z" hostname="chromium" tests="4" failures="3" skipped="0" time="30.552" errors="0">
+<testcase name="Homepage › should load homepage successfully" classname="homepage.spec.ts" time="4.984">
+</testcase>
+<testcase name="Homepage › should display navigation elements" classname="homepage.spec.ts" time="7.632">
+<failure message="homepage.spec.ts:14:7 should display navigation elements" type="FAILURE">
+<![CDATA[  [chromium] › homepage.spec.ts:14:7 › Homepage › should display navigation elements ───────────────
+
+    Error: expect.toBeVisible: Error: strict mode violation: locator('img[alt*="JomiaStore"]') resolved to 2 elements:
+        1) <img src="/logo.svg" decoding="async" data-nimg="fill" alt="JomiaStore Hub" fetchpriority="high" class="object-contain"/> aka getByRole('link', { name: 'JomiaStore Hub JomiaStore Hub' })
+        2) <img loading="lazy" decoding="async" data-nimg="fill" alt="JomiaStore Hub" src="/logo-mono.svg" class="object-contain"/> aka locator('footer').getByRole('img', { name: 'JomiaStore Hub' })
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('img[alt*="JomiaStore"]')
+
+
+      19 |     
+      20 |     // Check for logo
+    > 21 |     await expect(page.locator('img[alt*="JomiaStore"]')).toBeVisible();
+         |                                                          ^
+      22 |     
+      23 |     // Check for search bar
+      24 |     await expect(page.locator('input[placeholder*="Rechercher"]')).toBeVisible();
+        at /workspace/tests/e2e/homepage.spec.ts:21:58
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-display-navigation-elements-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-display-navigation-elements-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/homepage-Homepage-should-display-navigation-elements-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|homepage-Homepage-should-display-navigation-elements-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|homepage-Homepage-should-display-navigation-elements-chromium/video.webm]]
+
+[[ATTACHMENT|homepage-Homepage-should-display-navigation-elements-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Homepage › should display product sections" classname="homepage.spec.ts" time="10.066">
+<failure message="homepage.spec.ts:27:7 should display product sections" type="FAILURE">
+<![CDATA[  [chromium] › homepage.spec.ts:27:7 › Homepage › should display product sections ──────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('text=Produits populaires')
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('text=Produits populaires')
+
+
+      32 |     
+      33 |     // Check for product sections
+    > 34 |     await expect(page.locator('text=Produits populaires')).toBeVisible();
+         |                                                            ^
+      35 |   });
+      36 |
+      37 |   test('should be responsive on mobile', async ({ page }) => {
+        at /workspace/tests/e2e/homepage.spec.ts:34:60
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-display-product-sections-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-display-product-sections-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/homepage-Homepage-should-display-product-sections-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|homepage-Homepage-should-display-product-sections-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|homepage-Homepage-should-display-product-sections-chromium/video.webm]]
+
+[[ATTACHMENT|homepage-Homepage-should-display-product-sections-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Homepage › should be responsive on mobile" classname="homepage.spec.ts" time="7.87">
+<failure message="homepage.spec.ts:37:7 should be responsive on mobile" type="FAILURE">
+<![CDATA[  [chromium] › homepage.spec.ts:37:7 › Homepage › should be responsive on mobile ───────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('button[aria-label*="menu"], button:has-text("Menu")')
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('button[aria-label*="menu"], button:has-text("Menu")')
+
+
+      40 |     
+      41 |     // Check if mobile menu is accessible
+    > 42 |     await expect(page.locator('button[aria-label*="menu"], button:has-text("Menu")')).toBeVisible();
+         |                                                                                       ^
+      43 |   });
+      44 | });
+        at /workspace/tests/e2e/homepage.spec.ts:42:87
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-be-responsive-on-mobile-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-be-responsive-on-mobile-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/homepage-Homepage-should-be-responsive-on-mobile-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|homepage-Homepage-should-be-responsive-on-mobile-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|homepage-Homepage-should-be-responsive-on-mobile-chromium/video.webm]]
+
+[[ATTACHMENT|homepage-Homepage-should-be-responsive-on-mobile-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="homepage.spec.ts" timestamp="2025-09-30T00:29:44.361Z" hostname="firefox" tests="4" failures="3" skipped="0" time="40.512" errors="0">
+<testcase name="Homepage › should load homepage successfully" classname="homepage.spec.ts" time="7.945">
+</testcase>
+<testcase name="Homepage › should display navigation elements" classname="homepage.spec.ts" time="10.013">
+<failure message="homepage.spec.ts:14:7 should display navigation elements" type="FAILURE">
+<![CDATA[  [firefox] › homepage.spec.ts:14:7 › Homepage › should display navigation elements ────────────────
+
+    Error: expect.toBeVisible: Error: strict mode violation: locator('img[alt*="JomiaStore"]') resolved to 2 elements:
+        1) <img src="/logo.svg" decoding="async" data-nimg="fill" alt="JomiaStore Hub" fetchpriority="high" class="object-contain"/> aka getByRole('link', { name: 'JomiaStore Hub JomiaStore Hub' })
+        2) <img loading="lazy" decoding="async" data-nimg="fill" alt="JomiaStore Hub" src="/logo-mono.svg" class="object-contain"/> aka locator('footer').getByRole('img', { name: 'JomiaStore Hub' })
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('img[alt*="JomiaStore"]')
+
+
+      19 |     
+      20 |     // Check for logo
+    > 21 |     await expect(page.locator('img[alt*="JomiaStore"]')).toBeVisible();
+         |                                                          ^
+      22 |     
+      23 |     // Check for search bar
+      24 |     await expect(page.locator('input[placeholder*="Rechercher"]')).toBeVisible();
+        at /workspace/tests/e2e/homepage.spec.ts:21:58
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-display-navigation-elements-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-display-navigation-elements-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/homepage-Homepage-should-display-navigation-elements-firefox/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|homepage-Homepage-should-display-navigation-elements-firefox/test-failed-1.png]]
+
+[[ATTACHMENT|homepage-Homepage-should-display-navigation-elements-firefox/video.webm]]
+
+[[ATTACHMENT|homepage-Homepage-should-display-navigation-elements-firefox/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Homepage › should display product sections" classname="homepage.spec.ts" time="10.655">
+<failure message="homepage.spec.ts:27:7 should display product sections" type="FAILURE">
+<![CDATA[  [firefox] › homepage.spec.ts:27:7 › Homepage › should display product sections ───────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('text=Produits populaires')
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('text=Produits populaires')
+
+
+      32 |     
+      33 |     // Check for product sections
+    > 34 |     await expect(page.locator('text=Produits populaires')).toBeVisible();
+         |                                                            ^
+      35 |   });
+      36 |
+      37 |   test('should be responsive on mobile', async ({ page }) => {
+        at /workspace/tests/e2e/homepage.spec.ts:34:60
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-display-product-sections-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-display-product-sections-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/homepage-Homepage-should-display-product-sections-firefox/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|homepage-Homepage-should-display-product-sections-firefox/test-failed-1.png]]
+
+[[ATTACHMENT|homepage-Homepage-should-display-product-sections-firefox/video.webm]]
+
+[[ATTACHMENT|homepage-Homepage-should-display-product-sections-firefox/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Homepage › should be responsive on mobile" classname="homepage.spec.ts" time="11.899">
+<failure message="homepage.spec.ts:37:7 should be responsive on mobile" type="FAILURE">
+<![CDATA[  [firefox] › homepage.spec.ts:37:7 › Homepage › should be responsive on mobile ────────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('button[aria-label*="menu"], button:has-text("Menu")')
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('button[aria-label*="menu"], button:has-text("Menu")')
+
+
+      40 |     
+      41 |     // Check if mobile menu is accessible
+    > 42 |     await expect(page.locator('button[aria-label*="menu"], button:has-text("Menu")')).toBeVisible();
+         |                                                                                       ^
+      43 |   });
+      44 | });
+        at /workspace/tests/e2e/homepage.spec.ts:42:87
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-be-responsive-on-mobile-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-be-responsive-on-mobile-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/homepage-Homepage-should-be-responsive-on-mobile-firefox/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|homepage-Homepage-should-be-responsive-on-mobile-firefox/test-failed-1.png]]
+
+[[ATTACHMENT|homepage-Homepage-should-be-responsive-on-mobile-firefox/video.webm]]
+
+[[ATTACHMENT|homepage-Homepage-should-be-responsive-on-mobile-firefox/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="homepage.spec.ts" timestamp="2025-09-30T00:29:44.361Z" hostname="webkit" tests="4" failures="4" skipped="0" time="0.112" errors="0">
+<testcase name="Homepage › should load homepage successfully" classname="homepage.spec.ts" time="0.016">
+<failure message="homepage.spec.ts:4:7 should load homepage successfully" type="FAILURE">
+<![CDATA[  [webkit] › homepage.spec.ts:4:7 › Homepage › should load homepage successfully ───────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgstreamer-1.0.so.0                            ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libicudata.so.74                                 ║
+    ║     libicui18n.so.74                                 ║
+    ║     libicuuc.so.74                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstbase-1.0.so.0                              ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libGLESv2.so.2                                   ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Homepage › should display navigation elements" classname="homepage.spec.ts" time="0.012">
+<failure message="homepage.spec.ts:14:7 should display navigation elements" type="FAILURE">
+<![CDATA[  [webkit] › homepage.spec.ts:14:7 › Homepage › should display navigation elements ─────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgstreamer-1.0.so.0                            ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libicudata.so.74                                 ║
+    ║     libicui18n.so.74                                 ║
+    ║     libicuuc.so.74                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstbase-1.0.so.0                              ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libGLESv2.so.2                                   ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Homepage › should display product sections" classname="homepage.spec.ts" time="0.058">
+<failure message="homepage.spec.ts:27:7 should display product sections" type="FAILURE">
+<![CDATA[  [webkit] › homepage.spec.ts:27:7 › Homepage › should display product sections ────────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgstreamer-1.0.so.0                            ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libicudata.so.74                                 ║
+    ║     libicui18n.so.74                                 ║
+    ║     libicuuc.so.74                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstbase-1.0.so.0                              ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libGLESv2.so.2                                   ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Homepage › should be responsive on mobile" classname="homepage.spec.ts" time="0.026">
+<failure message="homepage.spec.ts:37:7 should be responsive on mobile" type="FAILURE">
+<![CDATA[  [webkit] › homepage.spec.ts:37:7 › Homepage › should be responsive on mobile ─────────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgstreamer-1.0.so.0                            ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libicudata.so.74                                 ║
+    ║     libicui18n.so.74                                 ║
+    ║     libicuuc.so.74                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstbase-1.0.so.0                              ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libGLESv2.so.2                                   ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+</testsuite>
+<testsuite name="homepage.spec.ts" timestamp="2025-09-30T00:29:44.361Z" hostname="Mobile Chrome" tests="4" failures="3" skipped="0" time="33.079" errors="0">
+<testcase name="Homepage › should load homepage successfully" classname="homepage.spec.ts" time="5.766">
+</testcase>
+<testcase name="Homepage › should display navigation elements" classname="homepage.spec.ts" time="6.008">
+<failure message="homepage.spec.ts:14:7 should display navigation elements" type="FAILURE">
+<![CDATA[  [Mobile Chrome] › homepage.spec.ts:14:7 › Homepage › should display navigation elements ──────────
+
+    Error: expect.toBeVisible: Error: strict mode violation: locator('img[alt*="JomiaStore"]') resolved to 2 elements:
+        1) <img src="/logo.svg" decoding="async" data-nimg="fill" alt="JomiaStore Hub" fetchpriority="high" class="object-contain"/> aka getByRole('link', { name: 'JomiaStore Hub JomiaStore Hub' })
+        2) <img loading="lazy" decoding="async" data-nimg="fill" alt="JomiaStore Hub" src="/logo-mono.svg" class="object-contain"/> aka locator('footer').getByRole('img', { name: 'JomiaStore Hub' })
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('img[alt*="JomiaStore"]')
+
+
+      19 |     
+      20 |     // Check for logo
+    > 21 |     await expect(page.locator('img[alt*="JomiaStore"]')).toBeVisible();
+         |                                                          ^
+      22 |     
+      23 |     // Check for search bar
+      24 |     await expect(page.locator('input[placeholder*="Rechercher"]')).toBeVisible();
+        at /workspace/tests/e2e/homepage.spec.ts:21:58
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-display-navigation-elements-Mobile-Chrome/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-display-navigation-elements-Mobile-Chrome/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/homepage-Homepage-should-display-navigation-elements-Mobile-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|homepage-Homepage-should-display-navigation-elements-Mobile-Chrome/test-failed-1.png]]
+
+[[ATTACHMENT|homepage-Homepage-should-display-navigation-elements-Mobile-Chrome/video.webm]]
+
+[[ATTACHMENT|homepage-Homepage-should-display-navigation-elements-Mobile-Chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Homepage › should display product sections" classname="homepage.spec.ts" time="11.326">
+<failure message="homepage.spec.ts:27:7 should display product sections" type="FAILURE">
+<![CDATA[  [Mobile Chrome] › homepage.spec.ts:27:7 › Homepage › should display product sections ─────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('text=Produits populaires')
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('text=Produits populaires')
+
+
+      32 |     
+      33 |     // Check for product sections
+    > 34 |     await expect(page.locator('text=Produits populaires')).toBeVisible();
+         |                                                            ^
+      35 |   });
+      36 |
+      37 |   test('should be responsive on mobile', async ({ page }) => {
+        at /workspace/tests/e2e/homepage.spec.ts:34:60
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-display-product-sections-Mobile-Chrome/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-display-product-sections-Mobile-Chrome/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/homepage-Homepage-should-display-product-sections-Mobile-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|homepage-Homepage-should-display-product-sections-Mobile-Chrome/test-failed-1.png]]
+
+[[ATTACHMENT|homepage-Homepage-should-display-product-sections-Mobile-Chrome/video.webm]]
+
+[[ATTACHMENT|homepage-Homepage-should-display-product-sections-Mobile-Chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Homepage › should be responsive on mobile" classname="homepage.spec.ts" time="9.979">
+<failure message="homepage.spec.ts:37:7 should be responsive on mobile" type="FAILURE">
+<![CDATA[  [Mobile Chrome] › homepage.spec.ts:37:7 › Homepage › should be responsive on mobile ──────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('button[aria-label*="menu"], button:has-text("Menu")')
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('button[aria-label*="menu"], button:has-text("Menu")')
+
+
+      40 |     
+      41 |     // Check if mobile menu is accessible
+    > 42 |     await expect(page.locator('button[aria-label*="menu"], button:has-text("Menu")')).toBeVisible();
+         |                                                                                       ^
+      43 |   });
+      44 | });
+        at /workspace/tests/e2e/homepage.spec.ts:42:87
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-be-responsive-on-mobile-Mobile-Chrome/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/homepage-Homepage-should-be-responsive-on-mobile-Mobile-Chrome/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/homepage-Homepage-should-be-responsive-on-mobile-Mobile-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|homepage-Homepage-should-be-responsive-on-mobile-Mobile-Chrome/test-failed-1.png]]
+
+[[ATTACHMENT|homepage-Homepage-should-be-responsive-on-mobile-Mobile-Chrome/video.webm]]
+
+[[ATTACHMENT|homepage-Homepage-should-be-responsive-on-mobile-Mobile-Chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="homepage.spec.ts" timestamp="2025-09-30T00:29:44.361Z" hostname="Mobile Safari" tests="4" failures="4" skipped="0" time="0.055" errors="0">
+<testcase name="Homepage › should load homepage successfully" classname="homepage.spec.ts" time="0.015">
+<failure message="homepage.spec.ts:4:7 should load homepage successfully" type="FAILURE">
+<![CDATA[  [Mobile Safari] › homepage.spec.ts:4:7 › Homepage › should load homepage successfully ────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgstreamer-1.0.so.0                            ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libicudata.so.74                                 ║
+    ║     libicui18n.so.74                                 ║
+    ║     libicuuc.so.74                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstbase-1.0.so.0                              ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libGLESv2.so.2                                   ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Homepage › should display navigation elements" classname="homepage.spec.ts" time="0.01">
+<failure message="homepage.spec.ts:14:7 should display navigation elements" type="FAILURE">
+<![CDATA[  [Mobile Safari] › homepage.spec.ts:14:7 › Homepage › should display navigation elements ──────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgstreamer-1.0.so.0                            ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libicudata.so.74                                 ║
+    ║     libicui18n.so.74                                 ║
+    ║     libicuuc.so.74                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstbase-1.0.so.0                              ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libGLESv2.so.2                                   ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Homepage › should display product sections" classname="homepage.spec.ts" time="0.02">
+<failure message="homepage.spec.ts:27:7 should display product sections" type="FAILURE">
+<![CDATA[  [Mobile Safari] › homepage.spec.ts:27:7 › Homepage › should display product sections ─────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgstreamer-1.0.so.0                            ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libicudata.so.74                                 ║
+    ║     libicui18n.so.74                                 ║
+    ║     libicuuc.so.74                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstbase-1.0.so.0                              ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libGLESv2.so.2                                   ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Homepage › should be responsive on mobile" classname="homepage.spec.ts" time="0.01">
+<failure message="homepage.spec.ts:37:7 should be responsive on mobile" type="FAILURE">
+<![CDATA[  [Mobile Safari] › homepage.spec.ts:37:7 › Homepage › should be responsive on mobile ──────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgstreamer-1.0.so.0                            ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libicudata.so.74                                 ║
+    ║     libicui18n.so.74                                 ║
+    ║     libicuuc.so.74                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstbase-1.0.so.0                              ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libGLESv2.so.2                                   ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+</testsuite>
+</testsuites>
