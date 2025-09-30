@@ -9,8 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { 
-  TouchButton, 
-  MobileInput, 
   useMobileViewport, 
   useTouchGestures,
   MobileSpacing 
@@ -165,19 +163,20 @@ const Header = () => {
             className="hidden md:flex flex-1 max-w-2xl mx-8"
           >
             <div className="relative w-full">
-              <MobileInput
+              <Input
                 type="text"
                 placeholder="Rechercher des produits, marques et catégories..."
                 value={searchQuery}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                className="pr-12 h-12 text-base border-2 border-gray-200 focus:border-jomiastore-primary"
+                className="pr-12 h-12 text-base border-2 border-gray-200 focus:border-jomiastore-primary rounded-lg"
               />
-              <TouchButton
+              <Button
                 type="submit"
-                className="absolute right-1 top-1 h-10 px-4 bg-jomiastore-secondary hover:bg-orange-600 min-h-[40px] min-w-[40px]"
+                size="sm"
+                className="absolute right-1 top-1 h-10 px-4 bg-jomiastore-secondary hover:bg-orange-600 rounded-md"
               >
                 <Search className="w-4 h-4" />
-              </TouchButton>
+              </Button>
             </div>
           </form>
 
@@ -298,15 +297,15 @@ const Header = () => {
           <div className="relative">
             <Input
               type="text"
-              placeholder="Rechercher..."
+              placeholder="Rechercher des produits, marques et catégories..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pr-12 h-10 border-2 border-gray-200 focus:border-jomiastore-primary"
+              className="pr-12 h-10 border-2 border-gray-200 focus:border-jomiastore-primary rounded-lg"
             />
             <Button
               type="submit"
               size="sm"
-              className="absolute right-1 top-1 h-8 px-3 bg-jomiastore-secondary hover:bg-orange-600"
+              className="absolute right-1 top-1 h-8 px-3 bg-jomiastore-secondary hover:bg-orange-600 rounded-md"
             >
               <Search className="w-4 h-4" />
             </Button>
