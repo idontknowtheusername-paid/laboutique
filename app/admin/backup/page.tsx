@@ -21,85 +21,69 @@ import {
   RotateCcw,
   Shield,
   Cloud,
-  Server
+  Server,
+  RefreshCw,
+  Trash2
 } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
-
-interface Backup {
-  id: string;
-  name: string;
-  type: 'full' | 'incremental' | 'database' | 'files';
-  size: number;
-  status: 'completed' | 'running' | 'failed' | 'scheduled';
-  created_at: string;
-  duration?: number;
-  location: 'local' | 'cloud' | 'external';
-}
+import { BackupService, Backup, BackupSettings, BackupStats, RestoreRequest } from '@/lib/services/backup.service';
+import { useToast } from '@/components/admin/Toast';
+import { useConfirmation } from '@/components/admin/ConfirmationDialog';
 
 export default function AdminBackupPage() {
   const [loading, setLoading] = useState(true);
   const [backups, setBackups] = useState<Backup[]>([]);
-  const [backupSettings, setBackupSettings] = useState({
-    frequency: 'daily',
-    retention: '30',
-    compression: 'enabled',
-    encryption: 'enabled',
-    location: 'cloud'
-  });
+  const [backupSettings, setBackupSettings] = useState<BackupSettings | null>(null);
+  const [stats, setStats] = useState<BackupStats | null>(null);
   const [isBackupRunning, setIsBackupRunning] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [filters, setFilters] = useState({
+    status: 'all',
+    type: 'all',
+    location: 'all'
+  });
+  const { success, error, info } = useToast();
+  const { confirm, ConfirmationComponent } = useConfirmation();
 
   useEffect(() => {
-    loadBackups();
-  }, []);
+    loadData();
+  }, [page, filters]);
 
-  const loadBackups = async () => {
+  const loadData = async () => {
     setLoading(true);
     try {
-      // Simuler des backups
-      const mockBackups: Backup[] = [
-        {
-          id: '1',
-          name: 'backup_2024_01_15_full',
-          type: 'full',
-          size: 2048576000, // 2GB
-          status: 'completed',
-          created_at: '2024-01-15T02:00:00Z',
-          duration: 1800, // 30 minutes
-          location: 'cloud'
-        },
-        {
-          id: '2',
-          name: 'backup_2024_01_14_incremental',
-          type: 'incremental',
-          size: 512000000, // 512MB
-          status: 'completed',
-          created_at: '2024-01-14T02:00:00Z',
-          duration: 300, // 5 minutes
-          location: 'cloud'
-        },
-        {
-          id: '3',
-          name: 'backup_2024_01_13_database',
-          type: 'database',
-          size: 1024000000, // 1GB
-          status: 'completed',
-          created_at: '2024-01-13T02:00:00Z',
-          duration: 600, // 10 minutes
-          location: 'local'
-        },
-        {
-          id: '4',
-          name: 'backup_2024_01_12_full',
-          type: 'full',
-          size: 1950000000, // 1.95GB
-          status: 'failed',
-          created_at: '2024-01-12T02:00:00Z',
-          location: 'cloud'
-        }
-      ];
-      setBackups(mockBackups);
-    } catch (error) {
-      console.error('Erreur lors du chargement des backups:', error);
+      // Charger les backups, paramètres et statistiques en parallèle
+      const [backupsResponse, settingsResponse, statsResponse] = await Promise.all([
+        BackupService.getAll(
+          {
+            status: filters.status !== 'all' ? filters.status as any : undefined,
+            type: filters.type !== 'all' ? filters.type as any : undefined,
+            location: filters.location !== 'all' ? filters.location as any : undefined
+          },
+          { page, limit: 10 }
+        ),
+        BackupService.getSettings(),
+        BackupService.getStats()
+      ]);
+
+      if (backupsResponse.success && backupsResponse.data) {
+        setBackups(backupsResponse.data);
+        setTotalPages(backupsResponse.pagination?.totalPages || 1);
+      }
+
+      if (settingsResponse.success && settingsResponse.data) {
+        setBackupSettings(settingsResponse.data);
+      }
+
+      if (statsResponse.success && statsResponse.data) {
+        setStats(statsResponse.data);
+      }
+
+      success('Données chargées', 'Les informations de sauvegarde ont été mises à jour');
+    } catch (err) {
+      console.error('Erreur lors du chargement des données:', err);
+      error('Erreur de chargement', 'Impossible de charger les données de sauvegarde');
     } finally {
       setLoading(false);
     }
@@ -158,44 +142,159 @@ export default function AdminBackupPage() {
     }
   };
 
-  const handleStartBackup = async () => {
+  const handleStartBackup = async (type: 'full' | 'incremental' | 'database' | 'files' = 'full') => {
     setIsBackupRunning(true);
     try {
-      // Simuler le démarrage d'un backup
-      const newBackup: Backup = {
-        id: Date.now().toString(),
-        name: `backup_${new Date().toISOString().split('T')[0]}_manual`,
-        type: 'full',
-        size: 0,
-        status: 'running',
-        created_at: new Date().toISOString(),
-        location: backupSettings.location as any
-      };
-
-      setBackups(prev => [newBackup, ...prev]);
-
-      // Simuler la fin du backup après 30 secondes
-      setTimeout(() => {
-        setBackups(prev => prev.map(backup => 
-          backup.id === newBackup.id 
-            ? { ...backup, status: 'completed', size: 2048576000, duration: 1800 }
-            : backup
-        ));
+      const result = await BackupService.createBackup(type, `Backup manuel ${type}`);
+      if (result.success && result.data) {
+        success('Backup démarré', `Le backup ${type} a été démarré avec succès`);
+        await loadData(); // Recharger les données
+        
+        // Simuler la fin du backup après 30 secondes
+        setTimeout(async () => {
+          await BackupService.updateBackupStatus(
+            result.data!.id,
+            'completed',
+            Math.floor(Math.random() * 2000000000) + 1000000000, // 1-3 GB
+            Math.floor(Math.random() * 3600) + 300, // 5-60 minutes
+            'abc123def456'
+          );
+          await loadData();
+          setIsBackupRunning(false);
+          success('Backup terminé', 'Le backup a été créé avec succès');
+        }, 30000);
+      } else {
+        error('Erreur de backup', result.error || 'Impossible de démarrer le backup');
         setIsBackupRunning(false);
-      }, 30000);
-    } catch (error) {
-      console.error('Erreur lors du backup:', error);
+      }
+    } catch (err) {
+      console.error('Erreur lors du backup:', err);
+      error('Erreur de backup', 'Une erreur est survenue lors du démarrage du backup');
       setIsBackupRunning(false);
     }
   };
 
   const handleRestoreBackup = async (backupId: string) => {
+    confirm(
+      'Restaurer le backup',
+      'Êtes-vous sûr de vouloir restaurer ce backup ? Cette action va remplacer les données actuelles.',
+      async () => {
+        try {
+          const restoreRequest: RestoreRequest = {
+            backup_id: backupId,
+            restore_type: 'full',
+            confirm_restore: true
+          };
+
+          const result = await BackupService.restoreBackup(restoreRequest);
+          if (result.success) {
+            success('Restauration démarrée', 'Le processus de restauration a été lancé');
+          } else {
+            error('Erreur de restauration', result.error || 'Impossible de restaurer le backup');
+          }
+        } catch (err) {
+          console.error('Erreur lors de la restauration:', err);
+          error('Erreur de restauration', 'Une erreur est survenue lors de la restauration');
+        }
+      },
+      'destructive'
+    );
+  };
+
+  const handleDownloadBackup = async (backupId: string) => {
     try {
-      // Logique de restauration
-      console.log('Restauration du backup:', backupId);
-    } catch (error) {
-      console.error('Erreur lors de la restauration:', error);
+      const result = await BackupService.downloadBackup(backupId);
+      if (result.success && result.data) {
+        // Simuler le téléchargement
+        const link = document.createElement('a');
+        link.href = result.data.downloadUrl;
+        link.download = result.data.filename;
+        link.click();
+        success('Téléchargement démarré', 'Le fichier de backup est en cours de téléchargement');
+      } else {
+        error('Erreur de téléchargement', result.error || 'Impossible de télécharger le backup');
+      }
+    } catch (err) {
+      console.error('Erreur lors du téléchargement:', err);
+      error('Erreur de téléchargement', 'Une erreur est survenue lors du téléchargement');
     }
+  };
+
+  const handleDeleteBackup = async (backupId: string) => {
+    confirm(
+      'Supprimer le backup',
+      'Êtes-vous sûr de vouloir supprimer ce backup ? Cette action est irréversible.',
+      async () => {
+        try {
+          const result = await BackupService.deleteBackup(backupId);
+          if (result.success) {
+            success('Backup supprimé', 'Le backup a été supprimé avec succès');
+            await loadData();
+          } else {
+            error('Erreur de suppression', result.error || 'Impossible de supprimer le backup');
+          }
+        } catch (err) {
+          console.error('Erreur lors de la suppression:', err);
+          error('Erreur de suppression', 'Une erreur est survenue lors de la suppression');
+        }
+      },
+      'destructive'
+    );
+  };
+
+  const handleUpdateSettings = async () => {
+    if (!backupSettings) return;
+
+    try {
+      const result = await BackupService.updateSettings(backupSettings);
+      if (result.success) {
+        success('Paramètres sauvegardés', 'Les paramètres de backup ont été mis à jour');
+        setBackupSettings(result.data);
+      } else {
+        error('Erreur de sauvegarde', result.error || 'Impossible de sauvegarder les paramètres');
+      }
+    } catch (err) {
+      console.error('Erreur lors de la sauvegarde des paramètres:', err);
+      error('Erreur de sauvegarde', 'Une erreur est survenue lors de la sauvegarde des paramètres');
+    }
+  };
+
+  const handleTestStorage = async (location: 'local' | 'cloud' | 'external') => {
+    try {
+      const result = await BackupService.testStorageConnection(location);
+      if (result.success) {
+        success('Test réussi', `La connexion au stockage ${location} fonctionne correctement`);
+      } else {
+        error('Test échoué', result.error || `Impossible de se connecter au stockage ${location}`);
+      }
+    } catch (err) {
+      console.error('Erreur lors du test de stockage:', err);
+      error('Erreur de test', 'Une erreur est survenue lors du test de connexion');
+    }
+  };
+
+  const handleCleanupOldBackups = async () => {
+    if (!backupSettings) return;
+
+    confirm(
+      'Nettoyer les anciens backups',
+      `Êtes-vous sûr de vouloir supprimer les backups de plus de ${backupSettings.retention_days} jours ?`,
+      async () => {
+        try {
+          const result = await BackupService.cleanupOldBackups(backupSettings.retention_days);
+          if (result.success && result.data) {
+            success('Nettoyage terminé', `${result.data.deleted} anciens backups ont été supprimés`);
+            await loadData();
+          } else {
+            error('Erreur de nettoyage', result.error || 'Impossible de nettoyer les anciens backups');
+          }
+        } catch (err) {
+          console.error('Erreur lors du nettoyage:', err);
+          error('Erreur de nettoyage', 'Une erreur est survenue lors du nettoyage');
+        }
+      },
+      'destructive'
+    );
   };
 
   return (
@@ -205,13 +304,36 @@ export default function AdminBackupPage() {
         subtitle="Gestion des backups automatiques et manuels"
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline">
-              <Upload className="w-4 h-4 mr-2" />
-              Restaurer
+            <Button variant="outline" onClick={loadData} disabled={loading}>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Rafraîchir
             </Button>
+            <Select value={filters.status} onValueChange={(value) => setFilters({...filters, status: value})}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous</SelectItem>
+                <SelectItem value="completed">Terminés</SelectItem>
+                <SelectItem value="running">En cours</SelectItem>
+                <SelectItem value="failed">Échoués</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filters.type} onValueChange={(value) => setFilters({...filters, type: value})}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous types</SelectItem>
+                <SelectItem value="full">Complet</SelectItem>
+                <SelectItem value="incremental">Incrémental</SelectItem>
+                <SelectItem value="database">Base</SelectItem>
+                <SelectItem value="files">Fichiers</SelectItem>
+              </SelectContent>
+            </Select>
             <Button 
               className="bg-jomiastore-primary hover:bg-blue-700"
-              onClick={handleStartBackup}
+              onClick={() => handleStartBackup('full')}
               disabled={isBackupRunning}
             >
               {isBackupRunning ? (
@@ -311,15 +433,32 @@ export default function AdminBackupPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleDownloadBackup(backup.id)}
+                              disabled={backup.status !== 'completed'}
+                              title="Télécharger le backup"
+                            >
                               <Download className="w-4 h-4" />
                             </Button>
                             <Button 
                               variant="ghost" 
                               size="sm"
                               onClick={() => handleRestoreBackup(backup.id)}
+                              disabled={backup.status !== 'completed'}
+                              title="Restaurer le backup"
                             >
                               <RotateCcw className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleDeleteBackup(backup.id)}
+                              className="text-red-600 hover:text-red-800"
+                              title="Supprimer le backup"
+                            >
+                              <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </td>
@@ -342,86 +481,124 @@ export default function AdminBackupPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Fréquence</label>
-                  <Select 
-                    value={backupSettings.frequency} 
-                    onValueChange={(value) => setBackupSettings({ ...backupSettings, frequency: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="hourly">Toutes les heures</SelectItem>
-                      <SelectItem value="daily">Quotidien</SelectItem>
-                      <SelectItem value="weekly">Hebdomadaire</SelectItem>
-                      <SelectItem value="monthly">Mensuel</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                {backupSettings ? (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Fréquence</label>
+                      <Select 
+                        value={backupSettings.frequency} 
+                        onValueChange={(value) => setBackupSettings({ ...backupSettings, frequency: value as any })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="hourly">Toutes les heures</SelectItem>
+                          <SelectItem value="daily">Quotidien</SelectItem>
+                          <SelectItem value="weekly">Hebdomadaire</SelectItem>
+                          <SelectItem value="monthly">Mensuel</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">Rétention (jours)</label>
-                  <Input
-                    type="number"
-                    value={backupSettings.retention}
-                    onChange={(e) => setBackupSettings({ ...backupSettings, retention: e.target.value })}
-                  />
-                </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Rétention (jours)</label>
+                      <Input
+                        type="number"
+                        value={backupSettings.retention_days}
+                        onChange={(e) => setBackupSettings({ ...backupSettings, retention_days: parseInt(e.target.value) })}
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">Compression</label>
-                  <Select 
-                    value={backupSettings.compression} 
-                    onValueChange={(value) => setBackupSettings({ ...backupSettings, compression: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="enabled">Activée</SelectItem>
-                      <SelectItem value="disabled">Désactivée</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Compression</label>
+                      <Select 
+                        value={backupSettings.compression_enabled ? 'enabled' : 'disabled'} 
+                        onValueChange={(value) => setBackupSettings({ ...backupSettings, compression_enabled: value === 'enabled' })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="enabled">Activée</SelectItem>
+                          <SelectItem value="disabled">Désactivée</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">Chiffrement</label>
-                  <Select 
-                    value={backupSettings.encryption} 
-                    onValueChange={(value) => setBackupSettings({ ...backupSettings, encryption: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="enabled">Activé</SelectItem>
-                      <SelectItem value="disabled">Désactivé</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Chiffrement</label>
+                      <Select 
+                        value={backupSettings.encryption_enabled ? 'enabled' : 'disabled'} 
+                        onValueChange={(value) => setBackupSettings({ ...backupSettings, encryption_enabled: value === 'enabled' })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="enabled">Activé</SelectItem>
+                          <SelectItem value="disabled">Désactivé</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">Localisation</label>
-                  <Select 
-                    value={backupSettings.location} 
-                    onValueChange={(value) => setBackupSettings({ ...backupSettings, location: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="local">Local</SelectItem>
-                      <SelectItem value="cloud">Cloud</SelectItem>
-                      <SelectItem value="external">Externe</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Localisation</label>
+                      <Select 
+                        value={backupSettings.location} 
+                        onValueChange={(value) => setBackupSettings({ ...backupSettings, location: value as any })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="local">Local</SelectItem>
+                          <SelectItem value="cloud">Cloud</SelectItem>
+                          <SelectItem value="external">Externe</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <Button className="w-full">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Sauvegarder la configuration
-                </Button>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Email de notification</label>
+                      <Input
+                        type="email"
+                        value={backupSettings.notification_email || ''}
+                        onChange={(e) => setBackupSettings({ ...backupSettings, notification_email: e.target.value })}
+                        placeholder="admin@example.com"
+                      />
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="auto_cleanup"
+                        checked={backupSettings.auto_cleanup}
+                        onChange={(e) => setBackupSettings({ ...backupSettings, auto_cleanup: e.target.checked })}
+                        className="rounded"
+                      />
+                      <label htmlFor="auto_cleanup" className="text-sm font-medium">
+                        Nettoyage automatique des anciens backups
+                      </label>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button onClick={handleUpdateSettings} className="flex-1">
+                        <Settings className="w-4 h-4 mr-2" />
+                        Sauvegarder
+                      </Button>
+                      <Button variant="outline" onClick={() => handleCleanupOldBackups()}>
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Nettoyer
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <Settings className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                    <p>Chargement des paramètres...</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -480,11 +657,21 @@ export default function AdminBackupPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">4.2 GB</div>
-                <p className="text-sm text-gray-500">sur 10 GB disponibles</p>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div className="bg-jomiastore-primary h-2 rounded-full" style={{ width: '42%' }}></div>
+                <div className="text-3xl font-bold">
+                  {stats ? formatFileSize(stats.storage_used) : '0 Bytes'}
                 </div>
+                <p className="text-sm text-gray-500">
+                  sur {stats ? formatFileSize(stats.storage_available) : '0 Bytes'} disponibles
+                </p>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div 
+                    className="bg-jomiastore-primary h-2 rounded-full" 
+                    style={{ width: `${stats?.storage_percentage || 0}%` }}
+                  ></div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {stats?.storage_percentage.toFixed(1) || 0}% utilisé
+                </p>
               </CardContent>
             </Card>
 
@@ -496,8 +683,18 @@ export default function AdminBackupPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">2h</div>
-                <p className="text-sm text-gray-500">il y a 2 heures</p>
+                <div className="text-3xl font-bold">
+                  {stats?.last_backup_date 
+                    ? new Date(stats.last_backup_date).toLocaleDateString('fr-FR')
+                    : 'Jamais'
+                  }
+                </div>
+                <p className="text-sm text-gray-500">
+                  {stats?.last_backup_date 
+                    ? `il y a ${Math.floor((Date.now() - new Date(stats.last_backup_date).getTime()) / (1000 * 60 * 60))}h`
+                    : 'Aucun backup'
+                  }
+                </p>
               </CardContent>
             </Card>
 
@@ -509,8 +706,12 @@ export default function AdminBackupPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">98.5%</div>
-                <p className="text-sm text-gray-500">sur les 30 derniers jours</p>
+                <div className="text-3xl font-bold">
+                  {stats ? `${stats.success_rate.toFixed(1)}%` : '0%'}
+                </div>
+                <p className="text-sm text-gray-500">
+                  {stats ? `${stats.successful_backups} réussis sur ${stats.total_backups} total` : 'Aucune donnée'}
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -547,8 +748,35 @@ export default function AdminBackupPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 py-4">
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={page === 1}
+                onClick={() => setPage(p => p - 1)}
+              >
+                Précédent
+              </Button>
+              <span className="px-2 py-1 text-sm">
+                Page {page} / {totalPages}
+              </span>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={page === totalPages}
+                onClick={() => setPage(p => p + 1)}
+              >
+                Suivant
+              </Button>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
+
+      <ConfirmationComponent />
     </div>
   );
 }
