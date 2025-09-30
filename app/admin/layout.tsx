@@ -159,7 +159,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
               <div className="w-8 h-8 bg-jomiastore-primary rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">B</span>
               </div>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">La Boutique B</span>
+              <span className="text-lg font-semibold text-gray-900 dark:text-white">Admin Panel</span>
             </Link>
           </div>
 
@@ -196,7 +196,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             <div className="flex items-center space-x-3">
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">{adminName}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Administrateur</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Admin</p>
               </div>
               <div className="w-8 h-8 bg-jomiastore-primary rounded-full flex items-center justify-center">
                 <span className="text-white font-medium text-sm">{avatarInitial}</span>
