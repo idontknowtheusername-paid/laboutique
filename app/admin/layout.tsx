@@ -14,6 +14,9 @@ import { ToastProvider } from '@/components/admin/Toast';
 import MobileNavigation from '@/components/admin/MobileNavigation';
 import { SkipLinks } from '@/components/admin/SkipLink';
 import { QuickThemeToggle } from '@/components/admin/ThemeToggle';
+import { ScreenReaderAnnouncer } from '@/components/admin/AccessibilityEnhancer';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -268,12 +271,30 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Configuration React Query
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      refetchOnWindowFocus: false,
+      retry: 2
+    }
+  }
+});
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <AdminLayoutContent>{children}</AdminLayoutContent>
-      </ToastProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <ToastProvider>
+          <AdminLayoutContent>
+            <ScreenReaderAnnouncer />
+            {children}
+          </AdminLayoutContent>
+        </ToastProvider>
+      </ThemeProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
