@@ -256,7 +256,7 @@ export const cacheUtils = {
       async () => {
         // Ici vous appelleriez votre service de produits
         const { ProductsService } = await import('../services/products.service');
-        return await ProductsService.getById(productId);
+        return await ProductsService.getBySlug(productId);
       }
     );
   },
@@ -305,7 +305,7 @@ export const cacheUtils = {
       userId,
       async () => {
         const { CartService } = await import('../services/cart.service');
-        return await CartService.getCart(userId);
+        return await CartService.getCartSummary(userId);
       }
     );
   }
