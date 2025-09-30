@@ -99,7 +99,7 @@ export class ResponseOptimizer {
     // Headers de performance
     const performanceHeaders = this.getPerformanceHeaders();
 
-    return new NextResponse(compressedResponse.body, {
+    return new NextResponse(compressedResponse.body as any, {
       status: response.status,
       statusText: response.statusText,
       headers: {
@@ -131,7 +131,7 @@ export class ResponseOptimizer {
     // Compression pour les assets
     const compressedResponse = await this.compressResponse(request, response.body);
 
-    return new NextResponse(compressedResponse.body, {
+    return new NextResponse(compressedResponse.body as any, {
       status: response.status,
       statusText: response.statusText,
       headers: {
@@ -165,7 +165,7 @@ export class ResponseOptimizer {
     // Headers CORS
     const corsHeaders = this.getCorsHeaders(request);
 
-    return new NextResponse(compressedResponse.body, {
+    return new NextResponse(compressedResponse.body as any, {
       status: response.status,
       statusText: response.statusText,
       headers: {
@@ -243,8 +243,8 @@ export class ResponseOptimizer {
     switch (type) {
       case 'static':
         // Assets statiques - cache long
-        headers['Cache-Control'] = `public, max-age=${this.config.cache.sMaxAge}, immutable`;
-        headers['Expires'] = new Date(Date.now() + this.config.cache.sMaxAge * 1000).toUTCString();
+        headers['Cache-Control'] = `public, max-age=${this.config.cache.sMaxAge || 86400}, immutable`;
+        headers['Expires'] = new Date(Date.now() + (this.config.cache.sMaxAge || 86400) * 1000).toUTCString();
         break;
       
       case 'text':

@@ -27,6 +27,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: false,
       error: 'Failed to get monitoring data'
-    }, 500);
+    }, { status: 500 });
   }
 }

@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 // Touch-friendly button component
 export const TouchButton = ({ 
@@ -217,9 +218,11 @@ export const MobileImage = ({
   const { isLowEndDevice, connectionType } = useMobilePerformance();
   
   return (
-    <img
+    <Image
       src={src}
       alt={alt}
+      width={400}
+      height={300}
       className={`
         w-full h-auto
         ${isLowEndDevice ? 'blur-sm' : ''}

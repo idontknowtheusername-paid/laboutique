@@ -21,4 +21,9 @@ export class ProductsServiceOptimized {
   static async getCategories() {
     return await cacheUtils.getCategories();
   }
+
+  // Obtenir les produits par catégorie avec cache
+  static async getByCategory(category: string, options: { limit: number }) {
+    return await cacheUtils.getSearchResults('category', { category, limit: options.limit });
+  }
 }
