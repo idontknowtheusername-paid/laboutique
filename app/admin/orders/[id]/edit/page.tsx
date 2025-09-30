@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Save, X } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import { OrdersService } from '@/lib/services/orders.service';
 
 export default function AdminEditOrderPage() {
   const params = useParams();

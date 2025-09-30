@@ -1,7 +1,7 @@
 'use client';
 
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
 
 // Types pour le cache
 interface CacheConfig {
@@ -70,7 +70,7 @@ export function useCachedData<T>(
     queryKey,
     queryFn,
     staleTime: config?.staleTime || 5 * 60 * 1000, // 5 minutes par défaut
-    cacheTime: config?.cacheTime || 10 * 60 * 1000, // 10 minutes par défaut
+    gcTime: config?.cacheTime || 10 * 60 * 1000, // 10 minutes par défaut
     refetchOnWindowFocus: config?.refetchOnWindowFocus ?? true,
     refetchOnMount: config?.refetchOnMount ?? true,
     retry: config?.retry ?? 3
@@ -105,7 +105,7 @@ export function useCachedPaginatedData<T>(
     queryKey: [...queryKey, page, limit],
     queryFn: () => queryFn(page, limit),
     staleTime: config?.staleTime || 2 * 60 * 1000, // 2 minutes pour les données paginées
-    cacheTime: config?.cacheTime || 5 * 60 * 1000, // 5 minutes
+    gcTime: config?.cacheTime || 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: config?.refetchOnWindowFocus ?? false,
     refetchOnMount: config?.refetchOnMount ?? true,
     retry: config?.retry ?? 2
@@ -199,7 +199,7 @@ export function useLocalCache<T>(
     }
   }, [key]);
 
-  const [value, setValue] = React.useState<T>(() => {
+  const [value, setValue] = useState<T>(() => {
     const cached = getCachedValue();
     return cached !== null ? cached : initialValue;
   });
@@ -223,9 +223,9 @@ export function useDebouncedCache<T>(
   value: T,
   delay: number = 500
 ) {
-  const [debouncedValue, setDebouncedValue] = React.useState(value);
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
@@ -237,9 +237,26 @@ export function useDebouncedCache<T>(
 
   const { updateValue } = useLocalCache(key, value);
 
-  React.useEffect(() => {
+  useEffect(() => {
     updateValue(debouncedValue);
   }, [debouncedValue, updateValue]);
+
+  return debouncedValue;
+}
+
+// Hook pour le debounce simple
+export function useDebounce<T>(value: T, delay: number = 300): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
 
   return debouncedValue;
 }

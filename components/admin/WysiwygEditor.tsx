@@ -27,7 +27,7 @@ export default function WysiwygEditor({
   return (
     <div className="wysiwyg-editor">
       <Editor
-        onInit={(evt, editor) => editorRef.current = editor}
+        onInit={(evt: any, editor: any) => editorRef.current = editor}
         value={value}
         onEditorChange={handleEditorChange}
         init={{
@@ -48,7 +48,7 @@ export default function WysiwygEditor({
           statusbar: false,
           resize: false,
           readonly: disabled,
-          setup: (editor) => {
+          setup: (editor: any) => {
             editor.on('change', () => {
               const content = editor.getContent();
               onChange(content);

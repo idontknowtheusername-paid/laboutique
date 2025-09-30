@@ -93,7 +93,7 @@ export default function AdminOrderDetailPage() {
             created_at: new Date().toISOString()
           });
 
-        setOrder({ ...order, status: newStatus });
+        setOrder({ ...order, status: newStatus as Order['status'] });
         
         // Recharger l'historique
         const { data: historyData } = await (OrdersService as any).getSupabaseClient()

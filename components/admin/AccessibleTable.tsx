@@ -164,7 +164,7 @@ export function AccessibleTableHeaderCell({
       onKeyDown={handleKeyDown}
       tabIndex={sortable ? 0 : undefined}
       role={sortable ? "columnheader button" : "columnheader"}
-      aria-sort={sortable ? sortDirection : undefined}
+      aria-sort={sortable ? (sortDirection === 'asc' ? 'ascending' : sortDirection === 'desc' ? 'descending' : 'none') : undefined}
       aria-label={sortable ? `Trier par ${children}` : undefined}
     >
       <div className="flex items-center gap-2">

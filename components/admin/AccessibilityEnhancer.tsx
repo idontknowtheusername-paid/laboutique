@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 
 // Hook pour la gestion du focus
@@ -188,7 +188,7 @@ export function AccessibleTooltip({
   const triggerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  const updatePosition = () => {
+  const updatePosition = useCallback(() => {
     if (triggerRef.current && tooltipRef.current) {
       const triggerRect = triggerRef.current.getBoundingClientRect();
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
@@ -217,13 +217,13 @@ export function AccessibleTooltip({
 
       setPosition({ x, y });
     }
-  };
+  }, [placement]);
 
   useEffect(() => {
     if (isVisible) {
       updatePosition();
     }
-  }, [isVisible, placement]);
+  }, [isVisible, placement, updatePosition]);
 
   return (
     <div
