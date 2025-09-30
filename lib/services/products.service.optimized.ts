@@ -1,29 +1,29 @@
-import { ProductsService } from './products.service';
+import { cacheUtils } from '../cache/cache-strategy';
 
-// Service de produits optimisé (version simplifiée sans cache Redis)
+// Service de produits optimisé avec cache Redis
 export class ProductsServiceOptimized {
-  // Obtenir un produit
+  // Obtenir un produit avec cache
   static async getById(id: string) {
-    return await ProductsService.getBySlug(id);
+    return await cacheUtils.getProduct(id);
   }
 
-  // Obtenir les produits populaires
+  // Obtenir les produits populaires avec cache
   static async getPopular(limit: number = 8) {
-    return await ProductsService.getPopular(limit);
+    return await cacheUtils.getSearchResults('popular', { limit });
   }
 
-  // Rechercher des produits
+  // Rechercher des produits avec cache
   static async search(query: string, filters: any = {}) {
-    return await ProductsService.search(query, filters);
+    return await cacheUtils.getSearchResults(query, filters);
   }
 
-  // Obtenir les catégories
+  // Obtenir les catégories avec cache
   static async getCategories() {
-    return await ProductsService.getCategories();
+    return await cacheUtils.getCategories();
   }
 
-  // Obtenir les produits par catégorie
+  // Obtenir les produits par catégorie avec cache
   static async getByCategory(category: string, options: { limit: number }) {
-    return await ProductsService.getByCategory(category, options);
+    return await cacheUtils.getSearchResults('category', { category, limit: options.limit });
   }
 }

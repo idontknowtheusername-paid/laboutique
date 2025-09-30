@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ProductsService } from '@/lib/services/products.service';
+import { ProductsServiceOptimized } from '@/lib/services/products.service.optimized';
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,17 +11,17 @@ export async function GET(request: NextRequest) {
     let products;
     
     if (search) {
-      products = await ProductsService.search(search, { limit });
+      products = await ProductsServiceOptimized.search(search, { limit });
     } else if (category) {
-      products = await ProductsService.getByCategory(category, { limit });
+      products = await ProductsServiceOptimized.getByCategory(category, { limit });
     } else {
-      products = await ProductsService.getPopular(limit);
+      products = await ProductsServiceOptimized.getPopular(limit);
     }
 
     return NextResponse.json({
       success: true,
       data: products.data,
-      cached: false
+      cached: products.cached || false
     });
 
   } catch (error) {
