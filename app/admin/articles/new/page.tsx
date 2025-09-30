@@ -10,6 +10,7 @@ import { ArticlesService, CreateArticleData } from '@/lib/services/articles.serv
 import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '@/components/ui/badge';
 import { ImageUploader } from '@/components/admin/ImageUploader';
+import WysiwygEditor from '@/components/admin/WysiwygEditor';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default function AdminNewArticlePage() {
@@ -71,7 +72,15 @@ export default function AdminNewArticlePage() {
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm mb-2">Contenu</label>
-                  <Textarea value={form.content || ''} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>set({ content: e.target.value })} rows={12} />
+                  <WysiwygEditor
+                    value={form.content || ''}
+                    onChange={(content) => set({ content })}
+                    placeholder="Rédigez votre article ici..."
+                    height={500}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Utilisez l'éditeur pour formater votre contenu avec du texte enrichi, des images, des liens, etc.
+                  </p>
                 </div>
                 <div className="md:col-span-2">
                   <ImageUploader

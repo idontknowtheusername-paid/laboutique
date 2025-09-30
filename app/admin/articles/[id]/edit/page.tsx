@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArticlesService, ArticlePost } from '@/lib/services/articles.service';
 import { Badge } from '@/components/ui/badge';
+import WysiwygEditor from '@/components/admin/WysiwygEditor';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 
 export default function AdminEditArticlePage() {
@@ -71,7 +72,15 @@ export default function AdminEditArticlePage() {
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm mb-2">Contenu</label>
-                  <Textarea value={post.content || ''} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>setPost({ ...post, content: e.target.value })} rows={12} />
+                  <WysiwygEditor
+                    value={post.content || ''}
+                    onChange={(content) => setPost({ ...post, content })}
+                    placeholder="Rédigez votre article ici..."
+                    height={500}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Utilisez l'éditeur pour formater votre contenu avec du texte enrichi, des images, des liens, etc.
+                  </p>
                 </div>
               </CardContent>
             </Card>

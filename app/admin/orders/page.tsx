@@ -19,6 +19,15 @@ export default function AdminOrdersPage() {
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
 
+  // Actions pour les commandes
+  const handleViewOrder = (orderId: string) => {
+    window.location.href = `/admin/orders/${orderId}`;
+  };
+
+  const handleEditOrder = (orderId: string) => {
+    window.location.href = `/admin/orders/${orderId}/edit`;
+  };
+
   const load = React.useCallback(async () => {
     setLoading(true);
     const res = await OrdersService.getRecent(100);
@@ -121,8 +130,22 @@ export default function AdminOrdersPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{new Date(o.created_at).toLocaleDateString('fr-FR')}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="sm"><Eye className="w-4 h-4" /></Button>
-                          <Button variant="ghost" size="sm"><Edit className="w-4 h-4" /></Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleViewOrder(o.id)}
+                            title="Voir les détails"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleEditOrder(o.id)}
+                            title="Modifier la commande"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
                         </div>
                       </td>
                     </tr>

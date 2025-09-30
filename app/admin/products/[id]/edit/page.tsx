@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProductsService, UpdateProductData, Product } from '@/lib/services/products.service';
 import { Badge } from '@/components/ui/badge';
+import WysiwygEditor from '@/components/admin/WysiwygEditor';
 import { showSuccessToast, showErrorToast } from '@/components/ui/enhanced-toast';
 
 export default function AdminEditProductPage() {
@@ -79,7 +80,12 @@ export default function AdminEditProductPage() {
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm mb-2">Description</label>
-                  <Textarea value={product.description || ''} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>setProduct({ ...product, description: e.target.value })} />
+                  <WysiwygEditor
+                    value={product.description || ''}
+                    onChange={(content) => setProduct({ ...product, description: content })}
+                    placeholder="Description du produit..."
+                    height={300}
+                  />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm mb-2">Résumé</label>

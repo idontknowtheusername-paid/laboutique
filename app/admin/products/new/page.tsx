@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { ImageUploader } from '@/components/admin/ImageUploader';
 import { VendorSelector } from '@/components/admin/VendorSelector';
 import { CategorySelector } from '@/components/admin/CategorySelector';
+import WysiwygEditor from '@/components/admin/WysiwygEditor';
 import { Download, AlertCircle, CheckCircle } from 'lucide-react';
 
 // Fonction utilitaire pour générer un slug
@@ -314,13 +315,15 @@ export default function AdminNewProductPage() {
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">Description complète du produit</label>
-                  <Textarea 
+                  <WysiwygEditor
+                    value={form.description || ''}
+                    onChange={(content) => update({ description: content })}
                     placeholder="Décrivez en détail votre produit, ses caractéristiques, avantages, spécifications techniques..."
-                    rows={4}
-                    value={form.description || ''} 
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>)=>update({ description: e.target.value })} 
+                    height={300}
                   />
-                  <p className="text-xs text-gray-500 mt-1">Description détaillée du produit</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Description détaillée du produit avec formatage enrichi (gras, italique, listes, liens, etc.)
+                  </p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">Aperçu du produit</label>
