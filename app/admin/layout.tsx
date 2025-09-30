@@ -9,8 +9,13 @@ import { Separator } from '@/components/ui/separator';
 import { Bell, LayoutGrid, Users, ShoppingCart, Package, Shield, Megaphone, Settings, Flag, Home } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import NotificationCenter from '@/components/admin/NotificationCenter';
+import { ThemeProvider } from '@/components/admin/ThemeProvider';
+import { ToastProvider } from '@/components/admin/Toast';
+import MobileNavigation from '@/components/admin/MobileNavigation';
+import { SkipLinks } from '@/components/admin/SkipLink';
+import { QuickThemeToggle } from '@/components/admin/ThemeToggle';
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, profile, loading, signOut } = useAuth();
@@ -35,6 +40,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return false;
   });
 
+  // Check authorization on mount and when user/profile changes
   useEffect(() => {
     if (loading) return;
 
@@ -82,21 +88,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       if (typeof window !== 'undefined') {
         try { window.sessionStorage.setItem('adminAuthorized', '1'); } catch {}
       }
-      const email = (user.email || 'admin').trim();
-      setAvatarInitial(email.charAt(0).toUpperCase());
-      setAdminName('Admin');
     }
-  }, [loading, user, profile, router]);
+  }, [user, profile, loading, router]);
 
-  // Afficher un loader pendant la vérification
-  if (!hasChecked) {
+  // Show loading while checking auth
+  if (loading || !hasChecked) {
     return (
-      <div className="min-h-screen bg-jomiastore-background flex items-center justify-center">
+      <div className="min-h-screen bg-jomiastore-background dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 bg-gradient-to-r from-jomiastore-primary to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-sm">B</span>
           </div>
-          <p className="text-gray-600">Vérification des permissions...</p>
+          <p className="text-gray-600 dark:text-gray-400">Vérification des permissions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show unauthorized if not authorized
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-jomiastore-background dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 bg-gradient-to-r from-jomiastore-primary to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <span className="text-white font-bold text-sm">B</span>
+          </div>
+          <p className="text-gray-600 dark:text-gray-400">Vérification des permissions...</p>
         </div>
       </div>
     );
@@ -120,111 +137,143 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/', label: "Voir le site", icon: Home, external: true },
   ];
 
-
   return (
-      <div className="min-h-screen bg-jomiastore-background">
-        <header className="bg-white border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="icon" className="mr-2">
-                    <span className="sr-only">Ouvrir le menu</span>
-                    ☰
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-72 p-0">
-                <SheetHeader className="sr-only">
-                  <SheetTitle>Menu d'administration</SheetTitle>
-                </SheetHeader>
-                  <div className="p-4 flex items-center gap-3 border-b">
-                    <div className="w-8 h-8 bg-gradient-to-r from-jomiastore-primary to-blue-600 rounded-lg flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">B</span>
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold">Admin – La Boutique B</div>
-                      <div className="text-xs text-gray-500">Panneau d'administration</div>
-                    </div>
-                  </div>
-                  <nav className="p-2">
-                    {nav.map((item) => {
-                      const Icon = item.icon;
-                      const active = pathname?.startsWith(item.href);
-                      return (
-                        <Link key={item.href} href={item.href} className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 ${active ? 'bg-gray-100 text-gray-900 border border-gray-200' : 'text-gray-700'}`}>
-                          <Icon className="w-4 h-4" />
-                          {item.label}
-                        </Link>
-                      );
-                    })}
-                    
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      {externalLinks.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                          <Link 
-                            key={item.href} 
-                            href={item.href} 
-                            target={item.external ? "_blank" : undefined}
-                            rel={item.external ? "noopener noreferrer" : undefined}
-                            className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 text-gray-700"
-                          >
-                            <Icon className="w-4 h-4" />
-                            {item.label}
-                          </Link>
-                        );
-                      })}
-                      <button
-                        onClick={() => signOut()}
-                        className="mt-3 w-full text-left flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 text-red-600"
-                        type="button"
-                        aria-label="Se déconnecter"
-                      >
-                        <Shield className="w-4 h-4" /> Se déconnecter
-                      </button>
-                    </div>
-                  </nav>
-                </SheetContent>
-              </Sheet>
-              <div>
-                <h1 className="text-lg font-bold">Admin – La Boutique B</h1>
-                <p className="text-xs text-gray-500">Panneau d'administration</p>
+    <div className="min-h-screen bg-jomiastore-background dark:bg-gray-900">
+      <SkipLinks />
+      
+      {/* Header */}
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40" id="navigation">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link href="/admin/dashboard" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-jomiastore-primary rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">B</span>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setShowNotifications(true)}
-                className="relative"
-              >
-                <Bell className="w-4 h-4 mr-2" /> 
-                Notifications
-                {notificationCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {notificationCount}
-                  </span>
-                )}
-              </Button>
-              <div className="w-8 h-8 bg-jomiastore-primary rounded-full flex items-center justify-center" title={adminName}>
+              <span className="text-xl font-bold text-gray-900 dark:text-white">La Boutique B</span>
+            </Link>
+          </div>
+
+          {/* Mobile Navigation */}
+          <div className="lg:hidden">
+            <MobileNavigation 
+              currentPath={pathname}
+              onNavigate={(path) => router.push(path)}
+              notificationCount={notificationCount}
+            />
+          </div>
+
+          {/* Desktop Right side */}
+          <div className="hidden lg:flex items-center space-x-4">
+            <QuickThemeToggle />
+            
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowNotifications(true)}
+              className="relative"
+              aria-label={`Notifications ${notificationCount > 0 ? `(${notificationCount} nouvelles)` : ''}`}
+            >
+              <Bell className="w-4 h-4 mr-2" /> 
+              Notifications
+              {notificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {notificationCount}
+                </span>
+              )}
+            </Button>
+
+            {/* User menu */}
+            <div className="flex items-center space-x-3">
+              <div className="text-right">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{adminName}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Administrateur</p>
+              </div>
+              <div className="w-8 h-8 bg-jomiastore-primary rounded-full flex items-center justify-center">
                 <span className="text-white font-medium text-sm">{avatarInitial}</span>
               </div>
+              <Button variant="outline" size="sm" onClick={signOut}>
+                Déconnexion
+              </Button>
             </div>
           </div>
-        </header>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <main>
-            {children}
-          </main>
         </div>
+      </header>
 
-        {/* Centre de notifications */}
-        <NotificationCenter 
-          isOpen={showNotifications}
-          onClose={() => setShowNotifications(false)}
-        />
+      <div className="flex">
+        {/* Desktop Sidebar */}
+        <aside className="hidden lg:block w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 min-h-screen">
+          <div className="p-4">
+            <nav className="space-y-2" role="navigation" aria-label="Navigation principale">
+              {nav.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-jomiastore-primary text-white'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <Separator className="my-4" />
+
+            <nav className="space-y-2" role="navigation" aria-label="Liens externes">
+              {externalLinks.map((item) => {
+                const Icon = item.icon;
+                
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    target={item.external ? '_blank' : undefined}
+                    rel={item.external ? 'noopener noreferrer' : undefined}
+                    className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <Icon className="w-4 h-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <div className="flex-1">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <main id="main-content" role="main">
+              {children}
+            </main>
+          </div>
+        </div>
       </div>
+
+      {/* Centre de notifications */}
+      <NotificationCenter 
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />
+    </div>
   );
 }
 
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider>
+      <ToastProvider>
+        <AdminLayoutContent>{children}</AdminLayoutContent>
+      </ToastProvider>
+    </ThemeProvider>
+  );
+}

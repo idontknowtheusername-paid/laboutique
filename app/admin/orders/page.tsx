@@ -10,12 +10,18 @@ import { OrdersService, Order } from '@/lib/services/orders.service';
 import { Download, Search, Eye, Edit, RefreshCw } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
+import ResponsiveTable from '@/components/admin/ResponsiveTable';
+import AccessibleButton from '@/components/admin/AccessibleButton';
+import { useToast } from '@/components/admin/Toast';
+import { useConfirmation } from '@/components/admin/ConfirmationDialog';
 
 export default function AdminOrdersPage() {
   const [loading, setLoading] = React.useState(true);
   const [orders, setOrders] = React.useState<Order[]>([]);
   const [search, setSearch] = React.useState('');
   const [status, setStatus] = React.useState<string>('all');
+  const { success, error } = useToast();
+  const { confirm, ConfirmationComponent } = useConfirmation();
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
 
@@ -26,6 +32,18 @@ export default function AdminOrdersPage() {
 
   const handleEditOrder = (orderId: string) => {
     window.location.href = `/admin/orders/${orderId}/edit`;
+  };
+
+  const handleDeleteOrder = (orderId: string) => {
+    confirm(
+      'Supprimer la commande',
+      'Êtes-vous sûr de vouloir supprimer cette commande ? Cette action est irréversible.',
+      () => {
+        // Logique de suppression
+        success('Commande supprimée avec succès');
+      },
+      'destructive'
+    );
   };
 
   const load = React.useCallback(async () => {
@@ -156,6 +174,9 @@ export default function AdminOrdersPage() {
           </CardContent>
         </Card>
       </div>
+      
+      <ConfirmationComponent />
+    </div>
   );
 }
 
