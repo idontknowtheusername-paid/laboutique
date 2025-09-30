@@ -115,13 +115,7 @@ export class CouponsService extends BaseService {
           end_date,
           created_at,
           updated_at,
-          created_by,
-          created_by_user:profiles!coupons_created_by_fkey(
-            id,
-            email,
-            first_name,
-            last_name
-          )
+          created_by
         `, { count: 'exact' });
 
       // Appliquer les filtres

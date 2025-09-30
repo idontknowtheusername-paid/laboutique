@@ -102,13 +102,7 @@ export class BackupService extends BaseService {
           compression_ratio,
           encryption_enabled,
           checksum,
-          created_by,
-          created_by_user:profiles!backups_created_by_fkey(
-            id,
-            email,
-            first_name,
-            last_name
-          )
+          created_by
         `, { count: 'exact' });
 
       // Appliquer les filtres
@@ -178,13 +172,7 @@ export class BackupService extends BaseService {
           compression_ratio,
           encryption_enabled,
           checksum,
-          created_by,
-          created_by_user:profiles!backups_created_by_fkey(
-            id,
-            email,
-            first_name,
-            last_name
-          )
+          created_by
         `)
         .eq('id', id)
         .single();
