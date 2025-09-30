@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Separator } from '@/components/ui/separator';
 import { Bell, LayoutGrid, Users, ShoppingCart, Package, Shield, Megaphone, Settings, Flag, Home } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import NotificationCenter from '@/components/admin/NotificationCenter';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -15,6 +16,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user, profile, loading, signOut } = useAuth();
   const [avatarInitial, setAvatarInitial] = useState<string>('A');
   const [adminName, setAdminName] = useState<string>('Admin');
+  const [showNotifications, setShowNotifications] = useState<boolean>(false);
+  const [notificationCount, setNotificationCount] = useState<number>(0);
   const [hasChecked, setHasChecked] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -185,8 +188,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                <Bell className="w-4 h-4 mr-2" /> Notifications
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowNotifications(true)}
+                className="relative"
+              >
+                <Bell className="w-4 h-4 mr-2" /> 
+                Notifications
+                {notificationCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {notificationCount}
+                  </span>
+                )}
               </Button>
               <div className="w-8 h-8 bg-jomiastore-primary rounded-full flex items-center justify-center" title={adminName}>
                 <span className="text-white font-medium text-sm">{avatarInitial}</span>
@@ -200,6 +214,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {children}
           </main>
         </div>
+
+        {/* Centre de notifications */}
+        <NotificationCenter 
+          isOpen={showNotifications}
+          onClose={() => setShowNotifications(false)}
+        />
       </div>
   );
 }

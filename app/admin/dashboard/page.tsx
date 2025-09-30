@@ -13,7 +13,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { Users, ShoppingCart, DollarSign, Package, TrendingUp, Star } from 'lucide-react';
+import { Users, ShoppingCart, DollarSign, Package, TrendingUp, Star, Bell, AlertTriangle, Clock, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { VendorsService, Vendor } from '@/lib/services/vendors.service';
@@ -31,6 +31,8 @@ export default function AdminDashboard() {
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [pendingTasks, setPendingTasks] = useState<any[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -62,6 +64,19 @@ export default function AdminDashboard() {
         // Récupérer les commandes récentes
         const ordersRes = await OrdersService.getRecent(10);
         if (ordersRes.success && ordersRes.data) setRecentOrders(ordersRes.data);
+
+        // Simuler des alertes et tâches en attente
+        setAlerts([
+          { id: 1, type: 'warning', message: '3 produits en rupture de stock', count: 3 },
+          { id: 2, type: 'info', message: '5 nouvelles commandes en attente', count: 5 },
+          { id: 3, type: 'error', message: '2 paiements échoués', count: 2 }
+        ]);
+
+        setPendingTasks([
+          { id: 1, type: 'order', title: 'Commande #12345 en attente', priority: 'high' },
+          { id: 2, type: 'product', title: 'Approuver 3 nouveaux produits', priority: 'medium' },
+          { id: 3, type: 'vendor', title: '2 vendeurs en attente d\'approbation', priority: 'low' }
+        ]);
 
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error);
@@ -182,6 +197,62 @@ export default function AdminDashboard() {
                   'Chargement...'
                 }
               </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Alertes et tâches en attente */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-orange-500" />
+                Alertes importantes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {alerts.map((alert) => (
+                  <div key={alert.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${
+                        alert.type === 'error' ? 'bg-red-500' : 
+                        alert.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+                      }`}></div>
+                      <span className="font-medium">{alert.message}</span>
+                    </div>
+                    <Badge className="bg-gray-100 text-gray-800">{alert.count}</Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-blue-500" />
+                Tâches en attente
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {pendingTasks.map((task) => (
+                  <div key={task.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-4 h-4 text-gray-400" />
+                      <span className="font-medium">{task.title}</span>
+                    </div>
+                    <Badge className={
+                      task.priority === 'high' ? 'bg-red-100 text-red-800' :
+                      task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }>
+                      {task.priority}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
