@@ -90,11 +90,11 @@ export default function FlashSalesConnected() {
 
   if (loading) {
     return (
-      <section className="py-8 bg-gradient-to-r from-red-500 to-pink-600">
+      <section className="py-12 bg-jomionstore-background">
         <div className="container">
-          <div className="text-center text-white">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
-            <p className="mt-2">Chargement des offres flash...</p>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-jomionstore-primary mx-auto"></div>
+            <p className="mt-2 text-gray-600">Chargement des offres flash...</p>
           </div>
         </div>
       </section>
@@ -103,11 +103,11 @@ export default function FlashSalesConnected() {
 
   if (products.length === 0) {
     return (
-      <section className="py-8 bg-gradient-to-r from-red-500 to-pink-600">
+      <section className="py-12 bg-jomionstore-background">
         <div className="container">
-          <div className="text-center text-white">
-            <h2 className="text-2xl font-bold mb-2">⚡ Ventes Flash</h2>
-            <p>Aucune offre flash disponible pour le moment</p>
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-2 text-gray-900">⚡ Ventes Flash</h2>
+            <p className="text-gray-600">Aucune offre flash disponible pour le moment</p>
           </div>
         </div>
       </section>
@@ -115,21 +115,21 @@ export default function FlashSalesConnected() {
   }
 
   return (
-    <section className="py-8 bg-gradient-to-r from-red-500 to-pink-600">
+    <section className="py-12 bg-jomionstore-background">
       <div className="container">
         {/* Header */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-6">
-          <div className="text-white mb-4 md:mb-0">
-            <h2 className="text-2xl md:text-3xl font-bold flex items-center">
+        <div className="flex flex-col md:flex-row items-center justify-between mb-8">
+          <div className="mb-4 md:mb-0">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center">
               ⚡ Ventes Flash
             </h2>
-            <p className="text-red-100">Offres limitées, ne les ratez pas !</p>
+            <p className="text-gray-600">Offres limitées, ne les ratez pas !</p>
           </div>
           
           {/* Countdown Timer */}
-          <div className="flex items-center space-x-4 bg-white/20 backdrop-blur rounded-lg px-4 py-2">
-            <Clock className="w-5 h-5 text-white" />
-            <div className="flex space-x-2 text-white font-mono">
+          <div className="flex items-center space-x-4 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+            <Clock className="w-5 h-5 text-red-600" />
+            <div className="flex space-x-2 text-red-600 font-mono">
               <div className="text-center">
                 <div className="text-xl font-bold">{String(timeLeft.hours).padStart(2, '0')}</div>
                 <div className="text-xs">H</div>
@@ -153,18 +153,18 @@ export default function FlashSalesConnected() {
           <div className="overflow-hidden">
             <div 
               className="flex transition-transform duration-300 ease-in-out"
-              style={{ transform: `translateX(-${currentIndex * (100 / 3)}%)` }}
+              style={{ transform: `translateX(-${currentIndex * (100 / 2)}%)` }}
             >
               {products.map((product) => {
                 const discount = product.compare_price ? calculateDiscount(product.price, product.compare_price) : 0;
                 
                 return (
-                  <div key={product.id} className="w-1/3 flex-shrink-0 px-2">
-                    <Card className="bg-white hover:shadow-lg transition-shadow duration-300">
-                      <CardContent className="p-4">
-                        <div className="relative mb-4">
+                  <div key={product.id} className="w-1/2 flex-shrink-0 px-3">
+                    <Card className="bg-white hover:shadow-xl transition-all duration-300 border border-gray-200">
+                      <CardContent className="p-6">
+                        <div className="relative mb-6">
                           <Link href={`/product/${product.slug}`}>
-                            <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
+                            <div className="aspect-square relative overflow-hidden rounded-xl bg-gray-100">
                               {product.images?.[0] ? (
                                 <Image
                                   src={product.images[0]}
@@ -181,39 +181,39 @@ export default function FlashSalesConnected() {
                           </Link>
                           
                           {discount > 0 && (
-                            <Badge className="absolute top-2 left-2 bg-red-500 text-white">
+                            <Badge className="absolute top-3 left-3 bg-red-500 text-white font-bold text-sm px-3 py-1">
                               -{discount}%
                             </Badge>
                           )}
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-4">
                           <Link href={`/product/${product.slug}`}>
-                            <h3 className="font-medium text-sm line-clamp-2 hover:text-red-600">
+                            <h3 className="font-semibold text-lg line-clamp-2 hover:text-jomionstore-primary transition-colors">
                               {product.name}
                             </h3>
                           </Link>
 
-                          <div className="flex items-center space-x-1">
+                          <div className="flex items-center space-x-2">
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`w-3 h-3 ${i < 4
+                                className={`w-4 h-4 ${i < 4
                                     ? 'fill-yellow-400 text-yellow-400'
                                     : 'fill-gray-200 text-gray-200'
                                   }`}
                               />
                             ))}
-                            <span className="text-xs text-gray-600">(4.5)</span>
+                            <span className="text-sm text-gray-600">(4.5)</span>
                           </div>
 
-                          <div className="space-y-1">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-bold text-red-600">
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-3">
+                              <span className="font-bold text-2xl text-jomionstore-primary">
                                 {formatPrice(product.price)}
                               </span>
                               {product.compare_price && (
-                                <span className="text-sm text-gray-500 line-through">
+                                <span className="text-lg text-gray-500 line-through">
                                   {formatPrice(product.compare_price)}
                                 </span>
                               )}
@@ -221,8 +221,8 @@ export default function FlashSalesConnected() {
                           </div>
 
                           <Button
-                            className="w-full bg-red-500 hover:bg-red-600 text-white"
-                            size="sm"
+                            className="w-full bg-jomionstore-primary hover:bg-blue-700 text-white font-semibold py-3"
+                            size="lg"
                             onClick={() => handleAddToCart(product)}
                             disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
                           >
@@ -241,32 +241,32 @@ export default function FlashSalesConnected() {
           </div>
 
           {/* Navigation Buttons */}
-          {products.length > 3 && (
+          {products.length > 2 && (
             <>
               <Button
                 variant="ghost"
                 size="sm"
-                className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full w-10 h-10 p-0"
+                className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full w-12 h-12 p-0 shadow-lg border border-gray-200"
                 onClick={prevSlide}
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-6 h-6" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full w-10 h-10 p-0"
+                className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full w-12 h-12 p-0 shadow-lg border border-gray-200"
                 onClick={nextSlide}
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-6 h-6" />
               </Button>
             </>
           )}
         </div>
 
         {/* View All Link */}
-        <div className="text-center mt-6">
+        <div className="text-center mt-8">
           <Link href="/products?sale=true">
-            <Button variant="outline" className="bg-white/20 border-white text-white hover:bg-white hover:text-red-600">
+            <Button variant="outline" className="bg-jomionstore-primary text-white border-jomionstore-primary hover:bg-blue-700 hover:border-blue-700 px-8 py-3">
               Voir toutes les offres flash
             </Button>
           </Link>
