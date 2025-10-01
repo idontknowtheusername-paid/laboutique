@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import Header from '@/components/layout/Header';
-import CategoryMenu from '@/components/layout/CategoryMenu';
+import ImprovedCategoryMenu from '@/components/layout/ImprovedCategoryMenu';
 import Footer from '@/components/layout/Footer';
 import { ProductsService, CategoriesService, Product, Category } from '@/lib/services';
 import { ProductSkeleton } from '@/components/ui/loading-skeleton';
@@ -134,7 +134,7 @@ export default function Home() {
     return (
       <main className="min-h-screen bg-jomiastore-background">
         <Header />
-        <CategoryMenu />
+        <ImprovedCategoryMenu />
         <div className="container py-16">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-jomiastore-primary mx-auto mb-4"></div>
@@ -150,7 +150,7 @@ export default function Home() {
     return (
       <main className="min-h-screen bg-jomiastore-background">
         <Header />
-        <CategoryMenu />
+        <ImprovedCategoryMenu />
         <div className="container py-16">
           <div className="text-center">
             <p className="text-red-600 mb-4">Erreur: {state.error}</p>
@@ -177,7 +177,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-jomiastore-background">
       <Header />
-      <CategoryMenu />
+      <ImprovedCategoryMenu />
 
       <div className="pt-2">
         <section className="container mb-4">
