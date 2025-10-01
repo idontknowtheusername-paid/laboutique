@@ -121,7 +121,7 @@ const HeroCarousel = () => {
   }, [isAutoPlaying, isVisible, nextSlide]);
 
   return (
-    <div ref={carouselRef} className="relative h-[500px] lg:h-[600px] overflow-hidden rounded-xl shadow-2xl">
+    <div ref={carouselRef} className="relative h-[250px] lg:h-[300px] overflow-hidden rounded-xl shadow-2xl">
       {/* Slides */}
       <div className="relative h-full">
         {slides.map((slide, index) => (

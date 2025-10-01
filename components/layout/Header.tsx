@@ -108,8 +108,8 @@ const Header = () => {
         isScrolled ? "shadow-md" : "shadow-sm"
       }`}
     >
-      {/* Announcement Bar */}
-      <div className="bg-gradient-to-r from-jomiastore-primary to-blue-600 text-white py-2">
+      {/* Announcement Bar - TEMPORAIREMENT MASQUÉ */}
+      {/* <div className="bg-gradient-to-r from-jomiastore-primary to-blue-600 text-white py-2">
         <div className="container relative">
           <Carousel setApi={setAnnApi} opts={{ align: "start", loop: true }}>
             <CarouselContent>
@@ -130,7 +130,7 @@ const Header = () => {
             </CarouselContent>
           </Carousel>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Header */}
       <div className="container py-4">
