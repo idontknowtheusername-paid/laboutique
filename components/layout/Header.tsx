@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Search, User, Heart, ShoppingCart, Menu, X, Crown, Package, CreditCard, MapPin, Bell, Settings, TicketPercent, Wallet, Shield, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -135,18 +134,8 @@ const Header = () => {
       {/* Main Header */}
       <div className="container py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3">
-            <span className="inline-block h-10 w-10 relative">
-              <Image
-                src="/logo.svg"
-                alt="JomiaStore Hub"
-                fill
-                className="object-contain"
-                sizes="40px"
-                priority
-              />
-            </span>
+          {/* Logo - Nom seulement */}
+          <Link href="/" className="flex items-center">
             <div>
               <h1 className="text-2xl font-bold text-jomiastore-primary">
                 JomiaStore Hub
