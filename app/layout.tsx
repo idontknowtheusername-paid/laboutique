@@ -7,7 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 export const metadata: Metadata = {
   title: "JomionStore - Benin Elite Shopping Experience",
   description:
-    "JomionStore Hub - Le centre commercial digital du Bénin. Découvrez des milliers de produits authentiques avec une livraison rapide et un service client exceptionnel.",
+    "JomionStore - Le centre commercial digital du Bénin. Découvrez des milliers de produits authentiques avec une livraison rapide et un service client exceptionnel.",
   keywords:
     "e-commerce Bénin, shopping en ligne, électronique, mode, maison, beauté, JomionStore",
   authors: [{ name: "JomionStore Team" }],
@@ -19,14 +19,14 @@ export const metadata: Metadata = {
     url: "https://www.jomionstore.com",
     siteName: "JomionStore",
     title: "JomionStore - Benin Elite Shopping Experience",
-    description: "JomionStore Hub - Le centre commercial digital du Bénin",
+    description: "JomionStore - Le centre commercial digital du Bénin",
     images: ["/images/og-image.jpg"],
   },
   twitter: {
     card: "summary_large_image",
     site: "@JomionStoreBenin",
     title: "JomionStore - Benin Elite Shopping Experience",
-    description: "JomionStore Hub - Le centre commercial digital du Bénin",
+    description: "JomionStore - Le centre commercial digital du Bénin",
     images: ["/images/twitter-image.jpg"],
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.jomionstore.com'),

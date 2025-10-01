@@ -29,9 +29,9 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
                 <span className="relative h-8 w-8">
-                  <Image src="/logo-mono.svg" alt="JomionStore Hub" fill className="object-contain" sizes="32px" />
+                  <Image src="/logo-mono.svg" alt="JomionStore" fill className="object-contain" sizes="32px" />
                 </span>
-                <span className="font-semibold">JomionStore Hub</span>
+                <span className="font-semibold">JomionStore</span>
               </div>
               <div className="space-y-2 text-gray-300 text-xs">
                 <div className="flex items-center space-x-2">

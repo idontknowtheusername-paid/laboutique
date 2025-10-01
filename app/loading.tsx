@@ -103,7 +103,7 @@ export default function GlobalLoading() {
           <div className="space-y-6">
             <div className="space-y-2">
               <h2 className="text-3xl font-bold bg-gradient-to-r from-jomionstore-primary to-blue-600 bg-clip-text text-transparent">
-                JomionStore Hub
+                JomionStore
               </h2>
               <p className="text-gray-600 text-lg">
                 Préparation de votre expérience shopping...

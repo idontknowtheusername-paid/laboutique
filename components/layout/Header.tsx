@@ -138,7 +138,7 @@ const Header = () => {
           <Link href="/" className="flex items-center">
             <div>
               <h1 className="text-2xl font-bold text-jomionstore-primary">
-                JomionStore Hub
+                JomionStore
               </h1>
               <p className="text-xs text-gray-500 -mt-1">
                 Centre commercial digital

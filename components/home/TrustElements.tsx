@@ -89,7 +89,7 @@ const TrustElements = () => {
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Pourquoi choisir JomionStore Hub ?
+              Pourquoi choisir JomionStore ?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Nous nous engageons à vous offrir la meilleure expérience d'achat en ligne au Bénin
@@ -126,7 +126,7 @@ const TrustElements = () => {
           <div className="bg-gradient-to-r from-jomionstore-primary to-blue-600 rounded-2xl p-8 md:p-12 text-white">
             <div className="text-center mb-8">
               <h3 className="text-2xl md:text-3xl font-bold mb-2">
-                JomionStore Hub en chiffres
+                JomionStore en chiffres
               </h3>
               <p className="text-blue-100">
                 Des résultats qui parlent d'eux-mêmes
@@ -199,7 +199,7 @@ const TrustElements = () => {
                 name: "Marie K.",
                 location: "Cotonou",
                 rating: 5,
-                comment: "Service exceptionnel ! Livraison rapide et produits de qualité. Je recommande vivement JomionStore Hub."
+                comment: "Service exceptionnel ! Livraison rapide et produits de qualité. Je recommande vivement JomionStore."
               },
               {
                 name: "Jean-Baptiste A.",

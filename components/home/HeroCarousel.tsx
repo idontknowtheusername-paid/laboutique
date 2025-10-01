@@ -9,7 +9,7 @@ import Image from 'next/image';
 const slides = [
   {
     id: 1,
-    title: 'Découvrez JomionStore Hub',
+    title: 'Découvrez JomionStore',
     subtitle: 'Le centre commercial digital du Bénin',
     description: 'Des milliers de produits authentiques, une livraison rapide et un service client exceptionnel.',
     cta: 'Découvrir maintenant',

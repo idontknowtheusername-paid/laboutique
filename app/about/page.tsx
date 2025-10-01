@@ -107,7 +107,7 @@ export default function AboutPage() {
             <span className="block text-jomionstore-primary">au Bénin</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            JomionStore Hub révolutionne l'expérience e-commerce en Afrique de l'Ouest en tant que 
+            JomionStore révolutionne l'expérience e-commerce en Afrique de l'Ouest en tant que 
             centre commercial digital qui connecte les meilleurs vendeurs avec des millions de clients.
           </p>
         </div>
@@ -272,7 +272,7 @@ export default function AboutPage() {
         {/* CTA Section */}
         <div className="bg-gradient-to-r from-jomionstore-primary to-blue-600 rounded-xl p-8 md:p-12 text-white text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Rejoignez l'aventure JomionStore Hub
+            Rejoignez l'aventure JomionStore
           </h2>
           <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
             Que vous soyez client ou vendeur, découvrez une nouvelle façon de faire du commerce en ligne

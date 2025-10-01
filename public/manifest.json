@@ -1,7 +1,7 @@
 {
-  "name": "JomionStore Hub - Le centre commercial digital du Bénin",
+  "name": "JomionStore - Le centre commercial digital du Bénin",
   "short_name": "JomionStore",
-  "description": "JomionStore Hub - Le centre commercial digital du Bénin. Découvrez des milliers de produits authentiques avec une livraison rapide et un service client exceptionnel.",
+  "description": "JomionStore - Le centre commercial digital du Bénin. Découvrez des milliers de produits authentiques avec une livraison rapide et un service client exceptionnel.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#F8FAFC",
