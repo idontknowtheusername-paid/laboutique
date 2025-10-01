@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer';
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-jomiastore-background">
+    <div className="min-h-screen bg-jomionstore-background">
       <Header />
       <CategoryMenu />
 

@@ -10,7 +10,7 @@ const MobileAppSection = () => {
   return (
     <>
       {/* Desktop Version */}
-      <section className="hidden md:block py-12 bg-gradient-to-r from-jomiastore-primary to-blue-600 text-white">
+      <section className="hidden md:block py-12 bg-gradient-to-r from-jomionstore-primary to-blue-600 text-white">
       <div className="container">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {/* Content */}
@@ -19,7 +19,7 @@ const MobileAppSection = () => {
               <div className="flex items-center space-x-2">
                 <Smartphone className="w-8 h-8" />
                 <h2 className="text-3xl md:text-4xl font-bold">
-                  Téléchargez l'app JomiaStore
+                  Téléchargez l'app JomionStore
                 </h2>
               </div>
               <p className="text-xl text-blue-100">
@@ -74,7 +74,7 @@ const MobileAppSection = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="bg-white text-jomiastore-primary hover:bg-gray-100 flex items-center space-x-2"
+                className="bg-white text-jomionstore-primary hover:bg-gray-100 flex items-center space-x-2"
               >
                 <Download className="w-5 h-5" />
                 <span>Google Play</span>
@@ -82,7 +82,7 @@ const MobileAppSection = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-jomiastore-primary flex items-center space-x-2"
+                className="border-white text-white hover:bg-white hover:text-jomionstore-primary flex items-center space-x-2"
               >
                 <Download className="w-5 h-5" />
                 <span>App Store</span>
@@ -92,7 +92,7 @@ const MobileAppSection = () => {
             {/* QR Code */}
             <div className="flex items-center space-x-4 pt-4">
               <div className="w-20 h-20 bg-white rounded-lg flex items-center justify-center">
-                <QrCode className="w-12 h-12 text-jomiastore-primary" />
+                <QrCode className="w-12 h-12 text-jomionstore-primary" />
               </div>
               <div>
                 <p className="text-sm text-blue-100">Scannez pour télécharger</p>
@@ -106,7 +106,7 @@ const MobileAppSection = () => {
             <div className="relative mx-auto w-64 h-[500px] bg-gray-900 rounded-[3rem] p-2 shadow-2xl">
               <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden relative">
                 {/* Status Bar */}
-                <div className="h-8 bg-jomiastore-primary flex items-center justify-between px-6 text-white text-xs">
+                <div className="h-8 bg-jomionstore-primary flex items-center justify-between px-6 text-white text-xs">
                   <span>9:41</span>
                   <div className="flex items-center space-x-1">
                     <div className="w-4 h-2 bg-white/30 rounded-sm"></div>
@@ -119,11 +119,11 @@ const MobileAppSection = () => {
                 <div className="p-4 space-y-4">
                   {/* Header */}
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-jomiastore-primary rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-jomionstore-primary rounded-lg flex items-center justify-center">
                       <span className="text-white font-bold text-sm">JS</span>
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900">JomiaStore</h3>
+                      <h3 className="font-bold text-gray-900">JomionStore</h3>
                       <p className="text-xs text-gray-500">Centre commercial digital</p>
                     </div>
                   </div>
@@ -152,7 +152,7 @@ const MobileAppSection = () => {
                       <div key={i} className="bg-gray-100 rounded-lg p-2">
                         <div className="w-full h-16 bg-gray-200 rounded mb-2"></div>
                         <p className="text-xs text-gray-600 line-clamp-2">Produit {i}</p>
-                        <p className="text-xs font-bold text-jomiastore-primary">25,000 F</p>
+                        <p className="text-xs font-bold text-jomionstore-primary">25,000 F</p>
                       </div>
                     ))}
                   </div>
@@ -173,14 +173,14 @@ const MobileAppSection = () => {
     </section>
 
       {/* Mobile Version - Compact */}
-      <section className="md:hidden py-8 bg-gradient-to-r from-jomiastore-primary to-blue-600 text-white">
+      <section className="md:hidden py-8 bg-gradient-to-r from-jomionstore-primary to-blue-600 text-white">
         <div className="container">
           <div className="text-center space-y-6">
             <div className="space-y-3">
               <div className="flex items-center justify-center space-x-2">
                 <Smartphone className="w-6 h-6" />
                 <h2 className="text-2xl font-bold">
-                  Téléchargez l'app JomiaStore
+                  Téléchargez l'app JomionStore
                 </h2>
               </div>
               <p className="text-blue-100">
@@ -212,7 +212,7 @@ const MobileAppSection = () => {
             <div className="flex flex-col space-y-3">
               <Button 
                 size="lg" 
-                className="bg-white text-jomiastore-primary hover:bg-gray-100 flex items-center justify-center space-x-2"
+                className="bg-white text-jomionstore-primary hover:bg-gray-100 flex items-center justify-center space-x-2"
               >
                 <Download className="w-4 h-4" />
                 <span>Télécharger sur Google Play</span>
@@ -220,7 +220,7 @@ const MobileAppSection = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-jomiastore-primary flex items-center justify-center space-x-2"
+                className="border-white text-white hover:bg-white hover:text-jomionstore-primary flex items-center justify-center space-x-2"
               >
                 <Download className="w-4 h-4" />
                 <span>Télécharger sur App Store</span>
@@ -230,7 +230,7 @@ const MobileAppSection = () => {
             {/* QR Code */}
             <div className="flex items-center justify-center space-x-3 pt-2">
               <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center">
-                <QrCode className="w-10 h-10 text-jomiastore-primary" />
+                <QrCode className="w-10 h-10 text-jomionstore-primary" />
               </div>
               <div className="text-left">
                 <p className="text-sm text-blue-100">Scannez pour télécharger</p>

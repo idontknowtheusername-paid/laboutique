@@ -84,7 +84,7 @@ export function ProtectedRoute({
 
 function ProtectedRouteLoading() {
   return (
-    <div className="min-h-screen bg-jomiastore-background flex items-center justify-center">
+    <div className="min-h-screen bg-jomionstore-background flex items-center justify-center">
       <div className="container max-w-md">
         <Card>
           <CardHeader>
@@ -145,7 +145,7 @@ function ProtectedRouteUnauthorized({
   const loginUrl = `/auth/login?redirect=${encodeURIComponent(redirectPath)}`;
 
   return (
-    <div className="min-h-screen bg-jomiastore-background flex items-center justify-center">
+    <div className="min-h-screen bg-jomionstore-background flex items-center justify-center">
       <div className="container max-w-md">
         <Card>
           <CardHeader>
@@ -174,7 +174,7 @@ function ProtectedRouteUnauthorized({
 
             <div className="space-y-3">
               {requireAuth && !currentRole && (
-                <Button asChild className="w-full bg-jomiastore-primary hover:bg-blue-700">
+                <Button asChild className="w-full bg-jomionstore-primary hover:bg-blue-700">
                   <Link href={loginUrl}>Se connecter</Link>
                 </Button>
               )}

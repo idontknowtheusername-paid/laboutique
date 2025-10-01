@@ -5,31 +5,31 @@ import { AppProviders } from "@/components/providers/AppProviders";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
-  title: "JomiaStore - Benin Elite Shopping Experience",
+  title: "JomionStore - Benin Elite Shopping Experience",
   description:
-    "JomiaStore Hub - Le centre commercial digital du Bénin. Découvrez des milliers de produits authentiques avec une livraison rapide et un service client exceptionnel.",
+    "JomionStore Hub - Le centre commercial digital du Bénin. Découvrez des milliers de produits authentiques avec une livraison rapide et un service client exceptionnel.",
   keywords:
-    "e-commerce Bénin, shopping en ligne, électronique, mode, maison, beauté, JomiaStore",
-  authors: [{ name: "JomiaStore Team" }],
+    "e-commerce Bénin, shopping en ligne, électronique, mode, maison, beauté, JomionStore",
+  authors: [{ name: "JomionStore Team" }],
   viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",
   openGraph: {
     type: "website",
     locale: "fr_BJ",
-    url: "https://www.jomiastore.com",
-    siteName: "JomiaStore",
-    title: "JomiaStore - Benin Elite Shopping Experience",
-    description: "JomiaStore Hub - Le centre commercial digital du Bénin",
+    url: "https://www.jomionstore.com",
+    siteName: "JomionStore",
+    title: "JomionStore - Benin Elite Shopping Experience",
+    description: "JomionStore Hub - Le centre commercial digital du Bénin",
     images: ["/images/og-image.jpg"],
   },
   twitter: {
     card: "summary_large_image",
-    site: "@JomiaStoreBenin",
-    title: "JomiaStore - Benin Elite Shopping Experience",
-    description: "JomiaStore Hub - Le centre commercial digital du Bénin",
+    site: "@JomionStoreBenin",
+    title: "JomionStore - Benin Elite Shopping Experience",
+    description: "JomionStore Hub - Le centre commercial digital du Bénin",
     images: ["/images/twitter-image.jpg"],
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.jomiastore.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.jomionstore.com'),
 };
 
 export default function RootLayout({
@@ -43,11 +43,11 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/manifest.json" />
-        <link rel="canonical" href="https://www.jomiastore.com" />
+        <link rel="canonical" href="https://www.jomionstore.com" />
         <meta name="theme-color" content="#1E40AF" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="JomiaStore" />
+        <meta name="apple-mobile-web-app-title" content="JomionStore" />
         <link rel="apple-touch-icon" href="/favicon.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

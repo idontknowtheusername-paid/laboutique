@@ -148,22 +148,22 @@ export const LoadingSpinner = ({ size = 'md', className = '' }: { size?: 'sm' | 
   };
 
   return (
-    <div className={`animate-spin rounded-full border-2 border-gray-300 border-t-jomiastore-primary ${sizeClasses[size]} ${className}`} />
+    <div className={`animate-spin rounded-full border-2 border-gray-300 border-t-jomionstore-primary ${sizeClasses[size]} ${className}`} />
   );
 };
 
-// Loading avec logo JomiaStore
-export const JomiaStoreLoading = ({ message = 'Chargement...' }: { message?: string }) => {
+// Loading avec logo JomionStore
+export const JomionStoreLoading = ({ message = 'Chargement...' }: { message?: string }) => {
   return (
     <div className="flex flex-col items-center justify-center space-y-4">
       <div className="relative">
-        <div className="w-16 h-16 bg-jomiastore-primary rounded-lg flex items-center justify-center">
+        <div className="w-16 h-16 bg-jomionstore-primary rounded-lg flex items-center justify-center">
           <div className="w-8 h-8 bg-white rounded animate-pulse"></div>
         </div>
-        <div className="absolute inset-0 rounded-lg border-2 border-jomiastore-primary/20 animate-ping"></div>
+        <div className="absolute inset-0 rounded-lg border-2 border-jomionstore-primary/20 animate-ping"></div>
       </div>
       <div className="text-center">
-        <h3 className="text-lg font-semibold text-jomiastore-primary">JomiaStore</h3>
+        <h3 className="text-lg font-semibold text-jomionstore-primary">JomionStore</h3>
         <p className="text-sm text-gray-600">{message}</p>
       </div>
     </div>

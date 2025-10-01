@@ -10,8 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // JomiaStore Custom Colors
-        jomiastore: {
+        // JomionStore Custom Colors
+        jomionstore: {
           primary: '#1E40AF', // Bleu sapphire
           secondary: '#EA580C', // Orange cuivre
           accent: '#7C2D12', // Brun chocolat

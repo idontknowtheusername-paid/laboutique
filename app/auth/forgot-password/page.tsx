@@ -75,7 +75,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-jomiastore-background flex items-center">
+    <div className="min-h-screen bg-jomionstore-background flex items-center">
       <div className="container py-8">
         {/* breadcrumb removed on auth pages */}
 
@@ -166,7 +166,7 @@ export default function ForgotPasswordPage() {
 
                       <Button
                         type="submit"
-                        className="w-full bg-jomiastore-primary hover:bg-blue-700"
+                        className="w-full bg-jomionstore-primary hover:bg-blue-700"
                         disabled={loading}
                       >
                         {loading ? (
@@ -183,7 +183,7 @@ export default function ForgotPasswordPage() {
               )}
 
               <p className="text-sm text-gray-600 text-center">
-                <Link href="/auth/login" className="text-jomiastore-primary hover:underline flex items-center justify-center">
+                <Link href="/auth/login" className="text-jomionstore-primary hover:underline flex items-center justify-center">
                   <ArrowLeft className="w-4 h-4 mr-1" />
                   Retour à la connexion
                 </Link>

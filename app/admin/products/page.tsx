@@ -140,7 +140,7 @@ export default function AdminProductsPage() {
               <Download className="w-4 h-4 mr-2" /> Importer
             </Button>
             <Button
-              className="bg-jomiastore-primary hover:bg-blue-700"
+              className="bg-jomionstore-primary hover:bg-blue-700"
               onClick={() =>
                 (window.location.href = "/admin/products/bulk-import")
               }

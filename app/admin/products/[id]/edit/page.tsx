@@ -134,7 +134,7 @@ export default function AdminEditProductPage() {
 
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={()=>save({})} disabled={saving}>Enregistrer</Button>
-          <Button className="bg-jomiastore-primary hover:bg-blue-700" onClick={()=>save({ status: 'active' })} disabled={saving}>Publier</Button>
+          <Button className="bg-jomionstore-primary hover:bg-blue-700" onClick={()=>save({ status: 'active' })} disabled={saving}>Publier</Button>
         </div>
       </div>
   );

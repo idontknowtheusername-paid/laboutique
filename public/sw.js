@@ -1,6 +1,6 @@
-const CACHE_NAME = 'jomiastore-v1';
-const STATIC_CACHE_NAME = 'jomiastore-static-v1';
-const DYNAMIC_CACHE_NAME = 'jomiastore-dynamic-v1';
+const CACHE_NAME = 'jomionstore-v1';
+const STATIC_CACHE_NAME = 'jomionstore-static-v1';
+const DYNAMIC_CACHE_NAME = 'jomionstore-dynamic-v1';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [

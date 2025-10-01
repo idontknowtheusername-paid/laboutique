@@ -160,9 +160,9 @@ export default function AdminAnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-jomiastore-background flex items-center justify-center">
+      <div className="min-h-screen bg-jomionstore-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-jomiastore-primary mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-jomionstore-primary mx-auto mb-4"></div>
           <p className="text-gray-600">Chargement des analytics...</p>
         </div>
       </div>
@@ -428,7 +428,7 @@ export default function AdminAnalyticsPage() {
                 {topProducts.map((product, index) => (
                   <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 bg-jomiastore-primary rounded-full flex items-center justify-center">
+                      <div className="w-8 h-8 bg-jomionstore-primary rounded-full flex items-center justify-center">
                         <span className="text-white font-bold text-sm">{index + 1}</span>
                       </div>
                       <div>

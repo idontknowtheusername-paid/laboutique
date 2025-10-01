@@ -137,7 +137,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-jomiastore-background flex items-center">
+    <div className="min-h-screen bg-jomionstore-background flex items-center">
       <div className="container py-8">
         {/* breadcrumb removed on auth pages */}
 
@@ -218,7 +218,7 @@ export default function LoginPage() {
                 <div className="flex items-center justify-between">
                   <Link
                     href="/auth/forgot-password"
-                    className="text-sm text-jomiastore-primary hover:underline"
+                    className="text-sm text-jomionstore-primary hover:underline"
                   >
                     Mot de passe oublié ?
                   </Link>
@@ -226,7 +226,7 @@ export default function LoginPage() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-jomiastore-primary hover:bg-blue-700"
+                  className="w-full bg-jomionstore-primary hover:bg-blue-700"
                   disabled={loading || socialLoading !== null}
                 >
                   {loading ? (
@@ -241,7 +241,7 @@ export default function LoginPage() {
               </form>
 
               <p className="text-sm text-gray-600 text-center">
-                Pas de compte ? <Link href="/auth/register" className="text-jomiastore-primary hover:underline">Créer un compte</Link>
+                Pas de compte ? <Link href="/auth/register" className="text-jomionstore-primary hover:underline">Créer un compte</Link>
               </p>
 
               {/* Separator */}

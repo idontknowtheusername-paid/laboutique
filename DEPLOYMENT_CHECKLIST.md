@@ -11,7 +11,7 @@
 - [ ] **Production** (.env.production)
   ```bash
   NODE_ENV=production
-  NEXT_PUBLIC_APP_URL=https://jomiastore.vercel.app
+  NEXT_PUBLIC_APP_URL=https://jomionstore.vercel.app
   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
   ```
@@ -42,14 +42,14 @@
   ```
 - [ ] **Vérifier le déploiement**
   ```bash
-  curl https://jomiastore.vercel.app
+  curl https://jomionstore.vercel.app
   ```
 
 ## ✅ **APRÈS LE DÉPLOIEMENT**
 
 ### 6. 🔍 **Vérifications**
-- [ ] **Site accessible** : https://jomiastore.vercel.app
-- [ ] **API fonctionnelle** : https://jomiastore.vercel.app/api/products
+- [ ] **Site accessible** : https://jomionstore.vercel.app
+- [ ] **API fonctionnelle** : https://jomionstore.vercel.app/api/products
 - [ ] **Pages principales** fonctionnelles
 - [ ] **Authentification** fonctionnelle
 
@@ -102,4 +102,4 @@
 
 ---
 
-**🎉 Une fois cette checklist complétée, JomiaStore sera prêt pour la production !**
+**🎉 Une fois cette checklist complétée, JomionStore sera prêt pour la production !**

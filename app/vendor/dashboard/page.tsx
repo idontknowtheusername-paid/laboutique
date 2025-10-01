@@ -102,7 +102,7 @@ export default function VendorDashboard() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-jomiastore-background">
+      <div className="min-h-screen bg-jomionstore-background">
         <header className="bg-white shadow-sm border-b h-16" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse space-y-4">
@@ -140,13 +140,13 @@ export default function VendorDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-jomiastore-background">
+    <div className="min-h-screen bg-jomionstore-background">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-jomiastore-primary to-blue-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-r from-jomionstore-primary to-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">B</span>
               </div>
               <div>
@@ -164,7 +164,7 @@ export default function VendorDashboard() {
                 <Settings className="w-4 h-4 mr-2" />
                 Paramètres
               </Button>
-              <div className="w-8 h-8 bg-jomiastore-primary rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-jomionstore-primary rounded-full flex items-center justify-center">
                 <span className="text-white font-medium text-sm">A</span>
               </div>
             </div>
@@ -322,7 +322,7 @@ export default function VendorDashboard() {
           <TabsContent value="products" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">Gestion des produits</h2>
-              <Button className="bg-jomiastore-primary hover:bg-blue-700">
+              <Button className="bg-jomionstore-primary hover:bg-blue-700">
                 <Plus className="w-4 h-4 mr-2" />
                 Ajouter un produit
               </Button>
@@ -547,7 +547,7 @@ export default function VendorDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-jomiastore-primary">4.8</div>
+                    <div className="text-4xl font-bold text-jomionstore-primary">4.8</div>
                     <div className="flex items-center justify-center mt-2">
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
@@ -610,7 +610,7 @@ export default function VendorDashboard() {
                     <label className="block text-sm font-medium mb-2">Adresse</label>
                     <Input defaultValue="Cotonou, Bénin" />
                   </div>
-                  <Button className="bg-jomiastore-primary hover:bg-blue-700">
+                  <Button className="bg-jomionstore-primary hover:bg-blue-700">
                     Sauvegarder
                   </Button>
                 </CardContent>
@@ -651,7 +651,7 @@ export default function VendorDashboard() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button className="bg-jomiastore-primary hover:bg-blue-700">
+                  <Button className="bg-jomionstore-primary hover:bg-blue-700">
                     Sauvegarder
                   </Button>
                 </CardContent>

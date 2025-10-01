@@ -246,14 +246,14 @@ export default function FashionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-jomiastore-background">
+    <div className="min-h-screen bg-jomionstore-background">
       <Header />
       <CategoryMenu />
       
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomionstore-primary">Accueil</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Mode & Style</span>
         </nav>
@@ -362,7 +362,7 @@ export default function FashionPage() {
                         }}
                         className={`w-8 h-8 rounded-full border-2 ${
                           selectedColors.includes(color.name) 
-                            ? 'border-jomiastore-primary' 
+                            ? 'border-jomionstore-primary' 
                             : 'border-gray-300'
                         }`}
                         style={{ backgroundColor: color.value }}
@@ -460,7 +460,7 @@ export default function FashionPage() {
             {/* Pagination */}
             <div className="flex items-center justify-center mt-12 space-x-2">
               <Button variant="outline" disabled>Précédent</Button>
-              <Button className="bg-jomiastore-primary">1</Button>
+              <Button className="bg-jomionstore-primary">1</Button>
               <Button variant="outline">2</Button>
               <Button variant="outline">3</Button>
               <Button variant="outline">...</Button>

@@ -40,9 +40,9 @@ export default function RecentPage() {
       <div>
         <div className="py-2">
           <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-            <a href="/" className="hover:text-jomiastore-primary">Accueil</a>
+            <a href="/" className="hover:text-jomionstore-primary">Accueil</a>
             <span>/</span>
-            <a href="/account" className="hover:text-jomiastore-primary">Mon compte</a>
+            <a href="/account" className="hover:text-jomionstore-primary">Mon compte</a>
             <span>/</span>
             <span className="text-gray-900 font-medium">Récemment consultés</span>
           </nav>
@@ -62,7 +62,7 @@ export default function RecentPage() {
                           <Image src={p.images?.[0] || '/placeholder-product.jpg'} alt={p.name} fill className="object-cover" />
                         </div>
                         <div className="p-3">
-                          <div className="text-sm font-medium line-clamp-2 group-hover:text-jomiastore-primary">{p.name}</div>
+                          <div className="text-sm font-medium line-clamp-2 group-hover:text-jomionstore-primary">{p.name}</div>
                         </div>
                       </div>
                     </Link>

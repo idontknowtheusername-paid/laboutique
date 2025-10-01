@@ -27,7 +27,7 @@ const blogPosts = [
     title: 'Tendances e-commerce 2025 au Bénin',
     excerpt: "Découvrez les tendances clés qui façonneront l'e-commerce au Bénin en 2025. Mobile-first, paiements digitaux et logistique locale.",
     content: 'Contenu complet de l\'article...',
-    author: 'Équipe JomiaStore',
+    author: 'Équipe JomionStore',
     date: '2024-01-15',
     readTime: '5 min',
     category: 'Insights',
@@ -52,7 +52,7 @@ const blogPosts = [
   },
   {
     id: 3,
-    title: 'JomiaStore x Vendeurs : Meilleures pratiques 2025',
+    title: 'JomionStore x Vendeurs : Meilleures pratiques 2025',
     excerpt: 'Optimisez vos ventes avec nos recommandations éprouvées. Photos, descriptions, prix et service client.',
     content: 'Contenu complet de l\'article...',
     author: 'Marie S.',
@@ -83,7 +83,7 @@ const blogPosts = [
     title: 'Livraison express : Comment ça marche ?',
     excerpt: 'Découvrez notre réseau de livraison et les secrets d\'une logistique efficace au Bénin.',
     content: 'Contenu complet de l\'article...',
-    author: 'Équipe JomiaStore',
+    author: 'Équipe JomionStore',
     date: '2024-01-05',
     readTime: '4 min',
     category: 'Logistique',
@@ -95,7 +95,7 @@ const blogPosts = [
   {
     id: 6,
     title: 'Sécurité en ligne : Protégez vos achats',
-    excerpt: 'Conseils pratiques pour acheter en toute sécurité sur JomiaStore et éviter les arnaques.',
+    excerpt: 'Conseils pratiques pour acheter en toute sécurité sur JomionStore et éviter les arnaques.',
     content: 'Contenu complet de l\'article...',
     author: 'Équipe Sécurité',
     date: '2024-01-03',
@@ -152,7 +152,7 @@ export default function BlogPage() {
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-jomiastore-background">
+      <div className="min-h-screen bg-jomionstore-background">
         <div className="container py-8">
           <div className="text-center py-12">
             <div className="animate-pulse">
@@ -166,7 +166,7 @@ export default function BlogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-jomiastore-background">
+    <div className="min-h-screen bg-jomionstore-background">
       {/* Temporarily removed Header and CategoryMenu to test hydration */}
       {/* <Header />
       <CategoryMenu /> */}
@@ -174,18 +174,18 @@ export default function BlogPage() {
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomionstore-primary">Accueil</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Blog</span>
         </nav>
 
         {/* Header */}
         <div className="text-center mb-12">
-          <Badge className="bg-jomiastore-primary/10 text-jomiastore-primary mb-4 px-4 py-2">
+          <Badge className="bg-jomionstore-primary/10 text-jomionstore-primary mb-4 px-4 py-2">
             Actus & Guides
           </Badge>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Le blog JomiaStore
+            Le blog JomionStore
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
             Articles, tutoriels et tendances pour mieux acheter et vendre au Bénin
@@ -272,7 +272,7 @@ export default function BlogPage() {
                     </Badge>
                   ))}
                 </div>
-                <Button className="bg-jomiastore-primary hover:bg-blue-700 w-fit">
+                <Button className="bg-jomionstore-primary hover:bg-blue-700 w-fit">
                   Lire l'article
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -353,7 +353,7 @@ export default function BlogPage() {
         )}
 
         {/* Newsletter CTA */}
-        <Card className="mt-12 bg-gradient-to-r from-jomiastore-primary to-blue-600 text-white">
+        <Card className="mt-12 bg-gradient-to-r from-jomionstore-primary to-blue-600 text-white">
           <CardContent className="p-8 text-center">
             <h3 className="text-2xl font-bold mb-4">
               Restez informé de nos derniers articles
@@ -366,7 +366,7 @@ export default function BlogPage() {
                 placeholder="Votre adresse email"
                 className="flex-1 bg-white text-gray-900"
               />
-              <Button className="bg-jomiastore-secondary hover:bg-orange-600">
+              <Button className="bg-jomionstore-secondary hover:bg-orange-600">
                 S'abonner
               </Button>
             </div>

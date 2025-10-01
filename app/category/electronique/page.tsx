@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function ElectronicsPage() {
   return (
-    <div className="min-h-screen bg-jomiastore-background">
+    <div className="min-h-screen bg-jomionstore-background">
       <Header />
       <CategoryMenu />
       <div className="container py-16 text-center">
@@ -18,7 +18,7 @@ export default function ElectronicsPage() {
               Cette page a été remplacée par la page dynamique de catégorie.
             </p>
             <Link href="/category/electronique">
-              <Button className="bg-jomiastore-primary hover:bg-blue-700">Voir la catégorie</Button>
+              <Button className="bg-jomionstore-primary hover:bg-blue-700">Voir la catégorie</Button>
             </Link>
           </CardContent>
         </Card>

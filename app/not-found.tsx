@@ -10,7 +10,7 @@ import { Search, Home, ArrowLeft, Package } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-jomiastore-background">
+    <div className="min-h-screen bg-jomionstore-background">
       <Header />
       <CategoryMenu />
       
@@ -18,9 +18,9 @@ export default function NotFound() {
         <div className="max-w-2xl mx-auto text-center">
           {/* 404 Illustration */}
           <div className="mb-8">
-            <div className="text-9xl font-bold text-jomiastore-primary mb-4">404</div>
-            <div className="w-32 h-32 bg-jomiastore-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Package className="w-16 h-16 text-jomiastore-primary" />
+            <div className="text-9xl font-bold text-jomionstore-primary mb-4">404</div>
+            <div className="w-32 h-32 bg-jomionstore-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Package className="w-16 h-16 text-jomionstore-primary" />
             </div>
           </div>
 
@@ -35,7 +35,7 @@ export default function NotFound() {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Link href="/">
-              <Button className="bg-jomiastore-primary hover:bg-blue-700">
+              <Button className="bg-jomionstore-primary hover:bg-blue-700">
                 <Home className="w-4 h-4 mr-2" />
                 Retour à l'accueil
               </Button>
@@ -56,16 +56,16 @@ export default function NotFound() {
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <h3 className="font-semibold text-gray-900 mb-4">Pages populaires</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Link href="/category/electronique" className="text-jomiastore-primary hover:underline text-sm">
+              <Link href="/category/electronique" className="text-jomionstore-primary hover:underline text-sm">
                 Électronique
               </Link>
-              <Link href="/category/mode" className="text-jomiastore-primary hover:underline text-sm">
+              <Link href="/category/mode" className="text-jomionstore-primary hover:underline text-sm">
                 Mode
               </Link>
-              <Link href="/category/beaute-sante" className="text-jomiastore-primary hover:underline text-sm">
+              <Link href="/category/beaute-sante" className="text-jomionstore-primary hover:underline text-sm">
                 Beauté & Santé
               </Link>
-              <Link href="/category/maison-jardin" className="text-jomiastore-primary hover:underline text-sm">
+              <Link href="/category/maison-jardin" className="text-jomionstore-primary hover:underline text-sm">
                 Maison & Jardin
               </Link>
             </div>

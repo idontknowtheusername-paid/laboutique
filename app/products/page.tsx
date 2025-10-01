@@ -100,7 +100,7 @@ export default function ProductsListingPage() {
   }, [filters, saleOnly]);
 
   return (
-    <main className="min-h-screen bg-jomiastore-background">
+    <main className="min-h-screen bg-jomionstore-background">
       <Header />
       <CategoryMenu />
       <div className="container py-6">

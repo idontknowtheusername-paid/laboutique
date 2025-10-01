@@ -163,26 +163,26 @@ export default function CareersPage() {
   });
 
   return (
-    <div className="min-h-screen bg-jomiastore-background">
+    <div className="min-h-screen bg-jomionstore-background">
       <Header />
       <CategoryMenu />
 
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomionstore-primary">Accueil</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Carrières</span>
         </nav>
 
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <Badge className="bg-jomiastore-primary/10 text-jomiastore-primary mb-4 px-4 py-2">
+          <Badge className="bg-jomionstore-primary/10 text-jomionstore-primary mb-4 px-4 py-2">
             Nous recrutons
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
             Rejoignez l'aventure
-            <span className="text-jomiastore-primary"> JomiaStore</span>
+            <span className="text-jomionstore-primary"> JomionStore</span>
           </h1>
           <p className="text-gray-600 max-w-3xl mx-auto text-xl">
             Construisons ensemble l'avenir du e-commerce en Afrique de l'Ouest. 
@@ -193,19 +193,19 @@ export default function CareersPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
           <div className="text-center">
-            <div className="text-3xl font-bold text-jomiastore-primary mb-2">50+</div>
+            <div className="text-3xl font-bold text-jomionstore-primary mb-2">50+</div>
             <div className="text-sm text-gray-600">Employés</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-jomiastore-primary mb-2">6</div>
+            <div className="text-3xl font-bold text-jomionstore-primary mb-2">6</div>
             <div className="text-sm text-gray-600">Équipes</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-jomiastore-primary mb-2">3</div>
+            <div className="text-3xl font-bold text-jomionstore-primary mb-2">3</div>
             <div className="text-sm text-gray-600">Pays</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-jomiastore-primary mb-2">100%</div>
+            <div className="text-3xl font-bold text-jomionstore-primary mb-2">100%</div>
             <div className="text-sm text-gray-600">Remote-friendly</div>
           </div>
         </div>
@@ -296,7 +296,7 @@ export default function CareersPage() {
                           Publié le {new Date(job.posted).toLocaleDateString('fr-FR')}
                         </p>
                       </div>
-                      <Button className="bg-jomiastore-primary hover:bg-blue-700 ml-4">
+                      <Button className="bg-jomionstore-primary hover:bg-blue-700 ml-4">
                         Postuler
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
@@ -334,32 +334,32 @@ export default function CareersPage() {
             <Card>
             <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Zap className="w-5 h-5 mr-2 text-jomiastore-primary" />
+                  <Zap className="w-5 h-5 mr-2 text-jomionstore-primary" />
                   Pourquoi nous rejoindre ?
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-jomiastore-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-2 h-2 bg-jomionstore-primary rounded-full mt-2 flex-shrink-0"></div>
                     <p className="text-sm text-gray-700">
                       <strong>Impact réel</strong> sur des millions d'utilisateurs en Afrique de l'Ouest
                     </p>
                   </div>
                   <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-jomiastore-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-2 h-2 bg-jomionstore-primary rounded-full mt-2 flex-shrink-0"></div>
                     <p className="text-sm text-gray-700">
                       <strong>Culture d'excellence</strong> avec des équipes passionnées et talentueuses
                     </p>
                   </div>
                   <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-jomiastore-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-2 h-2 bg-jomionstore-primary rounded-full mt-2 flex-shrink-0"></div>
                     <p className="text-sm text-gray-700">
                       <strong>Croissance rapide</strong> avec des opportunités d'évolution
                     </p>
                     </div>
                   <div className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-jomiastore-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-2 h-2 bg-jomionstore-primary rounded-full mt-2 flex-shrink-0"></div>
                     <p className="text-sm text-gray-700">
                       <strong>Technologies modernes</strong> et stack technique de pointe
                     </p>
@@ -379,8 +379,8 @@ export default function CareersPage() {
                     const IconComponent = benefit.icon;
                     return (
                       <div key={index} className="flex items-start space-x-3">
-                        <div className="w-8 h-8 bg-jomiastore-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <IconComponent className="w-4 h-4 text-jomiastore-primary" />
+                        <div className="w-8 h-8 bg-jomionstore-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <IconComponent className="w-4 h-4 text-jomionstore-primary" />
                         </div>
                         <div>
                           <h4 className="font-medium text-gray-900 text-sm">{benefit.title}</h4>

@@ -332,7 +332,7 @@ export default function AdminBackupPage() {
               </SelectContent>
             </Select>
             <Button 
-              className="bg-jomiastore-primary hover:bg-blue-700"
+              className="bg-jomionstore-primary hover:bg-blue-700"
               onClick={() => handleStartBackup('full')}
               disabled={isBackupRunning}
             >
@@ -665,7 +665,7 @@ export default function AdminBackupPage() {
                 </p>
                 <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                   <div 
-                    className="bg-jomiastore-primary h-2 rounded-full" 
+                    className="bg-jomionstore-primary h-2 rounded-full" 
                     style={{ width: `${stats?.storage_percentage || 0}%` }}
                   ></div>
                 </div>

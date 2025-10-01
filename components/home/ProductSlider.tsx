@@ -166,7 +166,7 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
               <Link href={viewAllLink}>
                 <Button
                   variant="outline"
-                  className="border-jomiastore-primary text-jomiastore-primary hover:bg-jomiastore-primary hover:text-white"
+                  className="border-jomionstore-primary text-jomionstore-primary hover:bg-jomionstore-primary hover:text-white"
                 >
                   Voir tout
                 </Button>
@@ -253,7 +253,7 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
 
                       {/* Product Name */}
                       <Link href={`/product/${product.slug}`}>
-                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-jomiastore-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
+                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-jomionstore-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
                           {product.name}
                         </h3>
                       </Link>
@@ -280,7 +280,7 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
                       {/* Price */}
                       <div className="space-y-1">
                         <div className="flex flex-col md:flex-row items-start md:items-center space-y-1 md:space-y-0 md:space-x-2">
-                          <span className="font-bold text-jomiastore-primary text-sm md:text-lg">
+                          <span className="font-bold text-jomionstore-primary text-sm md:text-lg">
                             {formatPrice(product.price)}
                           </span>
                           {product.comparePrice && (
@@ -343,7 +343,7 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
               onClick={() => setCurrentIndex(index * itemsToShow)}
               className={`w-2 h-2 rounded-full transition-colors duration-200 ${
                 Math.floor(currentIndex / itemsToShow) === index
-                  ? "bg-jomiastore-primary"
+                  ? "bg-jomionstore-primary"
                   : "bg-gray-300"
               }`}
             />

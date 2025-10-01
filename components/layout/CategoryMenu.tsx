@@ -176,7 +176,7 @@ const CategoryMenu = () => {
           <div className="md:hidden">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button aria-label="Ouvrir les catégories" className="bg-jomiastore-primary text-white h-9 px-3">
+                <Button aria-label="Ouvrir les catégories" className="bg-jomionstore-primary text-white h-9 px-3">
                   <Grid3X3 className="w-4 h-4 mr-2" /> Catégories
                 </Button>
               </SheetTrigger>
@@ -229,7 +229,7 @@ const CategoryMenu = () => {
           <NavigationMenuList className="flex flex-nowrap gap-1 overflow-x-auto no-scrollbar">
             {/* All Categories Button */}
             <NavigationMenuItem>
-              <NavigationMenuTrigger className="bg-jomiastore-primary text-white hover:bg-blue-700 px-5 py-2 h-auto rounded-md">
+              <NavigationMenuTrigger className="bg-jomionstore-primary text-white hover:bg-blue-700 px-5 py-2 h-auto rounded-md">
                 <Grid3X3 className="w-4 h-4 mr-2" />
                 Toutes les catégories
               </NavigationMenuTrigger>
@@ -241,7 +241,7 @@ const CategoryMenu = () => {
                       <div key={category.id} className="space-y-3">
                         <Link
                           href={`/category/${category.slug}`}
-                          className="flex items-center space-x-2 font-semibold text-jomiastore-primary hover:text-blue-700"
+                          className="flex items-center space-x-2 font-semibold text-jomionstore-primary hover:text-blue-700"
                         >
                           <IconComponent className="w-5 h-5" />
                           <span>{category.name}</span>
@@ -251,7 +251,7 @@ const CategoryMenu = () => {
                             <div key={child.slug}>
                               <Link
                                 href={`/category/${child.slug}`}
-                                className="block font-medium text-gray-700 hover:text-jomiastore-primary transition-colors"
+                                className="block font-medium text-gray-700 hover:text-jomionstore-primary transition-colors"
                               >
                                 {child.name}
                               </Link>
@@ -261,7 +261,7 @@ const CategoryMenu = () => {
                                     <li key={grandchild.id}>
                                       <Link
                                         href={`/category/${grandchild.slug}`}
-                                        className="text-sm text-gray-500 hover:text-jomiastore-secondary transition-colors"
+                                        className="text-sm text-gray-500 hover:text-jomionstore-secondary transition-colors"
                                       >
                                         {grandchild.name}
                                       </Link>
@@ -284,7 +284,7 @@ const CategoryMenu = () => {
               const IconComponent = getCategoryIcon(category.slug);
               return (
                 <NavigationMenuItem key={category.id}>
-                  <NavigationMenuTrigger className="text-gray-700 hover:text-jomiastore-primary px-4 py-2 h-auto bg-transparent rounded-md border border-transparent hover:border-jomiastore-primary/20">
+                  <NavigationMenuTrigger className="text-gray-700 hover:text-jomionstore-primary px-4 py-2 h-auto bg-transparent rounded-md border border-transparent hover:border-jomionstore-primary/20">
                     <IconComponent className="w-4 h-4 mr-2" />
                     {category.name}
                   </NavigationMenuTrigger>
@@ -294,7 +294,7 @@ const CategoryMenu = () => {
                         <div key={child.slug} className="space-y-2">
                           <Link
                             href={`/category/${child.slug}`}
-                            className="block font-semibold text-jomiastore-primary hover:text-blue-700"
+                            className="block font-semibold text-jomionstore-primary hover:text-blue-700"
                           >
                             {child.name}
                           </Link>
@@ -304,7 +304,7 @@ const CategoryMenu = () => {
                                 <li key={grandchild.id}>
                                   <Link
                                     href={`/category/${grandchild.slug}`}
-                                    className="text-sm text-gray-600 hover:text-jomiastore-secondary transition-colors"
+                                    className="text-sm text-gray-600 hover:text-jomionstore-secondary transition-colors"
                                   >
                                     {grandchild.name}
                                   </Link>

@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 export default function GlobalLoading() {
   return (
-    <div className="min-h-screen bg-jomiastore-background">
+    <div className="min-h-screen bg-jomionstore-background">
       {/* Header Skeleton */}
       <div className="bg-white border-b">
         <div className="container">
@@ -74,18 +74,18 @@ export default function GlobalLoading() {
       </div>
 
       {/* Modern Loading Overlay */}
-      <div className="fixed inset-0 bg-gradient-to-br from-white via-blue-50 to-jomiastore-background flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-gradient-to-br from-white via-blue-50 to-jomionstore-background flex items-center justify-center z-50">
         <div className="text-center">
           {/* Modern Logo Animation */}
           <div className="mb-12">
             <div className="relative">
               {/* Animated Logo Container */}
               <div className="w-24 h-24 mx-auto mb-6 relative">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-jomiastore-primary to-blue-600 animate-spin-slow"></div>
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-jomionstore-primary to-blue-600 animate-spin-slow"></div>
                 <div className="absolute inset-1 rounded-xl bg-white flex items-center justify-center">
                   <Image
                     src="/logo.svg"
-                    alt="JomiaStore"
+                    alt="JomionStore"
                     width={64}
                     height={64}
                     className="w-12 h-12 object-contain"
@@ -93,7 +93,7 @@ export default function GlobalLoading() {
                   />
                 </div>
                 {/* Floating particles */}
-                <div className="absolute -top-2 -right-2 w-3 h-3 bg-jomiastore-secondary rounded-full animate-float"></div>
+                <div className="absolute -top-2 -right-2 w-3 h-3 bg-jomionstore-secondary rounded-full animate-float"></div>
                 <div className="absolute -bottom-1 -left-2 w-2 h-2 bg-blue-400 rounded-full animate-float-delayed"></div>
               </div>
             </div>
@@ -102,8 +102,8 @@ export default function GlobalLoading() {
           {/* Modern Loading Content */}
           <div className="space-y-6">
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-jomiastore-primary to-blue-600 bg-clip-text text-transparent">
-                JomiaStore Hub
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-jomionstore-primary to-blue-600 bg-clip-text text-transparent">
+                JomionStore Hub
               </h2>
               <p className="text-gray-600 text-lg">
                 Préparation de votre expérience shopping...
@@ -113,17 +113,17 @@ export default function GlobalLoading() {
             {/* Modern Progress Bar */}
             <div className="w-80 mx-auto">
               <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-jomiastore-primary via-blue-500 to-jomiastore-secondary rounded-full animate-progress"></div>
+                <div className="h-full bg-gradient-to-r from-jomionstore-primary via-blue-500 to-jomionstore-secondary rounded-full animate-progress"></div>
               </div>
             </div>
 
             {/* Elegant Loading Animation */}
             <div className="flex justify-center space-x-1">
-              <div className="w-2 h-2 bg-jomiastore-primary rounded-full animate-wave"></div>
+              <div className="w-2 h-2 bg-jomionstore-primary rounded-full animate-wave"></div>
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-wave" style={{ animationDelay: '0.1s' }}></div>
-              <div className="w-2 h-2 bg-jomiastore-secondary rounded-full animate-wave" style={{ animationDelay: '0.2s' }}></div>
+              <div className="w-2 h-2 bg-jomionstore-secondary rounded-full animate-wave" style={{ animationDelay: '0.2s' }}></div>
               <div className="w-2 h-2 bg-blue-400 rounded-full animate-wave" style={{ animationDelay: '0.3s' }}></div>
-              <div className="w-2 h-2 bg-jomiastore-primary rounded-full animate-wave" style={{ animationDelay: '0.4s' }}></div>
+              <div className="w-2 h-2 bg-jomionstore-primary rounded-full animate-wave" style={{ animationDelay: '0.4s' }}></div>
             </div>
           </div>
         </div>

@@ -76,9 +76,9 @@ export default function SettingsPage() {
       <div>
         <div className="py-2">
           <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-            <a href="/" className="hover:text-jomiastore-primary">Accueil</a>
+            <a href="/" className="hover:text-jomionstore-primary">Accueil</a>
             <span>/</span>
-            <a href="/account" className="hover:text-jomiastore-primary">Mon compte</a>
+            <a href="/account" className="hover:text-jomionstore-primary">Mon compte</a>
             <span>/</span>
             <span className="text-gray-900 font-medium">Paramètres</span>
           </nav>
@@ -142,7 +142,7 @@ export default function SettingsPage() {
                     />
                   </div>
                   
-                  <Button onClick={handleProfileUpdate} disabled={loading} className="bg-jomiastore-primary hover:bg-blue-700">
+                  <Button onClick={handleProfileUpdate} disabled={loading} className="bg-jomionstore-primary hover:bg-blue-700">
                     {loading ? 'Mise à jour...' : 'Mettre à jour le profil'}
                   </Button>
                 </CardContent>
@@ -211,7 +211,7 @@ export default function SettingsPage() {
                         />
                       </div>
                       
-                      <Button onClick={handleNotificationUpdate} className="bg-jomiastore-primary hover:bg-blue-700">
+                      <Button onClick={handleNotificationUpdate} className="bg-jomionstore-primary hover:bg-blue-700">
                         Sauvegarder les préférences
                       </Button>
                     </>

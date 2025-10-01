@@ -326,7 +326,7 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-jomiastore-background">
+    <div className="min-h-screen bg-jomionstore-background">
       <Header />
       <CategoryMenu />
 
@@ -424,7 +424,7 @@ export default function SearchPage() {
             </div>
             <Button
               onClick={() => handleSearch(searchQuery)}
-              className="bg-jomiastore-primary"
+              className="bg-jomionstore-primary"
             >
               <Search className="w-4 h-4 mr-2" />
               Rechercher
@@ -696,7 +696,7 @@ export default function SearchPage() {
                       minRating: 0,
                     });
                   }}
-                  className="bg-jomiastore-primary hover:bg-blue-700"
+                  className="bg-jomionstore-primary hover:bg-blue-700"
                 >
                   Effacer les filtres
                 </Button>

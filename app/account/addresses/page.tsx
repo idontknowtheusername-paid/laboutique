@@ -29,9 +29,9 @@ export default function AddressesPage() {
       <div>
         <div className="py-2">
           <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-            <a href="/" className="hover:text-jomiastore-primary">Accueil</a>
+            <a href="/" className="hover:text-jomionstore-primary">Accueil</a>
             <span>/</span>
-            <a href="/account" className="hover:text-jomiastore-primary">Mon compte</a>
+            <a href="/account" className="hover:text-jomionstore-primary">Mon compte</a>
             <span>/</span>
             <span className="text-gray-900 font-medium">Adresses</span>
           </nav>
@@ -41,7 +41,7 @@ export default function AddressesPage() {
               <Card>
                 <CardHeader className="flex items-center justify-between">
                   <CardTitle>Mes adresses</CardTitle>
-                  <Button onClick={() => setAdding(v => !v)} className="bg-jomiastore-primary hover:bg-blue-700">
+                  <Button onClick={() => setAdding(v => !v)} className="bg-jomionstore-primary hover:bg-blue-700">
                     <Plus className="w-4 h-4 mr-2" /> Ajouter une adresse
                   </Button>
                 </CardHeader>
@@ -86,7 +86,7 @@ export default function AddressesPage() {
                         </div>
                       </div>
                       <div className="md:col-span-2 flex gap-3">
-                        <Button className="bg-jomiastore-primary hover:bg-blue-700" onClick={async ()=>{
+                        <Button className="bg-jomionstore-primary hover:bg-blue-700" onClick={async ()=>{
                           if (!user?.id) return;
                           const res = await AccountService.addAddress(user.id, { ...form, delivery_method: deliveryPrefs.method, delivery_instructions: deliveryPrefs.instructions } as any);
                           if (res.success && res.data) {
@@ -106,7 +106,7 @@ export default function AddressesPage() {
                       <div key={addr.id} className="p-4 border rounded-lg">
                         <div className="flex items-start justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded bg-jomiastore-primary text-white flex items-center justify-center"><MapPin className="w-5 h-5"/></div>
+                            <div className="w-10 h-10 rounded bg-jomionstore-primary text-white flex items-center justify-center"><MapPin className="w-5 h-5"/></div>
                             <div>
                               <div className="font-medium">{addr.full_name}</div>
                               <div className="text-xs text-gray-600">{addr.address_line}, {addr.city}, {addr.country}</div>

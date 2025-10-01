@@ -252,7 +252,7 @@ export default function AdminUsersPage() {
                   <tr key={u.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="w-8 h-8 bg-jomiastore-primary rounded-full flex items-center justify-center">
+                        <div className="w-8 h-8 bg-jomionstore-primary rounded-full flex items-center justify-center">
                           <span className="text-white font-medium text-sm">
                             {(u.first_name || u.email || "?")[0]}
                           </span>

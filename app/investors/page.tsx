@@ -117,7 +117,7 @@ const documents = [
     title: 'Pitch Deck 2024',
     type: 'PDF',
     size: '2.4 MB',
-    description: 'Présentation complète de JomiaStore'
+    description: 'Présentation complète de JomionStore'
   },
   {
     title: 'Business Plan',
@@ -143,26 +143,26 @@ export default function InvestorsPage() {
   const [selectedTab, setSelectedTab] = useState('overview');
 
   return (
-    <div className="min-h-screen bg-jomiastore-background">
+    <div className="min-h-screen bg-jomionstore-background">
       <Header />
       <CategoryMenu />
 
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomionstore-primary">Accueil</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Investisseurs</span>
         </nav>
 
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <Badge className="bg-jomiastore-primary/10 text-jomiastore-primary mb-4 px-4 py-2">
+          <Badge className="bg-jomionstore-primary/10 text-jomionstore-primary mb-4 px-4 py-2">
             Investisseurs
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
             Investissez dans l'avenir du
-            <span className="text-jomiastore-primary"> e-commerce africain</span>
+            <span className="text-jomionstore-primary"> e-commerce africain</span>
           </h1>
           <p className="text-gray-600 max-w-3xl mx-auto text-xl">
             Rejoignez-nous pour révolutionner le commerce en ligne en Afrique de l'Ouest. 
@@ -177,8 +177,8 @@ export default function InvestorsPage() {
             return (
               <Card key={index} className="text-center">
                 <CardContent className="p-6">
-                  <div className="w-12 h-12 bg-jomiastore-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <IconComponent className="w-6 h-6 text-jomiastore-primary" />
+                  <div className="w-12 h-12 bg-jomionstore-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <IconComponent className="w-6 h-6 text-jomionstore-primary" />
                   </div>
                   <div className="text-3xl font-bold text-gray-900 mb-2">{metric.value}</div>
                   <div className="text-sm text-gray-600 mb-1">{metric.title}</div>
@@ -209,7 +209,7 @@ export default function InvestorsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
-                    <Zap className="w-5 h-5 mr-2 text-jomiastore-primary" />
+                    <Zap className="w-5 h-5 mr-2 text-jomionstore-primary" />
                     Notre Vision
                   </CardTitle>
                 </CardHeader>
@@ -221,19 +221,19 @@ export default function InvestorsPage() {
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-start space-x-3">
-                      <div className="w-2 h-2 bg-jomiastore-primary rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-2 h-2 bg-jomionstore-primary rounded-full mt-2 flex-shrink-0"></div>
                       <p className="text-sm text-gray-700">
                         <strong>Marché en croissance :</strong> L'e-commerce en Afrique de l'Ouest croît de 25% par an
                       </p>
                     </div>
                     <div className="flex items-start space-x-3">
-                      <div className="w-2 h-2 bg-jomiastore-primary rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-2 h-2 bg-jomionstore-primary rounded-full mt-2 flex-shrink-0"></div>
                       <p className="text-sm text-gray-700">
                         <strong>Premier arrivant :</strong> Position de leader sur un marché fragmenté
                       </p>
                     </div>
                     <div className="flex items-start space-x-3">
-                      <div className="w-2 h-2 bg-jomiastore-primary rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-2 h-2 bg-jomionstore-primary rounded-full mt-2 flex-shrink-0"></div>
                       <p className="text-sm text-gray-700">
                         <strong>Impact social :</strong> Création d'emplois et inclusion financière
                       </p>
@@ -245,7 +245,7 @@ export default function InvestorsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
-                    <Target className="w-5 h-5 mr-2 text-jomiastore-primary" />
+                    <Target className="w-5 h-5 mr-2 text-jomionstore-primary" />
                     Opportunité d'Investissement
                   </CardTitle>
                 </CardHeader>
@@ -289,7 +289,7 @@ export default function InvestorsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Calendar className="w-5 h-5 mr-2 text-jomiastore-primary" />
+                  <Calendar className="w-5 h-5 mr-2 text-jomionstore-primary" />
                   Historique de Financement
                 </CardTitle>
               </CardHeader>
@@ -330,13 +330,13 @@ export default function InvestorsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
-                    <BarChart3 className="w-5 h-5 mr-2 text-jomiastore-primary" />
+                    <BarChart3 className="w-5 h-5 mr-2 text-jomionstore-primary" />
                     Croissance Utilisateurs
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="text-center p-6 bg-gradient-to-r from-jomiastore-primary to-blue-600 text-white rounded-lg">
+                    <div className="text-center p-6 bg-gradient-to-r from-jomionstore-primary to-blue-600 text-white rounded-lg">
                       <div className="text-3xl font-bold mb-2">500K+</div>
                       <div className="text-blue-100">Utilisateurs actifs mensuels</div>
                     </div>
@@ -357,7 +357,7 @@ export default function InvestorsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
-                    <DollarSign className="w-5 h-5 mr-2 text-jomiastore-primary" />
+                    <DollarSign className="w-5 h-5 mr-2 text-jomionstore-primary" />
                     Performance Financière
                   </CardTitle>
                 </CardHeader>
@@ -393,7 +393,7 @@ export default function InvestorsPage() {
                   {investors.map((investor, index) => (
                     <div key={index} className="p-6 border rounded-lg hover:bg-gray-50">
                       <div className="flex items-center space-x-4 mb-4">
-                        <div className="w-12 h-12 bg-jomiastore-primary rounded-full flex items-center justify-center">
+                        <div className="w-12 h-12 bg-jomionstore-primary rounded-full flex items-center justify-center">
                           <span className="text-white font-bold">{investor.logo}</span>
                         </div>
                         <div>
@@ -413,7 +413,7 @@ export default function InvestorsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <FileText className="w-5 h-5 mr-2 text-jomiastore-primary" />
+                  <FileText className="w-5 h-5 mr-2 text-jomionstore-primary" />
                   Documents d'Investissement
                 </CardTitle>
               </CardHeader>
@@ -442,7 +442,7 @@ export default function InvestorsPage() {
         </Tabs>
 
         {/* Contact CTA */}
-        <Card className="mt-16 bg-gradient-to-r from-jomiastore-primary to-blue-600 text-white">
+        <Card className="mt-16 bg-gradient-to-r from-jomionstore-primary to-blue-600 text-white">
           <CardContent className="p-8 text-center">
             <h3 className="text-2xl font-bold mb-4">
               Intéressé par cette opportunité ?
@@ -451,11 +451,11 @@ export default function InvestorsPage() {
               Contactez notre équipe pour discuter de cette opportunité d'investissement
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-white text-jomiastore-primary hover:bg-gray-100">
+              <Button className="bg-white text-jomionstore-primary hover:bg-gray-100">
                 <Mail className="w-4 h-4 mr-2" />
                 Contactez-nous
               </Button>
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-jomiastore-primary">
+              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-jomionstore-primary">
                 <Phone className="w-4 h-4 mr-2" />
                 Planifier un appel
               </Button>

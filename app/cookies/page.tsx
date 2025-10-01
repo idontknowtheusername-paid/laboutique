@@ -9,13 +9,13 @@ import Link from 'next/link';
 
 export default function CookiesPage() {
   return (
-    <div className="min-h-screen bg-jomiastore-background">
+    <div className="min-h-screen bg-jomionstore-background">
       <Header />
       <CategoryMenu />
 
       <div className="container py-8">
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomionstore-primary">Accueil</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Politique de cookies</span>
         </nav>

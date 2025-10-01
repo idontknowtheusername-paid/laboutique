@@ -97,9 +97,9 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   // Show loading while checking auth
   if (loading || !hasChecked) {
     return (
-      <div className="min-h-screen bg-jomiastore-background dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-jomionstore-background dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 bg-gradient-to-r from-jomiastore-primary to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+          <div className="w-8 h-8 bg-gradient-to-r from-jomionstore-primary to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-sm">B</span>
           </div>
           <p className="text-gray-600 dark:text-gray-400">Vérification des permissions...</p>
@@ -111,9 +111,9 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   // Show unauthorized if not authorized
   if (!isAuthorized) {
     return (
-      <div className="min-h-screen bg-jomiastore-background dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-jomionstore-background dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 bg-gradient-to-r from-jomiastore-primary to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+          <div className="w-8 h-8 bg-gradient-to-r from-jomionstore-primary to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-sm">B</span>
           </div>
           <p className="text-gray-600 dark:text-gray-400">Vérification des permissions...</p>
@@ -148,7 +148,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-screen bg-jomiastore-background dark:bg-gray-900">
+    <div className="min-h-screen bg-jomionstore-background dark:bg-gray-900">
       <SkipLinks />
       
       {/* Header */}
@@ -156,7 +156,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/admin/dashboard" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-jomiastore-primary rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-jomionstore-primary rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">B</span>
               </div>
               <span className="text-lg font-semibold text-gray-900 dark:text-white">Admin Panel</span>
@@ -198,7 +198,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                 <p className="text-sm font-medium text-gray-900 dark:text-white">{adminName}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Admin</p>
               </div>
-              <div className="w-8 h-8 bg-jomiastore-primary rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-jomionstore-primary rounded-full flex items-center justify-center">
                 <span className="text-white font-medium text-sm">{avatarInitial}</span>
               </div>
               <Button variant="outline" size="sm" onClick={signOut}>
@@ -241,7 +241,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                       href={item.href}
                       className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         isActive
-                          ? 'bg-jomiastore-primary text-white'
+                          ? 'bg-jomionstore-primary text-white'
                           : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
                       aria-current={isActive ? 'page' : undefined}

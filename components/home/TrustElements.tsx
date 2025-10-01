@@ -89,7 +89,7 @@ const TrustElements = () => {
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Pourquoi choisir JomiaStore Hub ?
+              Pourquoi choisir JomionStore Hub ?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Nous nous engageons à vous offrir la meilleure expérience d'achat en ligne au Bénin
@@ -109,7 +109,7 @@ const TrustElements = () => {
                       <h3 className="font-semibold text-gray-900 mb-1">
                         {feature.title}
                       </h3>
-                      <p className="text-sm font-medium text-jomiastore-primary mb-2">
+                      <p className="text-sm font-medium text-jomionstore-primary mb-2">
                         {feature.description}
                       </p>
                       <p className="text-sm text-gray-600">
@@ -123,10 +123,10 @@ const TrustElements = () => {
           </div>
 
           {/* Stats Section */}
-          <div className="bg-gradient-to-r from-jomiastore-primary to-blue-600 rounded-2xl p-8 md:p-12 text-white">
+          <div className="bg-gradient-to-r from-jomionstore-primary to-blue-600 rounded-2xl p-8 md:p-12 text-white">
             <div className="text-center mb-8">
               <h3 className="text-2xl md:text-3xl font-bold mb-2">
-                JomiaStore Hub en chiffres
+                JomionStore Hub en chiffres
               </h3>
               <p className="text-blue-100">
                 Des résultats qui parlent d'eux-mêmes
@@ -168,7 +168,7 @@ const TrustElements = () => {
             <div className="flex flex-wrap items-center justify-center gap-6">
               {certifications.map((cert, index) => (
                 <div key={index} className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-jomiastore-primary rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-jomionstore-primary rounded-full flex items-center justify-center">
                     <cert.icon className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-sm font-medium text-gray-700">
@@ -199,7 +199,7 @@ const TrustElements = () => {
                 name: "Marie K.",
                 location: "Cotonou",
                 rating: 5,
-                comment: "Service exceptionnel ! Livraison rapide et produits de qualité. Je recommande vivement JomiaStore Hub."
+                comment: "Service exceptionnel ! Livraison rapide et produits de qualité. Je recommande vivement JomionStore Hub."
               },
               {
                 name: "Jean-Baptiste A.",
@@ -227,7 +227,7 @@ const TrustElements = () => {
                     "{testimonial.comment}"
                   </p>
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-jomiastore-primary rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-jomionstore-primary rounded-full flex items-center justify-center">
                       <span className="text-white font-semibold text-sm">
                         {testimonial.name.charAt(0)}
                       </span>

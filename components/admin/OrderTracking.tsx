@@ -125,7 +125,7 @@ export default function OrderTracking({ orderId, currentStatus }: OrderTrackingP
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-jomiastore-primary"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-jomionstore-primary"></div>
             <span className="ml-2">Chargement du suivi...</span>
           </div>
         </CardContent>

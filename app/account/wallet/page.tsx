@@ -37,9 +37,9 @@ export default function WalletPage() {
       <div>
         <div className="py-2">
           <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-            <a href="/" className="hover:text-jomiastore-primary">Accueil</a>
+            <a href="/" className="hover:text-jomionstore-primary">Accueil</a>
             <span>/</span>
-            <a href="/account" className="hover:text-jomiastore-primary">Mon compte</a>
+            <a href="/account" className="hover:text-jomionstore-primary">Mon compte</a>
             <span>/</span>
             <span className="text-gray-900 font-medium">Mon wallet</span>
           </nav>

@@ -223,7 +223,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-jomiastore-background flex items-center">
+    <div className="min-h-screen bg-jomionstore-background flex items-center">
       <div className="container py-8">
         {/* breadcrumb removed on auth pages */}
 
@@ -441,11 +441,11 @@ export default function RegisterPage() {
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           >
                             J'accepte les{' '}
-                            <Link href="/terms" className="text-jomiastore-primary hover:underline">
+                            <Link href="/terms" className="text-jomionstore-primary hover:underline">
                               conditions d'utilisation
                             </Link>{' '}
                             et la{' '}
-                            <Link href="/privacy" className="text-jomiastore-primary hover:underline">
+                            <Link href="/privacy" className="text-jomionstore-primary hover:underline">
                               politique de confidentialité
                             </Link>
                           </label>
@@ -457,7 +457,7 @@ export default function RegisterPage() {
 
                       <Button
                         type="submit"
-                        className="w-full bg-jomiastore-primary hover:bg-blue-700"
+                        className="w-full bg-jomionstore-primary hover:bg-blue-700"
                         disabled={loading || socialLoading !== null}
                       >
                         {loading ? (
@@ -474,7 +474,7 @@ export default function RegisterPage() {
               )}
 
               <p className="text-sm text-gray-600 text-center">
-                Déjà un compte ? <Link href="/auth/login" className="text-jomiastore-primary hover:underline">Se connecter</Link>
+                Déjà un compte ? <Link href="/auth/login" className="text-jomionstore-primary hover:underline">Se connecter</Link>
               </p>
 
               {/* Separator */}

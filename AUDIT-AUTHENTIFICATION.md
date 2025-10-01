@@ -1,4 +1,4 @@
-# Audit Complet de l'Authentification - JomiaStore
+# Audit Complet de l'Authentification - JomionStore
 
 ## 🔍 Problèmes Identifiés et Corrigés
 

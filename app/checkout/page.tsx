@@ -74,16 +74,16 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-jomiastore-background">
+    <div className="min-h-screen bg-jomionstore-background">
       <Header />
       <CategoryMenu />
 
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomionstore-primary">Accueil</Link>
           <span>/</span>
-          <Link href="/cart" className="hover:text-jomiastore-primary">Panier</Link>
+          <Link href="/cart" className="hover:text-jomionstore-primary">Panier</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Paiement</span>
         </nav>
@@ -94,7 +94,7 @@ export default function CheckoutPage() {
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Commande confirmée !</h2>
             <p className="text-gray-600 mb-6">Merci pour votre achat. Vous recevrez un email de confirmation sous peu.</p>
             <Link href="/">
-              <Button className="bg-jomiastore-primary hover:bg-blue-700">Retour à l'accueil</Button>
+              <Button className="bg-jomionstore-primary hover:bg-blue-700">Retour à l'accueil</Button>
             </Link>
           </div>
         ) : (
@@ -129,7 +129,7 @@ export default function CheckoutPage() {
                     Vous serez redirigé vers la page sécurisée de FedaPay pour renseigner vos informations et finaliser le paiement.
                   </div>
                   <div className="text-sm text-gray-600 flex items-center">
-                    <ShieldCheck className="w-4 h-4 mr-2 text-jomiastore-secondary" /> Paiement sécurisé • Chiffré
+                    <ShieldCheck className="w-4 h-4 mr-2 text-jomionstore-secondary" /> Paiement sécurisé • Chiffré
                   </div>
                   {errorMsg ? (
                     <div className="text-sm text-red-600">{errorMsg}</div>
@@ -137,7 +137,7 @@ export default function CheckoutPage() {
                 </CardContent>
               </Card>
 
-              <Button disabled={loading} onClick={placeOrder} className="w-full bg-jomiastore-primary hover:bg-blue-700 h-12">{loading ? 'Redirection...' : 'Confirmer et payer'}</Button>
+              <Button disabled={loading} onClick={placeOrder} className="w-full bg-jomionstore-primary hover:bg-blue-700 h-12">{loading ? 'Redirection...' : 'Confirmer et payer'}</Button>
             </div>
 
             {/* Right: Summary */}
@@ -163,7 +163,7 @@ export default function CheckoutPage() {
                   <Separator />
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
-                    <span className="text-jomiastore-primary">{formatPrice(total)}</span>
+                    <span className="text-jomionstore-primary">{formatPrice(total)}</span>
                   </div>
                 </CardContent>
               </Card>

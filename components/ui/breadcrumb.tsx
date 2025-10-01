@@ -24,7 +24,7 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
     >
       <Link 
         href="/" 
-        className="flex items-center hover:text-jomiastore-primary transition-colors"
+        className="flex items-center hover:text-jomionstore-primary transition-colors"
         aria-label="Accueil"
       >
         <Home className="w-3 h-3" />
@@ -36,7 +36,7 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
           {item.href ? (
             <Link 
               href={item.href}
-              className="hover:text-jomiastore-primary transition-colors"
+              className="hover:text-jomionstore-primary transition-colors"
             >
               {item.label}
             </Link>

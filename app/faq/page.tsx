@@ -26,21 +26,21 @@ export default function FAQPage() {
   const filtered = faqs.filter(f => f.q.toLowerCase().includes(term.toLowerCase()));
 
   return (
-    <div className="min-h-screen bg-jomiastore-background">
+    <div className="min-h-screen bg-jomionstore-background">
       <Header />
       <CategoryMenu />
 
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-jomiastore-primary">Accueil</Link>
+          <Link href="/" className="hover:text-jomionstore-primary">Accueil</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">FAQ</span>
         </nav>
 
         {/* Hero */}
         <div className="text-center mb-10">
-          <Badge className="bg-jomiastore-primary/10 text-jomiastore-primary mb-3">Questions fréquentes</Badge>
+          <Badge className="bg-jomionstore-primary/10 text-jomionstore-primary mb-3">Questions fréquentes</Badge>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">FAQ</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">Trouvez rapidement des réponses aux questions les plus courantes.</p>
         </div>
@@ -74,7 +74,7 @@ export default function FAQPage() {
         <div className="text-center mt-10">
           <p className="text-gray-600 mb-4">Vous n'avez pas trouvé votre réponse ?</p>
           <Link href="/contact">
-            <Button className="bg-jomiastore-primary hover:bg-blue-700">Contacter le support</Button>
+            <Button className="bg-jomionstore-primary hover:bg-blue-700">Contacter le support</Button>
           </Link>
         </div>
       </div>

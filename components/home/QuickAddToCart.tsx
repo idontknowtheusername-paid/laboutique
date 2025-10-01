@@ -164,7 +164,7 @@ const QuickAddToCart: React.FC<QuickAddToCartProps> = ({
       return `${baseClass} bg-gray-400 hover:bg-gray-400 cursor-not-allowed text-white`;
     }
 
-    return `${baseClass} bg-jomiastore-primary hover:bg-blue-700 text-white`;
+    return `${baseClass} bg-jomionstore-primary hover:bg-blue-700 text-white`;
   };
 
   return (
@@ -244,7 +244,7 @@ const QuickAddToCart: React.FC<QuickAddToCartProps> = ({
       {/* Loading Overlay */}
       {showLoadingState && (
         <div className="absolute inset-0 bg-white bg-opacity-50 rounded-md flex items-center justify-center">
-          <div className="w-4 h-4 animate-spin rounded-full border-2 border-jomiastore-primary border-t-transparent" />
+          <div className="w-4 h-4 animate-spin rounded-full border-2 border-jomionstore-primary border-t-transparent" />
         </div>
       )}
     </div>

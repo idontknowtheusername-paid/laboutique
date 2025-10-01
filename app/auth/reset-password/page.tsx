@@ -17,7 +17,7 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-jomiastore-background flex items-center">
+    <div className="min-h-screen bg-jomionstore-background flex items-center">
       <div className="container py-8">
         <div className="max-w-md mx-auto">
           <Card>
@@ -37,11 +37,11 @@ export default function ResetPasswordPage() {
                     <label className="block text-sm font-medium mb-2">Confirmer le mot de passe</label>
                     <Input type="password" required value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="********" />
                   </div>
-                  <Button type="submit" className="w-full bg-jomiastore-primary hover:bg-blue-700">Mettre à jour</Button>
+                  <Button type="submit" className="w-full bg-jomionstore-primary hover:bg-blue-700">Mettre à jour</Button>
                 </form>
               )}
               <p className="text-sm text-gray-600 mt-4 text-center">
-                <Link href="/auth/login" className="text-jomiastore-primary hover:underline">Se connecter</Link>
+                <Link href="/auth/login" className="text-jomionstore-primary hover:underline">Se connecter</Link>
               </p>
             </CardContent>
           </Card>

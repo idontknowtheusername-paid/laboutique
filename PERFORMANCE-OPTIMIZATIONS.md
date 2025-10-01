@@ -1,6 +1,6 @@
 # Performance Optimizations Applied
 
-This document outlines all the performance optimizations that have been implemented in the JomiaStore e-commerce platform.
+This document outlines all the performance optimizations that have been implemented in the JomionStore e-commerce platform.
 
 ## 1. Bundle Size Optimizations
 

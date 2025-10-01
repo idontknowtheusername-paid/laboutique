@@ -14,7 +14,7 @@ export default function GlobalError({
 }) {
   return (
     <html>
-      <body className="min-h-screen bg-jomiastore-background">
+      <body className="min-h-screen bg-jomionstore-background">
         <div className="container py-8">
           <div className="max-w-2xl mx-auto text-center">
             {/* Error Icon */}
@@ -43,7 +43,7 @@ export default function GlobalError({
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button onClick={reset} className="bg-jomiastore-primary hover:bg-blue-700">
+              <Button onClick={reset} className="bg-jomionstore-primary hover:bg-blue-700">
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Réessayer
               </Button>

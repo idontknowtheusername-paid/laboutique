@@ -190,7 +190,7 @@ export default function AdminCouponsPage() {
               Rafraîchir
             </Button>
             <Button 
-              className="bg-jomiastore-primary hover:bg-blue-700"
+              className="bg-jomionstore-primary hover:bg-blue-700"
               onClick={() => window.location.href = '/admin/coupons/new'}
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -317,7 +317,7 @@ export default function AdminCouponsPage() {
                           <div className="flex items-center gap-2">
                             <div className="w-16 bg-gray-200 rounded-full h-2">
                               <div 
-                                className="bg-jomiastore-primary h-2 rounded-full"
+                                className="bg-jomionstore-primary h-2 rounded-full"
                                 style={{ 
                                   width: `${(coupon.used_count / (coupon.usage_limit || 100)) * 100}%` 
                                 }}

@@ -123,9 +123,9 @@ export default function PointsPage() {
       <div>
         <div className="py-2">
           <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-            <a href="/" className="hover:text-jomiastore-primary">Accueil</a>
+            <a href="/" className="hover:text-jomionstore-primary">Accueil</a>
             <span>/</span>
-            <a href="/account" className="hover:text-jomiastore-primary">Mon compte</a>
+            <a href="/account" className="hover:text-jomionstore-primary">Mon compte</a>
             <span>/</span>
             <span className="text-gray-900 font-medium">Points de fidélité</span>
           </nav>
@@ -143,7 +143,7 @@ export default function PointsPage() {
                 <CardContent className="space-y-4">
                   {loading ? (
                     <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-jomiastore-primary mx-auto"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-jomionstore-primary mx-auto"></div>
                     </div>
                   ) : points ? (
                     <>
@@ -170,7 +170,7 @@ export default function PointsPage() {
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div 
-                            className="bg-jomiastore-primary h-2 rounded-full transition-all duration-300"
+                            className="bg-jomionstore-primary h-2 rounded-full transition-all duration-300"
                             style={{ 
                               width: `${points.pointsToNext > 0 ? (points.current / (points.current + points.pointsToNext)) * 100 : 100}%` 
                             }}
@@ -180,7 +180,7 @@ export default function PointsPage() {
 
                       <div className="grid grid-cols-2 gap-4 pt-4 border-t">
                         <div className="text-center">
-                          <div className="text-2xl font-bold text-jomiastore-primary">{points.current}</div>
+                          <div className="text-2xl font-bold text-jomionstore-primary">{points.current}</div>
                           <div className="text-sm text-gray-600">Points actuels</div>
                         </div>
                         <div className="text-center">
@@ -272,21 +272,21 @@ export default function PointsPage() {
                 </CardHeader>
                 <CardContent className="text-sm text-gray-600 space-y-3">
                   <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-jomiastore-primary text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                    <div className="w-6 h-6 bg-jomionstore-primary text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
                     <div>
                       <div className="font-medium">Gagnez des points</div>
                       <div>1 point = 1€ dépensé</div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-jomiastore-primary text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                    <div className="w-6 h-6 bg-jomionstore-primary text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
                     <div>
                       <div className="font-medium">Montez de niveau</div>
                       <div>Plus vous achetez, plus vous gagnez d'avantages</div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-jomiastore-primary text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                    <div className="w-6 h-6 bg-jomionstore-primary text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
                     <div>
                       <div className="font-medium">Échangez vos points</div>
                       <div>100 points = 1€ de réduction</div>

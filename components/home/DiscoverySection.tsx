@@ -19,11 +19,11 @@ export default function DiscoverySection() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-jomiastore-primary" /> Découverte
+            <Sparkles className="w-6 h-6 text-jomionstore-primary" /> Découverte
           </h2>
           <p className="text-gray-600 mt-1.5">Trouvez rapidement des idées à explorer</p>
         </div>
-        <Link href="/products" className="text-jomiastore-primary hover:text-blue-700 text-sm">Voir tout</Link>
+        <Link href="/products" className="text-jomionstore-primary hover:text-blue-700 text-sm">Voir tout</Link>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
@@ -40,7 +40,7 @@ export default function DiscoverySection() {
                     </div>
                     <Badge className={`${tile.tone} border-0`}>{tile.title}</Badge>
                   </div>
-                  <div className="flex items-center justify-between mt-4 text-jomiastore-primary">
+                  <div className="flex items-center justify-between mt-4 text-jomionstore-primary">
                     <Icon className="w-5 h-5" />
                     <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>

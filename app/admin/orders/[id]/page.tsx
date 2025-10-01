@@ -160,9 +160,9 @@ export default function AdminOrderDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-jomiastore-background flex items-center justify-center">
+      <div className="min-h-screen bg-jomionstore-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-jomiastore-primary mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-jomionstore-primary mx-auto mb-4"></div>
           <p className="text-gray-600">Chargement de la commande...</p>
         </div>
       </div>
@@ -171,7 +171,7 @@ export default function AdminOrderDetailPage() {
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-jomiastore-background flex items-center justify-center">
+      <div className="min-h-screen bg-jomionstore-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Commande introuvable</h1>
           <Button onClick={() => window.history.back()}>
@@ -195,7 +195,7 @@ export default function AdminOrderDetailPage() {
               Retour
             </Button>
             <Button 
-              className="bg-jomiastore-primary hover:bg-blue-700"
+              className="bg-jomionstore-primary hover:bg-blue-700"
               onClick={() => window.location.href = `/admin/orders/${order.id}/edit`}
             >
               <Edit className="w-4 h-4 mr-2" />
@@ -275,7 +275,7 @@ export default function AdminOrderDetailPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-jomiastore-primary rounded-full flex items-center justify-center">
+                    <div className="w-12 h-12 bg-jomionstore-primary rounded-full flex items-center justify-center">
                       <span className="text-white font-medium text-lg">
                         {(order.user?.first_name || order.user?.email || '?')[0]}
                       </span>

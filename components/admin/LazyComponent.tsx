@@ -15,7 +15,7 @@ const DefaultFallback = () => (
   <Card>
     <CardContent className="p-6">
       <div className="flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-jomiastore-primary" />
+        <Loader2 className="w-6 h-6 animate-spin text-jomionstore-primary" />
         <span className="ml-2 text-gray-600">Chargement...</span>
       </div>
     </CardContent>

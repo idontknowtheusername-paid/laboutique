@@ -314,7 +314,7 @@ const ImprovedCategoryMenu = () => {
                 <SheetTrigger asChild>
                   <Button 
                     aria-label="Ouvrir les catégories" 
-                    className="bg-jomiastore-primary text-white h-9 px-3 hover:bg-blue-700 transition-colors"
+                    className="bg-jomionstore-primary text-white h-9 px-3 hover:bg-blue-700 transition-colors"
                   >
                     <Grid3X3 className="w-4 h-4 mr-2" /> 
                     Catégories
@@ -357,7 +357,7 @@ const ImprovedCategoryMenu = () => {
                             href={`/category/${category.slug}`}
                             className={`flex items-center justify-between py-3 px-3 rounded-lg transition-colors ${
                               isActive 
-                                ? 'bg-jomiastore-primary text-white' 
+                                ? 'bg-jomionstore-primary text-white' 
                                 : 'hover:bg-gray-100 text-gray-900'
                             }`}
                             onClick={() => setOpen(false)}
@@ -377,7 +377,7 @@ const ImprovedCategoryMenu = () => {
                                 <li key={child.id}>
                                   <Link
                                     href={`/category/${child.slug}`}
-                                    className="block py-2 text-sm text-gray-600 hover:text-jomiastore-primary transition-colors"
+                                    className="block py-2 text-sm text-gray-600 hover:text-jomionstore-primary transition-colors"
                                     onClick={() => setOpen(false)}
                                   >
                                     {child.name}
@@ -401,7 +401,7 @@ const ImprovedCategoryMenu = () => {
                   <NavigationMenuList className="flex flex-nowrap gap-1 overflow-x-auto no-scrollbar">
                     {/* All Categories Button */}
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger className="bg-jomiastore-primary text-white hover:bg-blue-700 px-5 py-2 h-auto rounded-md transition-colors">
+                      <NavigationMenuTrigger className="bg-jomionstore-primary text-white hover:bg-blue-700 px-5 py-2 h-auto rounded-md transition-colors">
                         <Grid3X3 className="w-4 h-4 mr-2" />
                         Toutes les catégories
                         {state.categories.length > 0 && (
@@ -422,8 +422,8 @@ const ImprovedCategoryMenu = () => {
                                   href={`/category/${category.slug}`}
                                   className={`flex items-center space-x-2 font-semibold transition-colors ${
                                     isActive 
-                                      ? 'text-jomiastore-primary' 
-                                      : 'text-gray-700 hover:text-jomiastore-primary'
+                                      ? 'text-jomionstore-primary' 
+                                      : 'text-gray-700 hover:text-jomionstore-primary'
                                   }`}
                                 >
                                   <IconComponent className="w-5 h-5" />
@@ -435,7 +435,7 @@ const ImprovedCategoryMenu = () => {
                                     <div key={child.slug}>
                                       <Link
                                         href={`/category/${child.slug}`}
-                                        className="block font-medium text-gray-700 hover:text-jomiastore-primary transition-colors"
+                                        className="block font-medium text-gray-700 hover:text-jomionstore-primary transition-colors"
                                       >
                                         {child.name}
                                       </Link>
@@ -445,7 +445,7 @@ const ImprovedCategoryMenu = () => {
                                             <li key={grandchild.id}>
                                               <Link
                                                 href={`/category/${grandchild.slug}`}
-                                                className="text-sm text-gray-500 hover:text-jomiastore-secondary transition-colors"
+                                                className="text-sm text-gray-500 hover:text-jomionstore-secondary transition-colors"
                                               >
                                                 {grandchild.name}
                                               </Link>
@@ -473,8 +473,8 @@ const ImprovedCategoryMenu = () => {
                           <NavigationMenuTrigger 
                             className={`px-4 py-2 h-auto rounded-md transition-all ${
                               isActive
-                                ? 'bg-jomiastore-primary text-white border-jomiastore-primary'
-                                : 'text-gray-700 hover:text-jomiastore-primary bg-transparent border border-transparent hover:border-jomiastore-primary/20'
+                                ? 'bg-jomionstore-primary text-white border-jomionstore-primary'
+                                : 'text-gray-700 hover:text-jomionstore-primary bg-transparent border border-transparent hover:border-jomionstore-primary/20'
                             }`}
                             onMouseEnter={() => setHoveredCategory(category.id)}
                             onMouseLeave={() => setHoveredCategory(null)}
@@ -489,7 +489,7 @@ const ImprovedCategoryMenu = () => {
                                 <div key={child.slug} className="space-y-2">
                                   <Link
                                     href={`/category/${child.slug}`}
-                                    className="block font-semibold text-jomiastore-primary hover:text-blue-700 transition-colors"
+                                    className="block font-semibold text-jomionstore-primary hover:text-blue-700 transition-colors"
                                   >
                                     {child.name}
                                   </Link>
@@ -499,7 +499,7 @@ const ImprovedCategoryMenu = () => {
                                         <li key={grandchild.id}>
                                           <Link
                                             href={`/category/${grandchild.slug}`}
-                                            className="text-sm text-gray-600 hover:text-jomiastore-secondary transition-colors"
+                                            className="text-sm text-gray-600 hover:text-jomionstore-secondary transition-colors"
                                           >
                                             {grandchild.name}
                                           </Link>
@@ -525,7 +525,7 @@ const ImprovedCategoryMenu = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="text-gray-600 hover:text-jomiastore-primary"
+              className="text-gray-600 hover:text-jomionstore-primary"
               title="Produits tendance"
             >
               <TrendingUp className="w-4 h-4" />
@@ -533,7 +533,7 @@ const ImprovedCategoryMenu = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="text-gray-600 hover:text-jomiastore-primary"
+              className="text-gray-600 hover:text-jomionstore-primary"
               title="Nouveautés"
             >
               <Clock className="w-4 h-4" />

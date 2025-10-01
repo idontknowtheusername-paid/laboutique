@@ -214,7 +214,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                   <div className="mt-4 space-y-3">
                     {updates.map((u, idx) => (
                       <div key={idx} className="flex items-start gap-3">
-                        <div className="w-2 h-2 mt-2 rounded-full bg-jomiastore-primary" />
+                        <div className="w-2 h-2 mt-2 rounded-full bg-jomionstore-primary" />
                         <div>
                           <div className="text-sm font-medium">{u.status}</div>
                           <div className="text-xs text-gray-600">{new Date(u.timestamp).toLocaleString('fr-FR')} {u.location ? `• ${u.location}` : ''}</div>

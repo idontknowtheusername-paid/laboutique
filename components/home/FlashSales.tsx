@@ -324,7 +324,7 @@ const FlashSales = () => {
                     <div className="space-y-2 md:space-y-3 flex-grow">
                       {/* Product Name */}
                       <Link href={`/product/${product.slug}`}>
-                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-jomiastore-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
+                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-jomionstore-primary transition-colors min-h-[2.5rem] md:min-h-[3rem]">
                           {product.name}
                         </h3>
                       </Link>
@@ -351,7 +351,7 @@ const FlashSales = () => {
                       {/* Prices */}
                       <div className="space-y-1">
                         <div className="flex flex-col md:flex-row items-start md:items-center space-y-1 md:space-y-0 md:space-x-2">
-                          <span className="font-bold text-jomiastore-primary text-sm md:text-lg">
+                          <span className="font-bold text-jomionstore-primary text-sm md:text-lg">
                             {formatPrice(product.salePrice)}
                           </span>
                           <span className="text-xs md:text-sm text-gray-500 line-through">

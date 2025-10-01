@@ -39,7 +39,7 @@ export default function ReturnsPage() {
               <Card>
                 <CardHeader className="flex items-center justify-between">
                   <CardTitle>Retours</CardTitle>
-                  <Button onClick={() => setCreating(v => !v)} className="bg-jomiastore-primary hover:bg-blue-700">
+                  <Button onClick={() => setCreating(v => !v)} className="bg-jomionstore-primary hover:bg-blue-700">
                     Créer une demande
                   </Button>
                 </CardHeader>
@@ -66,7 +66,7 @@ export default function ReturnsPage() {
                         </div>
                       </div>
                       <div className="md:col-span-2 flex gap-3">
-                        <Button className="bg-jomiastore-primary hover:bg-blue-700" onClick={async ()=>{
+                        <Button className="bg-jomionstore-primary hover:bg-blue-700" onClick={async ()=>{
                           if (!user?.id) return;
                           const res = await AccountService.createReturnRequest(user.id, form as any);
                           if (res.success && res.data) {
@@ -85,7 +85,7 @@ export default function ReturnsPage() {
                       <div key={rr.id} className="p-4 border rounded-lg">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded bg-jomiastore-primary text-white flex items-center justify-center"><Package className="w-5 h-5"/></div>
+                            <div className="w-10 h-10 rounded bg-jomionstore-primary text-white flex items-center justify-center"><Package className="w-5 h-5"/></div>
                             <div>
                               <div className="font-medium">Retour #{rr.id}</div>
                               <div className="text-xs text-gray-600">Commande {rr.order_id} • Statut: {rr.status}</div>

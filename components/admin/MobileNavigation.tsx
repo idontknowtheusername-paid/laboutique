@@ -91,7 +91,7 @@ export default function MobileNavigation({
                       variant={isActive ? "default" : "ghost"}
                       className={cn(
                         "w-full justify-start",
-                        isActive && "bg-jomiastore-primary text-white"
+                        isActive && "bg-jomionstore-primary text-white"
                       )}
                       onClick={() => handleNavigate(item.href)}
                       aria-current={isActive ? "page" : undefined}
