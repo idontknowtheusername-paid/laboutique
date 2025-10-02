@@ -6,11 +6,8 @@ import {
   Truck, 
   RefreshCw, 
   Headphones, 
-  Lock, 
   Award, 
-  Clock, 
   Users,
-  CheckCircle,
   Star
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -75,12 +72,6 @@ const TrustElements = () => {
     { number: "15+", label: "Villes desservies", icon: Truck }
   ];
 
-  const certifications = [
-    { name: "SSL Certifié", icon: Lock },
-    { name: "PCI DSS", icon: Shield },
-    { name: "ISO 27001", icon: Award },
-    { name: "Trustpilot", icon: Star }
-  ];
 
   return (
     <div className="bg-white">
@@ -152,101 +143,6 @@ const TrustElements = () => {
         </div>
       </section>
 
-      {/* Certifications Bar */}
-      <section className="py-8 bg-gray-50 border-t">
-        <div className="container">
-          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-            <div className="text-center md:text-left">
-              <h4 className="font-semibold text-gray-900 mb-2">
-                Certifications et Sécurité
-              </h4>
-              <p className="text-sm text-gray-600">
-                Votre confiance est notre priorité
-              </p>
-            </div>
-            
-            <div className="flex flex-wrap items-center justify-center gap-6">
-              {certifications.map((cert, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-jomionstore-primary rounded-full flex items-center justify-center">
-                    <cert.icon className="w-4 h-4 text-white" />
-                  </div>
-                  <span className="text-sm font-medium text-gray-700">
-                    {cert.name}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Customer Testimonials */}
-      <section className="py-12 bg-white">
-        <div className="container">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">
-              Ce que disent nos clients
-            </h3>
-            <p className="text-gray-600">
-              Plus de 10,000 avis clients vérifiés
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                name: "Marie K.",
-                location: "Cotonou",
-                rating: 5,
-                comment: "Service exceptionnel ! Livraison rapide et produits de qualité. Je recommande vivement JomionStore."
-              },
-              {
-                name: "Jean-Baptiste A.",
-                location: "Porto-Novo",
-                rating: 5,
-                comment: "La meilleure plateforme e-commerce du Bénin. Interface intuitive et paiement sécurisé."
-              },
-              {
-                name: "Fatou S.",
-                location: "Parakou",
-                rating: 5,
-                comment: "Excellent rapport qualité-prix. Le support client est très réactif et professionnel."
-              }
-            ].map((testimonial, index) => (
-              <Card key={index} className="border-0 shadow-sm">
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    <div className="flex text-yellow-400">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-current" />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-gray-600 mb-4 text-sm">
-                    "{testimonial.comment}"
-                  </p>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-jomionstore-primary rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm">
-                        {testimonial.name.charAt(0)}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900 text-sm">
-                        {testimonial.name}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {testimonial.location}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   );
 };
