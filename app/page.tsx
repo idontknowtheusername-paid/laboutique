@@ -288,6 +288,11 @@ export default function Home() {
           </div>
         )}
 
+        {/* Recommandé pour vous - Section personnalisée */}
+        <div className="mb-2.5">
+          <PersonalizedOffers />
+        </div>
+
         <div className="mb-2.5">
           <FeaturedBrands />
         </div>
@@ -300,10 +305,6 @@ export default function Home() {
         {/* Trust Elements */}
         <div className="mb-2.5">
           <TrustElements />
-        </div>
-        
-        <div>
-          <PersonalizedOffers />
         </div>
       </div>
 
