@@ -15,7 +15,20 @@ export default function FlashSalesConnected() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const { addToCart } = useCart();
+
+  // Détection de la taille d'écran
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   // Charger les produits en promotion depuis le backend
   useEffect(() => {
@@ -81,11 +94,13 @@ export default function FlashSalesConnected() {
   };
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % Math.max(1, products.length - 2));
+    const maxIndex = isMobile ? products.length - 1 : Math.max(1, products.length - 2);
+    setCurrentIndex((prev) => (prev + 1) % Math.max(1, maxIndex));
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + Math.max(1, products.length - 2)) % Math.max(1, products.length - 2));
+    const maxIndex = isMobile ? products.length - 1 : Math.max(1, products.length - 2);
+    setCurrentIndex((prev) => (prev - 1 + Math.max(1, maxIndex)) % Math.max(1, maxIndex));
   };
 
   if (loading) {
@@ -148,30 +163,30 @@ export default function FlashSalesConnected() {
           </div>
         </div>
 
-        {/* Products Carousel */}
+        {/* Products Carousel - Optimisé pour mobile */}
         <div className="relative">
           <div className="overflow-hidden">
             <div 
               className="flex transition-transform duration-300 ease-in-out"
-              style={{ transform: `translateX(-${currentIndex * (100 / 2)}%)` }}
+              style={{ transform: `translateX(-${currentIndex * (100 / (isMobile ? 1 : 2))}%)` }}
             >
               {products.map((product) => {
                 const discount = product.compare_price ? calculateDiscount(product.price, product.compare_price) : 0;
                 
                 return (
-                  <div key={product.id} className="w-1/2 flex-shrink-0 px-3">
+                  <div key={product.id} className="w-full sm:w-1/2 flex-shrink-0 px-2 sm:px-3">
                     <Card className="bg-white hover:shadow-xl transition-all duration-300 border border-gray-200">
-                      <CardContent className="p-6">
-                        <div className="relative mb-6">
+                      <CardContent className="p-3 sm:p-4 md:p-6">
+                        <div className="relative mb-4 sm:mb-6">
                           <Link href={`/product/${product.slug}`}>
-                            <div className="aspect-square relative overflow-hidden rounded-xl bg-gray-100" style={{ minHeight: '300px' }}>
+                            <div className="aspect-square relative overflow-hidden rounded-xl bg-gray-100" style={{ minHeight: isMobile ? '250px' : '300px' }}>
                               {product.images?.[0] ? (
                                 <Image
                                   src={product.images[0]}
                                   alt={product.name}
                                   fill
                                   className="object-cover hover:scale-105 transition-transform duration-300"
-                                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                                   loading="lazy"
                                   quality={85}
                                   placeholder="blur"
@@ -186,39 +201,39 @@ export default function FlashSalesConnected() {
                           </Link>
                           
                           {discount > 0 && (
-                            <Badge className="absolute top-3 left-3 bg-red-500 text-white font-bold text-sm px-3 py-1">
+                            <Badge className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-500 text-white font-bold text-xs sm:text-sm px-2 py-1 sm:px-3">
                               -{discount}%
                             </Badge>
                           )}
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-3 sm:space-y-4">
                           <Link href={`/product/${product.slug}`}>
-                            <h3 className="font-semibold text-lg line-clamp-2 hover:text-jomionstore-primary transition-colors">
+                            <h3 className="font-semibold text-sm sm:text-base md:text-lg line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
                               {product.name}
                             </h3>
                           </Link>
 
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-1 sm:space-x-2">
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`w-4 h-4 ${i < 4
+                                className={`w-3 h-3 sm:w-4 sm:h-4 ${i < 4
                                     ? 'fill-yellow-400 text-yellow-400'
                                     : 'fill-gray-200 text-gray-200'
                                   }`}
                               />
                             ))}
-                            <span className="text-sm text-gray-600">(4.5)</span>
+                            <span className="text-xs sm:text-sm text-gray-600">(4.5)</span>
                           </div>
 
                           <div className="space-y-2">
-                            <div className="flex items-center space-x-3">
-                              <span className="font-bold text-2xl text-jomionstore-primary">
+                            <div className="flex items-center space-x-2 sm:space-x-3 flex-wrap">
+                              <span className="font-bold text-lg sm:text-xl md:text-2xl text-jomionstore-primary">
                                 {formatPrice(product.price)}
                               </span>
                               {product.compare_price && (
-                                <span className="text-lg text-gray-500 line-through">
+                                <span className="text-sm sm:text-base md:text-lg text-gray-500 line-through">
                                   {formatPrice(product.compare_price)}
                                 </span>
                               )}
@@ -226,8 +241,8 @@ export default function FlashSalesConnected() {
                           </div>
 
                           <Button
-                            className="w-full bg-jomionstore-primary hover:bg-blue-700 text-white font-semibold py-3"
-                            size="lg"
+                            className="w-full bg-jomionstore-primary hover:bg-blue-700 text-white font-semibold py-2 sm:py-3 text-sm sm:text-base"
+                            size={isMobile ? "default" : "lg"}
                             onClick={() => handleAddToCart(product)}
                             disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
                           >
@@ -245,33 +260,38 @@ export default function FlashSalesConnected() {
             </div>
           </div>
 
-          {/* Navigation Buttons */}
-          {products.length > 2 && (
+          {/* Navigation Buttons - Optimisé pour mobile */}
+          {products.length > (isMobile ? 1 : 2) && (
             <>
               <Button
                 variant="ghost"
                 size="sm"
-                className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full w-12 h-12 p-0 shadow-lg border border-gray-200"
+                className="absolute left-1 sm:left-0 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 p-0 shadow-lg border border-gray-200"
                 onClick={prevSlide}
+                aria-label="Produit précédent"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full w-12 h-12 p-0 shadow-lg border border-gray-200"
+                className="absolute right-1 sm:right-0 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 p-0 shadow-lg border border-gray-200"
                 onClick={nextSlide}
+                aria-label="Produit suivant"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </Button>
             </>
           )}
         </div>
 
-        {/* View All Link */}
-        <div className="text-center mt-8">
+        {/* View All Link - Optimisé pour mobile */}
+        <div className="text-center mt-6 sm:mt-8">
           <Link href="/products?sale=true">
-            <Button variant="outline" className="bg-jomionstore-primary text-white border-jomionstore-primary hover:bg-blue-700 hover:border-blue-700 px-8 py-3">
+            <Button 
+              variant="outline" 
+              className="bg-jomionstore-primary text-white border-jomionstore-primary hover:bg-blue-700 hover:border-blue-700 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-sm sm:text-base"
+            >
               Voir toutes les offres flash
             </Button>
           </Link>

@@ -50,10 +50,10 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   const isHydrated = useHydration();
   const [retryCount, setRetryCount] = useState(0);
 
-  // Responsive grid columns - safe for SSR
+  // Responsive grid columns - optimisé pour mobile
   const getGridCols = () => {
-    // Use responsive classes that work with CSS media queries
-    return 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
+    // Grille adaptative : 1 colonne sur très petit écran, 2 sur mobile, 3 sur tablette, 4 sur desktop, 5 sur grand écran
+    return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
   };
 
   // Memoize expensive calculations
@@ -144,18 +144,18 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
         {/* Products Grid */}
         {!isLoading && !error && transformedProducts.length > 0 && (
-          <div className={`grid ${getGridCols()} gap-3 md:gap-4 lg:gap-6`}>
+          <div className={`grid ${getGridCols()} gap-2 sm:gap-3 md:gap-4 lg:gap-6`}>
             {transformedProducts.map((transformedProduct) => (
                 <Card key={transformedProduct.id} className="group hover-lift card-shadow h-full flex flex-col">
                   <div className="relative overflow-hidden">
-                    {/* Product Image - Optimized for CLS */}
-                    <div className="aspect-square bg-gray-100 relative" style={{ minHeight: '200px' }}>
+                    {/* Product Image - Optimized for mobile */}
+                    <div className="aspect-square bg-gray-100 relative" style={{ minHeight: '180px' }}>
                       <Image
                         src={transformedProduct.image}
                         alt={transformedProduct.name}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                        sizes="(max-width: 480px) 100vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                         loading="lazy"
                         quality={85}
                         placeholder="blur"
@@ -186,8 +186,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                       )}
                     </div>
 
-                  {/* Quick Actions */}
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2">
+                  {/* Quick Actions - Optimisé pour mobile */}
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-1 sm:space-y-2">
                       <WishlistButton
                         productId={transformedProduct.id}
                         productName={transformedProduct.name}
@@ -195,42 +195,47 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                         productSlug={transformedProduct.slug}
                         size="sm"
                         variant="icon"
-                        className="w-7 h-7 md:w-8 md:h-8"
+                        className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
                       />
-                    <Button size="icon" variant="secondary" className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm">
-                      <Eye className="w-3 h-3 md:w-4 md:h-4" />
+                    <Button 
+                      size="icon" 
+                      variant="secondary" 
+                      className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm"
+                      aria-label={`Voir les détails de ${transformedProduct.name}`}
+                    >
+                      <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
                     </Button>
                   </div>
                 </div>
 
-                  <CardContent className="p-3 md:p-4 flex flex-col flex-grow">
-                    <div className="space-y-1 md:space-y-1.5 flex-grow">
-                      {/* Product Name */}
+                  <CardContent className="p-2 sm:p-3 md:p-4 flex flex-col flex-grow">
+                    <div className="space-y-1 sm:space-y-1.5 flex-grow">
+                      {/* Product Name - Optimisé pour mobile */}
                       <Link href={`/product/${transformedProduct.slug}`}>
-                        <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-jomionstore-primary transition-colors">
+                        <h3 className="font-medium text-xs sm:text-sm md:text-base line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
                           {transformedProduct.name}
                         </h3>
                       </Link>
 
-                      {/* Rating */}
-                      <div className="flex items-center space-x-1 text-[10px] md:text-xs">
+                      {/* Rating - Optimisé pour mobile */}
+                      <div className="flex items-center space-x-1 text-[9px] sm:text-[10px] md:text-xs">
                         <div className="flex items-center">
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              className={`w-2.5 h-2.5 ${i < Math.floor(transformedProduct.rating)
+                              className={`w-2 h-2 sm:w-2.5 sm:h-2.5 ${i < Math.floor(transformedProduct.rating)
                                 ? 'fill-yellow-400 text-yellow-400'
                                 : 'fill-gray-200 text-gray-200'
                                 }`}
                             />
                           ))}
                         </div>
-                        <span className="text-gray-500 truncate">({transformedProduct.reviews})</span>
+                        <span className="text-gray-500 truncate text-[9px] sm:text-[10px]">({transformedProduct.reviews})</span>
                       </div>
 
-                      {/* Stock Status */}
+                      {/* Stock Status - Optimisé pour mobile */}
                       {transformedProduct.track_quantity && (
-                        <div className="text-xs">
+                        <div className="text-[10px] sm:text-xs">
                           {transformedProduct.quantity > 0 ? (
                             <span className="text-green-600">En stock ({transformedProduct.quantity})</span>
                           ) : (
@@ -239,14 +244,14 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                         </div>
                       )}
 
-                      {/* Price */}
+                      {/* Price - Optimisé pour mobile */}
                       <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-jomionstore-primary text-sm md:text-base truncate">
+                        <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                          <span className="font-bold text-jomionstore-primary text-xs sm:text-sm md:text-base truncate">
                             {formatPrice(transformedProduct.price)}
                           </span>
                           {transformedProduct.comparePrice && (
-                            <span className="text-xs text-gray-500 line-through truncate">
+                            <span className="text-[10px] sm:text-xs text-gray-500 line-through truncate">
                               {formatPrice(transformedProduct.comparePrice)}
                             </span>
                           )}
