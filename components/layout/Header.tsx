@@ -226,6 +226,8 @@ const Header = () => {
           <form
             onSubmit={handleSearch}
             className="hidden md:flex flex-1 max-w-2xl mx-8"
+            role="search"
+            aria-label="Recherche de produits"
           >
             <div className="relative w-full">
               <Input
@@ -236,26 +238,41 @@ const Header = () => {
                 onFocus={() => setShowSuggestions(searchQuery.length >= 2)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 className="pr-12 h-12 text-base border-2 border-gray-200 focus:border-jomionstore-primary rounded-lg"
+                aria-label="Champ de recherche de produits"
+                aria-describedby="search-help"
+                aria-expanded={showSuggestions}
+                aria-autocomplete="list"
+                role="combobox"
               />
               <Button
                 type="submit"
                 size="sm"
                 className="absolute right-1 top-1 h-10 px-4 bg-jomionstore-secondary hover:bg-orange-600 rounded-md"
+                aria-label="Lancer la recherche"
               >
                 <Search className="w-4 h-4" />
               </Button>
               
               {/* Suggestions de recherche */}
               {showSuggestions && searchSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1">
+                <div 
+                  className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1"
+                  role="listbox"
+                  aria-label="Suggestions de recherche"
+                  id="search-suggestions"
+                >
                   <div className="p-2">
-                    <div className="text-xs text-gray-500 mb-2 px-2">Suggestions</div>
+                    <div className="text-xs text-gray-500 mb-2 px-2" id="search-help">
+                      Suggestions de recherche
+                    </div>
                     {searchSuggestions.map((suggestion, index) => (
                       <button
                         key={index}
                         type="button"
                         onClick={() => handleSuggestionClick(suggestion)}
                         className="w-full text-left px-2 py-2 hover:bg-gray-100 rounded text-sm"
+                        role="option"
+                        aria-label={`Rechercher ${suggestion}`}
                       >
                         {suggestion}
                       </button>
@@ -277,6 +294,7 @@ const Header = () => {
                   variant="ghost"
                   className="flex items-center space-x-2 text-yellow-600 hover:text-yellow-700"
                   title="Admin Dashboard"
+                  aria-label="Accéder au tableau de bord administrateur"
                 >
                   <Crown className="w-6 h-6" />
                   <span className="hidden lg:block text-sm font-medium">Admin</span>
@@ -289,6 +307,8 @@ const Header = () => {
                     <Button
                       variant="ghost"
                       className="flex items-center space-x-2 text-gray-700 hover:text-jomionstore-primary"
+                      aria-label={user ? "Menu du compte utilisateur" : "Se connecter ou créer un compte"}
+                      aria-expanded="false"
                     >
                       <User className="w-5 h-5" />
                       <div className="hidden lg:block text-left">
@@ -337,6 +357,7 @@ const Header = () => {
                   variant="ghost"
                   size="icon"
                   className="text-gray-700 hover:text-jomionstore-primary"
+                  aria-label="Voir ma liste de souhaits"
                 >
                   <Heart className="w-6 h-6" />
                 </Button>
@@ -349,11 +370,15 @@ const Header = () => {
                 variant="ghost"
                 size="icon"
                 className="text-gray-700 hover:text-jomionstore-primary"
+                aria-label={`Voir le panier${cartItemsCount > 0 ? ` (${cartItemsCount} articles)` : ''}`}
               >
                 <ShoppingCart className="w-6 h-6" />
                 <ClientSafe>
                   {cartItemsCount > 0 && (
-                    <Badge className="absolute -top-2 -right-2 bg-jomionstore-secondary text-white text-xs px-2 py-1">
+                    <Badge 
+                      className="absolute -top-2 -right-2 bg-jomionstore-secondary text-white text-xs px-2 py-1"
+                      aria-label={`${cartItemsCount} articles dans le panier`}
+                    >
                       {cartItemsCount}
                     </Badge>
                   )}
@@ -364,7 +389,12 @@ const Header = () => {
             {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="md:hidden"
+                  aria-label="Ouvrir le menu de navigation mobile"
+                >
                   <Menu className="w-6 h-6" />
                 </Button>
               </SheetTrigger>
@@ -379,7 +409,12 @@ const Header = () => {
         </div>
 
         {/* Mobile Search */}
-        <form onSubmit={handleSearch} className="md:hidden mt-4">
+        <form 
+          onSubmit={handleSearch} 
+          className="md:hidden mt-4"
+          role="search"
+          aria-label="Recherche de produits mobile"
+        >
           <div className="relative">
             <Input
               type="text"
@@ -387,11 +422,13 @@ const Header = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pr-12 h-10 border-2 border-gray-200 focus:border-jomionstore-primary rounded-lg"
+              aria-label="Champ de recherche de produits mobile"
             />
             <Button
               type="submit"
               size="sm"
               className="absolute right-1 top-1 h-8 px-3 bg-jomionstore-secondary hover:bg-orange-600 rounded-md"
+              aria-label="Lancer la recherche mobile"
             >
               <Search className="w-4 h-4" />
             </Button>

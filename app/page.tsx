@@ -9,10 +9,13 @@ import Footer from '@/components/layout/Footer';
 import { ProductsService, CategoriesService, Product, Category } from '@/lib/services';
 import { ProductSkeleton } from '@/components/ui/loading-skeleton';
 import { useToast } from '@/components/admin/Toast';
+import LazySection from '@/components/ui/LazySection';
+import DynamicMeta from '@/components/seo/DynamicMeta';
+import ProductSectionMeta from '@/components/seo/ProductSectionMeta';
 
 // Optimized lazy loading components with better loading states and code splitting
 const HeroCarousel = dynamic(() => import('@/components/home/HeroCarousel'), {
-  loading: () => <div className="h-[500px] lg:h-[600px] bg-gray-100 animate-pulse rounded-xl" />,
+  loading: () => <div className="h-[250px] lg:h-[300px] bg-gray-100 animate-pulse rounded-xl" />,
   ssr: true // Critical above-the-fold content
 });
 
@@ -26,6 +29,7 @@ const ProductGrid = dynamic(() => import('@/components/home/ProductGrid'), {
   ssr: false
 });
 
+// Composants lourds avec lazy loading optimisé
 const FeaturedBrands = dynamic(() => import('@/components/home/FeaturedBrands'), {
   loading: () => <div className="h-48 bg-gray-100 animate-pulse rounded-xl" />,
   ssr: false
@@ -43,6 +47,12 @@ const MobileAppSection = dynamic(() => import('@/components/home/MobileAppSectio
 
 const TrustElements = dynamic(() => import('@/components/home/TrustElements'), {
   loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
+// Composants avec intersection observer pour lazy loading
+const LazyProductGrid = dynamic(() => import('@/components/home/ProductGrid'), {
+  loading: () => <ProductSkeleton count={8} />,
   ssr: false
 });
 
@@ -232,9 +242,18 @@ export default function Home() {
   const newProducts = getNewProducts();
 
   return (
-    <main className="min-h-screen bg-jomionstore-background">
-      <Header />
-      <ImprovedCategoryMenu />
+    <>
+      {/* Meta tags dynamiques */}
+      <DynamicMeta
+        title="JomionStore - Centre commercial digital du Bénin"
+        description="Découvrez des milliers de produits authentiques sur JomionStore. Électronique, mode, maison, sport et bien plus. Livraison rapide et service client exceptionnel."
+        keywords="e-commerce, Bénin, produits, électronique, mode, maison, sport, livraison, achat en ligne, JomionStore"
+        section="Accueil"
+      />
+      
+      <main className="min-h-screen bg-jomionstore-background">
+        <Header />
+        <ImprovedCategoryMenu />
 
       <div className="pt-2">
         <section className="container mb-4">
@@ -244,8 +263,15 @@ export default function Home() {
         <div className="mb-2.5">
           <FlashSalesConnected />
         </div>
+        {/* Sections avec lazy loading optimisé */}
         {state.trending.length > 0 && (
-          <div className="mb-2.5">
+          <LazySection className="mb-2.5" fallback={<ProductSkeleton count={8} />}>
+            <ProductSectionMeta
+              sectionTitle="Produits Tendance"
+              sectionDescription="Découvrez les produits les plus populaires du moment"
+              products={state.trending}
+              category="Tendance"
+            />
             <ProductGrid
               title="Produits Tendance"
               subtitle="Découvrez les produits les plus populaires du moment"
@@ -254,9 +280,10 @@ export default function Home() {
               backgroundColor="bg-white"
               maxItems={8}
             />
-          </div>
+          </LazySection>
         )}
-        <div className="mb-2.5">
+        
+        <LazySection className="mb-2.5" fallback={<ProductSkeleton count={8} />}>
           <ProductGrid
             title="À découvrir"
             subtitle="Produits que vous pourriez aimer"
@@ -265,10 +292,10 @@ export default function Home() {
             backgroundColor="bg-white"
             maxItems={8}
           />
-        </div>
+        </LazySection>
 
         {featuredProducts.length > 0 && (
-          <div className="mb-2.5">
+          <LazySection className="mb-2.5" fallback={<ProductSkeleton count={8} />}>
             <ProductGrid
               title="Produits en Vedette"
               subtitle="Notre sélection de produits exceptionnels"
@@ -277,11 +304,11 @@ export default function Home() {
               backgroundColor="bg-white"
               maxItems={8}
             />
-          </div>
+          </LazySection>
         )}
 
         {newProducts.length > 0 && (
-          <div className="mb-2.5">
+          <LazySection className="mb-2.5" fallback={<ProductSkeleton count={8} />}>
             <ProductGrid
               title="Nouveaux Produits"
               subtitle="Découvrez nos dernières nouveautés"
@@ -290,11 +317,17 @@ export default function Home() {
               backgroundColor="bg-gray-50"
               maxItems={8}
             />
-          </div>
+          </LazySection>
         )}
 
         {electronicsProducts.length > 0 && (
-          <div className="mb-2.5">
+          <LazySection className="mb-2.5" fallback={<ProductSkeleton count={8} />}>
+            <ProductSectionMeta
+              sectionTitle="Électronique & High-Tech"
+              sectionDescription="Les dernières technologies et gadgets électroniques"
+              products={electronicsProducts}
+              category="Électronique"
+            />
             <ProductGrid
               title="Électronique & High-Tech"
               subtitle="Les dernières technologies"
@@ -303,11 +336,17 @@ export default function Home() {
               backgroundColor="bg-white"
               maxItems={8}
             />
-          </div>
+          </LazySection>
         )}
 
         {fashionProducts.length > 0 && (
-          <div className="mb-2.5">
+          <LazySection className="mb-2.5" fallback={<ProductSkeleton count={8} />}>
+            <ProductSectionMeta
+              sectionTitle="Mode & Beauté"
+              sectionDescription="Collections tendance et produits de beauté"
+              products={fashionProducts}
+              category="Mode"
+            />
             <ProductGrid
               title="Mode & Beauté"
               subtitle="Collections tendance"
@@ -316,11 +355,11 @@ export default function Home() {
               backgroundColor="bg-gray-50"
               maxItems={8}
             />
-          </div>
+          </LazySection>
         )}
 
         {homeProducts.length > 0 && (
-          <div className="mb-2.5">
+          <LazySection className="mb-2.5" fallback={<ProductSkeleton count={8} />}>
             <ProductGrid
               title="Maison & Jardin"
               subtitle="Tout pour votre intérieur"
@@ -329,11 +368,11 @@ export default function Home() {
               backgroundColor="bg-white"
               maxItems={8}
             />
-          </div>
+          </LazySection>
         )}
 
         {sportsProducts.length > 0 && (
-          <div className="mb-2.5">
+          <LazySection className="mb-2.5" fallback={<ProductSkeleton count={8} />}>
             <ProductGrid
               title="Sport & Loisirs"
               subtitle="Équipements sportifs"
@@ -342,30 +381,31 @@ export default function Home() {
               backgroundColor="bg-gray-50"
               maxItems={8}
             />
-          </div>
+          </LazySection>
         )}
 
-        {/* Recommandé pour vous - Section personnalisée */}
-        <div className="mb-2.5">
+        {/* Recommandé pour vous - Section personnalisée avec lazy loading */}
+        <LazySection className="mb-2.5" fallback={<div className="h-64 bg-gray-100 animate-pulse rounded-xl" />}>
           <PersonalizedOffers />
-        </div>
+        </LazySection>
 
-        <div className="mb-2.5">
+        <LazySection className="mb-2.5" fallback={<div className="h-48 bg-gray-100 animate-pulse rounded-xl" />}>
           <FeaturedBrands />
-        </div>
+        </LazySection>
         
-        {/* Mobile App Section */}
-        <div className="mb-2.5">
+        {/* Mobile App Section avec lazy loading */}
+        <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
           <MobileAppSection />
-        </div>
+        </LazySection>
         
-        {/* Trust Elements */}
-        <div className="mb-2.5">
+        {/* Trust Elements avec lazy loading */}
+        <LazySection className="mb-2.5" fallback={<div className="h-64 bg-gray-100 animate-pulse rounded-xl" />}>
           <TrustElements />
-        </div>
+        </LazySection>
       </div>
 
       <Footer />
-    </main>
+      </main>
+    </>
   );
 }
