@@ -30,6 +30,8 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
   const { getCartItemsCount } = useCart();
   const { user, profile, signOut } = useAuth();
   const pathname = usePathname();
@@ -66,6 +68,12 @@ const Header = () => {
     },
   ], []);
 
+  // Suggestions de recherche populaires
+  const popularSearches = useMemo(() => [
+    'Smartphone', 'Laptop', 'TV', 'Mode', 'Chaussures', 'Sac', 'Montre', 'Parfum',
+    'Électronique', 'Maison', 'Jardin', 'Sport', 'Loisirs', 'Beauté', 'Santé'
+  ], []);
+
   useEffect(() => {
     if (!annApi) return;
     const intervalId = setInterval(() => {
@@ -92,12 +100,80 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Gestion des suggestions de recherche
+  useEffect(() => {
+    if (searchQuery.length >= 2) {
+      const filtered = popularSearches.filter(term => 
+        term.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setSearchSuggestions(filtered.slice(0, 5));
+      setShowSuggestions(true);
+    } else {
+      setSearchSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [searchQuery, popularSearches]);
+
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    const trimmedQuery = searchQuery.trim();
+    
+    // Validation de la recherche
+    if (!trimmedQuery) {
+      // Feedback visuel pour recherche vide
+      const input = e.currentTarget.querySelector('input');
+      if (input) {
+        input.style.borderColor = '#ef4444';
+        input.style.backgroundColor = '#fef2f2';
+        setTimeout(() => {
+          input.style.borderColor = '';
+          input.style.backgroundColor = '';
+        }, 2000);
+      }
+      return;
     }
+
+    // Validation de la longueur minimale
+    if (trimmedQuery.length < 2) {
+      // Feedback pour recherche trop courte
+      const input = e.currentTarget.querySelector('input');
+      if (input) {
+        input.style.borderColor = '#f59e0b';
+        input.style.backgroundColor = '#fffbeb';
+        setTimeout(() => {
+          input.style.borderColor = '';
+          input.style.backgroundColor = '';
+        }, 2000);
+      }
+      return;
+    }
+
+    // Validation des caractères spéciaux
+    const hasSpecialChars = /[<>:"/\\|?*]/.test(trimmedQuery);
+    if (hasSpecialChars) {
+      // Feedback pour caractères invalides
+      const input = e.currentTarget.querySelector('input');
+      if (input) {
+        input.style.borderColor = '#dc2626';
+        input.style.backgroundColor = '#fef2f2';
+        setTimeout(() => {
+          input.style.borderColor = '';
+          input.style.backgroundColor = '';
+        }, 2000);
+      }
+      return;
+    }
+
+    // Recherche valide - navigation
+    setShowSuggestions(false);
+    router.push(`/search?q=${encodeURIComponent(trimmedQuery)}`);
   }, [searchQuery, router]);
+
+  const handleSuggestionClick = useCallback((suggestion: string) => {
+    setSearchQuery(suggestion);
+    setShowSuggestions(false);
+    router.push(`/search?q=${encodeURIComponent(suggestion)}`);
+  }, [router]);
 
   const cartItemsCount = useMemo(() => getCartItemsCount(), [getCartItemsCount]);
 
@@ -157,6 +233,8 @@ const Header = () => {
                 placeholder="Rechercher des produits, marques et catégories..."
                 value={searchQuery}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                onFocus={() => setShowSuggestions(searchQuery.length >= 2)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 className="pr-12 h-12 text-base border-2 border-gray-200 focus:border-jomionstore-primary rounded-lg"
               />
               <Button
@@ -166,6 +244,25 @@ const Header = () => {
               >
                 <Search className="w-4 h-4" />
               </Button>
+              
+              {/* Suggestions de recherche */}
+              {showSuggestions && searchSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1">
+                  <div className="p-2">
+                    <div className="text-xs text-gray-500 mb-2 px-2">Suggestions</div>
+                    {searchSuggestions.map((suggestion, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => handleSuggestionClick(suggestion)}
+                        className="w-full text-left px-2 py-2 hover:bg-gray-100 rounded text-sm"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </form>
 

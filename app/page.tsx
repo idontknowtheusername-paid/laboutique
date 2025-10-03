@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import ImprovedCategoryMenu from '@/components/layout/ImprovedCategoryMenu';
 import Footer from '@/components/layout/Footer';
 import { ProductsService, CategoriesService, Product, Category } from '@/lib/services';
 import { ProductSkeleton } from '@/components/ui/loading-skeleton';
+import { useToast } from '@/components/admin/Toast';
 
 // Optimized lazy loading components with better loading states and code splitting
 const HeroCarousel = dynamic(() => import('@/components/home/HeroCarousel'), {
@@ -53,6 +55,7 @@ interface HomeState {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [state, setState] = useState<HomeState>({
     products: [],
     categories: [],
@@ -60,6 +63,53 @@ export default function Home() {
     loading: true,
     error: null
   });
+  const { success, error, info } = useToast();
+
+  // Fonction de rechargement intelligente
+  const handleRetry = async () => {
+    setState(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      const [productsResponse, categoriesResponse, trendingResponse] = await Promise.all([
+        ProductsService.getAll({}, { limit: 50 }),
+        CategoriesService.getAll(),
+        ProductsService.getPopular(12)
+      ]);
+
+      let products: Product[] = [];
+      let categories: Category[] = [];
+      let trending: Product[] = [];
+
+      if (productsResponse.success && productsResponse.data) {
+        products = productsResponse.data;
+      }
+
+      if (categoriesResponse.success && categoriesResponse.data) {
+        categories = categoriesResponse.data;
+      }
+
+      if (trendingResponse.success && trendingResponse.data) {
+        trending = trendingResponse.data;
+      }
+
+      setState({
+        products,
+        categories,
+        trending,
+        loading: false,
+        error: null
+      });
+
+      success('Données rechargées', 'Les données ont été mises à jour avec succès');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erreur de rechargement';
+      error('Erreur de rechargement', `Impossible de recharger les données: ${errorMessage}`);
+      setState(prev => ({
+        ...prev,
+        loading: false,
+        error: errorMessage
+      }));
+    }
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -96,12 +146,19 @@ export default function Home() {
           error: null
         });
 
+        // Notification de succès
+        success('Données chargées', `${products.length} produits, ${categories.length} catégories chargées`);
+
       } catch (error) {
-        console.error('Erreur lors du chargement des données:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Erreur de chargement';
+        
+        // Notification d'erreur utilisateur
+        error('Erreur de chargement', `Impossible de charger les données: ${errorMessage}`);
+        
         setState(prev => ({
           ...prev,
           loading: false,
-          error: error instanceof Error ? error.message : 'Erreur de chargement'
+          error: errorMessage
         }));
       }
     };
@@ -155,10 +212,10 @@ export default function Home() {
           <div className="text-center">
             <p className="text-red-600 mb-4">Erreur: {state.error}</p>
             <button 
-              onClick={() => window.location.reload()} 
+              onClick={handleRetry}
               className="bg-jomionstore-primary text-white px-6 py-2 rounded hover:bg-blue-700"
             >
-              Recharger
+              Réessayer
             </button>
           </div>
         </div>
