@@ -148,16 +148,18 @@ const ProductGrid: React.FC<ProductGridProps> = ({
             {transformedProducts.map((transformedProduct) => (
                 <Card key={transformedProduct.id} className="group hover-lift card-shadow h-full flex flex-col">
                   <div className="relative overflow-hidden">
-                    {/* Product Image */}
-                    <div className="aspect-square bg-gray-100 relative">
+                    {/* Product Image - Optimized for CLS */}
+                    <div className="aspect-square bg-gray-100 relative" style={{ minHeight: '200px' }}>
                       <Image
                         src={transformedProduct.image}
                         alt={transformedProduct.name}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                         loading="lazy"
-                        quality={75}
+                        quality={85}
+                        placeholder="blur"
+                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.src = '/images/placeholder-product.jpg';

@@ -11,6 +11,9 @@ const nextConfig = {
     formats: ["image/webp", "image/avif"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days cache
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       { protocol: "https", hostname: "**.supabase.co" },
       { protocol: "https", hostname: "qdagyxqkqgbzqrqzjvzz.supabase.co" },
@@ -54,7 +57,7 @@ const nextConfig = {
     // Enable modern bundling
     esmExternals: true,
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
     // Configuration pour les imports dynamiques
     if (!isServer) {
       config.resolve.fallback = {
@@ -64,6 +67,30 @@ const nextConfig = {
         tls: false,
       };
     }
+
+    // Bundle optimization - Simplified to avoid conflicts
+    if (!dev && !isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            priority: 20,
+          },
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            priority: 10,
+            reuseExistingChunk: true,
+          },
+        },
+      };
+    }
+
     return config;
   },
   compiler: {
@@ -71,6 +98,7 @@ const nextConfig = {
   },
   poweredByHeader: false,
   compress: true,
+  swcMinify: true,
 };
 
 module.exports = nextConfig;

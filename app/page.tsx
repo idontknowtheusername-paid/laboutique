@@ -8,10 +8,10 @@ import Footer from '@/components/layout/Footer';
 import { ProductsService, CategoriesService, Product, Category } from '@/lib/services';
 import { ProductSkeleton } from '@/components/ui/loading-skeleton';
 
-// Optimized lazy loading components with better loading states
+// Optimized lazy loading components with better loading states and code splitting
 const HeroCarousel = dynamic(() => import('@/components/home/HeroCarousel'), {
   loading: () => <div className="h-[500px] lg:h-[600px] bg-gray-100 animate-pulse rounded-xl" />,
-  ssr: false
+  ssr: true // Critical above-the-fold content
 });
 
 const FlashSalesConnected = dynamic(() => import('@/components/home/FlashSalesConnected'), {
