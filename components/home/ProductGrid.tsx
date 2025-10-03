@@ -14,6 +14,9 @@ import { WishlistButton } from '@/components/ui/wishlist-button';
 import { useHydration } from '@/hooks/useHydration';
 import { Product } from '@/lib/services/products.service';
 import Image from 'next/image';
+import InteractiveFeedback from '@/components/ui/InteractiveFeedback';
+import { useFeedback } from '@/components/ui/FeedbackProvider';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface ProductGridProps {
   title: string;
@@ -49,6 +52,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   const { addToCart } = useCart();
   const isHydrated = useHydration();
   const [retryCount, setRetryCount] = useState(0);
+  const { showSuccess, showError } = useFeedback();
+  const { trackProductView, trackAddToCart, trackAddToWishlist, trackButtonClick } = useAnalytics();
 
   // Responsive grid columns - optimisé pour mobile
   const getGridCols = () => {
@@ -112,7 +117,13 @@ const ProductGrid: React.FC<ProductGridProps> = ({
             </div>
 
             {viewAllLink && (
-              <Link href={viewAllLink} className="text-jomionstore-primary hover:text-blue-700 text-sm">Voir tout</Link>
+              <Link 
+                href={viewAllLink} 
+                className="text-jomionstore-primary hover:text-blue-700 text-sm"
+                onClick={() => trackButtonClick('Voir tout', title)}
+              >
+                Voir tout
+              </Link>
             )}
           </div>
         )}
@@ -186,25 +197,44 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                       )}
                     </div>
 
-                  {/* Quick Actions - Optimisé pour mobile */}
+                  {/* Quick Actions - Optimisé pour mobile avec feedback */}
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-1 sm:space-y-2">
-                      <WishlistButton
-                        productId={transformedProduct.id}
-                        productName={transformedProduct.name}
-                        price={transformedProduct.price}
-                        productSlug={transformedProduct.slug}
-                        size="sm"
-                        variant="icon"
+                      <InteractiveFeedback
+                        action="wishlist"
+                        onAction={() => {
+                          trackAddToWishlist(transformedProduct.id, transformedProduct.name, transformedProduct.category, transformedProduct.price);
+                          showSuccess('Ajouté aux favoris !');
+                        }}
                         className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
-                      />
-                    <Button 
-                      size="icon" 
-                      variant="secondary" 
-                      className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm"
-                      aria-label={`Voir les détails de ${transformedProduct.name}`}
-                    >
-                      <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
-                    </Button>
+                      >
+                        <WishlistButton
+                          productId={transformedProduct.id}
+                          productName={transformedProduct.name}
+                          price={transformedProduct.price}
+                          productSlug={transformedProduct.slug}
+                          size="sm"
+                          variant="icon"
+                          className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
+                        />
+                      </InteractiveFeedback>
+                      
+                      <InteractiveFeedback
+                        action="view"
+                        onAction={() => {
+                          trackProductView(transformedProduct.id, transformedProduct.name, transformedProduct.category, transformedProduct.price);
+                          showSuccess('Ouverture du produit...');
+                        }}
+                        className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
+                      >
+                        <Button 
+                          size="icon" 
+                          variant="secondary" 
+                          className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm"
+                          aria-label={`Voir les détails de ${transformedProduct.name}`}
+                        >
+                          <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
+                        </Button>
+                      </InteractiveFeedback>
                   </div>
                 </div>
 

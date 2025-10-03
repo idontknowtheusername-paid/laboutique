@@ -9,6 +9,9 @@ import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
 import { ProductsService, Product } from '@/lib/services';
 import Image from 'next/image';
+import InteractiveFeedback from '@/components/ui/InteractiveFeedback';
+import { useFeedback } from '@/components/ui/FeedbackProvider';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 export default function FlashSalesConnected() {
   const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 45, seconds: 30 });
@@ -17,6 +20,8 @@ export default function FlashSalesConnected() {
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const { addToCart } = useCart();
+  const { showSuccess, showError } = useFeedback();
+  const { trackAddToCart, trackButtonClick } = useAnalytics();
 
   // Détection de la taille d'écran
   useEffect(() => {
@@ -88,17 +93,22 @@ export default function FlashSalesConnected() {
   const handleAddToCart = async (product: Product) => {
     try {
       await addToCart(product.id, product.name, product.price, 1);
+      trackAddToCart(product.id, product.name, product.category || 'unknown', product.price);
+      showSuccess(`${product.name} ajouté au panier !`);
     } catch (error) {
       console.error('Erreur lors de l\'ajout au panier:', error);
+      showError('Erreur lors de l\'ajout au panier');
     }
   };
 
   const nextSlide = () => {
+    trackButtonClick('Carousel Next', 'Flash Sales');
     const maxIndex = isMobile ? products.length - 1 : Math.max(1, products.length - 2);
     setCurrentIndex((prev) => (prev + 1) % Math.max(1, maxIndex));
   };
 
   const prevSlide = () => {
+    trackButtonClick('Carousel Previous', 'Flash Sales');
     const maxIndex = isMobile ? products.length - 1 : Math.max(1, products.length - 2);
     setCurrentIndex((prev) => (prev - 1 + Math.max(1, maxIndex)) % Math.max(1, maxIndex));
   };
@@ -240,17 +250,23 @@ export default function FlashSalesConnected() {
                             </div>
                           </div>
 
-                          <Button
-                            className="w-full bg-jomionstore-primary hover:bg-blue-700 text-white font-semibold py-2 sm:py-3 text-sm sm:text-base"
-                            size={isMobile ? "default" : "lg"}
-                            onClick={() => handleAddToCart(product)}
+                          <InteractiveFeedback
+                            action="cart"
+                            onAction={() => handleAddToCart(product)}
                             disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
+                            className="w-full"
                           >
-                            {product.status !== 'active' || (product.track_quantity && product.quantity <= 0)
-                              ? 'Indisponible'
-                              : 'Ajouter au panier'
-                            }
-                          </Button>
+                            <Button
+                              className="w-full bg-jomionstore-primary hover:bg-blue-700 text-white font-semibold py-2 sm:py-3 text-sm sm:text-base"
+                              size={isMobile ? "default" : "lg"}
+                              disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
+                            >
+                              {product.status !== 'active' || (product.track_quantity && product.quantity <= 0)
+                                ? 'Indisponible'
+                                : 'Ajouter au panier'
+                              }
+                            </Button>
+                          </InteractiveFeedback>
                         </div>
                       </CardContent>
                     </Card>
@@ -291,6 +307,7 @@ export default function FlashSalesConnected() {
             <Button 
               variant="outline" 
               className="bg-jomionstore-primary text-white border-jomionstore-primary hover:bg-blue-700 hover:border-blue-700 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-sm sm:text-base"
+              onClick={() => trackButtonClick('Voir toutes les offres flash', 'Flash Sales')}
             >
               Voir toutes les offres flash
             </Button>
