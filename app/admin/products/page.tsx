@@ -44,15 +44,49 @@ export default function AdminProductsPage() {
   async function testDatabaseConnection() {
     try {
       const client = (ProductsService as any).getSupabaseClient();
-      const { data, error } = await client.from('products').select('count').limit(1);
       
-      if (error) {
-        error('Erreur de connexion', `Impossible de se connecter à la base: ${error.message}`);
-      } else {
-        success('Connexion réussie', 'La base de données est accessible');
+      // Test 1: Vérifier la connexion de base
+      const { data: connectionTest, error: connectionError } = await client
+        .from('products')
+        .select('count')
+        .limit(1);
+      
+      if (connectionError) {
+        error('Erreur de connexion', `Impossible de se connecter à la base: ${connectionError.message}`);
+        return;
       }
+
+      // Test 2: Vérifier les permissions de lecture
+      const { data: readTest, error: readError } = await client
+        .from('products')
+        .select('id, name, price, status')
+        .limit(5);
+      
+      if (readError) {
+        error('Erreur de lecture', `Impossible de lire les données: ${readError.message}`);
+        return;
+      }
+
+      // Test 3: Vérifier les permissions d'écriture (test en lecture seule)
+      const { data: writeTest, error: writeError } = await client
+        .from('products')
+        .select('id')
+        .limit(1);
+      
+      if (writeError) {
+        error('Erreur d\'écriture', `Problème de permissions: ${writeError.message}`);
+        return;
+      }
+
+      // Test 4: Vérifier la latence
+      const startTime = Date.now();
+      await client.from('products').select('count').limit(1);
+      const latency = Date.now() - startTime;
+
+      success('Connexion réussie', `Base de données accessible (latence: ${latency}ms, ${readTest?.length || 0} produits trouvés)`);
+      
     } catch (err) {
-      error('Erreur de connexion', 'Impossible de se connecter à la base de données');
+      error('Erreur de connexion', `Impossible de se connecter à la base de données: ${err instanceof Error ? err.message : 'Erreur inconnue'}`);
     }
   }
 
@@ -142,14 +176,12 @@ export default function AdminProductsPage() {
         setTotalCount(res.pagination?.total || 0);
         success('Données chargées', `${res.data.length} produits chargés`);
       } else {
-        console.error('Erreur lors du chargement des produits:', res.error);
         error('Erreur de chargement', res.error || 'Impossible de charger les produits');
         setItems([]);
         setTotalCount(0);
       }
     } catch (err) {
-      console.error('Erreur lors du chargement des produits:', err);
-      error('Erreur inattendue', 'Une erreur est survenue lors du chargement des produits');
+      error('Erreur inattendue', `Une erreur est survenue lors du chargement des produits: ${err instanceof Error ? err.message : 'Erreur inconnue'}`);
       setItems([]);
       setTotalCount(0);
     } finally {

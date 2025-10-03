@@ -62,6 +62,7 @@ export default function AdminOrderDetailPage() {
           }
         }
       } catch (error) {
+        // L'erreur sera gérée par l'état loading et l'affichage conditionnel
         console.error('Erreur lors du chargement de la commande:', error);
       } finally {
         setLoading(false);
@@ -108,6 +109,7 @@ export default function AdminOrderDetailPage() {
         }
       }
     } catch (error) {
+      // L'erreur sera gérée par l'état updating et l'affichage conditionnel
       console.error('Erreur lors de la mise à jour:', error);
     } finally {
       setUpdating(false);
@@ -133,6 +135,7 @@ export default function AdminOrderDetailPage() {
           router.refresh();
         }
     } catch (error) {
+      // L'erreur sera gérée par l'état addingNote et l'affichage conditionnel
       console.error('Erreur lors de l\'ajout de la note:', error);
     } finally {
       setAddingNote(false);
@@ -242,6 +245,7 @@ export default function AdminOrderDetailPage() {
         printWindow.close();
       }
     } catch (err) {
+      // L'erreur sera gérée par l'affichage conditionnel
       console.error('Erreur lors de l\'export PDF:', err);
     }
   };

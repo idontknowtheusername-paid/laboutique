@@ -44,6 +44,7 @@ export default function AdminEditOrderPage() {
           setOrder(data);
         }
       } catch (error) {
+        // L'erreur sera gérée par l'état loading et l'affichage conditionnel
         console.error('Erreur lors du chargement de la commande:', error);
       } finally {
         setLoading(false);
