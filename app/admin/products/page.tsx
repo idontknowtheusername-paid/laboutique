@@ -13,6 +13,7 @@ import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
 import ImportedProductsPreview from '@/components/admin/ImportedProductsPreview';
 import { useToast } from '@/components/admin/Toast';
+import { useDebounce } from '@/lib/hooks/useDebounce';
 
 interface AdminProduct {
   id: string;
@@ -33,7 +34,11 @@ export default function AdminProductsPage() {
   const [search, setSearch] = React.useState('');
   const [category, setCategory] = React.useState<string>('all');
   const [totalCount, setTotalCount] = React.useState<number>(0);
+  const [page, setPage] = React.useState(1);
   const { success, error, info } = useToast();
+  
+  // Debounced search pour optimiser les performances
+  const debouncedSearch = useDebounce(search, 300);
 
   // Test de connexion à la base de données
   async function testDatabaseConnection() {
@@ -120,31 +125,22 @@ export default function AdminProductsPage() {
   const load = React.useCallback(async () => {
     setLoading(true);
     try {
-      // Récupérer tous les produits (pas seulement les actifs)
+      // Recherche côté serveur avec debouncing
+      const filters = {
+        status: undefined, // Pas de filtre de statut pour voir tous les produits
+        search: debouncedSearch || undefined,
+        category: category !== 'all' ? category : undefined
+      };
+      
       const res = await ProductsService.getAll(
-        { status: undefined }, // Pas de filtre de statut pour voir tous les produits
-        { page: 1, limit: 200 }
+        filters,
+        { page, limit: 20 }
       );
       
       if (res.success && res.data) {
-        let list = res.data as any as AdminProduct[];
-        
-        // Appliquer les filtres côté client
-        if (search) {
-          list = list.filter((p) => 
-            p.name?.toLowerCase().includes(search.toLowerCase()) ||
-            p.sku?.toLowerCase().includes(search.toLowerCase()) ||
-            p.brand?.toLowerCase().includes(search.toLowerCase())
-          );
-        }
-        
-        if (category !== 'all') {
-          list = list.filter((p) => p.category?.name?.toLowerCase() === category);
-        }
-        
-        setItems(list);
+        setItems(res.data as any as AdminProduct[]);
         setTotalCount(res.pagination?.total || 0);
-        success('Données chargées', `${list.length} produits chargés`);
+        success('Données chargées', `${res.data.length} produits chargés`);
       } else {
         console.error('Erreur lors du chargement des produits:', res.error);
         error('Erreur de chargement', res.error || 'Impossible de charger les produits');
@@ -159,7 +155,7 @@ export default function AdminProductsPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, category, error, success]);
+  }, [debouncedSearch, category, page, error, success]);
 
   React.useEffect(() => { load(); }, [load]);
 
@@ -363,6 +359,36 @@ export default function AdminProductsPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+          
+          {/* Pagination */}
+          <div className="flex justify-center items-center gap-4 py-4 border-t">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(prev => Math.max(1, prev - 1))}
+              disabled={page === 1 || loading}
+            >
+              Précédent
+            </Button>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">
+                Page {page} sur {Math.ceil(totalCount / 20)}
+              </span>
+              <span className="text-sm text-gray-500">
+                ({items.length} produits)
+              </span>
+            </div>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(prev => prev + 1)}
+              disabled={page >= Math.ceil(totalCount / 20) || loading}
+            >
+              Suivant
+            </Button>
           </div>
         </CardContent>
       </Card>

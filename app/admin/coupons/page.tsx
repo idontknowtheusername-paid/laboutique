@@ -22,6 +22,7 @@ export default function AdminCouponsPage() {
   const [search, setSearch] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState<string>('all');
   const [typeFilter, setTypeFilter] = React.useState<string>('all');
+  const [selectedCoupons, setSelectedCoupons] = React.useState<string[]>([]);
   const { success, error, info } = useToast();
   const { confirm, ConfirmationComponent } = useConfirmation();
 
@@ -90,9 +91,11 @@ export default function AdminCouponsPage() {
 
   const handleDuplicateCoupon = async (coupon: Coupon) => {
     try {
+      // Générer un code unique pour la copie
+      const timestamp = Date.now().toString().slice(-4);
       const duplicateData = {
-        code: `${coupon.code}_COPY`,
-        name: `${coupon.name} (Copie)`,
+        code: `${coupon.code}_COPY_${timestamp}`,
+        name: `${coupon.name} (Copie ${timestamp})`,
         description: coupon.description,
         type: coupon.type,
         value: coupon.value,
@@ -117,9 +120,101 @@ export default function AdminCouponsPage() {
     }
   };
 
-  const handleCopyCode = (code: string) => {
-    navigator.clipboard.writeText(code);
-    success('Code copié', `Le code ${code} a été copié dans le presse-papiers`);
+  const handleCopyCode = async (code: string) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      success('Code copié', `Le code ${code} a été copié dans le presse-papiers`);
+    } catch (err) {
+      // Fallback pour les navigateurs qui ne supportent pas l'API Clipboard
+      const textArea = document.createElement('textarea');
+      textArea.value = code;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        success('Code copié', `Le code ${code} a été copié dans le presse-papiers`);
+      } catch (fallbackErr) {
+        error('Erreur de copie', 'Impossible de copier le code dans le presse-papiers');
+      }
+      document.body.removeChild(textArea);
+    }
+  };
+
+  // Actions en lot
+  const handleBulkStatusChange = async (newStatus: string) => {
+    if (selectedCoupons.length === 0) {
+      error('Aucune sélection', 'Veuillez sélectionner au moins un coupon');
+      return;
+    }
+
+    const confirmed = await confirm(
+      'Modifier le statut',
+      `Êtes-vous sûr de vouloir modifier le statut de ${selectedCoupons.length} coupon(s) ?`,
+      'default'
+    );
+
+    if (confirmed) {
+      try {
+        let successCount = 0;
+        for (const couponId of selectedCoupons) {
+          const result = await CouponsService.update(couponId, { status: newStatus });
+          if (result.success) successCount++;
+        }
+        
+        success('Statut modifié', `${successCount}/${selectedCoupons.length} coupons mis à jour`);
+        setSelectedCoupons([]);
+        loadCoupons();
+        loadStats();
+      } catch (err) {
+        error('Erreur de mise à jour', 'Une erreur est survenue lors de la modification du statut');
+      }
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedCoupons.length === 0) {
+      error('Aucune sélection', 'Veuillez sélectionner au moins un coupon');
+      return;
+    }
+
+    const confirmed = await confirm(
+      'Supprimer les coupons',
+      `Êtes-vous sûr de vouloir supprimer ${selectedCoupons.length} coupon(s) ? Cette action est irréversible.`,
+      'destructive'
+    );
+
+    if (confirmed) {
+      try {
+        let successCount = 0;
+        for (const couponId of selectedCoupons) {
+          const result = await CouponsService.delete(couponId);
+          if (result.success) successCount++;
+        }
+        
+        success('Coupons supprimés', `${successCount}/${selectedCoupons.length} coupons supprimés`);
+        setSelectedCoupons([]);
+        loadCoupons();
+        loadStats();
+      } catch (err) {
+        error('Erreur de suppression', 'Une erreur est survenue lors de la suppression');
+      }
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (selectedCoupons.length === filteredCoupons.length) {
+      setSelectedCoupons([]);
+    } else {
+      setSelectedCoupons(filteredCoupons.map(c => c.id));
+    }
+  };
+
+  const handleSelectCoupon = (couponId: string) => {
+    setSelectedCoupons(prev => 
+      prev.includes(couponId) 
+        ? prev.filter(id => id !== couponId)
+        : [...prev, couponId]
+    );
   };
 
   // Test de connexion à la base de données

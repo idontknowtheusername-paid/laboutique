@@ -15,6 +15,7 @@ import ResponsiveTable from '@/components/admin/ResponsiveTable';
 import AccessibleButton from '@/components/admin/AccessibleButton';
 import { useToast } from '@/components/admin/Toast';
 import { useConfirmation } from '@/components/admin/ConfirmationDialog';
+import { useDebounce } from '@/lib/hooks/useDebounce';
 
 export default function AdminOrdersPage() {
   const router = useRouter();
@@ -26,6 +27,9 @@ export default function AdminOrdersPage() {
   const { confirm, ConfirmationComponent } = useConfirmation();
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
+  
+  // Debounced search pour optimiser les performances
+  const debouncedSearch = useDebounce(search, 300);
 
   // Actions pour les commandes
   const handleViewOrder = (orderId: string) => {
@@ -109,26 +113,35 @@ export default function AdminOrdersPage() {
 
   const load = React.useCallback(async () => {
     setLoading(true);
-    const res = await OrdersService.getRecent(100);
-    setLoading(false);
-    if (res.success && res.data) {
-      setOrders(res.data);
+    try {
+      // Recherche côté serveur avec debouncing
+      const searchParams = {
+        search: debouncedSearch || undefined,
+        status: status === 'all' ? undefined : status,
+        page,
+        limit: 10
+      };
+      
+      const res = await OrdersService.getRecent(100, page, searchParams);
+      if (res.success && res.data) {
+        setOrders(res.data);
+        setTotalPages(Math.ceil((res.pagination?.total || 0) / 10));
+      } else {
+        error('Erreur de chargement', res.error || 'Impossible de charger les commandes');
+      }
+    } catch (err) {
+      error('Erreur inattendue', 'Une erreur est survenue lors du chargement des commandes');
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  }, [page, debouncedSearch, status, error]);
 
   React.useEffect(() => {
     load();
   }, [load]);
 
-  const filteredOrders = React.useMemo(() => {
-    return orders.filter((o) => {
-      const matchesSearch = !search || 
-        o.order_number?.toLowerCase().includes(search.toLowerCase()) ||
-        o.user?.email?.toLowerCase().includes(search.toLowerCase());
-      const matchesStatus = status === 'all' || o.status === status;
-      return matchesSearch && matchesStatus;
-    });
-  }, [orders, search, status]);
+  // Plus besoin de filtrage côté client car la recherche se fait côté serveur
+  const filteredOrders = orders;
 
   const getStatusColor = (status?: string) => {
     switch (status) {
@@ -278,6 +291,36 @@ export default function AdminOrdersPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+          
+          {/* Pagination */}
+          <div className="flex justify-center items-center gap-4 py-4 border-t">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(prev => Math.max(1, prev - 1))}
+              disabled={page === 1 || loading}
+            >
+              Précédent
+            </Button>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">
+                Page {page} sur {totalPages}
+              </span>
+              <span className="text-sm text-gray-500">
+                ({filteredOrders.length} commandes)
+              </span>
+            </div>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={page === totalPages || loading}
+            >
+              Suivant
+            </Button>
           </div>
         </CardContent>
       </Card>
