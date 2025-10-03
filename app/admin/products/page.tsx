@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { ProductsService } from '@/lib/services/products.service';
-import { Download, Search, Eye, Edit, RefreshCw, Plus } from 'lucide-react';
+import { Download, Search, Eye, Edit, RefreshCw, Plus, Trash2 } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
 import ImportedProductsPreview from '@/components/admin/ImportedProductsPreview';
@@ -26,6 +27,7 @@ interface AdminProduct {
 }
 
 export default function AdminProductsPage() {
+  const router = useRouter();
   const [loading, setLoading] = React.useState(true);
   const [items, setItems] = React.useState<AdminProduct[]>([]);
   const [search, setSearch] = React.useState('');
@@ -48,6 +50,72 @@ export default function AdminProductsPage() {
       error('Erreur de connexion', 'Impossible de se connecter à la base de données');
     }
   }
+
+  const handleDeleteProduct = async (productId: string, productName: string) => {
+    try {
+      const { error: deleteError } = await (ProductsService as any).getSupabaseClient()
+        .from('products')
+        .delete()
+        .eq('id', productId);
+
+      if (!deleteError) {
+        success('Produit supprimé', `Le produit "${productName}" a été supprimé avec succès.`);
+        load(); // Recharger les produits après suppression
+      } else {
+        error('Erreur de suppression', `Impossible de supprimer le produit: ${deleteError.message}`);
+      }
+    } catch (err) {
+      error('Erreur inattendue', 'Une erreur est survenue lors de la suppression du produit.');
+    }
+  };
+
+  const handleExportProducts = () => {
+    if (!items.length) {
+      error('Aucune donnée', 'Aucun produit à exporter');
+      return;
+    }
+
+    try {
+      const headers = [
+        "Nom",
+        "SKU",
+        "Marque",
+        "Catégorie",
+        "Vendeur",
+        "Prix",
+        "Statut",
+        "Date de création"
+      ];
+      
+      const csvRows = [headers.join(",")];
+      
+      items.forEach((product) => {
+        csvRows.push([
+          product.name || '',
+          product.sku || '',
+          product.brand || '',
+          product.category?.name || '',
+          product.vendor?.name || '',
+          product.price || 0,
+          product.status || '',
+          new Date().toLocaleDateString('fr-FR') // Date de création simulée
+        ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(","));
+      });
+      
+      const csvContent = csvRows.join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `produits_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      success('Export réussi', 'Le fichier CSV a été téléchargé avec succès');
+    } catch (err) {
+      error('Erreur d\'export', 'Impossible d\'exporter les produits');
+    }
+  };
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -121,7 +189,7 @@ export default function AdminProductsPage() {
             {/* Bouton principal - Créer manuellement */}
             <Button
               className="bg-green-600 hover:bg-green-700 text-white font-semibold"
-              onClick={() => (window.location.href = "/admin/products/new")}
+              onClick={() => router.push("/admin/products/new")}
             >
               <Plus className="w-4 h-4 mr-2" /> Créer manuellement
             </Button>
@@ -135,15 +203,19 @@ export default function AdminProductsPage() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => (window.location.href = "/admin/products/import")}
+              onClick={handleExportProducts}
+            >
+              <Download className="w-4 h-4 mr-2" /> Exporter
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => router.push("/admin/products/import")}
             >
               <Download className="w-4 h-4 mr-2" /> Importer
             </Button>
             <Button
               className="bg-jomionstore-primary hover:bg-blue-700"
-              onClick={() =>
-                (window.location.href = "/admin/products/bulk-import")
-              }
+              onClick={() => router.push("/admin/products/bulk-import")}
             >
               <Download className="w-4 h-4 mr-2" /> Import masse
             </Button>
@@ -273,11 +345,17 @@ export default function AdminProductsPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => {
-                            window.location.href = `/admin/products/${p.id}/edit`;
-                          }}
+                          onClick={() => router.push(`/admin/products/${p.id}/edit`)}
                         >
                           <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteProduct(p.id, p.name)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </td>

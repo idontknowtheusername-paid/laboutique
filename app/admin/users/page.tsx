@@ -84,16 +84,21 @@ export default function AdminUsersPage() {
   }
 
   async function handleDelete(userId: string) {
-    const { error } = await (AuthService as any)
-      .getSupabaseClient()
-      .from("profiles")
-      .delete()
-      .eq("id", userId);
-    if (!error) {
-      await load();
-      success("Utilisateur supprimé", "L'utilisateur a bien été supprimé.");
-    } else {
-      error("Erreur", "Impossible de supprimer l'utilisateur.");
+    try {
+      const { error } = await (AuthService as any)
+        .getSupabaseClient()
+        .from("profiles")
+        .delete()
+        .eq("id", userId);
+      
+      if (!error) {
+        await load();
+        success("Utilisateur supprimé", `L'utilisateur ${userId} a bien été supprimé.`);
+      } else {
+        error("Erreur", `Impossible de supprimer l'utilisateur: ${error.message}`);
+      }
+    } catch (err) {
+      error("Erreur inattendue", "Une erreur est survenue lors de la suppression de l'utilisateur.");
     }
   }
 

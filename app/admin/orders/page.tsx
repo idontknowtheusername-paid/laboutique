@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +17,7 @@ import { useToast } from '@/components/admin/Toast';
 import { useConfirmation } from '@/components/admin/ConfirmationDialog';
 
 export default function AdminOrdersPage() {
+  const router = useRouter();
   const [loading, setLoading] = React.useState(true);
   const [orders, setOrders] = React.useState<Order[]>([]);
   const [search, setSearch] = React.useState('');
@@ -27,23 +29,82 @@ export default function AdminOrdersPage() {
 
   // Actions pour les commandes
   const handleViewOrder = (orderId: string) => {
-    window.location.href = `/admin/orders/${orderId}`;
+    router.push(`/admin/orders/${orderId}`);
   };
 
   const handleEditOrder = (orderId: string) => {
-    window.location.href = `/admin/orders/${orderId}/edit`;
+    router.push(`/admin/orders/${orderId}/edit`);
   };
 
-  const handleDeleteOrder = (orderId: string) => {
-    confirm(
+  const handleDeleteOrder = async (orderId: string) => {
+    const confirmed = await confirm(
       'Supprimer la commande',
       'Êtes-vous sûr de vouloir supprimer cette commande ? Cette action est irréversible.',
-      () => {
-        // Logique de suppression
-        success('Commande supprimée avec succès');
-      },
       'destructive'
     );
+
+    if (confirmed) {
+      try {
+        // Logique de suppression réelle
+        const { error: deleteError } = await (OrdersService as any).getSupabaseClient()
+          .from('orders')
+          .delete()
+          .eq('id', orderId);
+
+        if (!deleteError) {
+          success('Commande supprimée avec succès', `La commande ${orderId} a été supprimée.`);
+          load(); // Recharger les commandes après suppression
+        } else {
+          error('Erreur de suppression', `Impossible de supprimer la commande: ${deleteError.message}`);
+        }
+      } catch (err) {
+        error('Erreur inattendue', 'Une erreur est survenue lors de la suppression de la commande.');
+      }
+    }
+  };
+
+  const handleExportOrders = () => {
+    if (!orders.length) {
+      error('Aucune donnée', 'Aucune commande à exporter');
+      return;
+    }
+
+    try {
+      const headers = [
+        "Numéro",
+        "Client",
+        "Email",
+        "Statut",
+        "Montant",
+        "Date"
+      ];
+      
+      const csvRows = [headers.join(",")];
+      
+      orders.forEach((order) => {
+        csvRows.push([
+          order.order_number || order.id,
+          `${order.user?.first_name || ''} ${order.user?.last_name || ''}`.trim(),
+          order.user?.email || '',
+          order.status || '',
+          order.total_amount || 0,
+          new Date(order.created_at).toLocaleDateString('fr-FR')
+        ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(","));
+      });
+      
+      const csvContent = csvRows.join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `commandes_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      success('Export réussi', 'Le fichier CSV a été téléchargé avec succès');
+    } catch (err) {
+      error('Erreur d\'export', 'Impossible d\'exporter les commandes');
+    }
   };
 
   const load = React.useCallback(async () => {
@@ -90,7 +151,7 @@ export default function AdminOrdersPage() {
             <Button variant="outline" onClick={load} disabled={loading}>
               <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleExportOrders}>
               <Download className="w-4 h-4 mr-2" /> Exporter
             </Button>
           </>

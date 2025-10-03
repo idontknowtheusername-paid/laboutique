@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,7 @@ import OrderTracking from '@/components/admin/OrderTracking';
 
 export default function AdminOrderDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const orderId = Array.isArray(params?.id) ? params?.id[0] : (params as any)?.id;
   const [loading, setLoading] = React.useState(true);
   const [order, setOrder] = React.useState<Order | null>(null);
@@ -126,11 +127,11 @@ export default function AdminOrderDetailPage() {
           created_at: new Date().toISOString()
         });
 
-      if (!error) {
-        setNewNote('');
-        // Recharger les données
-        window.location.reload();
-      }
+        if (!error) {
+          setNewNote('');
+          // Recharger les données
+          router.refresh();
+        }
     } catch (error) {
       console.error('Erreur lors de l\'ajout de la note:', error);
     } finally {
@@ -141,6 +142,142 @@ export default function AdminOrderDetailPage() {
   const openStatusModal = (status: string) => {
     setNewStatus(status);
     setShowStatusModal(true);
+  };
+
+  const handleExportPDF = () => {
+    try {
+      // Créer le contenu HTML pour le PDF
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Commande ${order.order_number || order.id}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+            .section { margin-bottom: 20px; }
+            .section h3 { color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+            .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+            .info-item { margin-bottom: 10px; }
+            .info-label { font-weight: bold; color: #666; }
+            .items-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            .items-table th, .items-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            .items-table th { background-color: #f5f5f5; }
+            .total { font-size: 18px; font-weight: bold; color: #2e7d32; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Commande ${order.order_number || order.id}</h1>
+            <p>Date: ${new Date(order.created_at).toLocaleDateString('fr-FR')}</p>
+          </div>
+          
+          <div class="section">
+            <h3>Informations de la commande</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Numéro:</div>
+                <div>${order.order_number || order.id}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Statut:</div>
+                <div>${order.status}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Montant total:</div>
+                <div class="total">${formatPrice(order.total_amount)}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="section">
+            <h3>Informations client</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Nom:</div>
+                <div>${order.user?.first_name} ${order.user?.last_name}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Email:</div>
+                <div>${order.user?.email}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="section">
+            <h3>Articles commandés</h3>
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th>Produit</th>
+                  <th>Quantité</th>
+                  <th>Prix unitaire</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${order.order_items?.map((item: any) => `
+                  <tr>
+                    <td>${item.product?.name || 'Produit supprimé'}</td>
+                    <td>${item.quantity}</td>
+                    <td>${formatPrice(item.price)}</td>
+                    <td>${formatPrice(item.price * item.quantity)}</td>
+                  </tr>
+                `).join('') || '<tr><td colspan="4">Aucun article</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        </body>
+        </html>
+      `;
+
+      // Ouvrir une nouvelle fenêtre avec le contenu HTML
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+      }
+    } catch (err) {
+      console.error('Erreur lors de l\'export PDF:', err);
+    }
+  };
+
+  const handleSendEmail = () => {
+    if (!order.user?.email) {
+      alert('Email du client non disponible');
+      return;
+    }
+    
+    const subject = `Commande ${order.order_number || order.id} - JomionStore`;
+    const body = `Bonjour ${order.user.first_name || ''} ${order.user.last_name || ''},
+
+Votre commande ${order.order_number || order.id} a été traitée.
+
+Détails de la commande:
+- Numéro: ${order.order_number || order.id}
+- Statut: ${order.status}
+- Montant total: ${formatPrice(order.total_amount)}
+- Date: ${new Date(order.created_at).toLocaleDateString('fr-FR')}
+
+Merci pour votre confiance.
+
+L'équipe JomionStore`;
+
+    const mailtoLink = `mailto:${order.user.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailtoLink);
+  };
+
+  const handleCallCustomer = () => {
+    if (!order.user?.phone) {
+      alert('Numéro de téléphone du client non disponible');
+      return;
+    }
+    
+    window.open(`tel:${order.user.phone}`);
   };
 
   const getStatusColor = (status?: string) => {
@@ -174,7 +311,7 @@ export default function AdminOrderDetailPage() {
       <div className="min-h-screen bg-jomionstore-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Commande introuvable</h1>
-          <Button onClick={() => window.history.back()}>
+          <Button onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Retour
           </Button>
@@ -190,13 +327,13 @@ export default function AdminOrderDetailPage() {
         subtitle="Détails et gestion de la commande"
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={() => window.history.back()}>
+            <Button variant="outline" onClick={() => router.back()}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Retour
             </Button>
             <Button 
               className="bg-jomionstore-primary hover:bg-blue-700"
-              onClick={() => window.location.href = `/admin/orders/${order.id}/edit`}
+              onClick={() => router.push(`/admin/orders/${order.id}/edit`)}
             >
               <Edit className="w-4 h-4 mr-2" />
               Modifier
@@ -288,11 +425,11 @@ export default function AdminOrderDetailPage() {
                     </div>
                   </div>
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={handleSendEmail}>
                       <Mail className="w-4 h-4 mr-1" />
                       Envoyer un email
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={handleCallCustomer}>
                       <Phone className="w-4 h-4 mr-1" />
                       Appeler
                     </Button>
@@ -359,10 +496,7 @@ export default function AdminOrderDetailPage() {
                   <Button 
                     className="w-full" 
                     variant="outline"
-                    onClick={() => {
-                      // Logique d'export
-                      console.log('Export commande', order.id);
-                    }}
+                    onClick={handleExportPDF}
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Exporter PDF

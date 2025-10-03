@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import { OrdersService } from '@/lib/services/orders.service';
 
 export default function AdminEditOrderPage() {
   const params = useParams();
+  const router = useRouter();
   const orderId = Array.isArray(params?.id) ? params?.id[0] : (params as any)?.id;
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
@@ -69,7 +70,7 @@ export default function AdminEditOrderPage() {
       if (!error) {
         setMessage('Commande mise à jour avec succès !');
         setTimeout(() => {
-          window.location.href = `/admin/orders/${order.id}`;
+          router.push(`/admin/orders/${order.id}`);
         }, 2000);
       } else {
         setMessage('Erreur lors de la mise à jour');
@@ -112,7 +113,7 @@ export default function AdminEditOrderPage() {
       <div className="min-h-screen bg-jomionstore-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Commande introuvable</h1>
-          <Button onClick={() => window.history.back()}>
+          <Button onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Retour
           </Button>
@@ -133,13 +134,13 @@ export default function AdminEditOrderPage() {
                 {message}
               </Badge>
             )}
-            <Button variant="outline" onClick={() => window.history.back()}>
+            <Button variant="outline" onClick={() => router.back()}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Retour
             </Button>
             <Button 
               variant="outline"
-              onClick={() => window.location.href = `/admin/orders/${order.id}`}
+              onClick={() => router.push(`/admin/orders/${order.id}`)}
             >
               <X className="w-4 h-4 mr-2" />
               Annuler
