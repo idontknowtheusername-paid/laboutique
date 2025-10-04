@@ -13,6 +13,7 @@ import { useAuth } from "./AuthContext";
 import { CartService, CartItem, CartSummary } from "@/lib/services";
 import { useToast } from "@/components/ui/toast";
 import { useHydration } from "@/hooks";
+import { useCartAnimation } from "@/contexts/CartAnimationContext";
 
 interface CartError {
   type: "network" | "auth" | "validation" | "server" | "conflict";
@@ -77,6 +78,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { triggerCartAnimation } = useCartAnimation();
   const [cartState, setCartState] = useState<CartState>({
     items: [],
     summary: null,
@@ -700,7 +702,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       updateCartState({ items: optimisticItems });
       calculateLocalSummary(optimisticItems);
 
-      // Animation panier style Amazon remplace la notification toast
+      // Animation panier style Amazon - image du produit vole vers le panier
+      triggerCartAnimation(productName);
 
       // Store operation for retry
       lastFailedOperation.current = () =>
