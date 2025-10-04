@@ -15,6 +15,7 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 
 export default function FlashSalesConnected() {
   const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 45, seconds: 30 });
+  const [urgencyMessage, setUrgencyMessage] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,18 +61,40 @@ export default function FlashSalesConnected() {
     loadFlashSaleProducts();
   }, []);
 
-  // Timer countdown
+  // Timer countdown avec messages d'urgence intelligents
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
+        const newTime = { ...prev };
+        
         if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
+          newTime.seconds = prev.seconds - 1;
         } else if (prev.minutes > 0) {
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
+          newTime.minutes = prev.minutes - 1;
+          newTime.seconds = 59;
         } else if (prev.hours > 0) {
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+          newTime.hours = prev.hours - 1;
+          newTime.minutes = 59;
+          newTime.seconds = 59;
+        } else {
+          return { hours: 23, minutes: 59, seconds: 59 }; // Reset to 24h
         }
-        return prev;
+
+        // Messages d'urgence intelligents
+        const totalMinutes = newTime.hours * 60 + newTime.minutes;
+        if (totalMinutes <= 5) {
+          setUrgencyMessage('🔥 DERNIÈRES MINUTES !');
+        } else if (totalMinutes <= 30) {
+          setUrgencyMessage('⚡ Plus que 30 minutes !');
+        } else if (totalMinutes <= 60) {
+          setUrgencyMessage('⏰ Plus qu\'une heure !');
+        } else if (totalMinutes <= 120) {
+          setUrgencyMessage('🚀 Offres bientôt terminées');
+        } else {
+          setUrgencyMessage('');
+        }
+
+        return newTime;
       });
     }, 1000);
 
@@ -147,26 +170,31 @@ export default function FlashSalesConnected() {
             <h2 className="text-xl md:text-2xl font-bold text-white flex items-center">
               ⚡ Ventes Flash
             </h2>
-            <p className="text-red-100 text-sm">Offres limitées, ne les ratez pas !</p>
+            <p className="text-red-100 text-sm">
+              {urgencyMessage || 'Offres limitées, ne les ratez pas !'}
+            </p>
           </div>
           
           {/* Countdown Timer */}
-          <div className="flex items-center space-x-3 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-            <Clock className="w-5 h-5 text-red-600" />
-            <div className="flex space-x-2 text-red-600 font-mono">
-              <div className="text-center">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              <Clock className="w-4 h-4 text-white/80" />
+            </div>
+            <div className="flex space-x-1 text-white font-mono">
+              <div className="text-center bg-white/20 hover:bg-white/30 rounded-lg px-2 py-1 min-w-[40px] transition-all duration-300 backdrop-blur-sm">
                 <div className="text-lg font-bold">{String(timeLeft.hours).padStart(2, '0')}</div>
-                <div className="text-xs">H</div>
+                <div className="text-xs text-white/70">H</div>
               </div>
-              <div className="text-xl">:</div>
-              <div className="text-center">
+              <div className="text-white/60 text-lg animate-pulse">:</div>
+              <div className="text-center bg-white/20 hover:bg-white/30 rounded-lg px-2 py-1 min-w-[40px] transition-all duration-300 backdrop-blur-sm">
                 <div className="text-lg font-bold">{String(timeLeft.minutes).padStart(2, '0')}</div>
-                <div className="text-xs">M</div>
+                <div className="text-xs text-white/70">M</div>
               </div>
-              <div className="text-xl">:</div>
-              <div className="text-center">
+              <div className="text-white/60 text-lg animate-pulse">:</div>
+              <div className="text-center bg-white/20 hover:bg-white/30 rounded-lg px-2 py-1 min-w-[40px] transition-all duration-300 backdrop-blur-sm">
                 <div className="text-lg font-bold">{String(timeLeft.seconds).padStart(2, '0')}</div>
-                <div className="text-xs">S</div>
+                <div className="text-xs text-white/70">S</div>
               </div>
             </div>
           </div>
