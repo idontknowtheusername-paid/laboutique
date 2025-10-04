@@ -268,20 +268,20 @@ function TrendingProductsContent() {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12 p-4 rounded-lg" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
+        <div className="text-center mb-12 p-4 rounded-lg" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
           <div className="flex items-center justify-center gap-4 mb-4">
-            <h2 className="text-3xl font-bold text-gray-900">Produits Tendance</h2>
+            <h2 className="text-3xl font-bold text-white">Produits Tendance</h2>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleRefresh}
               disabled={refreshing}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-white hover:text-green-200"
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             </Button>
           </div>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-green-100 max-w-2xl mx-auto">
             Découvrez les produits les plus populaires du moment
           </p>
           {error && products.length > 0 && (

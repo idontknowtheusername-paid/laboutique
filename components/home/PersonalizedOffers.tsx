@@ -194,11 +194,11 @@ const PersonalizedOffers = () => {
     <section className="py-12 bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8 p-4 rounded-lg" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
+        <div className="flex items-center justify-between mb-8 p-4 rounded-lg" style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}>
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-2">
-              <Sparkles className="w-6 h-6 text-blue-600" />
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+              <Sparkles className="w-6 h-6 text-white" />
+              <h2 className="text-2xl md:text-3xl font-bold text-white">
                 Recommandé pour vous
               </h2>
             </div>
@@ -209,7 +209,7 @@ const PersonalizedOffers = () => {
           </div>
           
           <Link href="/personalized">
-            <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50">
+            <Button variant="outline" className="border-white/30 text-white hover:bg-white/20 bg-white/10">
               Voir toutes les offres
             </Button>
           </Link>

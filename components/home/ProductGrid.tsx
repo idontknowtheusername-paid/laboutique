@@ -110,16 +110,16 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         {isLoading ? (
           <HeaderSkeleton />
         ) : (
-          <div className="flex items-center justify-between mb-4 p-4 rounded-lg" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
+          <div className="flex items-center justify-between mb-4 p-4 rounded-lg" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' }}>
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{title}</h2>
-              {subtitle && <p className="text-gray-600 mt-1.5">{subtitle}</p>}
+              <h2 className="text-2xl md:text-3xl font-bold text-white">{title}</h2>
+              {subtitle && <p className="text-blue-100 mt-1.5">{subtitle}</p>}
             </div>
 
             {viewAllLink && (
               <Link 
                 href={viewAllLink} 
-                className="text-jomionstore-primary hover:text-blue-700 text-sm"
+                className="text-white hover:text-blue-200 text-sm font-medium bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition-all"
                 onClick={() => trackButtonClick('Voir tout', title)}
               >
                 Voir tout

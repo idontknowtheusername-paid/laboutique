@@ -142,12 +142,12 @@ export default function FlashSalesConnected() {
     <section className="py-12 bg-jomionstore-background">
       <div className="container">
         {/* Header */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-8 p-4 rounded-lg" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
+        <div className="flex flex-col md:flex-row items-center justify-between mb-8 p-4 rounded-lg" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}>
           <div className="mb-4 md:mb-0">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center">
+            <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center">
               ⚡ Ventes Flash
             </h2>
-            <p className="text-gray-600">Offres limitées, ne les ratez pas !</p>
+            <p className="text-red-100">Offres limitées, ne les ratez pas !</p>
           </div>
           
           {/* Countdown Timer */}
