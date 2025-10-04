@@ -700,14 +700,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       updateCartState({ items: optimisticItems });
       calculateLocalSummary(optimisticItems);
 
-      // Show immediate feedback
-      if (isHydrated) {
-        addToast({
-          type: "success",
-          title: "Produit ajouté au panier",
-          description: `${productName} (${quantity})`,
-        });
-      }
+      // Animation panier style Amazon remplace la notification toast
 
       // Store operation for retry
       lastFailedOperation.current = () =>
@@ -790,13 +783,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       saveLocalCart(newItems);
       calculateLocalSummary(newItems);
 
-      if (isHydrated) {
-        addToast({
-          type: "success",
-          title: "Produit ajouté au panier",
-          description: `${productName} (${quantity})`,
-        });
-      }
+      // Animation panier style Amazon remplace la notification toast
     }
   };
 
