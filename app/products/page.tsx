@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
 import Footer from '@/components/layout/Footer';
 import ProductGrid from '@/components/home/ProductGrid';
+import ProductFilters from '@/components/products/ProductFilters';
 import { ProductsService, Product } from '@/lib/services/products.service';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
@@ -19,6 +20,13 @@ export default function ProductsListingPage() {
   const [error, setError] = useState<string | null>(null);
   const [totalSiteCount, setTotalSiteCount] = useState<number>(0);
   const [localSearch, setLocalSearch] = useState<string>(searchParams.get('search') || '');
+  const [activeFilters, setActiveFilters] = useState({
+    categories: [],
+    brands: [],
+    pieces: [],
+    priceMin: 0,
+    priceMax: 500000
+  });
 
   const filters = useMemo(() => {
     const featured = searchParams.get('featured') === 'true';
@@ -121,6 +129,12 @@ export default function ProductsListingPage() {
             <Badge className="text-sm">{totalSiteCount.toLocaleString('fr-FR')} produits</Badge>
           </div>
         </div>
+
+        {/* Filtres compacts */}
+        <ProductFilters 
+          onFiltersChange={setActiveFilters}
+          activeFilters={activeFilters}
+        />
         <ProductGrid
           title={title}
           products={products}
