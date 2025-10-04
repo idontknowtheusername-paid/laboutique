@@ -95,7 +95,7 @@ export default function FlashSalesConnected() {
   const handleAddToCart = async (product: Product) => {
     try {
       await addToCart(product.id, product.name, product.price, 1);
-      trackAddToCart(product.id, product.name, product.category || 'unknown', product.price);
+      trackAddToCart(product.id, product.name, (product.category as any)?.name || 'unknown', product.price);
       triggerCartAnimation(product.name);
     } catch (error) {
       console.error('Erreur lors de l\'ajout au panier:', error);

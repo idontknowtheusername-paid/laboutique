@@ -60,7 +60,7 @@ export default function HomePageContent() {
         // Load categories and products in parallel
         const [categoriesRes, productsRes] = await Promise.all([
           CategoriesService.getAll(),
-          ProductsService.getRecent(20)
+          ProductsService.getAll({}, { limit: 20 })
         ]);
 
         if (categoriesRes.success && categoriesRes.data) {
@@ -83,7 +83,7 @@ export default function HomePageContent() {
 
   // Helper functions
   const getProductsByCategory = (categorySlug: string) => {
-    return products.filter(p => p.category === categorySlug).slice(0, 8);
+    return products.filter(p => (p.category as any)?.slug === categorySlug).slice(0, 8);
   };
 
   const getFeaturedProducts = () => {
@@ -134,8 +134,8 @@ export default function HomePageContent() {
                 title="Nouveautés"
                 subtitle="Découvrez nos derniers produits"
                 products={newProducts}
-                loading={loading}
-                error={error}
+                isLoading={loading}
+                error={error || undefined}
                 viewAllLink="/products?sort=newest"
               />
             </LazySection>
@@ -147,8 +147,8 @@ export default function HomePageContent() {
                 title="Produits recommandés"
                 subtitle="Sélectionnés spécialement pour vous"
                 products={featuredProducts}
-                loading={loading}
-                error={error}
+                isLoading={loading}
+                error={error || undefined}
                 viewAllLink="/products?featured=true"
               />
             </LazySection>
@@ -160,8 +160,8 @@ export default function HomePageContent() {
                 title="Maison & Jardin"
                 subtitle="Tout pour votre intérieur et extérieur"
                 products={homeProducts}
-                loading={loading}
-                error={error}
+                isLoading={loading}
+                error={error || undefined}
                 viewAllLink="/category/maison-jardin"
               />
             </LazySection>
@@ -173,8 +173,8 @@ export default function HomePageContent() {
                 title="Sport & Loisirs"
                 subtitle="Équipements et accessoires pour vos activités"
                 products={sportsProducts}
-                loading={loading}
-                error={error}
+                isLoading={loading}
+                error={error || undefined}
                 viewAllLink="/category/sport-loisirs"
               />
             </LazySection>
@@ -186,8 +186,8 @@ export default function HomePageContent() {
                 title="Recommandé pour vous"
                 subtitle="Produits personnalisés selon vos préférences"
                 products={featuredProducts}
-                loading={loading}
-                error={error}
+                isLoading={loading}
+                error={error || undefined}
                 viewAllLink="/products?recommended=true"
               />
             </LazySection>

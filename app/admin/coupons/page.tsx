@@ -147,17 +147,23 @@ export default function AdminCouponsPage() {
       return;
     }
 
-    const confirmed = await confirm(
-      'Modifier le statut',
-      `Êtes-vous sûr de vouloir modifier le statut de ${selectedCoupons.length} coupon(s) ?`,
-      'default'
-    );
+    const confirmed = await new Promise<boolean>((resolve) => {
+      confirm(
+        'Modifier le statut',
+        `Êtes-vous sûr de vouloir modifier le statut de ${selectedCoupons.length} coupon(s) ?`,
+        () => resolve(true),
+        'default'
+      );
+    });
 
     if (confirmed) {
       try {
         let successCount = 0;
         for (const couponId of selectedCoupons) {
-          const result = await CouponsService.update(couponId, { status: newStatus });
+          const result = await CouponsService.update({ 
+            id: couponId, 
+            status: newStatus as 'active' | 'inactive' 
+          });
           if (result.success) successCount++;
         }
         
@@ -177,11 +183,14 @@ export default function AdminCouponsPage() {
       return;
     }
 
-    const confirmed = await confirm(
-      'Supprimer les coupons',
-      `Êtes-vous sûr de vouloir supprimer ${selectedCoupons.length} coupon(s) ? Cette action est irréversible.`,
-      'destructive'
-    );
+    const confirmed = await new Promise<boolean>((resolve) => {
+      confirm(
+        'Supprimer les coupons',
+        `Êtes-vous sûr de vouloir supprimer ${selectedCoupons.length} coupon(s) ? Cette action est irréversible.`,
+        () => resolve(true),
+        'destructive'
+      );
+    });
 
     if (confirmed) {
       try {

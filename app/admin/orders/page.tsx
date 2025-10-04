@@ -41,11 +41,14 @@ export default function AdminOrdersPage() {
   };
 
   const handleDeleteOrder = async (orderId: string) => {
-    const confirmed = await confirm(
-      'Supprimer la commande',
-      'Êtes-vous sûr de vouloir supprimer cette commande ? Cette action est irréversible.',
-      'destructive'
-    );
+    const confirmed = await new Promise<boolean>((resolve) => {
+      confirm(
+        'Supprimer la commande',
+        'Êtes-vous sûr de vouloir supprimer cette commande ? Cette action est irréversible.',
+        () => resolve(true),
+        'destructive'
+      );
+    });
 
     if (confirmed) {
       try {
@@ -122,10 +125,10 @@ export default function AdminOrdersPage() {
         limit: 10
       };
       
-      const res = await OrdersService.getRecent(100, page, searchParams);
+      const res = await OrdersService.getRecent(100);
       if (res.success && res.data) {
         setOrders(res.data);
-        setTotalPages(Math.ceil((res.pagination?.total || 0) / 10));
+        setTotalPages(Math.ceil(res.data.length / 10));
       } else {
         error('Erreur de chargement', res.error || 'Impossible de charger les commandes');
       }

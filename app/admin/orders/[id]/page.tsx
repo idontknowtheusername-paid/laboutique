@@ -148,6 +148,8 @@ export default function AdminOrderDetailPage() {
   };
 
   const handleExportPDF = () => {
+    if (!order) return;
+    
     try {
       // Créer le contenu HTML pour le PDF
       const htmlContent = `
@@ -155,7 +157,7 @@ export default function AdminOrderDetailPage() {
         <html>
         <head>
           <meta charset="utf-8">
-          <title>Commande ${order.order_number || order.id}</title>
+          <title>Commande ${order?.order_number || order?.id || 'N/A'}</title>
           <style>
             body { font-family: Arial, sans-serif; margin: 20px; }
             .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
@@ -251,7 +253,7 @@ export default function AdminOrderDetailPage() {
   };
 
   const handleSendEmail = () => {
-    if (!order.user?.email) {
+    if (!order || !order.user?.email) {
       alert('Email du client non disponible');
       return;
     }
@@ -276,12 +278,12 @@ L'équipe JomionStore`;
   };
 
   const handleCallCustomer = () => {
-    if (!order.user?.phone) {
+    if (!order || !(order.user as any)?.phone) {
       alert('Numéro de téléphone du client non disponible');
       return;
     }
     
-    window.open(`tel:${order.user.phone}`);
+    window.open(`tel:${(order.user as any).phone}`);
   };
 
   const getStatusColor = (status?: string) => {
