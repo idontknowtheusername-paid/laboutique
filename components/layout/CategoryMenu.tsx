@@ -23,6 +23,12 @@ const categoryIcons: Record<string, React.ComponentType<any>> = {
   'beaute-sante': Sparkles,
   'sport-loisirs': Dumbbell,
   'alimentation': ShoppingBag,
+  'mobilier': Home,
+  'electromenager': Smartphone,
+  'decoration': Sparkles,
+  'jardin': Home,
+  'eclairage': Sparkles,
+  'textile-maison': Shirt,
   // Default fallback
   'default': Grid3X3
 };
@@ -191,28 +197,49 @@ const CategoryMenu = () => {
                       <div key={category.id} className="">
                         <Link
                           href={`/category/${category.slug}`}
-                          className="flex items-center justify-between py-2.5"
+                          className="flex items-center justify-between py-2.5 hover:bg-gray-50 rounded-md px-2 -mx-2"
                           onClick={() => setOpen(false)}
                         >
                           <span className="flex items-center gap-2 font-medium text-gray-900">
                             <Icon className="w-4 h-4" /> {category.name}
+                            {category.children && category.children.length > 0 && (
+                              <span className="text-xs bg-jomionstore-primary/10 text-jomionstore-primary px-2 py-0.5 rounded-full">
+                                {category.children.length}
+                              </span>
+                            )}
                           </span>
-                          <ChevronDown className="w-4 h-4 text-gray-400 rotate-[-90deg]" />
+                          {category.children && category.children.length > 0 && (
+                            <ChevronDown className="w-4 h-4 text-gray-400 rotate-[-90deg]" />
+                          )}
                         </Link>
                         {category.children && category.children.length > 0 && (
-                          <ul className="pl-6 pb-2 space-y-1">
+                          <div className="pl-6 pb-2 space-y-1 border-l-2 border-gray-100 ml-2">
                             {category.children.slice(0, 6).map((child) => (
-                              <li key={child.id}>
+                              <div key={child.id} className="py-1">
                                 <Link
                                   href={`/category/${child.slug}`}
-                                  className="block py-1 text-sm text-gray-600"
+                                  className="block text-sm text-gray-600 hover:text-jomionstore-primary transition-colors"
                                   onClick={() => setOpen(false)}
                                 >
                                   {child.name}
                                 </Link>
-                              </li>
+                                {child.children && child.children.length > 0 && (
+                                  <div className="ml-4 mt-1 space-y-1">
+                                    {child.children.slice(0, 3).map((grandchild) => (
+                                      <Link
+                                        key={grandchild.id}
+                                        href={`/category/${grandchild.slug}`}
+                                        className="block text-xs text-gray-500 hover:text-jomionstore-secondary transition-colors"
+                                        onClick={() => setOpen(false)}
+                                      >
+                                        {grandchild.name}
+                                      </Link>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
                             ))}
-                          </ul>
+                          </div>
                         )}
                       </div>
                     );
@@ -248,26 +275,26 @@ const CategoryMenu = () => {
                         </Link>
                         <div className="space-y-2">
                           {category.children?.map((child) => (
-                            <div key={child.slug}>
+                            <div key={child.slug} className="space-y-1">
                               <Link
                                 href={`/category/${child.slug}`}
-                                className="block font-medium text-gray-700 hover:text-jomionstore-primary transition-colors"
+                                className="block font-medium text-gray-700 hover:text-jomionstore-primary transition-colors py-1"
                               >
                                 {child.name}
                               </Link>
                               {child.children && child.children.length > 0 && (
-                                <ul className="ml-2 mt-1 space-y-1">
+                                <div className="ml-3 space-y-1 border-l border-gray-200 pl-3">
                                   {child.children.slice(0, 4).map((grandchild) => (
-                                    <li key={grandchild.id}>
+                                    <div key={grandchild.id}>
                                       <Link
                                         href={`/category/${grandchild.slug}`}
-                                        className="text-sm text-gray-500 hover:text-jomionstore-secondary transition-colors"
+                                        className="text-sm text-gray-500 hover:text-jomionstore-secondary transition-colors block py-0.5"
                                       >
                                         {grandchild.name}
                                       </Link>
-                                    </li>
+                                    </div>
                                   ))}
-                                </ul>
+                                </div>
                               )}
                             </div>
                           ))}
@@ -299,18 +326,18 @@ const CategoryMenu = () => {
                             {child.name}
                           </Link>
                           {child.children && child.children.length > 0 && (
-                            <ul className="space-y-1">
+                            <div className="space-y-1 border-l border-gray-200 pl-3 mt-1">
                               {child.children.slice(0, 5).map((grandchild) => (
-                                <li key={grandchild.id}>
+                                <div key={grandchild.id}>
                                   <Link
                                     href={`/category/${grandchild.slug}`}
-                                    className="text-sm text-gray-600 hover:text-jomionstore-secondary transition-colors"
+                                    className="text-sm text-gray-600 hover:text-jomionstore-secondary transition-colors block py-0.5"
                                   >
                                     {grandchild.name}
                                   </Link>
-                                </li>
+                                </div>
                               ))}
-                            </ul>
+                            </div>
                           )}
                         </div>
                       ))}
