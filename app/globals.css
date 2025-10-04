@@ -193,5 +193,5 @@
 }
 
 .category-menu-offset {
-  margin-top: calc(var(--header-total-height) + 8px);
+  margin-top: var(--header-total-height);
 }
