@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Heart, ShoppingCart, Eye, Star } from 'lucide-react';
+import { useCartAnimation } from '@/contexts/CartAnimationContext';
 
 interface InteractiveFeedbackProps {
   children: React.ReactNode;
@@ -9,6 +10,7 @@ interface InteractiveFeedbackProps {
   onAction: () => void;
   disabled?: boolean;
   className?: string;
+  productName?: string;
 }
 
 const InteractiveFeedback: React.FC<InteractiveFeedbackProps> = ({
@@ -16,27 +18,37 @@ const InteractiveFeedback: React.FC<InteractiveFeedbackProps> = ({
   action,
   onAction,
   disabled = false,
-  className = ''
+  className = '',
+  productName
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const { triggerCartAnimation } = useCartAnimation();
 
   const handleClick = () => {
     if (disabled) return;
     
     setIsAnimating(true);
     setShowFeedback(true);
+    
+    // Action spécifique selon le type
+    if (action === 'cart') {
+      // Animation du panier style Amazon
+      triggerCartAnimation(productName);
+    } else {
+      // Feedback normal pour les autres actions
+      setShowFeedback(true);
+      setTimeout(() => {
+        setShowFeedback(false);
+      }, 2000);
+    }
+    
     onAction();
     
     // Reset animation after 600ms
     setTimeout(() => {
       setIsAnimating(false);
     }, 600);
-    
-    // Hide feedback after 2 seconds
-    setTimeout(() => {
-      setShowFeedback(false);
-    }, 2000);
   };
 
   const getActionIcon = () => {
@@ -70,8 +82,8 @@ const InteractiveFeedback: React.FC<InteractiveFeedbackProps> = ({
         {children}
       </div>
       
-      {/* Feedback Animation */}
-      {showFeedback && (
+      {/* Feedback Animation - Seulement pour les actions non-cart */}
+      {showFeedback && action !== 'cart' && (
         <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 z-50">
           <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg animate-bounce">
             <div className="flex items-center space-x-1">

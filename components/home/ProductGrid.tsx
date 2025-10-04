@@ -17,6 +17,7 @@ import Image from 'next/image';
 import InteractiveFeedback from '@/components/ui/InteractiveFeedback';
 import { useFeedback } from '@/components/ui/FeedbackProvider';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useCartAnimation } from '@/contexts/CartAnimationContext';
 
 interface ProductGridProps {
   title: string;
@@ -54,6 +55,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   const [retryCount, setRetryCount] = useState(0);
   const { showSuccess, showError } = useFeedback();
   const { trackProductView, trackAddToCart, trackAddToWishlist, trackButtonClick } = useAnalytics();
+  const { triggerCartAnimation } = useCartAnimation();
 
   // Responsive grid columns - optimisé pour mobile
   const getGridCols = () => {
@@ -289,14 +291,25 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                       </div>
                     </div>
 
-                    {/* Add to Cart - Toujours en bas */}
+                    {/* Add to Cart - Toujours en bas avec animation */}
                     <div className="mt-auto pt-2">
-                      <QuickAddToCart
-                        productId={transformedProduct.id}
-                        productName={transformedProduct.name}
-                        price={transformedProduct.price}
+                      <InteractiveFeedback
+                        action="cart"
+                        onAction={() => {
+                          trackAddToCart(transformedProduct.id, transformedProduct.name, transformedProduct.category, transformedProduct.price);
+                          triggerCartAnimation(transformedProduct.name);
+                        }}
                         disabled={transformedProduct.status !== 'active' || (transformedProduct.track_quantity && transformedProduct.quantity <= 0)}
-                      />
+                        productName={transformedProduct.name}
+                        className="w-full"
+                      >
+                        <QuickAddToCart
+                          productId={transformedProduct.id}
+                          productName={transformedProduct.name}
+                          price={transformedProduct.price}
+                          disabled={transformedProduct.status !== 'active' || (transformedProduct.track_quantity && transformedProduct.quantity <= 0)}
+                        />
+                      </InteractiveFeedback>
                     </div>
                   </CardContent>
                 </Card>
@@ -339,6 +352,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
           </div>
         )}
       </div>
+
     </section>
   );
 };

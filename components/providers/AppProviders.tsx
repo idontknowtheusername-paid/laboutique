@@ -5,6 +5,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { ToastProvider } from "@/components/ui/toast";
+import { CartAnimationProvider } from "@/contexts/CartAnimationContext";
 import {
   QueryClient,
   QueryClientProvider,
@@ -71,14 +72,16 @@ export function AppProviders({ children }: AppProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
-        <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <PrefetchUserData />
-              {children}
-            </WishlistProvider>
-          </CartProvider>
-        </AuthProvider>
+        <CartAnimationProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <PrefetchUserData />
+                {children}
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
+        </CartAnimationProvider>
       </ToastProvider>
     </QueryClientProvider>
   );

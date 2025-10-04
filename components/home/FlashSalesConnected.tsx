@@ -12,6 +12,7 @@ import Image from 'next/image';
 import InteractiveFeedback from '@/components/ui/InteractiveFeedback';
 import { useFeedback } from '@/components/ui/FeedbackProvider';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useCartAnimation } from '@/contexts/CartAnimationContext';
 
 export default function FlashSalesConnected() {
   const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 45, seconds: 30 });
@@ -22,6 +23,7 @@ export default function FlashSalesConnected() {
   const { addToCart } = useCart();
   const { showSuccess, showError } = useFeedback();
   const { trackAddToCart, trackButtonClick } = useAnalytics();
+  const { triggerCartAnimation } = useCartAnimation();
 
   // Détection de la taille d'écran
   useEffect(() => {
@@ -94,7 +96,7 @@ export default function FlashSalesConnected() {
     try {
       await addToCart(product.id, product.name, product.price, 1);
       trackAddToCart(product.id, product.name, product.category || 'unknown', product.price);
-      showSuccess(`${product.name} ajouté au panier !`);
+      triggerCartAnimation(product.name);
     } catch (error) {
       console.error('Erreur lors de l\'ajout au panier:', error);
       showError('Erreur lors de l\'ajout au panier');
@@ -254,6 +256,7 @@ export default function FlashSalesConnected() {
                             action="cart"
                             onAction={() => handleAddToCart(product)}
                             disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
+                            productName={product.name}
                             className="w-full"
                           >
                             <Button
@@ -313,6 +316,7 @@ export default function FlashSalesConnected() {
             </Button>
           </Link>
         </div>
+
       </div>
     </section>
   );

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import { AppProviders } from "@/components/providers/AppProviders";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import GlobalCartAnimation from '@/components/ui/GlobalCartAnimation';
 
 export const metadata: Metadata = {
   title: "JomionStore - Benin Elite Shopping Experience",
@@ -56,7 +57,10 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
       </head>
       <body className="font-sans antialiased">
-        <AppProviders>{children}</AppProviders>
+        <AppProviders>
+          {children}
+          <GlobalCartAnimation />
+        </AppProviders>
         <SpeedInsights />
         
         {/* Service Worker Registration */}
