@@ -139,7 +139,7 @@ export default function FlashSalesConnected() {
   }
 
   return (
-    <section className="py-12 bg-jomionstore-background" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
+    <section className="py-12 bg-jomionstore-background">
       <div className="container">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-center justify-between mb-8">
