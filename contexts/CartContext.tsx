@@ -51,7 +51,8 @@ interface CartContextType {
     productId: string,
     productName: string,
     price: number,
-    quantity?: number
+    quantity?: number,
+    productImage?: string
   ) => Promise<void>;
   removeFromCart: (itemId: string) => Promise<void>;
   updateQuantity: (itemId: string, quantity: number) => Promise<void>;
@@ -650,7 +651,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     productId: string,
     productName: string,
     price: number,
-    quantity: number = 1
+    quantity: number = 1,
+    productImage?: string
   ) => {
     updateCartState({ error: null });
 
@@ -703,7 +705,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       calculateLocalSummary(optimisticItems);
 
       // Animation panier style Amazon - image du produit vole vers le panier
-      triggerCartAnimation(productName);
+      triggerCartAnimation(productName, productImage);
 
       // Store operation for retry
       lastFailedOperation.current = () =>
@@ -773,7 +775,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
             name: productName,
             slug: "",
             price,
-            images: [],
+            images: productImage ? [productImage] : [],
             status: "active",
             quantity: 999,
             track_quantity: false,
@@ -786,7 +788,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       saveLocalCart(newItems);
       calculateLocalSummary(newItems);
 
-      // Animation panier style Amazon remplace la notification toast
+      // Animation panier style Amazon - image du produit vole vers le panier
+      triggerCartAnimation(productName, productImage);
     }
   };
 

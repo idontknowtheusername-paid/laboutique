@@ -11,6 +11,7 @@ interface QuickAddToCartProps {
   productId: string;
   productName: string;
   price: number;
+  productImage?: string;
   onAddToCart?: (productId: string, quantity: number) => void;
   className?: string;
   disabled?: boolean;
@@ -22,6 +23,7 @@ const QuickAddToCart: React.FC<QuickAddToCartProps> = ({
   productId,
   productName,
   price,
+  productImage,
   onAddToCart,
   className = '',
   disabled = false,
@@ -61,7 +63,7 @@ const QuickAddToCart: React.FC<QuickAddToCartProps> = ({
     setIsAnimating(true);
 
     try {
-      await addToCart(productId, productName, price, quantity);
+      await addToCart(productId, productName, price, quantity, productImage);
 
       // Call the optional callback for backward compatibility
       if (onAddToCart) {
