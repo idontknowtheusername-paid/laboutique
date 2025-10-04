@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { CartService } from '@/lib/services/cart.service';
+import ImageDebug from '@/components/debug/ImageDebug';
 
 export default function CartPage() {
   const {
@@ -236,13 +237,24 @@ export default function CartPage() {
                           <div className="flex flex-col sm:flex-row gap-4">
                             {/* Product Image */}
                             <div className="w-full sm:w-24 h-48 sm:h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 relative">
-                              <Image
-                                src={item.product?.images?.[0] || "/placeholder.jpg"}
-                                alt={item.product?.name || "Produit"}
-                                fill
-                                sizes="96px"
-                                className="object-cover"
-                              />
+                              {item.product?.images?.[0] ? (
+                                <Image
+                                  src={item.product.images[0]}
+                                  alt={item.product?.name || "Produit"}
+                                  fill
+                                  sizes="96px"
+                                  className="object-cover"
+                                  onError={(e) => {
+                                    // Fallback en cas d'erreur d'image
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = "/placeholder.jpg";
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                                  <span>Pas d'image</span>
+                                </div>
+                              )}
                               {(isUpdating || isRemoving) && (
                                 <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
                                   <div className="w-6 h-6 animate-spin rounded-full border-2 border-jomionstore-primary border-t-transparent" />
@@ -252,6 +264,10 @@ export default function CartPage() {
 
                             {/* Product Info */}
                             <div className="flex-1 space-y-2">
+                              <ImageDebug 
+                                images={item.product?.images} 
+                                productName={item.product?.name || 'Inconnu'} 
+                              />
                               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                                 <div className="flex-1">
                                   <h3 className="font-semibold text-gray-900 line-clamp-2">

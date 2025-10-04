@@ -690,7 +690,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
             name: productName,
             slug: "",
             price,
-            images: [],
+            images: productImage ? [productImage] : [],
             status: "active",
             quantity: 999,
             track_quantity: false,
