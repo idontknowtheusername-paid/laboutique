@@ -142,30 +142,30 @@ export default function FlashSalesConnected() {
     <section className="py-12 bg-jomionstore-background">
       <div className="container">
         {/* Header */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-8 p-4 rounded-lg" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}>
+        <div className="flex flex-col md:flex-row items-center justify-between mb-8 p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}>
           <div className="mb-4 md:mb-0">
-            <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center">
+            <h2 className="text-xl md:text-2xl font-bold text-white flex items-center">
               ⚡ Ventes Flash
             </h2>
-            <p className="text-red-100">Offres limitées, ne les ratez pas !</p>
+            <p className="text-red-100 text-sm">Offres limitées, ne les ratez pas !</p>
           </div>
           
           {/* Countdown Timer */}
-          <div className="flex items-center space-x-4 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+          <div className="flex items-center space-x-3 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
             <Clock className="w-5 h-5 text-red-600" />
             <div className="flex space-x-2 text-red-600 font-mono">
               <div className="text-center">
-                <div className="text-xl font-bold">{String(timeLeft.hours).padStart(2, '0')}</div>
+                <div className="text-lg font-bold">{String(timeLeft.hours).padStart(2, '0')}</div>
                 <div className="text-xs">H</div>
               </div>
               <div className="text-xl">:</div>
               <div className="text-center">
-                <div className="text-xl font-bold">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                <div className="text-lg font-bold">{String(timeLeft.minutes).padStart(2, '0')}</div>
                 <div className="text-xs">M</div>
               </div>
               <div className="text-xl">:</div>
               <div className="text-center">
-                <div className="text-xl font-bold">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                <div className="text-lg font-bold">{String(timeLeft.seconds).padStart(2, '0')}</div>
                 <div className="text-xs">S</div>
               </div>
             </div>
