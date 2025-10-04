@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Heart, ShoppingCart, Eye, Star } from 'lucide-react';
-import { useCartAnimation } from '@/contexts/CartAnimationContext';
 
 interface InteractiveFeedbackProps {
   children: React.ReactNode;
@@ -23,7 +22,6 @@ const InteractiveFeedback: React.FC<InteractiveFeedbackProps> = ({
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
-  const { triggerCartAnimation } = useCartAnimation();
 
   const handleClick = () => {
     if (disabled) return;
@@ -34,7 +32,6 @@ const InteractiveFeedback: React.FC<InteractiveFeedbackProps> = ({
     // Action spécifique selon le type
     if (action === 'cart') {
       // Animation du panier style Amazon
-      triggerCartAnimation(productName);
     } else {
       // Feedback normal pour les autres actions
       setShowFeedback(true);

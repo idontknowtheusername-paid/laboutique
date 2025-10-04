@@ -12,7 +12,6 @@ import Image from 'next/image';
 import InteractiveFeedback from '@/components/ui/InteractiveFeedback';
 import { useFeedback } from '@/components/ui/FeedbackProvider';
 import { useAnalytics } from '@/hooks/useAnalytics';
-import { useCartAnimation } from '@/contexts/CartAnimationContext';
 
 export default function FlashSalesConnected() {
   const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 45, seconds: 30 });
@@ -23,7 +22,6 @@ export default function FlashSalesConnected() {
   const { addToCart } = useCart();
   const { showSuccess, showError } = useFeedback();
   const { trackAddToCart, trackButtonClick } = useAnalytics();
-  const { triggerCartAnimation } = useCartAnimation();
 
   // Détection de la taille d'écran
   useEffect(() => {
