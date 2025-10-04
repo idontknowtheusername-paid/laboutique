@@ -104,7 +104,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   }, [displayedProducts]);
 
   return (
-    <section className={`py-6 ${backgroundColor}`}>
+    <section className={`py-6 ${backgroundColor}`} style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
       <div className="container">
         {/* Header */}
         {isLoading ? (

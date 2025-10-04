@@ -191,7 +191,7 @@ const PersonalizedOffers = () => {
   };
 
   return (
-    <section className="py-12 bg-gradient-to-br from-blue-50 to-indigo-100">
+    <section className="py-12 bg-gradient-to-br from-blue-50 to-indigo-100" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
       <div className="container">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
