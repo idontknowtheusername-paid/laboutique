@@ -57,8 +57,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
   // Responsive grid columns - optimisé pour mobile
   const getGridCols = () => {
-    // Grille adaptative : 1 colonne sur très petit écran, 2 sur mobile, 3 sur tablette, 4 sur desktop, 5 sur grand écran
-    return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
+    // Grille adaptative : 2 colonnes sur mobile, 3 sur tablette, 4 sur desktop, 5 sur grand écran
+    return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6';
   };
 
   // Memoize expensive calculations
