@@ -82,9 +82,6 @@ export default function HomePageContent() {
   }, []);
 
   // Helper functions
-  const getProductsByCategory = (categorySlug: string) => {
-    return products.filter(p => (p.category as any)?.slug === categorySlug).slice(0, 100);
-  };
 
   const getFeaturedProducts = () => {
     return products.filter(p => p.featured).slice(0, 100);
@@ -96,10 +93,28 @@ export default function HomePageContent() {
       .slice(0, 20); // FIFO: les 20 plus récents, les anciens sont automatiquement supprimés
   };
 
-  const homeProducts = getProductsByCategory('maison-jardin');
-  const sportsProducts = getProductsByCategory('sport-loisirs');
+  // Produits par catégorie dynamique
+  const getCategoryProducts = (categorySlug: string) => {
+    return products.filter(p => (p.category as any)?.slug === categorySlug).slice(0, 100);
+  };
+
+  // Sections principales
   const featuredProducts = getFeaturedProducts();
   const newProducts = getNewProducts();
+  
+  // Catégories dynamiques (prendre les 4 premières catégories principales avec des produits)
+  const mainCategories = categories
+    .filter(cat => cat.slug !== 'maison-jardin' && cat.slug !== 'sport-loisirs') // Éviter les doublons
+    .map(category => ({
+      ...category,
+      products: getCategoryProducts(category.slug)
+    }))
+    .filter(category => category.products.length > 0) // Seulement les catégories avec des produits
+    .slice(0, 4); // Limiter à 4 sections dynamiques
+
+  // Sections hardcodées existantes
+  const homeProducts = getCategoryProducts('maison-jardin');
+  const sportsProducts = getCategoryProducts('sport-loisirs');
 
   return (
     <>
@@ -180,18 +195,21 @@ export default function HomePageContent() {
             </LazySection>
           </section>
 
-          <section className="container mb-4">
-            <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
-              <ProductGrid
-                title="Recommandé pour vous"
-                subtitle="Produits personnalisés selon vos préférences"
-                products={featuredProducts}
-                isLoading={loading}
-                error={error || undefined}
-                viewAllLink="/products?recommended=true"
-              />
-            </LazySection>
-          </section>
+          {/* Sections dynamiques par catégorie */}
+          {mainCategories.map((category) => (
+            <section key={category.id} className="container mb-4">
+              <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
+                <ProductGrid
+                  title={category.name}
+                  subtitle={category.description || `Découvrez nos produits ${category.name.toLowerCase()}`}
+                  products={category.products}
+                  isLoading={loading}
+                  error={error || undefined}
+                  viewAllLink={`/category/${category.slug}`}
+                />
+              </LazySection>
+            </section>
+          ))}
 
           <LazySection className="mb-2.5" fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-xl" />}>
             <TrustElements />
