@@ -125,13 +125,13 @@ export default function FlashSalesConnected() {
 
   const nextSlide = () => {
     trackButtonClick('Carousel Next', 'Flash Sales');
-    const maxIndex = isMobile ? products.length - 1 : Math.max(1, products.length - 2);
+    const maxIndex = Math.max(1, products.length - 2);
     setCurrentIndex((prev) => (prev + 1) % Math.max(1, maxIndex));
   };
 
   const prevSlide = () => {
     trackButtonClick('Carousel Previous', 'Flash Sales');
-    const maxIndex = isMobile ? products.length - 1 : Math.max(1, products.length - 2);
+    const maxIndex = Math.max(1, products.length - 2);
     setCurrentIndex((prev) => (prev - 1 + Math.max(1, maxIndex)) % Math.max(1, maxIndex));
   };
 
@@ -205,13 +205,13 @@ export default function FlashSalesConnected() {
           <div className="overflow-hidden">
             <div 
               className="flex transition-transform duration-300 ease-in-out"
-              style={{ transform: `translateX(-${currentIndex * (100 / (isMobile ? 1 : 2))}%)` }}
+              style={{ transform: `translateX(-${currentIndex * (100 / 2)}%)` }}
             >
               {products.map((product) => {
                 const discount = product.compare_price ? calculateDiscount(product.price, product.compare_price) : 0;
                 
                 return (
-                  <div key={product.id} className="w-full sm:w-1/2 flex-shrink-0 px-2">
+                  <div key={product.id} className="w-1/2 flex-shrink-0 px-2">
                     <Card className="bg-white hover:shadow-xl transition-all duration-300 border border-gray-200 h-full">
                       <CardContent className="p-4">
                         <div className="relative mb-4">
@@ -304,7 +304,7 @@ export default function FlashSalesConnected() {
           </div>
 
           {/* Navigation Buttons - Optimisé pour mobile */}
-          {products.length > (isMobile ? 1 : 2) && (
+          {products.length > 2 && (
             <>
               <Button
                 variant="ghost"
