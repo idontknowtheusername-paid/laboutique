@@ -182,19 +182,19 @@ export default function FlashSalesConnected() {
               <Clock className="w-4 h-4 text-white/80" />
             </div>
             <div className="flex space-x-1 text-white font-mono">
-              <div className="text-center bg-white rounded-lg px-2 py-1 min-w-[40px] transition-all duration-300">
-                <div className="text-lg font-bold text-gray-900">{String(timeLeft.hours).padStart(2, '0')}</div>
-                <div className="text-xs text-gray-600">H</div>
+              <div className="text-center px-2 py-1 min-w-[40px]">
+                <div className="text-lg font-bold text-white">{String(timeLeft.hours).padStart(2, '0')}</div>
+                <div className="text-xs text-white/80">H</div>
               </div>
               <div className="text-white/60 text-lg animate-pulse">:</div>
-              <div className="text-center bg-white rounded-lg px-2 py-1 min-w-[40px] transition-all duration-300">
-                <div className="text-lg font-bold text-gray-900">{String(timeLeft.minutes).padStart(2, '0')}</div>
-                <div className="text-xs text-gray-600">M</div>
+              <div className="text-center px-2 py-1 min-w-[40px]">
+                <div className="text-lg font-bold text-white">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                <div className="text-xs text-white/80">M</div>
               </div>
               <div className="text-white/60 text-lg animate-pulse">:</div>
-              <div className="text-center bg-white rounded-lg px-2 py-1 min-w-[40px] transition-all duration-300">
-                <div className="text-lg font-bold text-gray-900">{String(timeLeft.seconds).padStart(2, '0')}</div>
-                <div className="text-xs text-gray-600">S</div>
+              <div className="text-center px-2 py-1 min-w-[40px]">
+                <div className="text-lg font-bold text-white">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                <div className="text-xs text-white/80">S</div>
               </div>
             </div>
           </div>
