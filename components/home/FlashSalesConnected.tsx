@@ -205,7 +205,7 @@ export default function FlashSalesConnected() {
           <div className="overflow-hidden">
             <div 
               className="flex transition-transform duration-300 ease-in-out"
-              style={{ transform: `translateX(-${currentIndex * (100 / 2)}%)` }}
+              style={{ transform: `translateX(-${currentIndex * 50}%)` }}
             >
               {products.map((product) => {
                 const discount = product.compare_price ? calculateDiscount(product.price, product.compare_price) : 0;
