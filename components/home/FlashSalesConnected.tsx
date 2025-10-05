@@ -211,12 +211,12 @@ export default function FlashSalesConnected() {
                 const discount = product.compare_price ? calculateDiscount(product.price, product.compare_price) : 0;
                 
                 return (
-                  <div key={product.id} className="w-full sm:w-1/2 flex-shrink-0 px-2 sm:px-3">
-                    <Card className="bg-white hover:shadow-xl transition-all duration-300 border border-gray-200">
-                      <CardContent className="p-3 sm:p-4 md:p-6">
-                        <div className="relative mb-4 sm:mb-6">
+                  <div key={product.id} className="w-full sm:w-1/2 flex-shrink-0 px-2">
+                    <Card className="bg-white hover:shadow-xl transition-all duration-300 border border-gray-200 h-full">
+                      <CardContent className="p-4">
+                        <div className="relative mb-4">
                           <Link href={`/product/${product.slug}`}>
-                            <div className="aspect-square relative overflow-hidden rounded-xl bg-gray-100" style={{ minHeight: isMobile ? '250px' : '300px' }}>
+                            <div className="aspect-square relative overflow-hidden rounded-xl bg-gray-100 h-64">
                               {product.images?.[0] ? (
                                 <Image
                                   src={product.images[0]}
@@ -238,39 +238,39 @@ export default function FlashSalesConnected() {
                           </Link>
                           
                           {discount > 0 && (
-                            <Badge className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-500 text-white font-bold text-xs sm:text-sm px-2 py-1 sm:px-3">
+                            <Badge className="absolute top-2 left-2 bg-red-500 text-white font-bold text-sm px-2 py-1">
                               -{discount}%
                             </Badge>
                           )}
                         </div>
 
-                        <div className="space-y-3 sm:space-y-4">
+                        <div className="space-y-3">
                           <Link href={`/product/${product.slug}`}>
-                            <h3 className="font-semibold text-sm sm:text-base md:text-lg line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
+                            <h3 className="font-semibold text-base line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
                               {product.name}
                             </h3>
                           </Link>
 
-                          <div className="flex items-center space-x-1 sm:space-x-2">
+                          <div className="flex items-center space-x-1">
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`w-3 h-3 sm:w-4 sm:h-4 ${i < 4
+                                className={`w-4 h-4 ${i < 4
                                     ? 'fill-yellow-400 text-yellow-400'
                                     : 'fill-gray-200 text-gray-200'
                                   }`}
                               />
                             ))}
-                            <span className="text-xs sm:text-sm text-gray-600">(4.5)</span>
+                            <span className="text-sm text-gray-600">(4.5)</span>
                           </div>
 
                           <div className="space-y-2">
-                            <div className="flex items-center space-x-2 sm:space-x-3 flex-wrap">
-                              <span className="font-bold text-lg sm:text-xl md:text-2xl text-jomionstore-primary">
+                            <div className="flex items-center space-x-2 flex-wrap">
+                              <span className="font-bold text-xl text-jomionstore-primary">
                                 {formatPrice(product.price)}
                               </span>
                               {product.compare_price && (
-                                <span className="text-sm sm:text-base md:text-lg text-gray-500 line-through">
+                                <span className="text-base text-gray-500 line-through">
                                   {formatPrice(product.compare_price)}
                                 </span>
                               )}
@@ -285,8 +285,7 @@ export default function FlashSalesConnected() {
                             className="w-full"
                           >
                             <Button
-                              className="w-full bg-jomionstore-primary hover:bg-blue-700 text-white font-semibold py-2 sm:py-3 text-sm sm:text-base"
-                              size={isMobile ? "default" : "lg"}
+                              className="w-full bg-jomionstore-primary hover:bg-blue-700 text-white font-semibold py-2 text-base"
                               disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
                             >
                               {product.status !== 'active' || (product.track_quantity && product.quantity <= 0)
