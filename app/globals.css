@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Masquer la toolbar Vercel en production */
+[data-vercel-toolbar] {
+  display: none !important;
+}
+
+/* Masquer les éléments Vercel toolbar */
+iframe[src*="vercel"] {
+  display: none !important;
+}
+
+/* Masquer les scripts Vercel */
+script[src*="vercel"] {
+  display: none !important;
+}
+
 /* Utilities */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

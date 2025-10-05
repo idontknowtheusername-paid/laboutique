@@ -63,6 +63,27 @@ export default function RootLayout({
         </AppProviders>
         <SpeedInsights />
         
+        {/* Désactiver la toolbar Vercel en production */}
+        <Script
+          id="disable-vercel-toolbar"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
+                // Désactiver la toolbar Vercel
+                const vercelToolbar = document.querySelector('[data-vercel-toolbar]');
+                if (vercelToolbar) {
+                  vercelToolbar.style.display = 'none';
+                }
+                
+                // Supprimer les scripts Vercel toolbar
+                const vercelScripts = document.querySelectorAll('script[src*="vercel"]');
+                vercelScripts.forEach(script => script.remove());
+              }
+            `,
+          }}
+        />
+        
         {/* Service Worker Registration */}
         <Script
           id="sw-registration"
