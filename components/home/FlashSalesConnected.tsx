@@ -49,7 +49,7 @@ export default function FlashSalesConnected() {
           const saleProducts = response.data.filter(product => 
             product.compare_price && product.compare_price > product.price
           );
-          setProducts(saleProducts.slice(0, 6)); // Limiter à 6 produits
+          setProducts(saleProducts.slice(0, 30)); // Limiter à 30 produits
         }
       } catch (error) {
         console.error('Erreur lors du chargement des produits Flash Sales:', error);

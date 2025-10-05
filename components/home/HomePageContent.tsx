@@ -60,7 +60,7 @@ export default function HomePageContent() {
         // Load categories and products in parallel
         const [categoriesRes, productsRes] = await Promise.all([
           CategoriesService.getAll(),
-          ProductsService.getAll({}, { limit: 20 })
+          ProductsService.getAll({}, { limit: 200 }) // Augmenter pour supporter 100 produits par section
         ]);
 
         if (categoriesRes.success && categoriesRes.data) {
@@ -83,17 +83,17 @@ export default function HomePageContent() {
 
   // Helper functions
   const getProductsByCategory = (categorySlug: string) => {
-    return products.filter(p => (p.category as any)?.slug === categorySlug).slice(0, 8);
+    return products.filter(p => (p.category as any)?.slug === categorySlug).slice(0, 100);
   };
 
   const getFeaturedProducts = () => {
-    return products.filter(p => p.featured).slice(0, 8);
+    return products.filter(p => p.featured).slice(0, 100);
   };
 
   const getNewProducts = () => {
     return products
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      .slice(0, 8);
+      .slice(0, 20); // FIFO: les 20 plus récents, les anciens sont automatiquement supprimés
   };
 
   const homeProducts = getProductsByCategory('maison-jardin');
