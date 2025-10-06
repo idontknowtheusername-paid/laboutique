@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { ShoppingCart } from 'lucide-react';
 
 interface AmazonCartAnimationProps {
@@ -100,10 +101,15 @@ const AmazonCartAnimation: React.FC<AmazonCartAnimationProps> = ({
           }}
         >
           <div className="w-12 h-12 rounded-lg overflow-hidden shadow-lg border-2 border-white">
-            <img
-              src={productImage}
+            <Image
+              src={productImage || '/placeholder-product.jpg'}
               alt={productName || 'Produit'}
+              width={48}
+              height={48}
               className="w-full h-full object-cover"
+              quality={85}
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
             />
           </div>
         </div>

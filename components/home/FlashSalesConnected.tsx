@@ -24,16 +24,27 @@ export default function FlashSalesConnected() {
   const { showSuccess, showError } = useFeedback();
   const { trackAddToCart, trackButtonClick } = useAnalytics();
 
-  // Détection de la taille d'écran
+  // Détection de la taille d'écran - SSR compatible
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 640);
+      if (typeof window !== 'undefined') {
+        setIsMobile(window.innerWidth < 640);
+      }
     };
     
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
+    // Initial check avec timeout pour éviter hydration mismatch
+    const timeoutId = setTimeout(checkScreenSize, 100);
     
-    return () => window.removeEventListener('resize', checkScreenSize);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', checkScreenSize);
+    }
+    
+    return () => {
+      clearTimeout(timeoutId);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', checkScreenSize);
+      }
+    };
   }, []);
 
   // Charger les produits en promotion depuis le backend
