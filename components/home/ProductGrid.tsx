@@ -110,7 +110,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         {isLoading ? (
           <HeaderSkeleton />
         ) : (
-          <div className="flex items-center justify-between mb-4 p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' }}>
+          <div className="flex items-center justify-between mb-4 p-3 rounded-lg" style={{ background: '#4169E1' }}>
             <div>
               <h2 className="text-xl md:text-2xl font-bold text-white">{title}</h2>
               {subtitle && <p className="text-blue-100 mt-1 text-sm">{subtitle}</p>}
