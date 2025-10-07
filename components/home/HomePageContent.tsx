@@ -28,6 +28,16 @@ const ProductGrid = dynamic(() => import('@/components/home/ProductGrid'), {
   ssr: false
 });
 
+const PersonalizedOffers = dynamic(() => import('@/components/home/PersonalizedOffers'), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
+const TrendingProducts = dynamic(() => import('@/components/home/TrendingProducts'), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
 const TrustElements = dynamic(() => import('@/components/home/TrustElements'), {
   loading: () => <div className="h-32 bg-gray-100 animate-pulse rounded-xl" />,
   ssr: false
@@ -144,6 +154,12 @@ export default function HomePageContent() {
           </section>
 
           <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+              <PersonalizedOffers />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
               <ProductGrid
                 title="Nouveautés"
@@ -166,6 +182,12 @@ export default function HomePageContent() {
                 error={error || undefined}
                 viewAllLink="/products?featured=true"
               />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+              <TrendingProducts />
             </LazySection>
           </section>
 
