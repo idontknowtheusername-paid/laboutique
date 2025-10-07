@@ -154,12 +154,6 @@ export default function HomePageContent() {
           </section>
 
           <section className="container mb-4">
-            <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-              <PersonalizedOffers />
-            </LazySection>
-          </section>
-
-          <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
               <ProductGrid
                 title="Nouveautés"
@@ -173,9 +167,15 @@ export default function HomePageContent() {
           </section>
 
           <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+              <TrendingProducts />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
               <ProductGrid
-                title="Produits recommandés"
+                title="Produits que vous aimeriez"
                 subtitle="Sélectionnés spécialement pour vous"
                 products={featuredProducts}
                 isLoading={loading}
@@ -187,7 +187,7 @@ export default function HomePageContent() {
 
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-              <TrendingProducts />
+              <PersonalizedOffers />
             </LazySection>
           </section>
 
