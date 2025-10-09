@@ -281,7 +281,7 @@ function TrendingProductsContent() {
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             </Button>
           </div>
-          <p className="text-blue-200 max-w-2xl mx-auto text-sm">
+          <p className="text-blue-200 max-w-2xl mx-auto text-sm truncate">
             Découvrez les produits les plus populaires du moment
           </p>
           {error && products.length > 0 && (

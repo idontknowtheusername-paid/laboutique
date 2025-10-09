@@ -176,36 +176,36 @@ export default function FlashSalesConnected() {
     <section className="py-12 bg-jomionstore-background">
       <div className="container">
         {/* Header */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-8 p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}>
-          <div className="mb-4 md:mb-0">
-            <h2 className="text-xl md:text-2xl font-bold text-white flex items-center">
+        <div className="flex flex-col md:flex-row items-center justify-between mb-4 md:mb-8 p-2 md:p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}>
+          <div className="mb-2 md:mb-0">
+            <h2 className="text-lg md:text-2xl font-bold text-white flex items-center">
               ⚡ Ventes Flash
             </h2>
-            <p className="text-red-100 text-sm">
+            <p className="text-red-100 text-xs md:text-sm truncate">
               {urgencyMessage || 'Offres limitées, ne les ratez pas !'}
             </p>
           </div>
           
           {/* Countdown Timer */}
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-              <Clock className="w-4 h-4 text-white/80" />
+          <div className="flex items-center space-x-2 md:space-x-4">
+            <div className="flex items-center space-x-1 md:space-x-2">
+              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full animate-pulse"></div>
+              <Clock className="w-3 h-3 md:w-4 md:h-4 text-white/80" />
             </div>
-            <div className="flex space-x-1 text-white font-mono">
-              <div className="text-center px-2 py-1 min-w-[40px]">
-                <div className="text-lg font-bold text-white">{String(timeLeft.hours).padStart(2, '0')}</div>
-                <div className="text-xs text-white/80">H</div>
+            <div className="flex space-x-0.5 md:space-x-1 text-white font-mono">
+              <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
+                <div className="text-sm md:text-lg font-bold text-white">{String(timeLeft.hours).padStart(2, '0')}</div>
+                <div className="text-[10px] md:text-xs text-white/80">H</div>
               </div>
-              <div className="text-white/60 text-lg animate-pulse">:</div>
-              <div className="text-center px-2 py-1 min-w-[40px]">
-                <div className="text-lg font-bold text-white">{String(timeLeft.minutes).padStart(2, '0')}</div>
-                <div className="text-xs text-white/80">M</div>
+              <div className="text-white/60 text-sm md:text-lg animate-pulse">:</div>
+              <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
+                <div className="text-sm md:text-lg font-bold text-white">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                <div className="text-[10px] md:text-xs text-white/80">M</div>
               </div>
-              <div className="text-white/60 text-lg animate-pulse">:</div>
-              <div className="text-center px-2 py-1 min-w-[40px]">
-                <div className="text-lg font-bold text-white">{String(timeLeft.seconds).padStart(2, '0')}</div>
-                <div className="text-xs text-white/80">S</div>
+              <div className="text-white/60 text-sm md:text-lg animate-pulse">:</div>
+              <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
+                <div className="text-sm md:text-lg font-bold text-white">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                <div className="text-[10px] md:text-xs text-white/80">S</div>
               </div>
             </div>
           </div>

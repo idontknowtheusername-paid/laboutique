@@ -113,7 +113,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
           <div className="flex items-center justify-between mb-4 p-3 rounded-lg" style={{ background: '#4169E1' }}>
             <div>
               <h2 className="text-xl md:text-2xl font-bold text-white">{title}</h2>
-              {subtitle && <p className="text-blue-200 mt-1 text-sm">{subtitle}</p>}
+              {subtitle && <p className="text-blue-200 mt-1 text-sm truncate">{subtitle}</p>}
             </div>
 
             {viewAllLink && (
