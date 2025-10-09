@@ -234,7 +234,7 @@ const PersonalizedOffers = () => {
           >
           {items.map((product) => (
             <Card key={product.id} className="perso-card group hover-lift card-shadow h-full flex flex-col bg-white border-blue-200 snap-start shrink-0 w-[240px]">
-              <div className="relative overflow-hidden">
+              <Link href={`/product/${product.slug}`} className="relative overflow-hidden block">
                 {/* Product Image */}
                 <div className="aspect-square bg-gray-100 relative">
                   <Image
@@ -261,15 +261,31 @@ const PersonalizedOffers = () => {
                 </div>
                 
                 {/* Quick Actions */}
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2">
-                  <Button size="icon" variant="secondary" className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm">
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2 z-10">
+                  <Button 
+                    size="icon" 
+                    variant="secondary" 
+                    className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
                     <Heart className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
-                  <Button size="icon" variant="secondary" className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm">
+                  <Button 
+                    size="icon" 
+                    variant="secondary" 
+                    className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
                     <Eye className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </div>
-              </div>
+              </Link>
 
               <CardContent className="p-3 md:p-4 flex flex-col flex-grow">
                 <div className="space-y-1 md:space-y-1.5 flex-grow">
@@ -279,11 +295,9 @@ const PersonalizedOffers = () => {
                   </p>
 
                   {/* Product Name */}
-                  <Link href={`/product/${product.slug}`}>
-                    <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-jomionstore-primary transition-colors">
-                      {product.name}
-                    </h3>
-                  </Link>
+                  <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-jomionstore-primary transition-colors">
+                    {product.name}
+                  </h3>
 
                   {/* Rating */}
                   <div className="flex items-center space-x-1 text-[10px] md:text-xs">
@@ -331,11 +345,16 @@ const PersonalizedOffers = () => {
 
                 {/* Add to Cart - Toujours en bas */}
                 <div className="mt-auto pt-2">
-                  <QuickAddToCart
-                    productId={product.id}
-                    productName={product.name}
-                    price={product.price}
-                  />
+                  <div onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}>
+                    <QuickAddToCart
+                      productId={product.id}
+                      productName={product.name}
+                      price={product.price}
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>

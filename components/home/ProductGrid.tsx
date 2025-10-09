@@ -158,7 +158,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
           <div className={`grid ${getGridCols()} gap-2 sm:gap-3 md:gap-4 lg:gap-6`}>
             {transformedProducts.map((transformedProduct) => (
                 <Card key={transformedProduct.id} className="group hover-lift card-shadow h-full flex flex-col">
-                  <div className="relative overflow-hidden">
+                  <Link href={`/product/${transformedProduct.slug}`} className="relative overflow-hidden block">
                     {/* Product Image - Optimized for mobile */}
                     <div className="aspect-square bg-gray-100 relative" style={{ minHeight: '180px' }}>
                       <Image
@@ -197,8 +197,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                       )}
                     </div>
 
-                  {/* Quick Actions - Optimisé pour mobile avec feedback */}
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-1 sm:space-y-2">
+                    {/* Quick Actions - Optimisé pour mobile avec feedback */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-1 sm:space-y-2 z-10">
                       <InteractiveFeedback
                         action="wishlist"
                         onAction={() => {
@@ -235,17 +235,15 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                           <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
                         </Button>
                       </InteractiveFeedback>
-                  </div>
-                </div>
+                    </div>
+                  </Link>
 
                   <CardContent className="p-2 sm:p-3 md:p-4 flex flex-col flex-grow">
                     <div className="space-y-1 sm:space-y-1.5 flex-grow">
                       {/* Product Name - Optimisé pour mobile */}
-                      <Link href={`/product/${transformedProduct.slug}`}>
-                        <h3 className="font-medium text-xs sm:text-sm md:text-base line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
-                          {transformedProduct.name}
-                        </h3>
-                      </Link>
+                      <h3 className="font-medium text-xs sm:text-sm md:text-base line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
+                        {transformedProduct.name}
+                      </h3>
 
                       {/* Rating - Optimisé pour mobile */}
                       <div className="flex items-center space-x-1 text-[9px] sm:text-[10px] md:text-xs">
