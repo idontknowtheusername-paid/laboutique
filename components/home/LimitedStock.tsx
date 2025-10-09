@@ -21,7 +21,6 @@ interface LimitedStockProduct {
   price: number;
   comparePrice?: number;
   stockLeft: number;
-  totalStock: number;
   category: string;
   vendor: string;
   discount?: number;
@@ -49,7 +48,6 @@ const LimitedStock: React.FC = () => {
                 : undefined;
 
               const stockLeft = product.quantity;
-              const totalStock = Math.floor(Math.random() * 50) + stockLeft; // Simuler le stock total
               
               let urgencyLevel: 'low' | 'medium' | 'high' | 'critical';
               if (stockLeft <= 2) urgencyLevel = 'critical';
@@ -65,7 +63,6 @@ const LimitedStock: React.FC = () => {
                 price: product.price,
                 comparePrice: product.compare_price,
                 stockLeft,
-                totalStock,
                 category: product.category?.name || 'Catégorie',
                 vendor: product.vendor?.name || 'Vendeur',
                 discount,
@@ -242,16 +239,16 @@ const LimitedStock: React.FC = () => {
                       {product.category} • {product.vendor}
                     </div>
 
-                    {/* Stock Progress Bar */}
+                    {/* Stock Info */}
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs">
                         <span className="text-gray-600">Stock disponible</span>
-                        <span className="font-medium">{product.stockLeft}/{product.totalStock}</span>
+                        <span className="font-medium">{product.stockLeft} unités</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
                           className={`h-2 rounded-full ${getStockBarColor(product.urgencyLevel)}`}
-                          style={{ width: `${(product.stockLeft / product.totalStock) * 100}%` }}
+                          style={{ width: `${Math.min((product.stockLeft / 10) * 100, 100)}%` }}
                         />
                       </div>
                     </div>

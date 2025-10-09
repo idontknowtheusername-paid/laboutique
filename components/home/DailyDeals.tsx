@@ -21,8 +21,6 @@ interface DailyDeal {
   price: number;
   originalPrice: number;
   discount: number;
-  timeLeft: number;
-  stockLeft: number;
   category: string;
   vendor: string;
 }
@@ -79,8 +77,6 @@ const DailyDeals: React.FC = () => {
                 price: product.price,
                 originalPrice: product.compare_price || product.price,
                 discount,
-                timeLeft: Math.floor(Math.random() * 24 * 60 * 60), // Random time left
-                stockLeft: Math.floor(Math.random() * 10) + 1,
                 category: product.category?.name || 'Catégorie',
                 vendor: product.vendor?.name || 'Vendeur'
               };
@@ -192,12 +188,6 @@ const DailyDeals: React.FC = () => {
                     </Badge>
                   </div>
 
-                  {/* Stock indicator */}
-                  <div className="absolute top-2 right-2">
-                    <Badge className="bg-red-600 text-white text-xs">
-                      {deal.stockLeft} restants
-                    </Badge>
-                  </div>
 
                   {/* Quick Actions */}
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-1">

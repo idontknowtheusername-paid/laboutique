@@ -7,18 +7,14 @@ import { Badge } from '@/components/ui/badge';
 import { Star, ExternalLink, TrendingUp, Award } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { ProductsService } from '@/lib/services';
 
 interface Brand {
   id: string;
   name: string;
   slug: string;
-  logo: string;
-  description: string;
   productCount: number;
-  rating: number;
-  isVerified: boolean;
   category: string;
-  discount: number;
 }
 
 const PopularBrands: React.FC = () => {
@@ -31,107 +27,41 @@ const PopularBrands: React.FC = () => {
       try {
         setLoading(true);
         
-        // Simuler des données de marques populaires
-        const mockBrands: Brand[] = [
-          {
-            id: '1',
-            name: 'Samsung',
-            slug: 'samsung',
-            logo: '/images/brands/samsung.png',
-            description: 'Électronique et smartphones',
-            productCount: 1250,
-            rating: 4.8,
-            isVerified: true,
-            category: 'Électronique',
-            discount: 15
-          },
-          {
-            id: '2',
-            name: 'Nike',
-            slug: 'nike',
-            logo: '/images/brands/nike.png',
-            description: 'Sport et mode',
-            productCount: 890,
-            rating: 4.7,
-            isVerified: true,
-            category: 'Sport',
-            discount: 20
-          },
-          {
-            id: '3',
-            name: 'Apple',
-            slug: 'apple',
-            logo: '/images/brands/apple.png',
-            description: 'Technologie premium',
-            productCount: 450,
-            rating: 4.9,
-            isVerified: true,
-            category: 'Électronique',
-            discount: 10
-          },
-          {
-            id: '4',
-            name: 'Adidas',
-            slug: 'adidas',
-            logo: '/images/brands/adidas.png',
-            description: 'Sport et lifestyle',
-            productCount: 750,
-            rating: 4.6,
-            isVerified: true,
-            category: 'Sport',
-            discount: 25
-          },
-          {
-            id: '5',
-            name: 'Sony',
-            slug: 'sony',
-            logo: '/images/brands/sony.png',
-            description: 'Audio et vidéo',
-            productCount: 680,
-            rating: 4.5,
-            isVerified: true,
-            category: 'Électronique',
-            discount: 18
-          },
-          {
-            id: '6',
-            name: 'LG',
-            slug: 'lg',
-            logo: '/images/brands/lg.png',
-            description: 'Électroménager',
-            productCount: 920,
-            rating: 4.4,
-            isVerified: true,
-            category: 'Maison',
-            discount: 22
-          },
-          {
-            id: '7',
-            name: 'HP',
-            slug: 'hp',
-            logo: '/images/brands/hp.png',
-            description: 'Informatique',
-            productCount: 540,
-            rating: 4.3,
-            isVerified: true,
-            category: 'Informatique',
-            discount: 12
-          },
-          {
-            id: '8',
-            name: 'Canon',
-            slug: 'canon',
-            logo: '/images/brands/canon.png',
-            description: 'Photographie',
-            productCount: 320,
-            rating: 4.7,
-            isVerified: true,
-            category: 'Photo',
-            discount: 30
-          }
-        ];
+        // Charger les vrais vendeurs depuis les produits
+        const response = await ProductsService.getAll({}, { limit: 100 });
+        
+        if (response.success && response.data) {
+          // Grouper par vendeur et compter les produits
+          const vendorMap = new Map<string, { count: number; category: string }>();
+          
+          response.data.forEach(product => {
+            if (product.vendor?.name) {
+              const vendorName = product.vendor.name;
+              const category = product.category?.name || 'Général';
+              
+              if (vendorMap.has(vendorName)) {
+                const existing = vendorMap.get(vendorName)!;
+                existing.count++;
+              } else {
+                vendorMap.set(vendorName, { count: 1, category });
+              }
+            }
+          });
 
-        setBrands(mockBrands);
+          // Convertir en array et trier par nombre de produits
+          const brands: Brand[] = Array.from(vendorMap.entries())
+            .map(([name, data], index) => ({
+              id: `vendor-${index}`,
+              name,
+              slug: name.toLowerCase().replace(/\s+/g, '-'),
+              productCount: data.count,
+              category: data.category
+            }))
+            .sort((a, b) => b.productCount - a.productCount)
+            .slice(0, 8);
+
+          setBrands(brands);
+        }
       } catch (err) {
         setError('Erreur de chargement des marques');
         console.error('Erreur:', err);
@@ -198,33 +128,16 @@ const PopularBrands: React.FC = () => {
         {brands.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
             {brands.map((brand) => (
-              <Link key={brand.id} href={`/brands/${brand.slug}`}>
+              <Link key={brand.id} href={`/vendor/${brand.slug}`}>
                 <Card className="group hover-lift card-shadow h-full flex flex-col bg-white hover:shadow-lg transition-all duration-300">
                   <CardContent className="p-4 flex flex-col items-center text-center space-y-3">
-                    {/* Brand Logo */}
+                    {/* Brand Logo Placeholder */}
                     <div className="relative w-16 h-16 mb-2">
-                      <div className="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-                        <Image
-                          src={brand.logo}
-                          alt={brand.name}
-                          width={64}
-                          height={64}
-                          className="object-contain group-hover:scale-110 transition-transform duration-300"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = '/images/placeholder-brand.png';
-                          }}
-                        />
+                      <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg flex items-center justify-center overflow-hidden">
+                        <span className="text-2xl font-bold text-purple-600">
+                          {brand.name.charAt(0).toUpperCase()}
+                        </span>
                       </div>
-                      
-                      {/* Verified Badge */}
-                      {brand.isVerified && (
-                        <div className="absolute -top-1 -right-1">
-                          <Badge className="bg-green-500 text-white text-xs p-1">
-                            ✓
-                          </Badge>
-                        </div>
-                      )}
                     </div>
 
                     {/* Brand Name */}
@@ -232,29 +145,11 @@ const PopularBrands: React.FC = () => {
                       {brand.name}
                     </h3>
 
-                    {/* Description */}
-                    <p className="text-xs text-gray-500 line-clamp-2">
-                      {brand.description}
-                    </p>
-
                     {/* Stats */}
                     <div className="space-y-1 w-full">
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-gray-500">Produits:</span>
                         <span className="font-medium">{brand.productCount}</span>
-                      </div>
-                      
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-500">Note:</span>
-                        <div className="flex items-center space-x-1">
-                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                          <span className="font-medium">{brand.rating}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-500">Réduction:</span>
-                        <span className="font-medium text-green-600">-{brand.discount}%</span>
                       </div>
                     </div>
 
@@ -270,7 +165,7 @@ const PopularBrands: React.FC = () => {
                       className="w-full text-xs border-purple-200 text-purple-600 hover:bg-purple-50"
                     >
                       <ExternalLink className="w-3 h-3 mr-1" />
-                      Voir la marque
+                      Voir les produits
                     </Button>
                   </CardContent>
                 </Card>

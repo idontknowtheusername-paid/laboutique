@@ -22,8 +22,6 @@ interface BestSeller {
   comparePrice?: number;
   rating: number;
   reviews: number;
-  salesCount: number;
-  rank: number;
   category: string;
   vendor: string;
   discount?: number;
@@ -45,31 +43,31 @@ const BestSellers: React.FC = () => {
         }, { limit: 10 });
 
         if (response.success && response.data) {
-          const bestSellersData: BestSeller[] = response.data.map((product, index) => {
-            const discount = product.compare_price && product.compare_price > product.price
-              ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
-              : undefined;
+          const bestSellersData: BestSeller[] = response.data
+            .map(product => {
+              const discount = product.compare_price && product.compare_price > product.price
+                ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
+                : undefined;
 
-            return {
-              id: product.id,
-              name: product.name,
-              slug: product.slug,
-              image: product.images?.[0] || '/images/placeholder-product.jpg',
-              price: product.price,
-              comparePrice: product.compare_price,
-              rating: product.average_rating || 4.5,
-              reviews: product.reviews_count || Math.floor(Math.random() * 1000) + 50,
-              salesCount: Math.floor(Math.random() * 500) + 100, // Simuler les ventes
-              rank: index + 1,
-              category: product.category?.name || 'Catégorie',
-              vendor: product.vendor?.name || 'Vendeur',
-              discount
-            };
-          });
+              return {
+                id: product.id,
+                name: product.name,
+                slug: product.slug,
+                image: product.images?.[0] || '/images/placeholder-product.jpg',
+                price: product.price,
+                comparePrice: product.compare_price,
+                rating: product.average_rating || 0,
+                reviews: product.reviews_count || 0,
+                category: product.category?.name || 'Catégorie',
+                vendor: product.vendor?.name || 'Vendeur',
+                discount
+              };
+            })
+            .filter(product => product.reviews > 0) // Seulement les produits avec des avis
+            .sort((a, b) => b.reviews - a.reviews) // Trier par nombre d'avis
+            .slice(0, 8);
 
-          // Trier par nombre de ventes
-          bestSellersData.sort((a, b) => b.salesCount - a.salesCount);
-          setBestSellers(bestSellersData.slice(0, 8));
+          setBestSellers(bestSellersData);
         }
       } catch (err) {
         setError('Erreur de chargement des meilleures ventes');
@@ -90,17 +88,17 @@ const BestSellers: React.FC = () => {
     }).format(price);
   };
 
-  const getRankIcon = (rank: number) => {
-    if (rank === 1) return <Crown className="w-4 h-4 text-yellow-500" />;
-    if (rank === 2) return <Trophy className="w-4 h-4 text-gray-400" />;
-    if (rank === 3) return <Trophy className="w-4 h-4 text-orange-500" />;
-    return <span className="text-sm font-bold text-gray-600">#{rank}</span>;
+  const getRankIcon = (index: number) => {
+    if (index === 0) return <Crown className="w-4 h-4 text-yellow-500" />;
+    if (index === 1) return <Trophy className="w-4 h-4 text-gray-400" />;
+    if (index === 2) return <Trophy className="w-4 h-4 text-orange-500" />;
+    return <span className="text-sm font-bold text-gray-600">#{index + 1}</span>;
   };
 
-  const getRankBadgeColor = (rank: number) => {
-    if (rank === 1) return 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white';
-    if (rank === 2) return 'bg-gradient-to-r from-gray-300 to-gray-500 text-white';
-    if (rank === 3) return 'bg-gradient-to-r from-orange-400 to-orange-600 text-white';
+  const getRankBadgeColor = (index: number) => {
+    if (index === 0) return 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white';
+    if (index === 1) return 'bg-gradient-to-r from-gray-300 to-gray-500 text-white';
+    if (index === 2) return 'bg-gradient-to-r from-orange-400 to-orange-600 text-white';
     return 'bg-gray-200 text-gray-700';
   };
 
@@ -156,7 +154,7 @@ const BestSellers: React.FC = () => {
         {/* Best Sellers Grid */}
         {bestSellers.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {bestSellers.map((product) => (
+            {bestSellers.map((product, index) => (
               <Card key={product.id} className="group hover-lift card-shadow h-full flex flex-col bg-white">
                 <div className="relative overflow-hidden">
                   <div className="aspect-square bg-gray-100 relative" style={{ minHeight: '180px' }}>
@@ -173,8 +171,8 @@ const BestSellers: React.FC = () => {
 
                   {/* Rank Badge */}
                   <div className="absolute top-2 left-2">
-                    <Badge className={`${getRankBadgeColor(product.rank)} text-xs font-bold flex items-center gap-1`}>
-                      {getRankIcon(product.rank)}
+                    <Badge className={`${getRankBadgeColor(index)} text-xs font-bold flex items-center gap-1`}>
+                      {getRankIcon(index)}
                     </Badge>
                   </div>
 
@@ -185,10 +183,10 @@ const BestSellers: React.FC = () => {
                     </Badge>
                   </div>
 
-                  {/* Sales Count */}
+                  {/* Reviews Count */}
                   <div className="absolute bottom-2 left-2">
                     <Badge className="bg-green-500 text-white text-xs">
-                      {product.salesCount} vendus
+                      {product.reviews} avis
                     </Badge>
                   </div>
 

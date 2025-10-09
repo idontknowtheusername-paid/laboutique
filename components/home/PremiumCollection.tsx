@@ -26,7 +26,6 @@ interface PremiumProduct {
   rating: number;
   reviews: number;
   premiumLevel: 'luxury' | 'premium' | 'high-end';
-  features: string[];
 }
 
 const PremiumCollection: React.FC = () => {
@@ -57,14 +56,6 @@ const PremiumCollection: React.FC = () => {
               else if (product.price >= 75000) premiumLevel = 'premium';
               else premiumLevel = 'high-end';
 
-              // Simuler des caractéristiques premium
-              const features = [
-                'Qualité exceptionnelle',
-                'Matériaux premium',
-                'Garantie étendue',
-                'Service client VIP'
-              ];
-
               return {
                 id: product.id,
                 name: product.name,
@@ -75,10 +66,9 @@ const PremiumCollection: React.FC = () => {
                 category: product.category?.name || 'Catégorie',
                 vendor: product.vendor?.name || 'Vendeur',
                 discount,
-                rating: product.average_rating || 4.8,
-                reviews: product.reviews_count || Math.floor(Math.random() * 200) + 50,
-                premiumLevel,
-                features
+                rating: product.average_rating || 0,
+                reviews: product.reviews_count || 0,
+                premiumLevel
               };
             })
             .sort((a, b) => b.price - a.price) // Trier par prix décroissant
@@ -265,14 +255,16 @@ const PremiumCollection: React.FC = () => {
                       {product.category} • {product.vendor}
                     </div>
 
-                    {/* Features */}
+                    {/* Premium Level Info */}
                     <div className="space-y-1">
-                      {product.features.slice(0, 2).map((feature, index) => (
-                        <div key={index} className="flex items-center space-x-1 text-xs text-gray-300">
-                          <Sparkles className="w-3 h-3 text-yellow-400" />
-                          <span>{feature}</span>
-                        </div>
-                      ))}
+                      <div className="flex items-center space-x-1 text-xs text-gray-300">
+                        <Sparkles className="w-3 h-3 text-yellow-400" />
+                        <span>Qualité {product.premiumLevel}</span>
+                      </div>
+                      <div className="flex items-center space-x-1 text-xs text-gray-300">
+                        <Crown className="w-3 h-3 text-yellow-400" />
+                        <span>Collection exclusive</span>
+                      </div>
                     </div>
 
                     {/* Price - Highlighted */}
