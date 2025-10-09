@@ -194,7 +194,7 @@ const PersonalizedOffers = () => {
     <section className="py-12 bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8 p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}>
+        <div className="flex items-center justify-between mb-8 p-3 rounded-lg" style={{ background: '#4169E1' }}>
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-2">
               <Sparkles className="w-6 h-6 text-white" />
@@ -347,7 +347,7 @@ const PersonalizedOffers = () => {
                 key={i}
                 aria-label={`Aller à l'élément ${i + 1}`}
                 onClick={() => scrollToIndex(i)}
-                className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-jomionstore-primary' : 'w-2 bg-blue-200'}`}
+                className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-blue-600' : 'w-2 bg-blue-200'}`}
               />
             ))}
           </div>
