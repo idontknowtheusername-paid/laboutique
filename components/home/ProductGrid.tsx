@@ -113,13 +113,13 @@ const ProductGrid: React.FC<ProductGridProps> = ({
           <div className="flex items-center justify-between mb-4 p-3 rounded-lg" style={{ background: '#4169E1' }}>
             <div>
               <h2 className="text-xl md:text-2xl font-bold text-white">{title}</h2>
-              {subtitle && <p className="text-blue-100 mt-1 text-sm">{subtitle}</p>}
+              {subtitle && <p className="text-blue-200 mt-1 text-sm">{subtitle}</p>}
             </div>
 
             {viewAllLink && (
               <Link 
                 href={viewAllLink} 
-                className="text-white hover:text-blue-200 text-xs font-medium bg-white/20 hover:bg-white/30 px-2 py-1 rounded-full transition-all"
+                className="text-white hover:text-blue-300 text-xs font-medium bg-white/20 hover:bg-white/30 px-2 py-1 rounded-full transition-all"
                 onClick={() => trackButtonClick('Voir tout', title)}
               >
                 Voir tout

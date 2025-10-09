@@ -251,7 +251,7 @@ export default function InvestorsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="p-4 bg-blue-50 rounded-lg">
+                    <div className="p-4 bg-blue-100 rounded-lg">
                       <h4 className="font-semibold text-gray-900 mb-2">Série B - 15M€</h4>
                       <p className="text-sm text-gray-700">
                         Levée de fonds pour accélérer notre expansion panafricaine
@@ -336,9 +336,9 @@ export default function InvestorsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="text-center p-6 bg-gradient-to-r from-jomionstore-primary to-blue-600 text-white rounded-lg">
+                    <div className="text-center p-6 bg-gradient-to-r from-jomionstore-primary to-blue-700 text-white rounded-lg">
                       <div className="text-3xl font-bold mb-2">500K+</div>
-                      <div className="text-blue-100">Utilisateurs actifs mensuels</div>
+                      <div className="text-blue-200">Utilisateurs actifs mensuels</div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="text-center">
@@ -442,12 +442,12 @@ export default function InvestorsPage() {
         </Tabs>
 
         {/* Contact CTA */}
-        <Card className="mt-16 bg-gradient-to-r from-jomionstore-primary to-blue-600 text-white">
+        <Card className="mt-16 bg-gradient-to-r from-jomionstore-primary to-blue-700 text-white">
           <CardContent className="p-8 text-center">
             <h3 className="text-2xl font-bold mb-4">
               Intéressé par cette opportunité ?
             </h3>
-            <p className="text-blue-100 mb-6">
+            <p className="text-blue-200 mb-6">
               Contactez notre équipe pour discuter de cette opportunité d'investissement
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -97,8 +97,8 @@ export const showWishlistToast = (productName: string, added: boolean = true) =>
 export const showQuickViewToast = (productName: string) => {
     toast.info(
         <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <Eye className="w-4 h-4 text-blue-600" />
+            <div className="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center">
+                <Eye className="w-4 h-4 text-blue-700" />
             </div>
             <div>
                 <p className="font-medium">Aperçu rapide</p>
@@ -219,7 +219,7 @@ export const showProgressToast = (message: string, progress: number, id?: string
                 <p className="font-medium">{message}</p>
                 <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                     <div
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        className="bg-blue-700 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
                     />
                 </div>

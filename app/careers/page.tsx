@@ -296,7 +296,7 @@ export default function CareersPage() {
                           Publié le {new Date(job.posted).toLocaleDateString('fr-FR')}
                         </p>
                       </div>
-                      <Button className="bg-jomionstore-primary hover:bg-blue-700 ml-4">
+                      <Button className="bg-jomionstore-primary hover:bg-blue-800 ml-4">
                         Postuler
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>

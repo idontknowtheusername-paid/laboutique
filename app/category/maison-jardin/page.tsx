@@ -114,7 +114,7 @@ const homeGardenProducts = [
     vendor: 'iRobot',
     category: 'Électroménager',
     badge: 'Nouveau',
-    badgeColor: 'bg-blue-500'
+    badgeColor: 'bg-blue-600'
   },
   {
     id: '9',

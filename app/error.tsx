@@ -43,7 +43,7 @@ export default function GlobalError({
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button onClick={reset} className="bg-jomionstore-primary hover:bg-blue-700">
+              <Button onClick={reset} className="bg-jomionstore-primary hover:bg-blue-800">
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Réessayer
               </Button>
@@ -62,7 +62,7 @@ export default function GlobalError({
             </div>
 
             {/* Help Text */}
-            <div className="mt-12 p-6 bg-blue-50 rounded-lg">
+            <div className="mt-12 p-6 bg-blue-100 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-2">Besoin d'aide ?</h3>
               <p className="text-sm text-gray-600">
                 Si le problème persiste, n'hésitez pas à contacter notre équipe support.

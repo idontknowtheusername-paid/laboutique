@@ -191,7 +191,7 @@ const PersonalizedOffers = () => {
   };
 
   return (
-    <section className="py-12 bg-gradient-to-br from-blue-50 to-indigo-100">
+    <section className="py-12 bg-gradient-to-br from-blue-50 to-blue-100">
       <div className="container">
         {/* Header */}
         <div className="flex items-center justify-between mb-8 p-3 rounded-lg" style={{ background: '#4169E1' }}>
@@ -233,7 +233,7 @@ const PersonalizedOffers = () => {
             style={{ scrollbarWidth: 'none' as any }}
           >
           {items.map((product) => (
-            <Card key={product.id} className="perso-card group hover-lift card-shadow h-full flex flex-col bg-white border-blue-100 snap-start shrink-0 w-[240px]">
+            <Card key={product.id} className="perso-card group hover-lift card-shadow h-full flex flex-col bg-white border-blue-200 snap-start shrink-0 w-[240px]">
               <div className="relative overflow-hidden">
                 {/* Product Image */}
                 <div className="aspect-square bg-gray-100 relative">
@@ -248,7 +248,7 @@ const PersonalizedOffers = () => {
                 
                 {/* Personalization Badge */}
                 <div className="absolute top-2 left-2 flex flex-col space-y-1">
-                  <Badge className="bg-blue-500 text-white text-xs">
+                  <Badge className="bg-blue-600 text-white text-xs">
                     <Sparkles className="w-3 h-3 mr-1" />
                     Pour vous
                   </Badge>
@@ -274,7 +274,7 @@ const PersonalizedOffers = () => {
               <CardContent className="p-3 md:p-4 flex flex-col flex-grow">
                 <div className="space-y-1 md:space-y-1.5 flex-grow">
                   {/* Personalization Reason */}
-                  <p className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full text-center">
+                  <p className="text-xs text-blue-700 bg-blue-100 px-2 py-1 rounded-full text-center">
                     {product.personalizationReason}
                   </p>
 
@@ -347,7 +347,7 @@ const PersonalizedOffers = () => {
                 key={i}
                 aria-label={`Aller à l'élément ${i + 1}`}
                 onClick={() => scrollToIndex(i)}
-                className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-blue-600' : 'w-2 bg-blue-200'}`}
+                className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-blue-700' : 'w-2 bg-blue-300'}`}
               />
             ))}
           </div>

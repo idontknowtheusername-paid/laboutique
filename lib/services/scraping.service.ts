@@ -12,7 +12,7 @@ export class ScrapingService {
       domain: 'alibaba.com',
       name: 'AliBaba',
       icon: '🏭',
-      color: 'bg-blue-100 text-blue-800'
+      color: 'bg-blue-200 text-blue-900'
     }
   };
 

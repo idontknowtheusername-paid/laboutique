@@ -74,7 +74,7 @@ export default function FAQPage() {
         <div className="text-center mt-10">
           <p className="text-gray-600 mb-4">Vous n'avez pas trouvé votre réponse ?</p>
           <Link href="/contact">
-            <Button className="bg-jomionstore-primary hover:bg-blue-700">Contacter le support</Button>
+            <Button className="bg-jomionstore-primary hover:bg-blue-800">Contacter le support</Button>
           </Link>
         </div>
       </div>

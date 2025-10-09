@@ -136,7 +136,7 @@ const beautyHealthProducts = [
     vendor: 'Clean Beauty',
     category: 'Accessoires beauté',
     badge: 'Nouveau',
-    badgeColor: 'bg-blue-500'
+    badgeColor: 'bg-blue-600'
   },
   {
     id: '11',

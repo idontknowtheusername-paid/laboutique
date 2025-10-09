@@ -112,7 +112,7 @@ const Footer = () => {
             <div className="flex items-center gap-2 justify-start md:justify-center">
               <span className="text-xs text-gray-400">Nous acceptons</span>
               <div className="flex items-center gap-2">
-                <div className="w-7 h-5 bg-blue-600 rounded text-white text-[10px] flex items-center justify-center font-bold">VISA</div>
+                <div className="w-7 h-5 bg-blue-700 rounded text-white text-[10px] flex items-center justify-center font-bold">VISA</div>
                 <div className="w-7 h-5 bg-red-600 rounded text-white text-[10px] flex items-center justify-center font-bold">MC</div>
                 <div className="w-7 h-5 bg-yellow-500 rounded text-white text-[10px] flex items-center justify-center font-bold">MTN</div>
                 <div className="w-7 h-5 bg-red-500 rounded text-white text-[10px] flex items-center justify-center font-bold">AIR</div>

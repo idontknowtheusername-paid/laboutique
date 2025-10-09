@@ -94,7 +94,7 @@ const InteractiveFeedback: React.FC<InteractiveFeedbackProps> = ({
       {/* Ripple Effect */}
       {isAnimating && (
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-blue-500 opacity-20 rounded-full animate-ping"></div>
+          <div className="absolute inset-0 bg-blue-600 opacity-20 rounded-full animate-ping"></div>
         </div>
       )}
     </div>

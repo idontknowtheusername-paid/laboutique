@@ -113,7 +113,7 @@ export default function HelpCenterPage() {
         {/* Contact CTA */}
         <div className="mt-12 text-center">
           <Link href="/contact">
-            <Button className="bg-jomionstore-primary hover:bg-blue-700">
+            <Button className="bg-jomionstore-primary hover:bg-blue-800">
               <MessageCircle className="w-4 h-4 mr-2" /> Contacter le support
             </Button>
           </Link>

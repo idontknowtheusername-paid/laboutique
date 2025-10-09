@@ -256,7 +256,7 @@ const CategoryMenu = () => {
           <NavigationMenuList className="flex flex-nowrap gap-1 overflow-x-auto no-scrollbar">
             {/* All Categories Button */}
             <NavigationMenuItem>
-              <NavigationMenuTrigger className="bg-jomionstore-primary text-white hover:bg-blue-700 px-5 py-2 h-auto rounded-md">
+              <NavigationMenuTrigger className="bg-jomionstore-primary text-white hover:bg-blue-800 px-5 py-2 h-auto rounded-md">
                 <Grid3X3 className="w-4 h-4 mr-2" />
                 Toutes les catégories
               </NavigationMenuTrigger>
@@ -268,7 +268,7 @@ const CategoryMenu = () => {
                       <div key={category.id} className="space-y-3">
                         <Link
                           href={`/category/${category.slug}`}
-                          className="flex items-center space-x-2 font-semibold text-jomionstore-primary hover:text-blue-700"
+                          className="flex items-center space-x-2 font-semibold text-jomionstore-primary hover:text-blue-800"
                         >
                           <IconComponent className="w-5 h-5" />
                           <span>{category.name}</span>
@@ -321,7 +321,7 @@ const CategoryMenu = () => {
                         <div key={child.slug} className="space-y-2">
                           <Link
                             href={`/category/${child.slug}`}
-                            className="block font-semibold text-jomionstore-primary hover:text-blue-700"
+                            className="block font-semibold text-jomionstore-primary hover:text-blue-800"
                           >
                             {child.name}
                           </Link>

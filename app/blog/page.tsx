@@ -31,7 +31,7 @@ const blogPosts = [
     date: '2024-01-15',
     readTime: '5 min',
     category: 'Insights',
-    categoryColor: 'bg-blue-500',
+    categoryColor: 'bg-blue-600',
     image: 'https://images.pexels.com/photos/265087/pexels-photo-265087.jpeg?auto=compress&cs=tinysrgb&w=800',
     featured: true,
     tags: ['E-commerce', 'Tendances', 'Bénin']
@@ -272,7 +272,7 @@ export default function BlogPage() {
                     </Badge>
                   ))}
                 </div>
-                <Button className="bg-jomionstore-primary hover:bg-blue-700 w-fit">
+                <Button className="bg-jomionstore-primary hover:bg-blue-800 w-fit">
                   Lire l'article
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -353,12 +353,12 @@ export default function BlogPage() {
         )}
 
         {/* Newsletter CTA */}
-        <Card className="mt-12 bg-gradient-to-r from-jomionstore-primary to-blue-600 text-white">
+        <Card className="mt-12 bg-gradient-to-r from-jomionstore-primary to-blue-700 text-white">
           <CardContent className="p-8 text-center">
             <h3 className="text-2xl font-bold mb-4">
               Restez informé de nos derniers articles
             </h3>
-            <p className="text-blue-100 mb-6">
+            <p className="text-blue-200 mb-6">
               Recevez nos meilleurs conseils et tendances directement dans votre boîte mail
             </p>
             <div className="flex flex-col sm:flex-row max-w-md mx-auto gap-3">

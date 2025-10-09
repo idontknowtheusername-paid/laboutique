@@ -94,7 +94,7 @@ export default function CheckoutPage() {
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Commande confirmée !</h2>
             <p className="text-gray-600 mb-6">Merci pour votre achat. Vous recevrez un email de confirmation sous peu.</p>
             <Link href="/">
-              <Button className="bg-jomionstore-primary hover:bg-blue-700">Retour à l'accueil</Button>
+              <Button className="bg-jomionstore-primary hover:bg-blue-800">Retour à l'accueil</Button>
             </Link>
           </div>
         ) : (
@@ -137,7 +137,7 @@ export default function CheckoutPage() {
                 </CardContent>
               </Card>
 
-              <Button disabled={loading} onClick={placeOrder} className="w-full bg-jomionstore-primary hover:bg-blue-700 h-12">{loading ? 'Redirection...' : 'Confirmer et payer'}</Button>
+              <Button disabled={loading} onClick={placeOrder} className="w-full bg-jomionstore-primary hover:bg-blue-800 h-12">{loading ? 'Redirection...' : 'Confirmer et payer'}</Button>
             </div>
 
             {/* Right: Summary */}

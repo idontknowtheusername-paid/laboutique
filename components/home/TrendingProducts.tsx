@@ -276,12 +276,12 @@ function TrendingProductsContent() {
               size="sm"
               onClick={handleRefresh}
               disabled={refreshing}
-              className="text-white hover:text-blue-200"
+              className="text-white hover:text-blue-300"
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             </Button>
           </div>
-          <p className="text-blue-100 max-w-2xl mx-auto text-sm">
+          <p className="text-blue-200 max-w-2xl mx-auto text-sm">
             Découvrez les produits les plus populaires du moment
           </p>
           {error && products.length > 0 && (

@@ -18,7 +18,7 @@ export default function ElectronicsPage() {
               Cette page a été remplacée par la page dynamique de catégorie.
             </p>
             <Link href="/category/electronique">
-              <Button className="bg-jomionstore-primary hover:bg-blue-700">Voir la catégorie</Button>
+              <Button className="bg-jomionstore-primary hover:bg-blue-800">Voir la catégorie</Button>
             </Link>
           </CardContent>
         </Card>

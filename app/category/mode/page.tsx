@@ -27,7 +27,7 @@ const fashionProducts = [
     vendor: 'Nike Store',
     category: 'Chaussures',
     badge: 'Nouveau',
-    badgeColor: 'bg-blue-500'
+    badgeColor: 'bg-blue-600'
   },
   {
     id: '2',

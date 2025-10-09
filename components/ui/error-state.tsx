@@ -139,7 +139,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
                         {canRetry && (
                             <Button
                                 onClick={onRetry}
-                                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                                className="flex-1 bg-blue-700 hover:bg-blue-800"
                             >
                                 <RefreshCw className="w-4 h-4 mr-2" />
                                 Réessayer
