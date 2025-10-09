@@ -28,12 +28,47 @@ const ProductGrid = dynamic(() => import('@/components/home/ProductGrid'), {
   ssr: false
 });
 
+const DailyDeals = dynamic(() => import('@/components/home/DailyDeals'), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
+const BestSellers = dynamic(() => import('@/components/home/BestSellers'), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
+const PopularBrands = dynamic(() => import('@/components/home/PopularBrands'), {
+  loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
 const PersonalizedOffers = dynamic(() => import('@/components/home/PersonalizedOffers'), {
   loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
   ssr: false
 });
 
+const LimitedStock = dynamic(() => import('@/components/home/LimitedStock'), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
+const WeeklyNewArrivals = dynamic(() => import('@/components/home/WeeklyNewArrivals'), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
 const TrendingProducts = dynamic(() => import('@/components/home/TrendingProducts'), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
+const BudgetFriendly = dynamic(() => import('@/components/home/BudgetFriendly'), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
+const PremiumCollection = dynamic(() => import('@/components/home/PremiumCollection'), {
   loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
   ssr: false
 });
@@ -154,6 +189,12 @@ export default function HomePageContent() {
           </section>
 
           <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+              <DailyDeals />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
               <ProductGrid
                 title="Nouveautés"
@@ -168,7 +209,19 @@ export default function HomePageContent() {
 
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+              <BestSellers />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
               <TrendingProducts />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<div className="h-64 bg-gray-100 animate-pulse rounded-xl" />}>
+              <PopularBrands />
             </LazySection>
           </section>
 
@@ -188,6 +241,18 @@ export default function HomePageContent() {
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
               <PersonalizedOffers />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+              <LimitedStock />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+              <WeeklyNewArrivals />
             </LazySection>
           </section>
 
@@ -232,6 +297,18 @@ export default function HomePageContent() {
               </LazySection>
             </section>
           ))}
+
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+              <BudgetFriendly />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+              <PremiumCollection />
+            </LazySection>
+          </section>
 
           <LazySection className="mb-2.5" fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-xl" />}>
             <TrustElements />
