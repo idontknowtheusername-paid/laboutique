@@ -233,21 +233,27 @@ const PersonalizedOffers = () => {
             style={{ scrollbarWidth: 'none' as any }}
           >
           {items.map((product) => (
-            <Card key={product.id} className="perso-card group hover-lift card-shadow h-full flex flex-col bg-white border-blue-200 snap-start shrink-0 w-[240px]">
+            <Card key={product.id} className="group hover-lift card-shadow h-full flex flex-col bg-white border-blue-200 snap-start shrink-0 w-[240px]">
               <Link href={`/product/${product.slug}`} className="relative overflow-hidden block">
-                {/* Product Image */}
-                <div className="aspect-square bg-gray-100 relative">
+                {/* Product Image - harmonisé */}
+                <div className="aspect-square bg-gray-100 relative" style={{ minHeight: '180px' }}>
                   <Image
                     src={product.image}
                     alt={product.name}
                     fill
-                    sizes="(max-width: 1024px) 50vw, 20vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 480px) 100vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                    loading="lazy"
+                    quality={85}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = '/images/placeholder-product.jpg';
+                    }}
                   />
                 </div>
-                
-                {/* Personalization Badge */}
-                <div className="absolute top-2 left-2 flex flex-col space-y-1">
+
+                {/* Badges harmonisés */}
+                <div className="absolute top-2 left-2 space-y-1">
                   <Badge className="bg-blue-600 text-white text-xs">
                     <Sparkles className="w-3 h-3 mr-1" />
                     Pour vous
@@ -259,82 +265,85 @@ const PersonalizedOffers = () => {
                     </Badge>
                   )}
                 </div>
-                
-                {/* Quick Actions */}
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-2 z-10">
+
+                {/* Quick Actions harmonisées */}
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-1 sm:space-y-2 z-10">
                   <Button 
                     size="icon" 
                     variant="secondary" 
-                    className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm"
+                    className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                     }}
                   >
-                    <Heart className="w-3 h-3 md:w-4 md:h-4" />
+                    <Heart className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
                   </Button>
                   <Button 
                     size="icon" 
                     variant="secondary" 
-                    className="w-7 h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm"
+                    className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-white/90 hover:bg-white shadow-sm"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                     }}
                   >
-                    <Eye className="w-3 h-3 md:w-4 md:h-4" />
+                    <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
                   </Button>
                 </div>
               </Link>
 
-              <CardContent className="p-3 md:p-4 flex flex-col flex-grow">
-                <div className="space-y-1 md:space-y-1.5 flex-grow">
-                  {/* Personalization Reason */}
-                  <p className="text-xs text-blue-700 bg-blue-100 px-2 py-1 rounded-full text-center">
-                    {product.personalizationReason}
-                  </p>
+              <CardContent className="p-2 sm:p-3 md:p-4 flex flex-col flex-grow">
+                <div className="space-y-1 sm:space-y-1.5 flex-grow">
+                  {/* Raison de personnalisation (optionnelle) */}
+                  {product.personalizationReason && (
+                    <p className="text-xs text-blue-700 bg-blue-100 px-2 py-1 rounded-full text-center">
+                      {product.personalizationReason}
+                    </p>
+                  )}
 
-                  {/* Product Name */}
-                  <h3 className="font-medium text-xs md:text-sm line-clamp-2 hover:text-jomionstore-primary transition-colors">
+                  {/* Product Name - harmonisé */}
+                  <h3 className="font-medium text-xs sm:text-sm md:text-base line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
                     {product.name}
                   </h3>
 
-                  {/* Rating */}
-                  <div className="flex items-center space-x-1 text-[10px] md:text-xs">
+                  {/* Rating - harmonisé */}
+                  <div className="flex items-center space-x-1 text-[9px] sm:text-[10px] md:text-xs">
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-2.5 h-2.5 ${
-                            i < Math.floor(product.rating)
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'fill-gray-200 text-gray-200'
-                          }`}
+                          className={`w-2 h-2 sm:w-2.5 sm:h-2.5 ${i < Math.floor(product.rating)
+                            ? 'fill-yellow-400 text-yellow-400'
+                            : 'fill-gray-200 text-gray-200'
+                            }`}
                         />
                       ))}
                     </div>
-                    <span className="text-gray-500 truncate">({product.reviews})</span>
+                    <span className="text-gray-500 truncate text-[9px] sm:text-[10px]">({product.reviews})</span>
                   </div>
 
-                  {/* Price */}
+                  {/* Price - harmonisé */}
                   <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-jomionstore-primary text-sm md:text-base truncate">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                      <span className="font-bold text-jomionstore-primary text-xs sm:text-sm md:text-base truncate">
                         {formatPrice(product.price)}
                       </span>
                       {product.comparePrice && (
-                        <span className="text-xs text-gray-500 line-through truncate">
+                        <span className="text-[10px] sm:text-xs text-gray-500 line-through truncate">
                           {formatPrice(product.comparePrice)}
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Loyalty Points */}
+                  {/* Points fidélité et flash */}
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">
-                      +{product.loyaltyPoints} pts
-                    </span>
+                    {product.loyaltyPoints && (
+                      <span className="text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">
+                        +{product.loyaltyPoints} pts
+                      </span>
+                    )}
                     {product.isFlashOffer && product.timeLeft && (
                       <span className="text-red-600 font-medium">
                         {formatTime(product.timeLeft)}
@@ -343,7 +352,7 @@ const PersonalizedOffers = () => {
                   </div>
                 </div>
 
-                {/* Add to Cart - Toujours en bas */}
+                {/* Add to Cart - harmonisé */}
                 <div className="mt-auto pt-2">
                   <div onClick={(e) => {
                     e.preventDefault();
