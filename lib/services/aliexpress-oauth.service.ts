@@ -154,14 +154,14 @@ export class AliExpressOAuthService {
 
     try {
       // Vérifier si un token existe déjà
-      const { data: existingTokens } = await supabaseAdmin
+      const { data: existingTokens } = await (supabaseAdmin as any)
         .from('aliexpress_oauth_tokens')
         .select('id')
         .limit(1);
 
       if (existingTokens && existingTokens.length > 0) {
         // Update existing token
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await (supabaseAdmin as any)
           .from('aliexpress_oauth_tokens')
           .update(tokenData)
           .eq('id', existingTokens[0].id)
@@ -177,7 +177,7 @@ export class AliExpressOAuthService {
         return data as StoredOAuthToken;
       } else {
         // Insert new token
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await (supabaseAdmin as any)
           .from('aliexpress_oauth_tokens')
           .insert([tokenData])
           .select()
@@ -205,7 +205,7 @@ export class AliExpressOAuthService {
 
     try {
       // Récupérer le dernier token
-      const { data: tokens, error } = await supabaseAdmin
+      const { data: tokens, error } = await (supabaseAdmin as any)
         .from('aliexpress_oauth_tokens')
         .select('*')
         .order('created_at', { ascending: false })
@@ -266,7 +266,7 @@ export class AliExpressOAuthService {
     console.log('[OAuth] Révocation de tous les tokens');
 
     try {
-      const { error } = await supabaseAdmin
+      const { error } = await (supabaseAdmin as any)
         .from('aliexpress_oauth_tokens')
         .delete()
         .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all

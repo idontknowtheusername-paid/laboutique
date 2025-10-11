@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ProductsService } from '@/lib/services/products.service';
-import { getAliExpressApiService } from '@/lib/services/aliexpress-api.service';
+import { getAliExpressDropshipApiService } from '@/lib/services/aliexpress-dropship-api.service';
 import { validateImportedProduct } from '@/lib/schemas/product-import.schema';
 import { ScrapedProductData } from '@/lib/services/types';
 import { supabase } from '@/lib/supabase';
@@ -57,14 +57,14 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Récupérer les données du produit via l'API AliExpress
+    // Récupérer les données du produit via l'API AliExpress Dropship (OAuth)
     console.log('[IMPORT] 🚀 Début de l\'import pour:', url);
     let scrapedData: ScrapedProductData | null = null;
     
     try {
-      console.log('[IMPORT] ✨ Utilisation de l\'API officielle AliExpress');
+      console.log('[IMPORT] ✨ Utilisation de l\'API Dropship AliExpress (OAuth)');
       
-      const aliExpressService = getAliExpressApiService();
+      const aliExpressService = getAliExpressDropshipApiService();
       const product = await aliExpressService.getProductByUrl(url);
       
       if (!product) {
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
       }
       
       scrapedData = aliExpressService.convertToScrapedProductData(product, url);
-      console.log('[IMPORT] ✅ Données récupérées via API:', {
+      console.log('[IMPORT] ✅ Données récupérées via API Dropship:', {
         name: scrapedData.name,
         price: scrapedData.price,
         original_price: scrapedData.original_price,
@@ -85,10 +85,25 @@ export async function POST(request: NextRequest) {
       });
     } catch (err) {
       console.error('[IMPORT] ❌ Échec de la récupération des données:', err);
+      
+      const errorMessage = (err as any)?.message || 'Impossible de récupérer les données du produit';
+      
+      // Message spécifique si problème OAuth
+      if (errorMessage.includes('token') || errorMessage.includes('autoriser')) {
+        return NextResponse.json(
+          { 
+            error: 'Application non autorisée',
+            details: 'Vous devez autoriser l\'application AliExpress. Allez dans Admin > Produits et cliquez sur "Autoriser AliExpress".',
+            action_required: 'oauth_authorization'
+          },
+          { status: 401 }
+        );
+      }
+      
       return NextResponse.json(
         { 
-          error: (err as any)?.message || 'Impossible de récupérer les données du produit',
-          details: 'Vérifiez que vos clés API AliExpress sont correctement configurées'
+          error: errorMessage,
+          details: 'Vérifiez que votre app AliExpress est correctement configurée et autorisée'
         },
         { status: 500 }
       );
