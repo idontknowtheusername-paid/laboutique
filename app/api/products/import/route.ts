@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ProductsService } from '@/lib/services/products.service';
-import { ScrapingService } from '@/lib/services/scraping.service';
 import { getAliExpressApiService } from '@/lib/services/aliexpress-api.service';
 import { validateImportedProduct } from '@/lib/schemas/product-import.schema';
 import { ScrapedProductData } from '@/lib/services/types';
@@ -12,9 +11,29 @@ import { findBestCategory, getDefaultCategory, findBestCategoryByKeywords } from
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Fonction pour valider l'URL
+// Fonction pour valider l'URL AliExpress
 function validateUrl(url: string): { valid: boolean; error?: string } {
-  return ScrapingService.validateProductUrl(url);
+  if (!url || typeof url !== 'string') {
+    return { valid: false, error: 'URL invalide' };
+  }
+
+  try {
+    const urlObj = new URL(url);
+    
+    // Vérifier que c'est HTTPS
+    if (urlObj.protocol !== 'https:') {
+      return { valid: false, error: 'L\'URL doit utiliser HTTPS' };
+    }
+
+    // Vérifier que c'est AliExpress
+    if (!url.includes('aliexpress.com')) {
+      return { valid: false, error: 'Seules les URLs AliExpress sont supportées' };
+    }
+
+    return { valid: true };
+  } catch (error) {
+    return { valid: false, error: 'Format d\'URL invalide' };
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -38,61 +57,38 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Récupérer les données du produit
+    // Récupérer les données du produit via l'API AliExpress
     console.log('[IMPORT] 🚀 Début de l\'import pour:', url);
     let scrapedData: ScrapedProductData | null = null;
     
     try {
-      // Détecter si c'est AliExpress pour utiliser l'API officielle
-      const isAliExpress = url.includes('aliexpress.com');
+      console.log('[IMPORT] ✨ Utilisation de l\'API officielle AliExpress');
       
-      if (isAliExpress) {
-        console.log('[IMPORT] ✨ Utilisation de l\'API officielle AliExpress');
-        
-        try {
-          const aliExpressService = getAliExpressApiService();
-          const product = await aliExpressService.getProductByUrl(url);
-          
-          if (product) {
-            scrapedData = aliExpressService.convertToScrapedProductData(product, url);
-            console.log('[IMPORT] ✅ Données récupérées via API:', {
-              name: scrapedData.name,
-              price: scrapedData.price,
-              original_price: scrapedData.original_price,
-              source_platform: scrapedData.source_platform,
-              imagesCount: scrapedData.images?.length || 0
-            });
-          } else {
-            throw new Error('Produit non trouvé via l\'API AliExpress');
-          }
-        } catch (apiError) {
-          console.error('[IMPORT] ⚠️ API AliExpress échouée, fallback vers scraping:', apiError);
-          
-          // Fallback vers scraping si API échoue
-          scrapedData = await ScrapingService.scrapeProduct(url);
-          console.log('[IMPORT] 📊 Données scrapées (fallback):', scrapedData ? {
-            name: scrapedData.name,
-            price: scrapedData.price,
-            source_platform: scrapedData.source_platform,
-            imagesCount: scrapedData.images?.length || 0
-          } : null);
-        }
-      } else {
-        // Utiliser scraping pour les autres plateformes (AliBaba, etc.)
-        console.log('[IMPORT] 🕷️ Utilisation du scraping pour:', url);
-        scrapedData = await ScrapingService.scrapeProduct(url);
-        console.log('[IMPORT] 📊 Données scrapées:', scrapedData ? {
-          name: scrapedData.name,
-          price: scrapedData.price,
-          original_price: scrapedData.original_price,
-          source_platform: scrapedData.source_platform,
-          imagesCount: scrapedData.images?.length || 0
-        } : null);
+      const aliExpressService = getAliExpressApiService();
+      const product = await aliExpressService.getProductByUrl(url);
+      
+      if (!product) {
+        console.error('[IMPORT] ❌ Produit non trouvé via l\'API AliExpress');
+        return NextResponse.json(
+          { error: 'Produit non trouvé sur AliExpress' },
+          { status: 404 }
+        );
       }
+      
+      scrapedData = aliExpressService.convertToScrapedProductData(product, url);
+      console.log('[IMPORT] ✅ Données récupérées via API:', {
+        name: scrapedData.name,
+        price: scrapedData.price,
+        original_price: scrapedData.original_price,
+        source_platform: scrapedData.source_platform,
+        imagesCount: scrapedData.images?.length || 0
+      });
     } catch (err) {
-      console.error('[IMPORT] ❌ Échec de la récupération des données');
+      console.error('[IMPORT] ❌ Échec de la récupération des données:', err);
       return NextResponse.json(
-        { error: (err as any)?.message || 'Impossible de récupérer les données du produit'
+        { 
+          error: (err as any)?.message || 'Impossible de récupérer les données du produit',
+          details: 'Vérifiez que vos clés API AliExpress sont correctement configurées'
         },
         { status: 500 }
       );
