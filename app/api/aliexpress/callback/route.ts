@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAliExpressOAuthService } from '@/lib/services/aliexpress-oauth.service';
 
 /**
- * Callback OAuth AliExpress
+ * Callback OAuth AliExpress Dropship
  * Cette route reçoit le code d'autorisation après que l'utilisateur autorise l'app
  */
 export async function GET(request: NextRequest) {
@@ -9,33 +10,56 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code');
     const state = searchParams.get('state');
+    const error = searchParams.get('error');
 
-    console.log('[AliExpress Callback] Received:', { code: code?.slice(0, 10) + '...', state });
+    console.log('[OAuth Callback] Reçu:', { 
+      hasCode: !!code, 
+      hasError: !!error, 
+      state 
+    });
 
-    if (!code) {
-      return NextResponse.json(
-        { error: 'Code d\'autorisation manquant' },
-        { status: 400 }
+    // Gérer les erreurs d'autorisation
+    if (error) {
+      console.error('[OAuth Callback] Erreur autorisation:', error);
+      return NextResponse.redirect(
+        new URL(`/admin/products?oauth_error=${encodeURIComponent(error)}`, request.url)
       );
     }
 
-    // TODO: Échanger le code contre un access token
-    // Ce sera implémenté dans la prochaine étape
+    // Vérifier que le code est présent
+    if (!code) {
+      console.error('[OAuth Callback] Code manquant');
+      return NextResponse.redirect(
+        new URL('/admin/products?oauth_error=missing_code', request.url)
+      );
+    }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Autorisation reçue avec succès',
-      code: code.slice(0, 10) + '...' // Log partiel pour sécurité
-    });
+    // Échanger le code contre un access_token
+    console.log('[OAuth Callback] Échange code contre token...');
+    const oauthService = getAliExpressOAuthService();
+    
+    const token = await oauthService.exchangeCodeForToken(code);
+    console.log('[OAuth Callback] Token reçu');
+
+    // Stocker le token en base
+    console.log('[OAuth Callback] Stockage token...');
+    await oauthService.storeToken(token);
+    console.log('[OAuth Callback] Token stocké');
+
+    // Rediriger vers l'admin avec succès
+    return NextResponse.redirect(
+      new URL('/admin/products?oauth_success=true', request.url)
+    );
 
   } catch (error) {
-    console.error('[AliExpress Callback] Error:', error);
-    return NextResponse.json(
-      { 
-        error: 'Erreur lors du traitement du callback',
-        details: error instanceof Error ? error.message : 'Erreur inconnue'
-      },
-      { status: 500 }
+    console.error('[OAuth Callback] Erreur:', error);
+    
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : 'Erreur lors de l\'autorisation';
+
+    return NextResponse.redirect(
+      new URL(`/admin/products?oauth_error=${encodeURIComponent(errorMessage)}`, request.url)
     );
   }
 }
