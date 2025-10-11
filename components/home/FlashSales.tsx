@@ -286,14 +286,24 @@ const FlashSales = () => {
                 <Card className="group hover-lift card-shadow bg-white text-gray-900 overflow-hidden h-full flex flex-col">
                   <div className="relative">
                     {/* Product Image */}
-                    <div className="aspect-square overflow-hidden relative">
-                      <NextImage
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
-                      />
+                    <div className="aspect-square overflow-hidden relative bg-gray-100">
+                      {product.image ? (
+                        <NextImage
+                          src={product.image}
+                          alt={product.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                          loading="lazy"
+                          quality={85}
+                          placeholder="blur"
+                          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                          Pas d'image
+                        </div>
+                      )}
                     </div>
 
                     {/* Discount Badge */}

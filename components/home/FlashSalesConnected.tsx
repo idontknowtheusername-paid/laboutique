@@ -227,7 +227,7 @@ export default function FlashSalesConnected() {
                       <CardContent className="p-4">
                         <div className="relative mb-4">
                           <Link href={`/product/${product.slug}`}>
-                            <div className="aspect-square relative overflow-hidden rounded-xl bg-gray-100 h-64">
+                            <div className="aspect-square relative overflow-hidden rounded-xl bg-gray-100">
                               {product.images?.[0] ? (
                                 <Image
                                   src={product.images[0]}
