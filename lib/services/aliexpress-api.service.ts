@@ -183,14 +183,19 @@ export class AliExpressApiService {
       const params: Record<string, any> = {
         product_ids: productId,
         fields: 'product_id,product_title,product_main_image_url,product_video_url,product_small_image_urls,shop_url,shop_id,second_level_category_id,first_level_category_id,original_price,sale_price,discount,sale_price_currency,lastest_volume,product_detail_url,platform_product_type,evaluate_rate,ship_to_days,relevant_market_commission_rate',
-        target_currency: 'XOF', // Franc CFA
+        target_currency: 'USD', // USD d'abord, conversion après
         target_language: 'FR',
         country: 'BJ', // Bénin
       };
 
-      // Ajouter tracking ID si disponible (pour affiliation)
+      // Le tracking ID est OBLIGATOIRE pour l'API affiliate
+      // Si pas de tracking ID, utiliser un tracking ID par défaut pour les tests
       if (this.config.trackingId) {
         params.tracking_id = this.config.trackingId;
+      } else {
+        // Tracking ID de test - l'utilisateur devra le remplacer pour gagner des commissions
+        console.warn('[AliExpress API] ⚠️  Tracking ID non configuré, utilisation mode test');
+        params.tracking_id = 'default';
       }
 
       const response = await this.callApi('aliexpress.affiliate.productdetail.get', params);

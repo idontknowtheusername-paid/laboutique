@@ -6,7 +6,31 @@
  */
 
 const crypto = require('crypto');
-require('dotenv').config({ path: '.env.local' });
+const fs = require('fs');
+const path = require('path');
+
+// Charger .env.local manuellement
+function loadEnv() {
+  try {
+    const envPath = path.join(process.cwd(), '.env.local');
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    
+    envContent.split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#')) {
+        const [key, ...valueParts] = trimmed.split('=');
+        const value = valueParts.join('=').trim();
+        if (key && value) {
+          process.env[key.trim()] = value;
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Erreur lors du chargement de .env.local:', error.message);
+  }
+}
+
+loadEnv();
 
 // Configuration
 const APP_KEY = process.env.ALIEXPRESS_APP_KEY;
@@ -73,7 +97,11 @@ async function testConnection() {
   log('\n2️⃣  Test d\'appel API...', 'blue');
   
   const timestamp = Date.now().toString();
-  const method = 'aliexpress.affiliate.hotproduct.query';
+  // Utiliser l'API de détails produit qui est dans le groupe dropship
+  const method = 'aliexpress.ds.product.get';
+  
+  // Tester avec un produit ID existant
+  const testProductId = '1005004567890123';
   
   const params = {
     app_key: APP_KEY,
@@ -82,16 +110,8 @@ async function testConnection() {
     sign_method: 'md5',
     format: 'json',
     v: '2.0',
-    page_no: '1',
-    page_size: '5',
-    target_currency: 'XOF',
-    target_language: 'FR',
-    ship_to_country: 'BJ',
+    product_id: testProductId,
   };
-  
-  if (TRACKING_ID) {
-    params.tracking_id = TRACKING_ID;
-  }
   
   params.sign = generateSign(params);
   
