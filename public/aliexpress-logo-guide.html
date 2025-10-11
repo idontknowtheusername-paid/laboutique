@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logo La Boutique B - Guide AliExpress</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #0066CC;
+      border-bottom: 3px solid #0066CC;
+      padding-bottom: 10px;
+    }
+    .logo-preview {
+      text-align: center;
+      margin: 30px 0;
+      padding: 30px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+    canvas {
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 12px 24px;
+      background: #0066CC;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #0052A3;
+    }
+    .specs {
+      background: #E3F2FD;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 4px solid #0066CC;
+    }
+    .specs ul {
+      margin: 10px 0;
+    }
+    .specs li {
+      margin: 8px 0;
+    }
+    .option-section {
+      margin: 25px 0;
+      padding: 20px;
+      background: #FAFAFA;
+      border-radius: 8px;
+    }
+    .check {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 Logo pour App AliExpress</h1>
+    <p><strong>La Boutique B - Drop Shipping</strong></p>
+    
+    <div class="specs">
+      <h3>📋 Spécifications Requises</h3>
+      <ul>
+        <li><span class="check">✓</span> Taille : <strong>100px × 100px</strong> (exactement)</li>
+        <li><span class="check">✓</span> Format : <strong>PNG</strong> (recommandé) ou JPG</li>
+        <li><span class="check">✓</span> Taille fichier : <strong>< 100 KB</strong></li>
+        <li><span class="check">✓</span> Design : Simple, clair, professionnel</li>
+      </ul>
+    </div>
+
+    <div class="logo-preview">
+      <h3>📦 Logo Simple Prêt à Télécharger</h3>
+      <p>Cliquez sur le bouton pour télécharger ce logo (100x100px PNG)</p>
+      <canvas id="logoCanvas" width="100" height="100"></canvas>
+      <br>
+      <button onclick="downloadLogo()">
+        📥 Télécharger Logo (PNG 100×100)
+      </button>
+      <p style="font-size: 12px; color: #666; margin-top: 10px;">
+        <em>Logo avec lettre "B" blanche sur fond bleu dégradé</em>
+      </p>
+    </div>
+
+    <div class="option-section">
+      <h3>🎨 Autres Options</h3>
+      
+      <h4>Option 1 : Créer avec Canva (Gratuit)</h4>
+      <ol>
+        <li>Aller sur <a href="https://www.canva.com" target="_blank">canva.com</a></li>
+        <li>Créer un design personnalisé 100×100px</li>
+        <li>Ajouter texte "B" ou "LB" stylisé</li>
+        <li>Utiliser couleur bleu (#0066CC) ou votre charte</li>
+        <li>Télécharger en PNG</li>
+      </ol>
+
+      <h4>Option 2 : Logo Professionnel</h4>
+      <ul>
+        <li><strong>Fiverr</strong> : 5-20$ pour logo personnalisé</li>
+        <li><strong>99designs</strong> : Concours de design</li>
+        <li><strong>Freelancer local</strong> : Designer graphique</li>
+      </ul>
+
+      <h4>Option 3 : Utiliser Logo Existant</h4>
+      <ul>
+        <li>Redimensionner à 100×100px exactement</li>
+        <li>Utiliser outil en ligne : <a href="https://www.iloveimg.com/resize-image" target="_blank">iloveimg.com/resize-image</a></li>
+        <li>Ou logiciel : Photoshop, GIMP, etc.</li>
+      </ul>
+    </div>
+
+    <div class="specs" style="background: #FFF3E0; border-color: #FF9800;">
+      <h3>⚠️ Important</h3>
+      <ul>
+        <li>Le logo représente votre app dans le dashboard AliExpress</li>
+        <li>Vous pourrez le changer plus tard si nécessaire</li>
+        <li>Un logo simple est suffisant pour commencer</li>
+        <li>Évitez les logos trop détaillés (illisibles en 100×100px)</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Créer un logo simple automatiquement
+    const canvas = document.getElementById('logoCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Gradient bleu
+    const gradient = ctx.createLinearGradient(0, 0, 100, 100);
+    gradient.addColorStop(0, '#0066CC');
+    gradient.addColorStop(1, '#004999');
+    
+    // Fond avec coins arrondis
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.moveTo(20, 0);
+    ctx.lineTo(80, 0);
+    ctx.quadraticCurveTo(100, 0, 100, 20);
+    ctx.lineTo(100, 80);
+    ctx.quadraticCurveTo(100, 100, 80, 100);
+    ctx.lineTo(20, 100);
+    ctx.quadraticCurveTo(0, 100, 0, 80);
+    ctx.lineTo(0, 20);
+    ctx.quadraticCurveTo(0, 0, 20, 0);
+    ctx.fill();
+    
+    // Lettre B
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 60px Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('B', 50, 55);
+    
+    function downloadLogo() {
+      const link = document.createElement('a');
+      link.download = 'laboutiqueb-aliexpress-logo-100x100.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      
+      // Confirmation visuelle
+      const btn = event.target;
+      const originalText = btn.textContent;
+      btn.textContent = '✓ Téléchargé !';
+      btn.style.background = '#4CAF50';
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.background = '#0066CC';
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
