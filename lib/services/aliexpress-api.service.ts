@@ -356,9 +356,10 @@ export class AliExpressApiService {
     
     // Images supplémentaires
     if (product.product_small_image_urls) {
-      const smallImages = typeof product.product_small_image_urls === 'string'
-        ? product.product_small_image_urls.split(',')
-        : product.product_small_image_urls;
+      const smallImagesRaw = product.product_small_image_urls as string | string[];
+      const smallImages = typeof smallImagesRaw === 'string'
+        ? smallImagesRaw.split(',')
+        : smallImagesRaw;
       images.push(...smallImages.slice(0, 4)); // Max 5 images au total
     }
 
