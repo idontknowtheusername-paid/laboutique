@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ProductsService } from '@/lib/services/products.service';
 import { ScrapingService } from '@/lib/services/scraping.service';
+import { getAliExpressApiService } from '@/lib/services/aliexpress-api.service';
 import { validateImportedProduct } from '@/lib/schemas/product-import.schema';
 import { ScrapedProductData } from '@/lib/services/types';
 import { supabase } from '@/lib/supabase';
@@ -37,22 +38,61 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Scraper les données via ScrapingBee (exclusif)
-    console.log('[IMPORT] 🕷️ Début du scraping pour:', url);
+    // Récupérer les données du produit
+    console.log('[IMPORT] 🚀 Début de l\'import pour:', url);
     let scrapedData: ScrapedProductData | null = null;
+    
     try {
-      scrapedData = await ScrapingService.scrapeProduct(url);
-      console.log('[IMPORT] 📊 Données scrapées:', scrapedData ? {
-        name: scrapedData.name,
-        price: scrapedData.price,
-        original_price: scrapedData.original_price,
-        source_platform: scrapedData.source_platform,
-        imagesCount: scrapedData.images?.length || 0
-      } : null);
+      // Détecter si c'est AliExpress pour utiliser l'API officielle
+      const isAliExpress = url.includes('aliexpress.com');
+      
+      if (isAliExpress) {
+        console.log('[IMPORT] ✨ Utilisation de l\'API officielle AliExpress');
+        
+        try {
+          const aliExpressService = getAliExpressApiService();
+          const product = await aliExpressService.getProductByUrl(url);
+          
+          if (product) {
+            scrapedData = aliExpressService.convertToScrapedProductData(product, url);
+            console.log('[IMPORT] ✅ Données récupérées via API:', {
+              name: scrapedData.name,
+              price: scrapedData.price,
+              original_price: scrapedData.original_price,
+              source_platform: scrapedData.source_platform,
+              imagesCount: scrapedData.images?.length || 0
+            });
+          } else {
+            throw new Error('Produit non trouvé via l\'API AliExpress');
+          }
+        } catch (apiError) {
+          console.error('[IMPORT] ⚠️ API AliExpress échouée, fallback vers scraping:', apiError);
+          
+          // Fallback vers scraping si API échoue
+          scrapedData = await ScrapingService.scrapeProduct(url);
+          console.log('[IMPORT] 📊 Données scrapées (fallback):', scrapedData ? {
+            name: scrapedData.name,
+            price: scrapedData.price,
+            source_platform: scrapedData.source_platform,
+            imagesCount: scrapedData.images?.length || 0
+          } : null);
+        }
+      } else {
+        // Utiliser scraping pour les autres plateformes (AliBaba, etc.)
+        console.log('[IMPORT] 🕷️ Utilisation du scraping pour:', url);
+        scrapedData = await ScrapingService.scrapeProduct(url);
+        console.log('[IMPORT] 📊 Données scrapées:', scrapedData ? {
+          name: scrapedData.name,
+          price: scrapedData.price,
+          original_price: scrapedData.original_price,
+          source_platform: scrapedData.source_platform,
+          imagesCount: scrapedData.images?.length || 0
+        } : null);
+      }
     } catch (err) {
-      console.error('[IMPORT] ❌ Aucune donnée scrapée');
+      console.error('[IMPORT] ❌ Échec de la récupération des données');
       return NextResponse.json(
-        { error: (err as any)?.message || 'Impossible de récupérer les données du produit (ScrapingBee)'
+        { error: (err as any)?.message || 'Impossible de récupérer les données du produit'
         },
         { status: 500 }
       );
