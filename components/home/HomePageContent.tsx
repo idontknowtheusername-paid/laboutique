@@ -11,6 +11,7 @@ import LazySection from '@/components/ui/LazySection';
 import DynamicMeta from '@/components/seo/DynamicMeta';
 import ProductSectionMeta from '@/components/seo/ProductSectionMeta';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import OptimizedProductSection from './OptimizedProductSection';
 
 // Optimized lazy loading components with better loading states and code splitting
 const HeroCarousel = dynamic(() => import('@/components/home/HeroCarousel'), {
@@ -67,18 +68,11 @@ export default function HomePageContent() {
         setLoading(true);
         setError(null);
 
-        // Load categories and products in parallel
-        const [categoriesRes, productsRes] = await Promise.all([
-          CategoriesService.getAll(),
-          ProductsService.getAll({}, { limit: 200 }) // Augmenter pour supporter 100 produits par section
-        ]);
+        // Load categories only (products will be loaded per section)
+        const categoriesRes = await CategoriesService.getAll();
 
         if (categoriesRes.success && categoriesRes.data) {
           setCategories(categoriesRes.data);
-        }
-
-        if (productsRes.success && productsRes.data) {
-          setProducts(productsRes.data);
         }
       } catch (err) {
         setError('Erreur de chargement des données');
@@ -93,73 +87,11 @@ export default function HomePageContent() {
 
   // Helper functions
 
-  const getFeaturedProducts = () => {
-    return products.filter(p => p.featured).slice(0, 100);
-  };
-
-  const getNewProducts = () => {
-    return products
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-      .slice(0, 20); // FIFO: les 20 plus récents, les anciens sont automatiquement supprimés
-  };
-
   // Produits par catégorie dynamique
   const getCategoryProducts = (categorySlug: string) => {
     return products.filter(p => (p.category as any)?.slug === categorySlug).slice(0, 100);
   };
 
-  // Sections principales
-  const featuredProducts = getFeaturedProducts();
-  const newProducts = getNewProducts();
-  
-  // Nouvelles sections avec logique de filtrage
-  const dailyDealsProducts = products
-    .filter(product => {
-      const discount = product.compare_price && product.compare_price > product.price
-        ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
-        : 0;
-      return discount >= 20; // Au moins 20% de réduction
-    })
-    .slice(0, 8);
-
-  const bestSellersProducts = products
-    .filter(product => (product.reviews_count || 0) > 0)
-    .sort((a, b) => (b.reviews_count || 0) - (a.reviews_count || 0))
-    .slice(0, 8);
-
-  const limitedStockProducts = products
-    .filter(product => product.track_quantity && product.quantity > 0 && product.quantity <= 10)
-    .sort((a, b) => a.quantity - b.quantity)
-    .slice(0, 8);
-
-  const weeklyNewProducts = products
-    .filter(product => {
-      const createdDate = new Date(product.created_at);
-      const daysAgo = Math.floor((new Date().getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
-      return daysAgo <= 7; // Produits des 7 derniers jours
-    })
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 8);
-
-  const budgetFriendlyProducts = products
-    .filter(product => product.price <= 10000) // Moins de 10,000 FCFA
-    .sort((a, b) => a.price - b.price)
-    .slice(0, 8);
-
-  const premiumProducts = products
-    .filter(product => product.price >= 50000) // Plus de 50,000 FCFA
-    .sort((a, b) => b.price - a.price)
-    .slice(0, 8);
-
-  // Grouper par vendeur pour PopularBrands
-  const vendorMap = new Map<string, Product>();
-  products.forEach(product => {
-    if (product.vendor?.name && !vendorMap.has(product.vendor.name)) {
-      vendorMap.set(product.vendor.name, product);
-    }
-  });
-  const popularBrandsProducts = Array.from(vendorMap.values()).slice(0, 8);
-  
   // Catégories dynamiques (prendre les 4 premières catégories principales avec des produits)
   const mainCategories = categories
     .filter(cat => cat.slug !== 'maison-jardin' && cat.slug !== 'sport-loisirs') // Éviter les doublons
@@ -203,41 +135,38 @@ export default function HomePageContent() {
 
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
-              <ProductGrid
+              <OptimizedProductSection
                 title="Offres du Jour"
                 subtitle="Offres limitées - Ne ratez pas ces bonnes affaires !"
-                products={dailyDealsProducts}
-                isLoading={loading}
-                error={error || undefined}
                 viewAllLink="/products?discount_min=20&sort=discount"
                 maxItems={8}
+                serviceMethod={ProductsService.getDailyDeals}
+                serviceParams={[8]}
               />
             </LazySection>
           </section>
 
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
-              <ProductGrid
+              <OptimizedProductSection
                 title="Nouveautés"
                 subtitle="Découvrez nos derniers produits"
-                products={newProducts}
-                isLoading={loading}
-                error={error || undefined}
                 viewAllLink="/products?sort=newest"
+                serviceMethod={ProductsService.getFeatured}
+                serviceParams={[20]}
               />
             </LazySection>
           </section>
 
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
-              <ProductGrid
+              <OptimizedProductSection
                 title="Top Ventes"
                 subtitle="Les produits les plus vendus cette semaine"
-                products={bestSellersProducts}
-                isLoading={loading}
-                error={error || undefined}
                 viewAllLink="/products?sort=popular"
                 maxItems={8}
+                serviceMethod={ProductsService.getBestSellers}
+                serviceParams={[8]}
               />
             </LazySection>
           </section>
@@ -250,27 +179,25 @@ export default function HomePageContent() {
 
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
-              <ProductGrid
+              <OptimizedProductSection
                 title="Marques Populaires"
                 subtitle="Découvrez les marques les plus appréciées"
-                products={popularBrandsProducts}
-                isLoading={loading}
-                error={error || undefined}
                 viewAllLink="/brands"
                 maxItems={8}
+                serviceMethod={ProductsService.getByVendor}
+                serviceParams={[8]}
               />
             </LazySection>
           </section>
 
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
-              <ProductGrid
+              <OptimizedProductSection
                 title="Produits que vous aimeriez"
                 subtitle="Sélectionnés spécialement pour vous"
-                products={featuredProducts}
-                isLoading={loading}
-                error={error || undefined}
                 viewAllLink="/products?featured=true"
+                serviceMethod={ProductsService.getFeatured}
+                serviceParams={[100]}
               />
             </LazySection>
           </section>
@@ -283,28 +210,26 @@ export default function HomePageContent() {
 
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
-              <ProductGrid
+              <OptimizedProductSection
                 title="Stock Limité"
                 subtitle="Quantités limitées - Commandez maintenant !"
-                products={limitedStockProducts}
-                isLoading={loading}
-                error={error || undefined}
                 viewAllLink="/products?stock_limited=true"
                 maxItems={8}
+                serviceMethod={ProductsService.getLimitedStock}
+                serviceParams={[8]}
               />
             </LazySection>
           </section>
 
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
-              <ProductGrid
+              <OptimizedProductSection
                 title="Nouveautés de la Semaine"
                 subtitle="Découvrez les derniers arrivages"
-                products={weeklyNewProducts}
-                isLoading={loading}
-                error={error || undefined}
                 viewAllLink="/products?sort=newest&days=7"
                 maxItems={8}
+                serviceMethod={ProductsService.getWeeklyNew}
+                serviceParams={[8]}
               />
             </LazySection>
           </section>
@@ -353,28 +278,26 @@ export default function HomePageContent() {
 
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
-              <ProductGrid
+              <OptimizedProductSection
                 title="Produits Économiques"
                 subtitle="Des produits de qualité à petits prix"
-                products={budgetFriendlyProducts}
-                isLoading={loading}
-                error={error || undefined}
                 viewAllLink="/products?price_max=10000&sort=price_asc"
                 maxItems={8}
+                serviceMethod={ProductsService.getBudgetFriendly}
+                serviceParams={[8, 10000]}
               />
             </LazySection>
           </section>
 
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
-              <ProductGrid
+              <OptimizedProductSection
                 title="Collection Premium"
                 subtitle="L'excellence à son apogée"
-                products={premiumProducts}
-                isLoading={loading}
-                error={error || undefined}
                 viewAllLink="/products?price_min=50000&sort=price_desc"
                 maxItems={8}
+                serviceMethod={ProductsService.getPremium}
+                serviceParams={[8, 50000]}
               />
             </LazySection>
           </section>

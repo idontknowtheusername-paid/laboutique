@@ -809,4 +809,468 @@ export class ProductsService extends BaseService {
       return this.createResponse(false, this.handleError(error));
     }
   }
+
+  /**
+   * Récupérer les offres du jour (produits avec réduction >= 20%)
+   */
+  static async getDailyDeals(limit: number = 8): Promise<ServiceResponse<Product[]>> {
+    try {
+      if (!isSupabaseConfigured()) {
+        return this.createResponse([], 'Supabase non configuré');
+      }
+
+      const { data, error } = await this.getSupabaseClient()
+        .from('products')
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          source_url,
+          source_platform,
+          created_at,
+          updated_at,
+          categories:category_id (
+            id,
+            name,
+            slug
+          ),
+          vendors:vendor_id (
+            id,
+            name,
+            slug,
+            logo_url
+          )
+        `)
+        .eq('status', 'active')
+        .not('compare_price', 'is', null)
+        .gt('compare_price', 0)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+
+      // Filtrer côté client pour les produits avec au moins 20% de réduction
+      const filteredData = data?.filter(product => {
+        if (!product.compare_price || product.compare_price <= product.price) return false;
+        const discount = Math.round(((product.compare_price - product.price) / product.compare_price) * 100);
+        return discount >= 20;
+      }) || [];
+
+      return this.createResponse(filteredData);
+    } catch (error) {
+      return this.createResponse([], this.handleError(error));
+    }
+  }
+
+  /**
+   * Récupérer les meilleures ventes (triés par nombre de reviews)
+   */
+  static async getBestSellers(limit: number = 8): Promise<ServiceResponse<Product[]>> {
+    try {
+      if (!isSupabaseConfigured()) {
+        return this.createResponse([], 'Supabase non configuré');
+      }
+
+      const { data, error } = await this.getSupabaseClient()
+        .from('products')
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          source_url,
+          source_platform,
+          created_at,
+          updated_at,
+          categories:category_id (
+            id,
+            name,
+            slug
+          ),
+          vendors:vendor_id (
+            id,
+            name,
+            slug,
+            logo_url
+          )
+        `)
+        .eq('status', 'active')
+        .gt('reviews_count', 0)
+        .order('reviews_count', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+
+      return this.createResponse(data || []);
+    } catch (error) {
+      return this.createResponse([], this.handleError(error));
+    }
+  }
+
+  /**
+   * Récupérer les produits en stock limité (quantity <= 10)
+   */
+  static async getLimitedStock(limit: number = 8): Promise<ServiceResponse<Product[]>> {
+    try {
+      if (!isSupabaseConfigured()) {
+        return this.createResponse([], 'Supabase non configuré');
+      }
+
+      const { data, error } = await this.getSupabaseClient()
+        .from('products')
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          source_url,
+          source_platform,
+          created_at,
+          updated_at,
+          categories:category_id (
+            id,
+            name,
+            slug
+          ),
+          vendors:vendor_id (
+            id,
+            name,
+            slug,
+            logo_url
+          )
+        `)
+        .eq('status', 'active')
+        .eq('track_quantity', true)
+        .gt('quantity', 0)
+        .lte('quantity', 10)
+        .order('quantity', { ascending: true })
+        .limit(limit);
+
+      if (error) throw error;
+
+      return this.createResponse(data || []);
+    } catch (error) {
+      return this.createResponse([], this.handleError(error));
+    }
+  }
+
+  /**
+   * Récupérer les nouveautés de la semaine (créés dans les 7 derniers jours)
+   */
+  static async getWeeklyNew(limit: number = 8): Promise<ServiceResponse<Product[]>> {
+    try {
+      if (!isSupabaseConfigured()) {
+        return this.createResponse([], 'Supabase non configuré');
+      }
+
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const sevenDaysAgoISO = sevenDaysAgo.toISOString();
+
+      const { data, error } = await this.getSupabaseClient()
+        .from('products')
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          source_url,
+          source_platform,
+          created_at,
+          updated_at,
+          categories:category_id (
+            id,
+            name,
+            slug
+          ),
+          vendors:vendor_id (
+            id,
+            name,
+            slug,
+            logo_url
+          )
+        `)
+        .eq('status', 'active')
+        .gte('created_at', sevenDaysAgoISO)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+
+      return this.createResponse(data || []);
+    } catch (error) {
+      return this.createResponse([], this.handleError(error));
+    }
+  }
+
+  /**
+   * Récupérer les produits économiques (prix <= maxPrice)
+   */
+  static async getBudgetFriendly(limit: number = 8, maxPrice: number = 10000): Promise<ServiceResponse<Product[]>> {
+    try {
+      if (!isSupabaseConfigured()) {
+        return this.createResponse([], 'Supabase non configuré');
+      }
+
+      const { data, error } = await this.getSupabaseClient()
+        .from('products')
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          source_url,
+          source_platform,
+          created_at,
+          updated_at,
+          categories:category_id (
+            id,
+            name,
+            slug
+          ),
+          vendors:vendor_id (
+            id,
+            name,
+            slug,
+            logo_url
+          )
+        `)
+        .eq('status', 'active')
+        .lte('price', maxPrice)
+        .order('price', { ascending: true })
+        .limit(limit);
+
+      if (error) throw error;
+
+      return this.createResponse(data || []);
+    } catch (error) {
+      return this.createResponse([], this.handleError(error));
+    }
+  }
+
+  /**
+   * Récupérer les produits premium (prix >= minPrice)
+   */
+  static async getPremium(limit: number = 8, minPrice: number = 50000): Promise<ServiceResponse<Product[]>> {
+    try {
+      if (!isSupabaseConfigured()) {
+        return this.createResponse([], 'Supabase non configuré');
+      }
+
+      const { data, error } = await this.getSupabaseClient()
+        .from('products')
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          source_url,
+          source_platform,
+          created_at,
+          updated_at,
+          categories:category_id (
+            id,
+            name,
+            slug
+          ),
+          vendors:vendor_id (
+            id,
+            name,
+            slug,
+            logo_url
+          )
+        `)
+        .eq('status', 'active')
+        .gte('price', minPrice)
+        .order('price', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+
+      return this.createResponse(data || []);
+    } catch (error) {
+      return this.createResponse([], this.handleError(error));
+    }
+  }
+
+  /**
+   * Récupérer les produits groupés par vendeur (marques populaires)
+   */
+  static async getByVendor(limit: number = 8): Promise<ServiceResponse<Product[]>> {
+    try {
+      if (!isSupabaseConfigured()) {
+        return this.createResponse([], 'Supabase non configuré');
+      }
+
+      // Récupérer tous les produits avec leurs vendeurs
+      const { data, error } = await this.getSupabaseClient()
+        .from('products')
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          source_url,
+          source_platform,
+          created_at,
+          updated_at,
+          categories:category_id (
+            id,
+            name,
+            slug
+          ),
+          vendors:vendor_id (
+            id,
+            name,
+            slug,
+            logo_url
+          )
+        `)
+        .eq('status', 'active')
+        .not('vendor_id', 'is', null)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Grouper par vendeur et prendre un produit par vendeur
+      const vendorMap = new Map<string, Product>();
+      data?.forEach(product => {
+        if (product.vendor?.name && !vendorMap.has(product.vendor.name)) {
+          vendorMap.set(product.vendor.name, product);
+        }
+      });
+
+      const result = Array.from(vendorMap.values()).slice(0, limit);
+      return this.createResponse(result);
+    } catch (error) {
+      return this.createResponse([], this.handleError(error));
+    }
+  }
 }
