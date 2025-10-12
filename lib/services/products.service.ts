@@ -1273,4 +1273,166 @@ export class ProductsService extends BaseService {
       return this.createResponse([], this.handleError(error));
     }
   }
+
+  /**
+   * Récupérer les produits par catégorie (optimisé pour les sections)
+   */
+  static async getByCategory(
+    categorySlug: string, 
+    limit: number = 8
+  ): Promise<ServiceResponse<Product[]>> {
+    try {
+      if (!isSupabaseConfigured()) {
+        return this.createResponse([], 'Supabase non configuré');
+      }
+
+      const { data, error } = await this.getSupabaseClient()
+        .from('products')
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          source_url,
+          source_platform,
+          created_at,
+          updated_at,
+          categories:category_id (
+            id,
+            name,
+            slug
+          ),
+          vendors:vendor_id (
+            id,
+            name,
+            slug,
+            logo_url
+          )
+        `)
+        .eq('status', 'active')
+        .eq('categories.slug', categorySlug)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+
+      return this.createResponse(data || []);
+    } catch (error) {
+      return this.createResponse([], this.handleError(error));
+    }
+  }
+
+  /**
+   * Récupérer les produits par catégorie avec tri personnalisé
+   */
+  static async getByCategorySorted(
+    categorySlug: string, 
+    limit: number = 8,
+    sortBy: 'newest' | 'popular' | 'price_asc' | 'price_desc' | 'featured' = 'newest'
+  ): Promise<ServiceResponse<Product[]>> {
+    try {
+      if (!isSupabaseConfigured()) {
+        return this.createResponse([], 'Supabase non configuré');
+      }
+
+      let orderBy: string;
+      let ascending: boolean;
+
+      switch (sortBy) {
+        case 'newest':
+          orderBy = 'created_at';
+          ascending = false;
+          break;
+        case 'popular':
+          orderBy = 'reviews_count';
+          ascending = false;
+          break;
+        case 'price_asc':
+          orderBy = 'price';
+          ascending = true;
+          break;
+        case 'price_desc':
+          orderBy = 'price';
+          ascending = false;
+          break;
+        case 'featured':
+          orderBy = 'featured';
+          ascending = false;
+          break;
+        default:
+          orderBy = 'created_at';
+          ascending = false;
+      }
+
+      const { data, error } = await this.getSupabaseClient()
+        .from('products')
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          short_description,
+          sku,
+          price,
+          compare_price,
+          cost_price,
+          track_quantity,
+          quantity,
+          weight,
+          dimensions,
+          category_id,
+          vendor_id,
+          brand,
+          tags,
+          images,
+          status,
+          featured,
+          meta_title,
+          meta_description,
+          source_url,
+          source_platform,
+          created_at,
+          updated_at,
+          categories:category_id (
+            id,
+            name,
+            slug
+          ),
+          vendors:vendor_id (
+            id,
+            name,
+            slug,
+            logo_url
+          )
+        `)
+        .eq('status', 'active')
+        .eq('categories.slug', categorySlug)
+        .order(orderBy, { ascending })
+        .limit(limit);
+
+      if (error) throw error;
+
+      return this.createResponse(data || []);
+    } catch (error) {
+      return this.createResponse([], this.handleError(error));
+    }
+  }
 }

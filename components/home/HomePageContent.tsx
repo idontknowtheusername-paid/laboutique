@@ -12,6 +12,7 @@ import DynamicMeta from '@/components/seo/DynamicMeta';
 import ProductSectionMeta from '@/components/seo/ProductSectionMeta';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import OptimizedProductSection from './OptimizedProductSection';
+import CategoryCarousel from './CategoryCarousel';
 
 // Optimized lazy loading components with better loading states and code splitting
 const HeroCarousel = dynamic(() => import('@/components/home/HeroCarousel'), {
@@ -298,6 +299,140 @@ export default function HomePageContent() {
                 maxItems={8}
                 serviceMethod={ProductsService.getPremium}
                 serviceParams={[8, 50000]}
+              />
+            </LazySection>
+          </section>
+
+          {/* NOUVELLES SECTIONS PAR PRIORITÉ */}
+          
+          {/* HAUTE PRIORITÉ - Sections essentielles */}
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
+              <CategoryCarousel
+                title="Bébé & Enfant"
+                subtitle="Tout pour vos petits trésors"
+                categorySlug="bebe-enfant"
+                viewAllLink="/category/bebe-enfant"
+                maxItems={8}
+                sortBy="featured"
+                showBadge={true}
+                badgeText="Bébé"
+                badgeColor="bg-pink-500"
+              />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
+              <CategoryCarousel
+                title="Alimentation & Boissons"
+                subtitle="Produits frais et épicerie fine"
+                categorySlug="alimentation-boissons"
+                viewAllLink="/category/alimentation-boissons"
+                maxItems={8}
+                sortBy="newest"
+                showBadge={true}
+                badgeText="Frais"
+                badgeColor="bg-green-500"
+              />
+            </LazySection>
+          </section>
+
+          {/* PRIORITÉ MOYENNE - Sections complémentaires */}
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
+              <OptimizedProductSection
+                title="Éducation & Livres"
+                subtitle="Livres, fournitures scolaires et matériel éducatif"
+                viewAllLink="/category/education-livres"
+                maxItems={8}
+                serviceMethod={ProductsService.getByCategorySorted}
+                serviceParams={['education-livres', 8, 'popular']}
+              />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
+              <CategoryCarousel
+                title="Jardinage & Agriculture"
+                subtitle="Outils et équipements pour cultiver"
+                categorySlug="jardinage-agriculture"
+                viewAllLink="/category/jardinage-agriculture"
+                maxItems={8}
+                sortBy="newest"
+                showBadge={true}
+                badgeText="Local"
+                badgeColor="bg-emerald-500"
+              />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
+              <OptimizedProductSection
+                title="Bricolage & Outillage"
+                subtitle="Outils et matériaux pour tous vos projets"
+                viewAllLink="/category/bricolage-outillage"
+                maxItems={8}
+                serviceMethod={ProductsService.getByCategorySorted}
+                serviceParams={['bricolage-outillage', 8, 'newest']}
+              />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
+              <CategoryCarousel
+                title="Téléphonie & Accessoires"
+                subtitle="Smartphones et accessoires mobiles"
+                categorySlug="telephonie-accessoires"
+                viewAllLink="/category/telephonie-accessoires"
+                maxItems={8}
+                sortBy="popular"
+                showBadge={true}
+                badgeText="Tech"
+                badgeColor="bg-blue-500"
+              />
+            </LazySection>
+          </section>
+
+          {/* PRIORITÉ BASSE - Sections spécialisées */}
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
+              <OptimizedProductSection
+                title="Voyage & Bagages"
+                subtitle="Valises et accessoires de voyage"
+                viewAllLink="/category/voyage-bagages"
+                maxItems={6}
+                serviceMethod={ProductsService.getByCategorySorted}
+                serviceParams={['voyage-bagages', 6, 'newest']}
+              />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
+              <OptimizedProductSection
+                title="Musique & Instruments"
+                subtitle="Instruments et équipements audio"
+                viewAllLink="/category/musique-instruments"
+                maxItems={6}
+                serviceMethod={ProductsService.getByCategorySorted}
+                serviceParams={['musique-instruments', 6, 'newest']}
+              />
+            </LazySection>
+          </section>
+
+          <section className="container mb-4">
+            <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
+              <OptimizedProductSection
+                title="Art & Artisanat"
+                subtitle="Matériel artistique et artisanat local"
+                viewAllLink="/category/art-artisanat"
+                maxItems={6}
+                serviceMethod={ProductsService.getByCategorySorted}
+                serviceParams={['art-artisanat', 6, 'featured']}
               />
             </LazySection>
           </section>
