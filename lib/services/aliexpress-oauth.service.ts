@@ -17,8 +17,9 @@ export class AliExpressOAuthService {
   // URL OAuth pour AliExpress (documentation officielle)
   // https://openservice.aliexpress.com/doc/doc.htm?nodeId=27493&docId=118729
   private authBaseUrl = 'https://api-sg.aliexpress.com/oauth/authorize';
-  // API endpoint pour toutes les requêtes API (système unifié)
-  private apiBaseUrl = 'https://api-sg.aliexpress.com/sync';
+  // API endpoint pour System Interfaces (auth/token)
+  // Documentation: System Interfaces use /rest not /sync
+  private restBaseUrl = 'https://api-sg.aliexpress.com/rest';
 
   constructor(config?: AliExpressOAuthConfig) {
     this.config = config || {
@@ -78,7 +79,7 @@ export class AliExpressOAuthService {
     params.sign = this.generateSign(params);
 
     try {
-      const url = `${this.apiBaseUrl}/auth/token/create?${new URLSearchParams(params).toString()}`;
+      const url = `${this.restBaseUrl}/auth/token/create?${new URLSearchParams(params).toString()}`;
       
       const response = await fetch(url, {
         method: 'GET',
@@ -124,7 +125,27 @@ export class AliExpressOAuthService {
   }
 
   /**
-   * Générer la signature HMAC-MD5 pour authentifier les requêtes
+   * Générer la signature SHA256 pour System Interfaces (auth/token)
+   * Documentation: For System APIs, include API path in signature string
+   */
+  private generateSystemSign(apiPath: string, params: Record<string, any>): string {
+    // Trier les paramètres par clé (ASCII order)
+    const sortedKeys = Object.keys(params).sort();
+    
+    // Construire la chaîne : /api/pathkey1value1key2value2...
+    let signString = apiPath;
+    for (const key of sortedKeys) {
+      if (params[key] !== undefined && params[key] !== null && key !== 'sign') {
+        signString += key + params[key];
+      }
+    }
+
+    // Hasher avec SHA256 (pas MD5 pour System Interfaces)
+    return crypto.createHash('sha256').update(signString, 'utf8').digest('hex').toUpperCase();
+  }
+
+  /**
+   * Générer la signature HMAC-MD5 pour Business Interfaces (produits, etc.)
    */
   private generateSign(params: Record<string, any>): string {
     // Trier les paramètres par clé
@@ -145,29 +166,27 @@ export class AliExpressOAuthService {
 
   /**
    * Rafraîchir un access_token expiré
-   * Documentation: https://openservice.aliexpress.com/doc/doc.htm?nodeId=27493&docId=118729
+   * Documentation: System Interface - uses /rest endpoint with SHA256
    */
   async refreshAccessToken(refreshToken: string): Promise<AliExpressOAuthToken> {
     console.log('[OAuth] Rafraîchissement access_token');
 
     const timestamp = Date.now().toString();
+    const apiPath = '/auth/token/refresh';
     
     const params: Record<string, any> = {
       app_key: this.config.appKey,
       refresh_token: refreshToken,
       timestamp: timestamp,
-      sign_method: 'md5',
-      format: 'json',
-      v: '2.0',
-      method: 'auth.token.refresh',
+      sign_method: 'sha256',
     };
 
-    // Générer la signature
-    params.sign = this.generateSign(params);
+    // Générer la signature pour System Interface
+    params.sign = this.generateSystemSign(apiPath, params);
 
     try {
       const queryString = new URLSearchParams(params).toString();
-      const url = `${this.apiBaseUrl}?${queryString}`;
+      const url = `${this.restBaseUrl}${apiPath}?${queryString}`;
       
       const response = await fetch(url, {
         method: 'GET',
