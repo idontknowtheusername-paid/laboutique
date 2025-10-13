@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAliExpressOAuthService } from '@/lib/services/aliexpress-oauth.service';
 
+// Force Node.js runtime pour accéder aux variables d'environnement
+export const runtime = 'nodejs';
+
 /**
  * Route pour initier l'autorisation OAuth AliExpress
  * Redirige l'utilisateur vers AliExpress pour autoriser l'application

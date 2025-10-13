@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAliExpressOAuthService } from '@/lib/services/aliexpress-oauth.service';
 
+// Force Node.js runtime pour accéder aux variables d'environnement
+export const runtime = 'nodejs';
+
 /**
  * Callback OAuth AliExpress Dropship
  * Cette route reçoit le code d'autorisation après que l'utilisateur autorise l'app
