@@ -14,7 +14,8 @@ import type {
  */
 export class AliExpressOAuthService {
   private config: AliExpressOAuthConfig;
-  private authBaseUrl = 'https://oauth.aliexpress.com/authorize';
+  // URL OAuth pour AliExpress (peut aussi être oauth.alibaba.com)
+  private authBaseUrl = 'https://oauth.alibaba.com/authorize';
   private tokenUrl = 'https://gw.api.alibaba.com/openapi/param2/1/system.oauth2/getToken';
 
   constructor(config?: AliExpressOAuthConfig) {
