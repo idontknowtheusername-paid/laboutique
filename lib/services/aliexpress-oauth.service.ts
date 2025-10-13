@@ -14,9 +14,9 @@ import type {
  */
 export class AliExpressOAuthService {
   private config: AliExpressOAuthConfig;
-  // URL OAuth pour AliExpress
-  // Endpoint production - fonctionne aussi en mode Test selon la doc
-  private authBaseUrl = 'https://oauth.alibaba.com/authorize';
+  // URL OAuth pour AliExpress (documentation officielle)
+  // https://openservice.aliexpress.com/doc/doc.htm?nodeId=27493&docId=118729
+  private authBaseUrl = 'https://api-sg.aliexpress.com/oauth/authorize';
   private tokenUrl = 'https://gw.api.alibaba.com/openapi/param2/1/system.oauth2/getToken';
 
   constructor(config?: AliExpressOAuthConfig) {
@@ -37,15 +37,16 @@ export class AliExpressOAuthService {
 
   /**
    * Générer l'URL d'autorisation pour rediriger l'utilisateur
+   * Documentation: https://openservice.aliexpress.com/doc/doc.htm?nodeId=27493&docId=118729
    */
   generateAuthorizationUrl(state?: string): string {
-    // AliExpress OAuth attend PLUSIEURS paramètres liés à l'app key
+    // Paramètres selon la documentation officielle
     const params = {
-      client_id: this.config.appKey,
-      app_key: this.config.appKey,  // Aussi requis !
-      redirect_uri: this.config.redirectUri,
-      state: state || crypto.randomBytes(16).toString('hex'),
       response_type: 'code',
+      client_id: this.config.appKey,  // Documentation dit: client_id=${appkey}
+      redirect_uri: this.config.redirectUri,
+      force_auth: 'true',  // Recommandé par la documentation
+      state: state || crypto.randomBytes(16).toString('hex'),
     };
 
     const queryString = new URLSearchParams(params as any).toString();
