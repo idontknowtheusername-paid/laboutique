@@ -38,7 +38,7 @@ export class AliExpressOAuthService {
    */
   generateAuthorizationUrl(state?: string): string {
     const params: OAuthAuthorizationParams = {
-      app_key: this.config.appKey,
+      client_id: this.config.appKey, // AliExpress utilise client_id, pas app_key !
       redirect_uri: this.config.redirectUri,
       state: state || crypto.randomBytes(16).toString('hex'),
       response_type: 'code',

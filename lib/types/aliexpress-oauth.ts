@@ -30,7 +30,7 @@ export interface StoredOAuthToken {
 }
 
 export interface OAuthAuthorizationParams {
-  app_key: string;
+  client_id: string; // AliExpress utilise client_id pour OAuth
   redirect_uri: string;
   state: string;
   response_type: 'code';
