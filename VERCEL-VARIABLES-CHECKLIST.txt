@@ -1,0 +1,111 @@
+═══════════════════════════════════════════════════════════
+🎯 CHECKLIST VERCEL - Configuration Variables
+═══════════════════════════════════════════════════════════
+
+📍 ÉTAPE 1 : Aller sur Vercel
+─────────────────────────────────────────────────────────────
+→ https://vercel.com/dashboard
+→ Se connecter si nécessaire
+
+📍 ÉTAPE 2 : Sélectionner le Projet
+─────────────────────────────────────────────────────────────
+→ Chercher le projet avec URL : laboutique-seven.vercel.app
+→ Cliquer dessus
+
+📍 ÉTAPE 3 : Aller dans Settings
+─────────────────────────────────────────────────────────────
+→ Cliquer sur "Settings" en haut
+→ Menu gauche → "Environment Variables"
+
+📍 ÉTAPE 4 : Ajouter Variable 1
+─────────────────────────────────────────────────────────────
+→ Cliquer "Add New"
+
+Name (copier-coller) :
+ALIEXPRESS_APP_KEY
+
+Value (copier-coller) :
+520312
+
+Environment :
+☑ Production  ☑ Preview  ☑ Development
+
+→ Cliquer "Save"
+
+📍 ÉTAPE 5 : Ajouter Variable 2
+─────────────────────────────────────────────────────────────
+→ Cliquer "Add New"
+
+Name (copier-coller) :
+ALIEXPRESS_APP_SECRET
+
+Value (copier-coller) :
+vfuE366X5RPk9BghoOcGTk3nGfcncvOe
+
+Environment :
+☑ Production  ☑ Preview  ☑ Development
+
+→ Cliquer "Save"
+
+📍 ÉTAPE 6 : Ajouter Variable 3
+─────────────────────────────────────────────────────────────
+→ Cliquer "Add New"
+
+Name (copier-coller) :
+ALIEXPRESS_REDIRECT_URI
+
+Value (copier-coller) :
+https://laboutique-seven.vercel.app/api/aliexpress/callback
+
+Environment :
+☑ Production  ☑ Preview  ☑ Development
+
+→ Cliquer "Save"
+
+📍 ÉTAPE 7 : Vérifier
+─────────────────────────────────────────────────────────────
+Sur la page Environment Variables, vous devez voir :
+
+✅ ALIEXPRESS_APP_KEY
+✅ ALIEXPRESS_APP_SECRET
+✅ ALIEXPRESS_REDIRECT_URI
+
+Chacune avec : Production, Preview, Development
+
+📍 ÉTAPE 8 : Redéployer ⚠️ OBLIGATOIRE
+─────────────────────────────────────────────────────────────
+→ En haut, cliquer "Deployments"
+→ Premier déploiement de la liste
+→ Cliquer sur ⋯ (3 points)
+→ Cliquer "Redeploy"
+→ Confirmer "Redeploy"
+
+📍 ÉTAPE 9 : Attendre (2-3 min)
+─────────────────────────────────────────────────────────────
+→ Attendre que le statut devienne : ✅ Ready
+→ Ne PAS tester avant !
+
+📍 ÉTAPE 10 : Tester
+─────────────────────────────────────────────────────────────
+Ouvrir dans navigateur :
+https://laboutique-seven.vercel.app/api/aliexpress/test-env
+
+Résultat attendu :
+✅ ALIEXPRESS_APP_KEY: Défini
+✅ ALIEXPRESS_APP_SECRET: Défini
+✅ ALIEXPRESS_REDIRECT_URI: Défini
+
+Si OK, tester :
+https://laboutique-seven.vercel.app/api/aliexpress/auth
+
+→ Doit rediriger vers AliExpress
+
+═══════════════════════════════════════════════════════════
+⚠️ IMPORTANT
+═══════════════════════════════════════════════════════════
+1. BON PROJET : Vérifier URL laboutique-seven.vercel.app
+2. TOUS LES ENVIRONNEMENTS : Cocher les 3 cases
+3. REDÉPLOYER : Obligatoire après ajout variables
+4. ATTENDRE : Ne pas tester avant ✅ Ready
+
+═══════════════════════════════════════════════════════════
