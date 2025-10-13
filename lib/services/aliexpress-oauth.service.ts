@@ -137,21 +137,25 @@ export class AliExpressOAuthService {
   /**
    * Générer la signature SHA256 pour System Interfaces (auth/token)
    * Documentation: For System APIs, include API path in signature string
+   * Format: /api/pathkey1value1key2value2... (no app_secret wrapping)
    */
   private generateSystemSign(apiPath: string, params: Record<string, any>): string {
     // Trier les paramètres par clé (ASCII order)
-    const sortedKeys = Object.keys(params).sort();
+    const sortedKeys = Object.keys(params).filter(k => k !== 'sign').sort();
     
     // Construire la chaîne : /api/pathkey1value1key2value2...
     let signString = apiPath;
     for (const key of sortedKeys) {
-      if (params[key] !== undefined && params[key] !== null && key !== 'sign') {
-        signString += key + params[key];
-      }
+      signString += key + params[key];
     }
 
+    console.log('[OAuth] Chaîne à signer (System):', signString);
+
     // Hasher avec SHA256 (pas MD5 pour System Interfaces)
-    return crypto.createHash('sha256').update(signString, 'utf8').digest('hex').toUpperCase();
+    const signature = crypto.createHash('sha256').update(signString, 'utf8').digest('hex').toUpperCase();
+    console.log('[OAuth] Signature générée:', signature);
+    
+    return signature;
   }
 
   /**
