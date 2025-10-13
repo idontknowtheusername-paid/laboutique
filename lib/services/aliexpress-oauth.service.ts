@@ -17,8 +17,8 @@ export class AliExpressOAuthService {
   // URL OAuth pour AliExpress (documentation officielle)
   // https://openservice.aliexpress.com/doc/doc.htm?nodeId=27493&docId=118729
   private authBaseUrl = 'https://api-sg.aliexpress.com/oauth/authorize';
-  // API pour échanger le code contre un token
-  private baseUrl = 'https://api-sg.aliexpress.com';
+  // API endpoint pour toutes les requêtes API (système unifié)
+  private apiBaseUrl = 'https://api-sg.aliexpress.com/sync';
 
   constructor(config?: AliExpressOAuthConfig) {
     this.config = config || {
@@ -78,7 +78,7 @@ export class AliExpressOAuthService {
     params.sign = this.generateSign(params);
 
     try {
-      const url = `${this.baseUrl}/auth/token/create?${new URLSearchParams(params).toString()}`;
+      const url = `${this.apiBaseUrl}/auth/token/create?${new URLSearchParams(params).toString()}`;
       
       const response = await fetch(url, {
         method: 'GET',
@@ -166,7 +166,8 @@ export class AliExpressOAuthService {
     params.sign = this.generateSign(params);
 
     try {
-      const url = `${this.baseUrl}/auth/token/refresh?${new URLSearchParams(params).toString()}`;
+      const queryString = new URLSearchParams(params).toString();
+      const url = `${this.apiBaseUrl}?${queryString}`;
       
       const response = await fetch(url, {
         method: 'GET',
