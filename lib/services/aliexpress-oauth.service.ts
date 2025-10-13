@@ -97,10 +97,18 @@ export class AliExpressOAuthService {
       const data = await response.json();
       console.log('[OAuth] Réponse token complète:', JSON.stringify(data, null, 2));
 
-      // Vérifier les erreurs
+      // Vérifier les erreurs - plusieurs formats possibles
       if (data.error_response) {
-        console.error('[OAuth] Erreur API:', data.error_response);
+        console.error('[OAuth] Erreur API (error_response):', data.error_response);
         throw new Error(data.error_response.msg || 'Erreur lors de l\'échange du code');
+      }
+
+      // Format d'erreur : {type, code, message}
+      if (data.type === 'ISP' || data.code || data.message) {
+        const errorMsg = `API Error - Type: ${data.type}, Code: ${data.code}, Message: ${data.message}`;
+        console.error('[OAuth] Erreur API détaillée:', errorMsg);
+        console.error('[OAuth] Request ID:', data.request_id);
+        throw new Error(errorMsg);
       }
 
       // Le token peut être directement ou dans un sous-objet
