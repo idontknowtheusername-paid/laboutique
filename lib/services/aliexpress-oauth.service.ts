@@ -95,7 +95,7 @@ export class AliExpressOAuthService {
       }
 
       const data = await response.json();
-      console.log('[OAuth] Réponse token:', data);
+      console.log('[OAuth] Réponse token complète:', JSON.stringify(data, null, 2));
 
       // Vérifier les erreurs
       if (data.error_response) {
@@ -103,10 +103,12 @@ export class AliExpressOAuthService {
         throw new Error(data.error_response.msg || 'Erreur lors de l\'échange du code');
       }
 
-      // Le token est dans la réponse directe
-      if (!data.access_token) {
-        console.error('[OAuth] Pas de access_token dans la réponse:', data);
-        throw new Error('Pas de access_token dans la réponse');
+      // Le token peut être directement ou dans un sous-objet
+      const tokenData = data.access_token ? data : (data.result || data);
+      
+      if (!tokenData.access_token) {
+        console.error('[OAuth] Structure de réponse inattendue:', JSON.stringify(data, null, 2));
+        throw new Error(`Pas de access_token trouvé. Structure reçue: ${JSON.stringify(Object.keys(data))}`);
       }
 
       return {
