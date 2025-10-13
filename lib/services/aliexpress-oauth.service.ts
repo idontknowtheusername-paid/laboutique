@@ -17,7 +17,8 @@ export class AliExpressOAuthService {
   // URL OAuth pour AliExpress (documentation officielle)
   // https://openservice.aliexpress.com/doc/doc.htm?nodeId=27493&docId=118729
   private authBaseUrl = 'https://api-sg.aliexpress.com/oauth/authorize';
-  private tokenUrl = 'https://gw.api.alibaba.com/openapi/param2/1/system.oauth2/getToken';
+  // API pour échanger le code contre un token
+  private baseUrl = 'https://api-sg.aliexpress.com';
 
   constructor(config?: AliExpressOAuthConfig) {
     this.config = config || {
@@ -55,24 +56,35 @@ export class AliExpressOAuthService {
 
   /**
    * Échanger le code d'autorisation contre un access_token
+   * Documentation: https://openservice.aliexpress.com/doc/api.htm?cid=3&path=/auth/token/create
    */
   async exchangeCodeForToken(code: string): Promise<AliExpressOAuthToken> {
     console.log('[OAuth] Échange code contre access_token');
 
-    const params: OAuthTokenParams = {
+    // Utiliser l'API /auth/token/create selon la documentation
+    const timestamp = Date.now().toString();
+    
+    const params: Record<string, any> = {
       app_key: this.config.appKey,
-      app_secret: this.config.appSecret,
-      code,
-      grant_type: 'authorization_code',
+      code: code,
+      timestamp: timestamp,
+      sign_method: 'md5',
+      format: 'json',
+      v: '2.0',
+      method: 'auth.token.create',
     };
 
+    // Générer la signature
+    params.sign = this.generateSign(params);
+
     try {
-      const response = await fetch(this.tokenUrl, {
-        method: 'POST',
+      const url = `${this.baseUrl}/auth/token/create?${new URLSearchParams(params).toString()}`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
         },
-        body: new URLSearchParams(params as any).toString(),
       });
 
       if (!response.ok) {
@@ -82,14 +94,29 @@ export class AliExpressOAuthService {
       }
 
       const data = await response.json();
-      console.log('[OAuth] Token reçu');
+      console.log('[OAuth] Réponse token:', data);
 
+      // Vérifier les erreurs
       if (data.error_response) {
         console.error('[OAuth] Erreur API:', data.error_response);
-        throw new Error(data.error_response.msg || 'Erreur OAuth');
+        throw new Error(data.error_response.msg || 'Erreur lors de l\'échange du code');
       }
 
-      return data as AliExpressOAuthToken;
+      // Le token est dans la réponse directe
+      if (!data.access_token) {
+        console.error('[OAuth] Pas de access_token dans la réponse:', data);
+        throw new Error('Pas de access_token dans la réponse');
+      }
+
+      return {
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+        expires_in: data.expires_in || 2592000, // 30 jours selon la doc
+        refresh_expires_in: data.refresh_expires_in || 5184000, // 60 jours
+        token_type: data.token_type || 'Bearer',
+        user_id: data.user_id || data.seller_id,
+        aliexpress_user_id: data.havana_id,
+      };
     } catch (error) {
       console.error('[OAuth] Échec échange code:', error);
       throw error;
@@ -97,25 +124,55 @@ export class AliExpressOAuthService {
   }
 
   /**
+   * Générer la signature HMAC-MD5 pour authentifier les requêtes
+   */
+  private generateSign(params: Record<string, any>): string {
+    // Trier les paramètres par clé
+    const sortedKeys = Object.keys(params).sort();
+    
+    // Construire la chaîne à signer
+    let signString = this.config.appSecret;
+    for (const key of sortedKeys) {
+      if (params[key] !== undefined && params[key] !== null) {
+        signString += key + params[key];
+      }
+    }
+    signString += this.config.appSecret;
+
+    // Générer signature MD5
+    return crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
+  }
+
+  /**
    * Rafraîchir un access_token expiré
+   * Documentation: https://openservice.aliexpress.com/doc/doc.htm?nodeId=27493&docId=118729
    */
   async refreshAccessToken(refreshToken: string): Promise<AliExpressOAuthToken> {
     console.log('[OAuth] Rafraîchissement access_token');
 
-    const params: OAuthRefreshParams = {
+    const timestamp = Date.now().toString();
+    
+    const params: Record<string, any> = {
       app_key: this.config.appKey,
-      app_secret: this.config.appSecret,
       refresh_token: refreshToken,
-      grant_type: 'refresh_token',
+      timestamp: timestamp,
+      sign_method: 'md5',
+      format: 'json',
+      v: '2.0',
+      method: 'auth.token.refresh',
     };
 
+    // Générer la signature
+    params.sign = this.generateSign(params);
+
     try {
-      const response = await fetch(this.tokenUrl, {
-        method: 'POST',
+      const url = `${this.baseUrl}/auth/token/refresh?${new URLSearchParams(params).toString()}`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
         },
-        body: new URLSearchParams(params as any).toString(),
       });
 
       if (!response.ok) {
@@ -132,7 +189,20 @@ export class AliExpressOAuthService {
         throw new Error(data.error_response.msg || 'Erreur refresh token');
       }
 
-      return data as AliExpressOAuthToken;
+      if (!data.access_token) {
+        console.error('[OAuth] Pas de access_token dans la réponse:', data);
+        throw new Error('Pas de access_token dans la réponse');
+      }
+
+      return {
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+        expires_in: data.expires_in || 2592000,
+        refresh_expires_in: data.refresh_expires_in || 5184000,
+        token_type: data.token_type || 'Bearer',
+        user_id: data.user_id || data.seller_id,
+        aliexpress_user_id: data.havana_id,
+      };
     } catch (error) {
       console.error('[OAuth] Échec refresh:', error);
       throw error;
