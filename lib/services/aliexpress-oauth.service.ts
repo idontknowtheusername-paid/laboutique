@@ -88,6 +88,18 @@ export class AliExpressOAuthService {
         },
       });
 
+      // CRUCIAL: Lire les headers pour debug
+      const errorMessage = response.headers.get('X-Ca-Error-Message');
+      const allHeaders: Record<string, string> = {};
+      response.headers.forEach((value, key) => {
+        allHeaders[key] = value;
+      });
+      
+      console.log('[OAuth] Response Headers:', allHeaders);
+      if (errorMessage) {
+        console.log('[OAuth] 🔑 SERVEUR ATTEND CETTE STRING:', errorMessage);
+      }
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error('[OAuth] Erreur HTTP:', response.status, errorText);

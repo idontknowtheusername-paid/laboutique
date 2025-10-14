@@ -42,6 +42,16 @@ export async function GET(request: Request) {
       },
     });
     
+    // CRUCIAL: Lire le header X-Ca-Error-Message
+    const errorMessage = response.headers.get('X-Ca-Error-Message');
+    const allHeaders: Record<string, string> = {};
+    response.headers.forEach((value, key) => {
+      allHeaders[key] = value;
+    });
+    
+    console.log('[Test Signature] Headers:', allHeaders);
+    console.log('[Test Signature] X-Ca-Error-Message:', errorMessage);
+    
     const data = await response.json();
     
     console.log('[Test Signature] Réponse:', JSON.stringify(data, null, 2));
@@ -64,6 +74,8 @@ export async function GET(request: Request) {
           message: data.error_message || data.message,
           type: data.error_type || data.type
         },
+        server_expected_string: errorMessage || 'Non fourni dans headers',
+        headers: allHeaders,
         full_response: data
       });
     } else {
@@ -71,6 +83,8 @@ export async function GET(request: Request) {
         success: false,
         message: '⚠️ Réponse inattendue',
         signature_used: signature,
+        server_expected_string: errorMessage || 'Non fourni dans headers',
+        headers: allHeaders,
         full_response: data
       });
     }
