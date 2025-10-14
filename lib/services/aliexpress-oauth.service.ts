@@ -58,28 +58,30 @@ export class AliExpressOAuthService {
   /**
    * Échanger le code d'autorisation contre un access_token
    * Documentation: https://openservice.aliexpress.com/doc/api.htm?cid=3&path=/auth/token/create
+   * NOTE: auth.token.create est une System API qui utilise SHA256 (comme auth.token.refresh)
    */
   async exchangeCodeForToken(code: string): Promise<AliExpressOAuthToken> {
     console.log('[OAuth] Échange code contre access_token');
 
     // Utiliser l'API /auth/token/create selon la documentation
     const timestamp = Date.now().toString();
+    const apiPath = '/auth/token/create';
     
     const params: Record<string, any> = {
       app_key: this.config.appKey,
       code: code,
       timestamp: timestamp,
-      sign_method: 'md5',
-      format: 'json',
-      v: '2.0',
-      method: 'auth.token.create',
+      sign_method: 'sha256',
     };
 
-    // Générer la signature
-    params.sign = this.generateSign(params);
+    // Générer la signature pour System Interface (SHA256 avec chemin API)
+    params.sign = this.generateSystemSign(apiPath, params);
 
     try {
       const url = `${this.restBaseUrl}/auth/token/create?${new URLSearchParams(params).toString()}`;
+      
+      console.log('[OAuth] 📤 Requête URL:', url);
+      console.log('[OAuth] 📤 Paramètres:', params);
       
       const response = await fetch(url, {
         method: 'GET',
@@ -90,14 +92,20 @@ export class AliExpressOAuthService {
 
       // CRUCIAL: Lire les headers pour debug
       const errorMessage = response.headers.get('X-Ca-Error-Message');
+      const signDebug = response.headers.get('X-Ca-Signature-Headers');
       const allHeaders: Record<string, string> = {};
       response.headers.forEach((value, key) => {
         allHeaders[key] = value;
       });
       
-      console.log('[OAuth] Response Headers:', allHeaders);
+      console.log('[OAuth] 📥 Response Status:', response.status);
+      console.log('[OAuth] 📥 Response Headers:', JSON.stringify(allHeaders, null, 2));
+      
       if (errorMessage) {
-        console.log('[OAuth] 🔑 SERVEUR ATTEND CETTE STRING:', errorMessage);
+        console.log('[OAuth] 🔑 SERVEUR MESSAGE ERREUR:', errorMessage);
+      }
+      if (signDebug) {
+        console.log('[OAuth] 🔑 SERVEUR SIGNATURE DEBUG:', signDebug);
       }
 
       if (!response.ok) {
@@ -161,11 +169,14 @@ export class AliExpressOAuthService {
       signString += key + params[key];
     }
 
-    console.log('[OAuth] Chaîne à signer (System):', signString);
+    console.log('[OAuth] 🔐 API Path:', apiPath);
+    console.log('[OAuth] 🔐 Sorted Keys:', sortedKeys);
+    console.log('[OAuth] 🔐 String to Sign:', signString);
+    console.log('[OAuth] 🔐 App Secret (first 10 chars):', this.config.appSecret.substring(0, 10) + '...');
 
     // CORRECTION: Utiliser HMAC-SHA256 avec appSecret comme clé (pas SHA256 simple)
     const signature = crypto.createHmac('sha256', this.config.appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
-    console.log('[OAuth] Signature générée (HMAC-SHA256):', signature);
+    console.log('[OAuth] 🔐 Signature générée (HMAC-SHA256):', signature);
     
     return signature;
   }
