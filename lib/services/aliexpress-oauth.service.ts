@@ -69,7 +69,7 @@ export class AliExpressOAuthService {
       app_key: this.config.appKey,
       code: code,
       timestamp: timestamp,
-      sign_method: 'sha256',
+      sign_method: 'md5',
       format: 'json',
       v: '2.0',
       method: 'auth.token.create',
@@ -197,9 +197,9 @@ export class AliExpressOAuthService {
     
     console.log('[OAuth] Chaîne à signer (Classic):', signString);
     
-    // Utiliser SHA256
-    const signature = crypto.createHash('sha256').update(signString, 'utf8').digest('hex').toUpperCase();
-    console.log('[OAuth] Signature générée (SHA256):', signature);
+    // Utiliser MD5
+    const signature = crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
+    console.log('[OAuth] Signature générée (MD5):', signature);
     
     return signature;
   }
