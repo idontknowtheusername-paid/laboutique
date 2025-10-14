@@ -151,9 +151,9 @@ export class AliExpressOAuthService {
 
     console.log('[OAuth] Chaîne à signer (System):', signString);
 
-    // Hasher avec SHA256 (pas MD5 pour System Interfaces)
-    const signature = crypto.createHash('sha256').update(signString, 'utf8').digest('hex').toUpperCase();
-    console.log('[OAuth] Signature générée:', signature);
+    // CORRECTION: Utiliser HMAC-SHA256 avec appSecret comme clé (pas SHA256 simple)
+    const signature = crypto.createHmac('sha256', this.config.appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
+    console.log('[OAuth] Signature générée (HMAC-SHA256):', signature);
     
     return signature;
   }

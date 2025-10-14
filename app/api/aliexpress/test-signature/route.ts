@@ -32,8 +32,8 @@ export async function GET(request: Request) {
     signString += key + params[key];
   }
   
-  // Générer la signature
-  const signature = crypto.createHash('sha256').update(signString, 'utf8').digest('hex').toUpperCase();
+  // Générer la signature avec HMAC-SHA256 (CORRECTION)
+  const signature = crypto.createHmac('sha256', appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
   
   // URL finale
   params['sign'] = signature;
@@ -41,6 +41,7 @@ export async function GET(request: Request) {
   
   return NextResponse.json({
     debug: 'Signature Generation Test',
+    method: 'HMAC-SHA256 (CORRIGÉ)',
     step1_parameters: params,
     step2_sorted_keys: sortedKeys,
     step3_sign_string: signString,
@@ -49,6 +50,11 @@ export async function GET(request: Request) {
     documentation_example: {
       signString: '/auth/token/createapp_key12345678code3_500102_JxZ05Ux3cnnSSUm6dCxYg6Q26sign_methodsha256timestamp1517820392000',
       note: 'Compare notre signString avec cet exemple de la doc'
+    },
+    fix_applied: {
+      before: 'crypto.createHash(sha256) - SHA256 simple',
+      after: 'crypto.createHmac(sha256, appSecret) - HMAC-SHA256',
+      reason: 'Le SDK Java utilise appSecret, donc la signature doit utiliser HMAC avec appSecret comme clé'
     },
     config: {
       appKey: appKey,
