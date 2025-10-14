@@ -4,135 +4,195 @@ import crypto from 'crypto';
 export const runtime = 'nodejs';
 
 /**
- * Test de TOUTES les variantes de signature possibles
+ * Test toutes les variantes de signature et capture les headers de réponse
  */
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const testCode = searchParams.get('code') || 'TEST_CODE_123';
-  
-  const appKey = process.env.ALIEXPRESS_APP_KEY || '';
-  const appSecret = process.env.ALIEXPRESS_APP_SECRET || '';
-  const timestamp = Date.now().toString();
-  const apiPath = '/auth/token/create';
-  
-  // Paramètres de base
-  const params: Record<string, string> = {
-    app_key: appKey,
-    code: testCode,
-    timestamp: timestamp,
-    sign_method: 'sha256',
-  };
-  
-  const sortedKeys = Object.keys(params).sort();
-  
-  // ========================================
-  // VARIANTE 1: HMAC-SHA256 avec path au début (actuelle)
-  // ========================================
-  let signString1 = apiPath;
-  for (const key of sortedKeys) {
-    signString1 += key + params[key];
-  }
-  const signature1 = crypto.createHmac('sha256', appSecret).update(signString1, 'utf8').digest('hex').toUpperCase();
-  
-  // ========================================
-  // VARIANTE 2: SHA256 simple avec path + wrapping appSecret (comme MD5)
-  // ========================================
-  let signString2 = appSecret + apiPath;
-  for (const key of sortedKeys) {
-    signString2 += key + params[key];
-  }
-  signString2 += appSecret;
-  const signature2 = crypto.createHash('sha256').update(signString2, 'utf8').digest('hex').toUpperCase();
-  
-  // ========================================
-  // VARIANTE 3: HMAC-SHA256 SANS path
-  // ========================================
-  let signString3 = '';
-  for (const key of sortedKeys) {
-    signString3 += key + params[key];
-  }
-  const signature3 = crypto.createHmac('sha256', appSecret).update(signString3, 'utf8').digest('hex').toUpperCase();
-  
-  // ========================================
-  // VARIANTE 4: SHA256 simple avec path SEULEMENT (pas de wrapping)
-  // ========================================
-  let signString4 = apiPath;
-  for (const key of sortedKeys) {
-    signString4 += key + params[key];
-  }
-  const signature4 = crypto.createHash('sha256').update(signString4, 'utf8').digest('hex').toUpperCase();
-  
-  // ========================================
-  // VARIANTE 5: MD5 avec wrapping appSecret (comme Business API)
-  // ========================================
-  let signString5 = appSecret;
-  for (const key of sortedKeys) {
-    signString5 += key + params[key];
-  }
-  signString5 += appSecret;
-  const signature5 = crypto.createHash('md5').update(signString5, 'utf8').digest('hex').toUpperCase();
-  
-  // ========================================
-  // VARIANTE 6: HMAC-SHA256 avec wrapping appSecret au début/fin
-  // ========================================
-  let signString6 = appSecret + apiPath;
-  for (const key of sortedKeys) {
-    signString6 += key + params[key];
-  }
-  signString6 += appSecret;
-  const signature6 = crypto.createHmac('sha256', appSecret).update(signString6, 'utf8').digest('hex').toUpperCase();
-  
-  return NextResponse.json({
-    test: 'All Signature Variants',
-    parameters: params,
-    sorted_keys: sortedKeys,
-    variants: {
-      variant_1: {
-        name: 'HMAC-SHA256 avec path (ACTUELLE)',
-        sign_string: signString1,
-        signature: signature1,
-        description: 'crypto.createHmac(sha256, appSecret) avec apiPath au début'
-      },
-      variant_2: {
-        name: 'SHA256 avec path + wrapping appSecret',
-        sign_string: signString2,
-        signature: signature2,
-        description: 'crypto.createHash(sha256) avec appSecret au début et fin + apiPath'
-      },
-      variant_3: {
-        name: 'HMAC-SHA256 SANS path',
-        sign_string: signString3,
-        signature: signature3,
-        description: 'crypto.createHmac(sha256, appSecret) sans apiPath'
-      },
-      variant_4: {
-        name: 'SHA256 simple avec path SEULEMENT',
-        sign_string: signString4,
-        signature: signature4,
-        description: 'crypto.createHash(sha256) avec apiPath, pas de wrapping'
-      },
-      variant_5: {
-        name: 'MD5 avec wrapping (comme Business API)',
-        sign_string: signString5,
-        signature: signature5,
-        description: 'crypto.createHash(md5) avec appSecret au début et fin, SANS apiPath',
-        note: 'Même si sign_method=sha256, peut-être que System API utilise MD5 ?'
-      },
-      variant_6: {
-        name: 'HMAC-SHA256 avec wrapping complet',
-        sign_string: signString6,
-        signature: signature6,
-        description: 'crypto.createHmac(sha256, appSecret) avec appSecret ET apiPath wrapping'
-      }
-    },
-    next_step: {
-      message: 'Testez chaque signature manuellement',
-      how: 'Copiez chaque signature et testez-la via /api/aliexpress/test-with-signature?signature=XXX&code=YYY'
-    },
-    config: {
-      appKey: appKey,
-      appSecret: appSecret ? `${appSecret.slice(0, 5)}...` : 'MANQUANT',
-      apiPath: apiPath
+  try {
+    const { searchParams } = new URL(request.url);
+    const code = searchParams.get('code');
+    
+    if (!code) {
+      return NextResponse.json({
+        error: 'Paramètre code requis',
+        usage: '/api/aliexpress/test-all-signatures?code=VOTRE_CODE',
+      });
     }
-  });
+
+    const appKey = process.env.ALIEXPRESS_APP_KEY || '';
+    const appSecret = process.env.ALIEXPRESS_APP_SECRET || '';
+    const timestamp = Date.now().toString();
+    
+    const baseParams = {
+      app_key: appKey,
+      code: code,
+      timestamp: timestamp,
+      sign_method: 'md5',
+      format: 'json',
+      v: '2.0',
+      method: 'auth.token.create',
+    };
+
+    const tests = [
+      {
+        name: 'MD5 Classique',
+        params: { ...baseParams },
+        signature: generateMD5Signature(baseParams, appSecret)
+      },
+      {
+        name: 'SHA256',
+        params: { ...baseParams, sign_method: 'sha256' },
+        signature: generateSHA256Signature(baseParams, appSecret)
+      },
+      {
+        name: 'System Interface',
+        params: { ...baseParams },
+        signature: generateSystemSignature('/auth/token/create', baseParams, appSecret)
+      },
+      {
+        name: 'HMAC-SHA256',
+        params: { ...baseParams, sign_method: 'sha256' },
+        signature: generateHMACSignature(baseParams, appSecret)
+      },
+      {
+        name: 'Sans app_secret wrap',
+        params: { ...baseParams },
+        signature: generateNoSecretSignature(baseParams, appSecret)
+      },
+      {
+        name: 'Avec access_token dans params',
+        params: { ...baseParams, access_token: 'test' },
+        signature: generateMD5Signature({...baseParams, access_token: 'test'}, appSecret)
+      }
+    ];
+
+    const results = [];
+
+    for (const test of tests) {
+      try {
+        const testParams = { ...test.params, sign: test.signature };
+        const queryString = new URLSearchParams(testParams).toString();
+        const url = `https://api-sg.aliexpress.com/rest/auth/token/create?${queryString}`;
+        
+        console.log(`[Test ${test.name}] URL:`, url);
+        console.log(`[Test ${test.name}] Signature:`, test.signature);
+        
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+          },
+        });
+
+        // Capturer tous les headers
+        const headers: Record<string, string> = {};
+        response.headers.forEach((value, key) => {
+          headers[key] = value;
+        });
+
+        const responseText = await response.text();
+        let responseData;
+        try {
+          responseData = JSON.parse(responseText);
+        } catch {
+          responseData = { raw_response: responseText };
+        }
+
+        results.push({
+          test_name: test.name,
+          signature: test.signature,
+          status: response.status,
+          headers,
+          response: responseData,
+          x_ca_error_message: headers['x-ca-error-message'] || headers['X-Ca-Error-Message'],
+          success: response.ok
+        });
+
+        console.log(`[Test ${test.name}] Status:`, response.status);
+        console.log(`[Test ${test.name}] X-Ca-Error-Message:`, headers['x-ca-error-message'] || headers['X-Ca-Error-Message']);
+
+      } catch (error) {
+        results.push({
+          test_name: test.name,
+          signature: test.signature,
+          error: error instanceof Error ? error.message : 'Erreur inconnue',
+          success: false
+        });
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Tests de signature terminés',
+      code: code.substring(0, 10) + '...',
+      results,
+      summary: {
+        total_tests: tests.length,
+        successful_tests: results.filter(r => r.success).length,
+        failed_tests: results.filter(r => !r.success).length,
+        error_messages: results
+          .filter(r => r.x_ca_error_message)
+          .map(r => ({ test: r.test_name, message: r.x_ca_error_message }))
+      }
+    });
+    
+  } catch (error) {
+    return NextResponse.json({
+      error: error instanceof Error ? error.message : 'Erreur',
+    }, { status: 500 });
+  }
+}
+
+function generateMD5Signature(params: Record<string, any>, appSecret: string): string {
+  const sortedKeys = Object.keys(params).sort();
+  let signString = appSecret;
+  for (const key of sortedKeys) {
+    if (params[key] !== undefined && params[key] !== null) {
+      signString += key + params[key];
+    }
+  }
+  signString += appSecret;
+  return crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
+}
+
+function generateSHA256Signature(params: Record<string, any>, appSecret: string): string {
+  const sortedKeys = Object.keys(params).sort();
+  let signString = appSecret;
+  for (const key of sortedKeys) {
+    if (params[key] !== undefined && params[key] !== null) {
+      signString += key + params[key];
+    }
+  }
+  signString += appSecret;
+  return crypto.createHash('sha256').update(signString, 'utf8').digest('hex').toUpperCase();
+}
+
+function generateSystemSignature(apiPath: string, params: Record<string, any>, appSecret: string): string {
+  const sortedKeys = Object.keys(params).filter(k => k !== 'sign').sort();
+  let signString = apiPath;
+  for (const key of sortedKeys) {
+    signString += key + params[key];
+  }
+  return crypto.createHmac('sha256', appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
+}
+
+function generateHMACSignature(params: Record<string, any>, appSecret: string): string {
+  const sortedKeys = Object.keys(params).sort();
+  let signString = '';
+  for (const key of sortedKeys) {
+    if (params[key] !== undefined && params[key] !== null) {
+      signString += key + params[key];
+    }
+  }
+  return crypto.createHmac('sha256', appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
+}
+
+function generateNoSecretSignature(params: Record<string, any>, appSecret: string): string {
+  const sortedKeys = Object.keys(params).sort();
+  let signString = '';
+  for (const key of sortedKeys) {
+    if (params[key] !== undefined && params[key] !== null) {
+      signString += key + params[key];
+    }
+  }
+  return crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
 }
