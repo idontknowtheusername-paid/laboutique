@@ -69,7 +69,7 @@ export class AliExpressOAuthService {
       app_key: this.config.appKey,
       code: code,
       timestamp: timestamp,
-      sign_method: 'md5',
+      sign_method: 'sha256',
       format: 'json',
       v: '2.0',
       method: 'auth.token.create',
@@ -167,9 +167,9 @@ export class AliExpressOAuthService {
 
     console.log('[OAuth] Chaîne à signer (System):', signString);
 
-    // Utiliser MD5 pour System Interface avec app_secret comme clé
-    const signature = crypto.createHmac('md5', this.config.appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
-    console.log('[OAuth] Signature générée (HMAC-MD5):', signature);
+    // Utiliser SHA256 pour System Interface avec app_secret comme clé
+    const signature = crypto.createHmac('sha256', this.config.appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
+    console.log('[OAuth] Signature générée (HMAC-SHA256):', signature);
     
     return signature;
   }
