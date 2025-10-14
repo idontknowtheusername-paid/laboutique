@@ -98,6 +98,10 @@ export class AliExpressOAuthService {
       console.log('[OAuth] Response Headers:', allHeaders);
       if (errorMessage) {
         console.log('[OAuth] 🔑 SERVEUR ATTEND CETTE STRING:', errorMessage);
+        console.log('[OAuth] 🔑 NOTRE SIGNSTRING:', this.buildSignString(params));
+      } else {
+        console.log('[OAuth] ❌ Pas de X-Ca-Error-Message dans les headers');
+        console.log('[OAuth] 🔑 NOTRE SIGNSTRING:', this.buildSignString(params));
       }
 
       if (!response.ok) {
@@ -174,6 +178,14 @@ export class AliExpressOAuthService {
    * Générer la signature HMAC-MD5 pour Business Interfaces (produits, etc.)
    */
   private generateSign(params: Record<string, any>): string {
+    const signString = this.buildSignString(params);
+    return crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
+  }
+
+  /**
+   * Construire la chaîne à signer (pour debug)
+   */
+  private buildSignString(params: Record<string, any>): string {
     // Trier les paramètres par clé
     const sortedKeys = Object.keys(params).sort();
     
@@ -185,9 +197,8 @@ export class AliExpressOAuthService {
       }
     }
     signString += this.config.appSecret;
-
-    // Générer signature MD5
-    return crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
+    
+    return signString;
   }
 
   /**
