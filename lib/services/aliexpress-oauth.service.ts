@@ -75,8 +75,8 @@ export class AliExpressOAuthService {
       method: 'auth.token.create',
     };
 
-    // Générer la signature
-    params.sign = this.generateSign(params);
+    // Générer la signature - utiliser System Interface pour OAuth
+    params.sign = this.generateSystemSign('/auth/token/create', params);
 
     try {
       const url = `${this.restBaseUrl}/auth/token/create?${new URLSearchParams(params).toString()}`;
@@ -151,7 +151,7 @@ export class AliExpressOAuthService {
   }
 
   /**
-   * Générer la signature SHA256 pour System Interfaces (auth/token)
+   * Générer la signature pour System Interfaces (auth/token)
    * Documentation: For System APIs, include API path in signature string
    * Format: /api/pathkey1value1key2value2... (no app_secret wrapping)
    */
@@ -167,9 +167,9 @@ export class AliExpressOAuthService {
 
     console.log('[OAuth] Chaîne à signer (System):', signString);
 
-    // CORRECTION: Utiliser HMAC-SHA256 avec appSecret comme clé (pas SHA256 simple)
-    const signature = crypto.createHmac('sha256', this.config.appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
-    console.log('[OAuth] Signature générée (HMAC-SHA256):', signature);
+    // Utiliser MD5 pour System Interface avec app_secret comme clé
+    const signature = crypto.createHmac('md5', this.config.appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
+    console.log('[OAuth] Signature générée (HMAC-MD5):', signature);
     
     return signature;
   }
