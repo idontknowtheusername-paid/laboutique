@@ -77,8 +77,8 @@ export class AliExpressOAuthService {
       client_id: this.config.appKey,
     };
 
-    // Générer la signature - essayer méthode classique avec structure différente
-    params.sign = this.generateClassicSign(params);
+    // Générer la signature - essayer méthode alternative
+    params.sign = this.generateAlternativeSign(params);
 
     try {
       // Essayer l'endpoint sync au lieu de rest
@@ -200,6 +200,36 @@ export class AliExpressOAuthService {
     // Utiliser MD5
     const signature = crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
     console.log('[OAuth] Signature générée (MD5):', signature);
+    
+    return signature;
+  }
+
+  /**
+   * Générer la signature avec structure différente
+   */
+  private generateAlternativeSign(params: Record<string, any>): string {
+    // Trier les paramètres par clé
+    const sortedKeys = Object.keys(params).sort();
+    
+    // Construire la chaîne à signer avec structure différente
+    let signString = '';
+    for (const key of sortedKeys) {
+      if (params[key] !== undefined && params[key] !== null) {
+        signString += key + '=' + params[key] + '&';
+      }
+    }
+    
+    // Enlever le dernier &
+    signString = signString.slice(0, -1);
+    
+    // Ajouter app_secret au début et à la fin
+    signString = this.config.appSecret + signString + this.config.appSecret;
+    
+    console.log('[OAuth] Chaîne à signer (Alternative):', signString);
+    
+    // Utiliser MD5
+    const signature = crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
+    console.log('[OAuth] Signature générée (MD5 Alternative):', signature);
     
     return signature;
   }
