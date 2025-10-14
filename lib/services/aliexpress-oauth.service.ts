@@ -75,8 +75,8 @@ export class AliExpressOAuthService {
       method: 'auth.token.create',
     };
 
-    // Générer la signature - essayer méthode HMAC
-    params.sign = this.generateHMACSign(params);
+    // Générer la signature - essayer méthode classique
+    params.sign = this.generateClassicSign(params);
 
     try {
       // Revenir à l'endpoint rest
