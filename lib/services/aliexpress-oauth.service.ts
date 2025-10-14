@@ -75,8 +75,8 @@ export class AliExpressOAuthService {
       method: 'auth.token.create',
     };
 
-    // Générer la signature - utiliser System Interface pour OAuth
-    params.sign = this.generateSystemSign('/auth/token/create', params);
+    // Générer la signature - essayer méthode classique avec structure différente
+    params.sign = this.generateClassicSign(params);
 
     try {
       const url = `${this.restBaseUrl}/auth/token/create?${new URLSearchParams(params).toString()}`;
@@ -170,6 +170,33 @@ export class AliExpressOAuthService {
     // Utiliser SHA256 pour System Interface avec app_secret comme clé
     const signature = crypto.createHmac('sha256', this.config.appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
     console.log('[OAuth] Signature générée (HMAC-SHA256):', signature);
+    
+    return signature;
+  }
+
+  /**
+   * Générer la signature classique pour OAuth
+   */
+  private generateClassicSign(params: Record<string, any>): string {
+    // Trier les paramètres par clé
+    const sortedKeys = Object.keys(params).sort();
+    
+    // Construire la chaîne à signer avec structure différente
+    let signString = '';
+    for (const key of sortedKeys) {
+      if (params[key] !== undefined && params[key] !== null) {
+        signString += key + params[key];
+      }
+    }
+    
+    // Ajouter app_secret au début et à la fin
+    signString = this.config.appSecret + signString + this.config.appSecret;
+    
+    console.log('[OAuth] Chaîne à signer (Classic):', signString);
+    
+    // Utiliser SHA256
+    const signature = crypto.createHash('sha256').update(signString, 'utf8').digest('hex').toUpperCase();
+    console.log('[OAuth] Signature générée (SHA256):', signature);
     
     return signature;
   }
