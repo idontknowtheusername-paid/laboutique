@@ -77,8 +77,8 @@ export class AliExpressOAuthService {
       client_id: this.config.appKey,
     };
 
-    // Générer la signature - essayer méthode alternative
-    params.sign = this.generateAlternativeSign(params);
+    // Générer la signature - essayer méthode HMAC
+    params.sign = this.generateHMACSign(params);
 
     try {
       // Revenir à l'endpoint rest
@@ -230,6 +230,30 @@ export class AliExpressOAuthService {
     // Utiliser MD5
     const signature = crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
     console.log('[OAuth] Signature générée (MD5 Alternative):', signature);
+    
+    return signature;
+  }
+
+  /**
+   * Générer la signature HMAC
+   */
+  private generateHMACSign(params: Record<string, any>): string {
+    // Trier les paramètres par clé
+    const sortedKeys = Object.keys(params).sort();
+    
+    // Construire la chaîne à signer
+    let signString = '';
+    for (const key of sortedKeys) {
+      if (params[key] !== undefined && params[key] !== null) {
+        signString += key + params[key];
+      }
+    }
+    
+    console.log('[OAuth] Chaîne à signer (HMAC):', signString);
+    
+    // Utiliser HMAC-MD5
+    const signature = crypto.createHmac('md5', this.config.appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
+    console.log('[OAuth] Signature générée (HMAC-MD5):', signature);
     
     return signature;
   }
