@@ -73,8 +73,6 @@ export class AliExpressOAuthService {
       format: 'json',
       v: '2.0',
       method: 'auth.token.create',
-      grant_type: 'authorization_code',
-      client_id: this.config.appKey,
     };
 
     // Générer la signature - essayer méthode HMAC
