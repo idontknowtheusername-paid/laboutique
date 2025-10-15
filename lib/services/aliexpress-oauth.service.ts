@@ -75,19 +75,18 @@ export class AliExpressOAuthService {
       method: 'auth.token.create',
     };
 
-    // Générer la signature - essayer méthode alternative
-    params.sign = this.generateAlternativeSign(params);
+    // Générer la signature - essayer sans app_secret au début/fin
+    params.sign = this.generateNoSecretSign(params);
 
     try {
-      // Essayer l'endpoint sync avec méthode POST
-      const url = `https://api-sg.aliexpress.com/sync`;
+      // Utiliser l'endpoint REST correct avec GET
+      const url = `${this.restBaseUrl}/auth/token/create?${new URLSearchParams(params).toString()}`;
       
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
         },
-        body: new URLSearchParams(params).toString(),
       });
 
       // CRUCIAL: Lire les headers pour debug
@@ -253,6 +252,30 @@ export class AliExpressOAuthService {
     // Utiliser HMAC-MD5
     const signature = crypto.createHmac('md5', this.config.appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
     console.log('[OAuth] Signature générée (HMAC-MD5):', signature);
+    
+    return signature;
+  }
+
+  /**
+   * Générer la signature sans app_secret au début/fin
+   */
+  private generateNoSecretSign(params: Record<string, any>): string {
+    // Trier les paramètres par clé
+    const sortedKeys = Object.keys(params).sort();
+    
+    // Construire la chaîne à signer SANS app_secret
+    let signString = '';
+    for (const key of sortedKeys) {
+      if (params[key] !== undefined && params[key] !== null) {
+        signString += key + params[key];
+      }
+    }
+    
+    console.log('[OAuth] Chaîne à signer (No Secret):', signString);
+    
+    // Utiliser MD5
+    const signature = crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
+    console.log('[OAuth] Signature générée (MD5 No Secret):', signature);
     
     return signature;
   }
