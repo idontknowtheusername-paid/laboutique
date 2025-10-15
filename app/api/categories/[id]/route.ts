@@ -38,7 +38,7 @@ export async function PUT(
       );
     }
 
-    const { data: category, error } = await supabase
+    const { data: category, error } = await (supabase as any)
       .from('categories')
       .update({
         name: name.trim(),
