@@ -39,34 +39,75 @@ export default function CheckoutPage() {
   const shipping = subtotal > 50000 ? 0 : 2000;
   const total = subtotal + shipping;
 
+  // États pour le formulaire
+  const [formData, setFormData] = React.useState({
+    firstName: '',
+    lastName: '',
+    address: '',
+    city: '',
+    postalCode: '',
+    phone: '',
+    email: user?.email || '',
+  });
+
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation du formulaire
+    if (!formData.firstName || !formData.lastName || !formData.address || !formData.city || !formData.phone || !formData.email) {
+      setErrorMsg('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+
     try {
       setLoading(true);
       setErrorMsg(null);
+      
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: user?.id,
-          items: cartSummary.map(i => ({ product_id: i.id, vendor_id: 'default', quantity: i.qty, price: i.price })),
+          items: cartSummary.map(i => ({ 
+            product_id: i.id, 
+            vendor_id: 'default', 
+            quantity: i.qty, 
+            price: i.price 
+          })),
           customer: {
-            name: 'Client',
-            email: 'client@example.com',
-            phone: '+22900000000',
-            shipping_address: {},
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            country: 'Benin',
+            postalCode: formData.postalCode || '229',
+            shipping_address: {
+              address: formData.address,
+              city: formData.city,
+              country: 'Benin',
+              postalCode: formData.postalCode || '229'
+            }
           }
         })
       });
+      
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Checkout failed');
+      
+      if (!res.ok) {
+        throw new Error(json.error || 'Échec de l\'initialisation du paiement');
+      }
+      
       if (json.payment_url) {
+        console.log('Redirection vers Qosic:', json.payment_url);
         window.location.href = json.payment_url;
         return;
       }
+      
       setPlaced(true);
     } catch (err) {
-      console.error(err);
+      console.error('Erreur checkout:', err);
       setErrorMsg((err as Error)?.message || 'Le paiement a échoué. Réessayez.');
     } finally {
       setLoading(false);
@@ -108,31 +149,76 @@ export default function CheckoutPage() {
                 </CardHeader>
                 <CardContent>
                   <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input placeholder="Prénom *" required />
-                    <Input placeholder="Nom *" required />
-                    <Input className="md:col-span-2" placeholder="Adresse *" required />
-                    <Input placeholder="Ville *" required />
-                    <Input placeholder="Code postal" />
-                    <Input className="md:col-span-2" placeholder="Téléphone *" required />
-                    <Input className="md:col-span-2" type="email" placeholder="Email *" required />
+                    <Input 
+                      placeholder="Prénom *" 
+                      value={formData.firstName}
+                      onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                      required 
+                    />
+                    <Input 
+                      placeholder="Nom *" 
+                      value={formData.lastName}
+                      onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                      required 
+                    />
+                    <Input 
+                      className="md:col-span-2" 
+                      placeholder="Adresse *" 
+                      value={formData.address}
+                      onChange={(e) => setFormData({...formData, address: e.target.value})}
+                      required 
+                    />
+                    <Input 
+                      placeholder="Ville *" 
+                      value={formData.city}
+                      onChange={(e) => setFormData({...formData, city: e.target.value})}
+                      required 
+                    />
+                    <Input 
+                      placeholder="Code postal" 
+                      value={formData.postalCode}
+                      onChange={(e) => setFormData({...formData, postalCode: e.target.value})}
+                    />
+                    <Input 
+                      className="md:col-span-2" 
+                      placeholder="Téléphone * (ex: 22967307747)" 
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      required 
+                    />
+                    <Input 
+                      className="md:col-span-2" 
+                      type="email" 
+                      placeholder="Email *" 
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      required 
+                    />
                   </form>
                 </CardContent>
               </Card>
 
-              {/* Payment (hosted by FedaPay) */}
+              {/* Payment (hosted by Qosic) */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center"><CreditCard className="w-5 h-5 mr-2" /> Paiement</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="text-sm text-gray-700">
-                    Vous serez redirigé vers la page sécurisée de FedaPay pour renseigner vos informations et finaliser le paiement.
+                    Vous serez redirigé vers la page sécurisée de Qosic pour finaliser le paiement par Mobile Money ou Carte bancaire.
                   </div>
-                  <div className="text-sm text-gray-600 flex items-center">
-                    <ShieldCheck className="w-4 h-4 mr-2 text-jomionstore-secondary" /> Paiement sécurisé • Chiffré
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <ShieldCheck className="w-4 h-4 text-jomionstore-secondary" /> 
+                    <span>Paiement sécurisé • Chiffré SSL</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+                    <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded">Mobile Money</span>
+                    <span className="px-2 py-1 bg-green-50 text-green-700 rounded">Carte bancaire</span>
                   </div>
                   {errorMsg ? (
-                    <div className="text-sm text-red-600">{errorMsg}</div>
+                    <div className="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-600">
+                      {errorMsg}
+                    </div>
                   ) : null}
                 </CardContent>
               </Card>
