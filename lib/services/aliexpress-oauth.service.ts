@@ -79,8 +79,8 @@ export class AliExpressOAuthService {
     params.sign = this.generateAlternativeSign(params);
 
     try {
-      // Revenir à l'endpoint rest
-      const url = `${this.restBaseUrl}/auth/token/create?${new URLSearchParams(params).toString()}`;
+      // Essayer l'endpoint sync avec méthode POST
+      const url = `https://api-sg.aliexpress.com/sync`;
       
       const response = await fetch(url, {
         method: 'GET',
