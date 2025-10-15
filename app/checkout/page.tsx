@@ -10,15 +10,11 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { CreditCard, Truck, ShieldCheck, CheckCircle, Smartphone, Globe, Zap } from 'lucide-react';
+import { CreditCard, Truck, ShieldCheck, CheckCircle, Smartphone, Globe, Zap, ShoppingCart, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
 import Link from 'next/link';
-
-const cartSummary = [
-  { id: '1', name: 'iPhone 15 Pro Max 256GB', price: 850000, qty: 1 },
-  { id: '2', name: 'AirPods Pro 2', price: 140000, qty: 1 },
-];
 
 const formatPrice = (price: number) => new Intl.NumberFormat('fr-BJ', { style: 'currency', currency: 'XOF', minimumFractionDigits: 0 }).format(price);
 
@@ -31,6 +27,9 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('checkout');
   const router = useRouter();
   const { user } = useAuth();
+  
+  // ✅ UTILISER LE VRAI PANIER
+  const { cartItems, cartSummary, loading: cartLoading } = useCart();
 
   useEffect(() => {
     // Protéger la page checkout si non connecté
@@ -39,9 +38,17 @@ export default function CheckoutPage() {
     }
   }, [user, router]);
 
-  const subtotal = cartSummary.reduce((s, i) => s + i.price * i.qty, 0);
-  const shipping = subtotal > 50000 ? 0 : 2000;
-  const total = subtotal + shipping;
+  // Rediriger si le panier est vide
+  useEffect(() => {
+    if (!cartLoading && cartItems && cartItems.length === 0) {
+      router.replace('/cart');
+    }
+  }, [cartItems, cartLoading, router]);
+
+  // ✅ CALCULER LES TOTAUX DEPUIS LE VRAI PANIER
+  const subtotal = cartSummary?.subtotal || 0;
+  const shipping = cartSummary?.shipping_amount || 0;
+  const total = cartSummary?.total_amount || 0;
 
   // États pour le formulaire
   const [formData, setFormData] = React.useState({
@@ -56,16 +63,21 @@ export default function CheckoutPage() {
 
   const placeOrderCheckout = async () => {
     try {
+      // ✅ Utiliser les vrais items du panier
+      if (!cartItems || cartItems.length === 0) {
+        throw new Error('Votre panier est vide');
+      }
+
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: user?.id,
-          items: cartSummary.map(i => ({ 
-            product_id: i.id, 
+          items: cartItems.map(item => ({ 
+            product_id: item.product_id, 
             vendor_id: 'default', 
-            quantity: i.qty, 
-            price: i.price 
+            quantity: item.quantity, 
+            price: item.product?.price || 0 
           })),
           customer: {
             firstName: formData.firstName,
@@ -106,16 +118,21 @@ export default function CheckoutPage() {
 
   const placeOrderMobileMoney = async () => {
     try {
+      // ✅ Utiliser les vrais items du panier
+      if (!cartItems || cartItems.length === 0) {
+        throw new Error('Votre panier est vide');
+      }
+
       const res = await fetch('/api/checkout/mobile-money', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: user?.id,
-          items: cartSummary.map(i => ({ 
-            product_id: i.id, 
+          items: cartItems.map(item => ({ 
+            product_id: item.product_id, 
             vendor_id: 'default', 
-            quantity: i.qty, 
-            price: i.price 
+            quantity: item.quantity, 
+            price: item.product?.price || 0 
           })),
           customer: {
             firstName: formData.firstName,
@@ -196,7 +213,24 @@ export default function CheckoutPage() {
           <span className="text-gray-900 font-medium">Paiement</span>
         </nav>
 
-        {placed ? (
+        {/* Loading state */}
+        {cartLoading ? (
+          <div className="flex flex-col items-center justify-center py-16">
+            <Loader2 className="w-12 h-12 text-jomionstore-primary animate-spin mb-4" />
+            <p className="text-gray-600">Chargement du panier...</p>
+          </div>
+        ) : !cartItems || cartItems.length === 0 ? (
+          <div className="text-center py-16">
+            <ShoppingCart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Votre panier est vide</h2>
+            <p className="text-gray-600 mb-6">Ajoutez des produits à votre panier avant de passer au paiement</p>
+            <Link href="/products">
+              <Button className="bg-jomionstore-primary hover:bg-blue-800">
+                Découvrir nos produits
+              </Button>
+            </Link>
+          </div>
+        ) : placed ? (
           <div className="text-center py-16">
             <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Commande confirmée !</h2>
@@ -378,27 +412,50 @@ export default function CheckoutPage() {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Résumé</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <ShoppingCart className="w-5 h-5" />
+                    Résumé ({cartItems?.length || 0} article{(cartItems?.length || 0) > 1 ? 's' : ''})
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    {cartSummary.map((it) => (
-                      <div key={it.id} className="flex items-center justify-between">
-                        <span className="text-sm text-gray-700 line-clamp-1">{it.name} × {it.qty}</span>
-                        <span className="text-sm font-medium">{formatPrice(it.price * it.qty)}</span>
+                  {cartLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="w-6 h-6 animate-spin text-jomionstore-primary" />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="space-y-3 max-h-60 overflow-y-auto">
+                        {cartItems?.map((item) => (
+                          <div key={item.id} className="flex items-center justify-between gap-2">
+                            <span className="text-sm text-gray-700 line-clamp-1 flex-1">
+                              {item.product?.name || 'Produit'} × {item.quantity}
+                            </span>
+                            <span className="text-sm font-medium whitespace-nowrap">
+                              {formatPrice((item.product?.price || 0) * item.quantity)}
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                  <Separator />
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between"><span>Sous-total</span><span>{formatPrice(subtotal)}</span></div>
-                    <div className="flex justify-between"><span>Livraison</span><span className={shipping === 0 ? 'text-green-600' : ''}>{shipping === 0 ? 'Gratuite' : formatPrice(shipping)}</span></div>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>Total</span>
-                    <span className="text-jomionstore-primary">{formatPrice(total)}</span>
-                  </div>
+                      <Separator />
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span>Sous-total</span>
+                          <span>{formatPrice(subtotal)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Livraison</span>
+                          <span className={shipping === 0 ? 'text-green-600 font-medium' : ''}>
+                            {shipping === 0 ? 'Gratuite ✨' : formatPrice(shipping)}
+                          </span>
+                        </div>
+                      </div>
+                      <Separator />
+                      <div className="flex justify-between text-lg font-bold">
+                        <span>Total</span>
+                        <span className="text-jomionstore-primary">{formatPrice(total)}</span>
+                      </div>
+                    </>
+                  )}
                 </CardContent>
               </Card>
 
