@@ -16,10 +16,10 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       { protocol: "https", hostname: "**.supabase.co" },
-      { protocol: "https", hostname: "qdagyxqkqgbzqrqzjvzz.supabase.co" },
       { protocol: "https", hostname: "images.pexels.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "via.placeholder.com" },
+      { protocol: "http", hostname: "via.placeholder.com" },
     ],
   },
   experimental: {

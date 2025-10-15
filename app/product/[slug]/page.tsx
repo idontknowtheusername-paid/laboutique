@@ -150,16 +150,21 @@ export default function ProductDetailPage() {
   }, [params]);
 
   const nextImage = () => {
-    const imagesLength = product?.images?.length ?? 0;
-    if (imagesLength === 0) return;
+    if (!product?.images || product.images.length === 0) return;
+    const imagesLength = product.images.length;
     setCurrentImageIndex((prev) => (prev + 1) % imagesLength);
   };
 
   const prevImage = () => {
-    const imagesLength = product?.images?.length ?? 0;
-    if (imagesLength === 0) return;
+    if (!product?.images || product.images.length === 0) return;
+    const imagesLength = product.images.length;
     setCurrentImageIndex((prev) => (prev - 1 + imagesLength) % imagesLength);
   };
+
+  // Reset image index when product changes
+  useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [product?.id]);
 
   return (
     <div className="min-h-screen bg-jomionstore-background">
@@ -183,11 +188,18 @@ export default function ProductDetailPage() {
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
           <Link href="/" className="hover:text-jomionstore-primary">Accueil</Link>
           <span>/</span>
-          <Link href="/category/electronique" className="hover:text-jomionstore-primary">Électronique</Link>
-          <span>/</span>
-          <Link href="/category/electronique/smartphones" className="hover:text-jomionstore-primary">Smartphones</Link>
-          <span>/</span>
-          <span className="text-gray-900 font-medium">{product?.name || '...'}</span>
+          {product?.category && (
+            <>
+              <Link 
+                href={`/category/${product.category.slug}`} 
+                className="hover:text-jomionstore-primary"
+              >
+                {product.category.name}
+              </Link>
+              <span>/</span>
+            </>
+          )}
+          <span className="text-gray-900 font-medium line-clamp-1">{product?.name || '...'}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
@@ -200,28 +212,34 @@ export default function ProductDetailPage() {
                 alt={product?.name || ''}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
+                className="object-contain"
+                priority={true}
                 onError={(e) => {
                   // Fallback to placeholder if image fails to load
                   const target = e.target as HTMLImageElement;
                   target.src = '/placeholder-product.jpg';
                 }}
-                unoptimized={product?.images?.[currentImageIndex]?.startsWith('http')}
               />
               
-              {/* Navigation Arrows */}
-              <button
-                onClick={prevImage}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={nextImage}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+              {/* Navigation Arrows - Only show if multiple images */}
+              {product?.images && product.images.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all z-10"
+                    aria-label="Image précédente"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all z-10"
+                    aria-label="Image suivante"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
 
               {/* Discount Badge */}
               {product?.compare_price && product?.price && product.compare_price > product.price && (
@@ -247,13 +265,13 @@ export default function ProductDetailPage() {
                       alt={`${product?.name || ''} ${index + 1}`}
                       fill
                       sizes="96px"
-                      className="object-cover"
+                      className="object-contain"
+                      loading="lazy"
                       onError={(e) => {
                         // Fallback to placeholder if image fails to load
                         const target = e.target as HTMLImageElement;
                         target.src = '/placeholder-product.jpg';
                       }}
-                      unoptimized={image.startsWith('http')}
                     />
                   </div>
                 </button>
@@ -313,7 +331,9 @@ export default function ProductDetailPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-jomionstore-primary rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold">A</span>
+                    <span className="text-white font-bold text-lg">
+                      {product?.vendor?.name ? product.vendor.name.substring(0, 2).toUpperCase() : 'VD'}
+                    </span>
                   </div>
                   <div>
                     <div className="flex items-center space-x-2">
@@ -346,7 +366,7 @@ export default function ProductDetailPage() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    disabled={quantity <= 1}
+                    disabled={quantity <= 1 || !product}
                   >
                     <Minus className="w-4 h-4" />
                   </Button>
@@ -354,14 +374,18 @@ export default function ProductDetailPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setQuantity(Math.min(product?.quantity || 1, quantity + 1))}
-                    disabled={!!product?.track_quantity && quantity >= (product?.quantity || 0)}
+                    onClick={() => {
+                      if (!product) return;
+                      const maxQty = product.track_quantity ? product.quantity : 99;
+                      setQuantity(Math.min(maxQty, quantity + 1));
+                    }}
+                    disabled={!product || (product.track_quantity && quantity >= product.quantity)}
                   >
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
                 <span className="text-sm text-gray-600">
-                  {product?.quantity ?? 0} disponibles
+                  {product?.track_quantity ? `${product?.quantity ?? 0} disponibles` : 'Stock illimité'}
                 </span>
               </div>
             </div>
