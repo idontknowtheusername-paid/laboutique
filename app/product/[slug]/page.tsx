@@ -57,6 +57,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [similarProducts, setSimilarProducts] = useState<SliderProduct[]>([]);
+  const [recentlyViewedProducts, setRecentlyViewedProducts] = useState<SliderProduct[]>([]);
   const [newProducts, setNewProducts] = useState<SliderProduct[]>([]);
 
   const { addToCart } = useCart();
@@ -165,6 +166,38 @@ export default function ProductDetailPage() {
   useEffect(() => {
     setCurrentImageIndex(0);
   }, [product?.id]);
+
+  // Load recently viewed products
+  useEffect(() => {
+    if (!product) return;
+    
+    try {
+      const raw = localStorage.getItem('recently_viewed');
+      if (!raw) return;
+      
+      const recentlyViewed = JSON.parse(raw) as any[];
+      // Filter out current product and limit to 8 items
+      const filtered = recentlyViewed
+        .filter((p: any) => p && p.id !== product.id)
+        .slice(0, 8)
+        .map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          image: p.images?.[0] || '/placeholder-product.jpg',
+          price: p.price,
+          rating: 0,
+          reviews: 0,
+          vendor: '',
+          category: '',
+        }));
+      
+      setRecentlyViewedProducts(filtered);
+    } catch (err) {
+      console.error('Error loading recently viewed:', err);
+      setRecentlyViewedProducts([]);
+    }
+  }, [product]);
 
   return (
     <div className="min-h-screen bg-jomionstore-background">
@@ -543,20 +576,34 @@ export default function ProductDetailPage() {
         </Card>
 
         {/* Similar Products */}
-        <ProductSlider
-          title="Produits similaires"
-          subtitle="Découvrez d'autres produits qui pourraient vous intéresser"
-          products={similarProducts}
-          backgroundColor="bg-white"
-        />
+        {similarProducts.length > 0 && (
+          <ProductSlider
+            title="Produits similaires"
+            subtitle="Découvrez d'autres produits qui pourraient vous intéresser"
+            products={similarProducts}
+            backgroundColor="bg-white"
+          />
+        )}
+
+        {/* Recently Viewed - NEW */}
+        {recentlyViewedProducts.length > 0 && (
+          <ProductSlider
+            title="Vous avez récemment consulté"
+            subtitle="Retrouvez les produits que vous avez vus"
+            products={recentlyViewedProducts}
+            backgroundColor="bg-gradient-to-br from-gray-50 to-gray-100"
+          />
+        )}
 
         {/* Nouveautés */}
-        <ProductSlider
-          title="Nouveautés"
-          subtitle="Les derniers produits ajoutés"
-          products={newProducts}
-          backgroundColor="bg-gray-50"
-        />
+        {newProducts.length > 0 && (
+          <ProductSlider
+            title="Nouveautés"
+            subtitle="Les derniers produits ajoutés"
+            products={newProducts}
+            backgroundColor="bg-white"
+          />
+        )}
 
         {/* Removed 'also viewed' mock slider */}
       </div>
