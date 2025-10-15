@@ -17,8 +17,9 @@ export class AliExpressOAuthService {
   // URL OAuth pour AliExpress (documentation officielle)
   // https://openservice.aliexpress.com/doc/doc.htm?nodeId=27493&docId=118729
   private authBaseUrl = 'https://api-sg.aliexpress.com/oauth/authorize';
-  // API endpoint pour System Interfaces (auth/token)
-  // Documentation: System Interfaces use /rest not /sync
+  // Endpoint OAuth 2.0 standard pour l'échange de token
+  private tokenUrl = 'https://oauth.aliexpress.com/token';
+  // API endpoint pour System Interfaces (refresh token)
   private restBaseUrl = 'https://api-sg.aliexpress.com/rest';
 
   constructor(config?: AliExpressOAuthConfig) {
@@ -57,54 +58,31 @@ export class AliExpressOAuthService {
 
   /**
    * Échanger le code d'autorisation contre un access_token
-   * Documentation: https://openservice.aliexpress.com/doc/api.htm?cid=3&path=/auth/token/create
+   * Utilise l'endpoint OAuth 2.0 standard
    */
   async exchangeCodeForToken(code: string): Promise<AliExpressOAuthToken> {
-    console.log('[OAuth] Échange code contre access_token');
+    console.log('[OAuth] Échange code contre access_token avec OAuth 2.0 standard');
 
-    // Utiliser l'API /auth/token/create selon la documentation
-    const timestamp = Date.now().toString();
-    
-    const params: Record<string, any> = {
-      app_key: this.config.appKey,
+    // Paramètres OAuth 2.0 standard (pas de signature MD5)
+    const params = {
+      grant_type: 'authorization_code',
+      client_id: this.config.appKey,
+      client_secret: this.config.appSecret,
       code: code,
-      timestamp: timestamp,
-      sign_method: 'md5',
-      format: 'json',
-      v: '2.0',
-      method: 'auth.token.create',
+      redirect_uri: this.config.redirectUri,
     };
 
-    // Générer la signature pour OAuth
-    params.sign = this.generateOAuthSign(params);
-
     try {
-      // Essayer l'endpoint sync avec la méthode correcte
-      const url = `https://api-sg.aliexpress.com/sync`;
-      
-      const response = await fetch(url, {
+      const response = await fetch(this.tokenUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams(params).toString(),
       });
 
-      // CRUCIAL: Lire les headers pour debug
-      const errorMessage = response.headers.get('X-Ca-Error-Message');
-      const allHeaders: Record<string, string> = {};
-      response.headers.forEach((value, key) => {
-        allHeaders[key] = value;
-      });
-      
-      console.log('[OAuth] Response Headers:', allHeaders);
-      if (errorMessage) {
-        console.log('[OAuth] 🔑 SERVEUR ATTEND CETTE STRING:', errorMessage);
-        console.log('[OAuth] 🔑 NOTRE SIGNSTRING:', this.buildSignString(params));
-      } else {
-        console.log('[OAuth] ❌ Pas de X-Ca-Error-Message dans les headers');
-        console.log('[OAuth] 🔑 NOTRE SIGNSTRING:', this.buildSignString(params));
-      }
+      console.log('[OAuth] Status:', response.status);
+      console.log('[OAuth] Headers:', Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -115,33 +93,22 @@ export class AliExpressOAuthService {
       const data = await response.json();
       console.log('[OAuth] Réponse token complète:', JSON.stringify(data, null, 2));
 
-      // Vérifier les erreurs - plusieurs formats possibles
-      if (data.error_response) {
-        console.error('[OAuth] Erreur API (error_response):', data.error_response);
-        throw new Error(data.error_response.msg || 'Erreur lors de l\'échange du code');
+      // Vérifier les erreurs OAuth 2.0
+      if (data.error) {
+        console.error('[OAuth] Erreur OAuth:', data.error, data.error_description);
+        throw new Error(`OAuth Error: ${data.error} - ${data.error_description}`);
       }
 
-      // Format d'erreur : {type, code, message}
-      if (data.type === 'ISP' || data.code || data.message) {
-        const errorMsg = `API Error - Type: ${data.type}, Code: ${data.code}, Message: ${data.message}`;
-        console.error('[OAuth] Erreur API détaillée:', errorMsg);
-        console.error('[OAuth] Request ID:', data.request_id);
-        throw new Error(errorMsg);
-      }
-
-      // Le token peut être directement ou dans un sous-objet
-      const tokenData = data.access_token ? data : (data.result || data);
-      
-      if (!tokenData.access_token) {
-        console.error('[OAuth] Structure de réponse inattendue:', JSON.stringify(data, null, 2));
-        throw new Error(`Pas de access_token trouvé. Structure reçue: ${JSON.stringify(Object.keys(data))}`);
+      if (!data.access_token) {
+        console.error('[OAuth] Pas de access_token dans la réponse:', data);
+        throw new Error('Pas de access_token dans la réponse');
       }
 
       return {
         access_token: data.access_token,
         refresh_token: data.refresh_token,
-        expires_in: data.expires_in || 2592000, // 30 jours selon la doc
-        refresh_expires_in: data.refresh_expires_in || 5184000, // 60 jours
+        expires_in: data.expires_in || 86400, // 24h par défaut
+        refresh_expires_in: data.refresh_expires_in || 2592000, // 30 jours
         token_type: data.token_type || 'Bearer',
         user_id: data.user_id || data.seller_id,
         aliexpress_user_id: data.havana_id,
