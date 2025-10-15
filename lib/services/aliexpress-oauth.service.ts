@@ -75,8 +75,8 @@ export class AliExpressOAuthService {
       method: 'auth.token.create',
     };
 
-    // Générer la signature - essayer sans app_secret au début/fin
-    params.sign = this.generateNoSecretSign(params);
+    // Générer la signature pour OAuth
+    params.sign = this.generateOAuthSign(params);
 
     try {
       // Essayer l'endpoint sync avec la méthode correcte
@@ -177,90 +177,10 @@ export class AliExpressOAuthService {
   }
 
   /**
-   * Générer la signature classique pour OAuth
+   * Générer la signature pour OAuth token exchange
+   * Format: key1value1key2value2... (sans app_secret au début/fin)
    */
-  private generateClassicSign(params: Record<string, any>): string {
-    // Trier les paramètres par clé
-    const sortedKeys = Object.keys(params).sort();
-    
-    // Construire la chaîne à signer avec structure différente
-    let signString = '';
-    for (const key of sortedKeys) {
-      if (params[key] !== undefined && params[key] !== null) {
-        signString += key + params[key];
-      }
-    }
-    
-    // Ajouter app_secret au début et à la fin
-    signString = this.config.appSecret + signString + this.config.appSecret;
-    
-    console.log('[OAuth] Chaîne à signer (Classic):', signString);
-    
-    // Utiliser MD5
-    const signature = crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
-    console.log('[OAuth] Signature générée (MD5):', signature);
-    
-    return signature;
-  }
-
-  /**
-   * Générer la signature avec structure différente
-   */
-  private generateAlternativeSign(params: Record<string, any>): string {
-    // Trier les paramètres par clé
-    const sortedKeys = Object.keys(params).sort();
-    
-    // Construire la chaîne à signer avec structure différente
-    let signString = '';
-    for (const key of sortedKeys) {
-      if (params[key] !== undefined && params[key] !== null) {
-        signString += key + '=' + params[key] + '&';
-      }
-    }
-    
-    // Enlever le dernier &
-    signString = signString.slice(0, -1);
-    
-    // Ajouter app_secret au début et à la fin
-    signString = this.config.appSecret + signString + this.config.appSecret;
-    
-    console.log('[OAuth] Chaîne à signer (Alternative):', signString);
-    
-    // Utiliser MD5
-    const signature = crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
-    console.log('[OAuth] Signature générée (MD5 Alternative):', signature);
-    
-    return signature;
-  }
-
-  /**
-   * Générer la signature HMAC
-   */
-  private generateHMACSign(params: Record<string, any>): string {
-    // Trier les paramètres par clé
-    const sortedKeys = Object.keys(params).sort();
-    
-    // Construire la chaîne à signer
-    let signString = '';
-    for (const key of sortedKeys) {
-      if (params[key] !== undefined && params[key] !== null) {
-        signString += key + params[key];
-      }
-    }
-    
-    console.log('[OAuth] Chaîne à signer (HMAC):', signString);
-    
-    // Utiliser HMAC-MD5
-    const signature = crypto.createHmac('md5', this.config.appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
-    console.log('[OAuth] Signature générée (HMAC-MD5):', signature);
-    
-    return signature;
-  }
-
-  /**
-   * Générer la signature sans app_secret au début/fin
-   */
-  private generateNoSecretSign(params: Record<string, any>): string {
+  private generateOAuthSign(params: Record<string, any>): string {
     // Trier les paramètres par clé
     const sortedKeys = Object.keys(params).sort();
     
@@ -272,31 +192,33 @@ export class AliExpressOAuthService {
       }
     }
     
-    console.log('[OAuth] Chaîne à signer (No Secret):', signString);
+    console.log('[OAuth] Chaîne à signer (OAuth):', signString);
     
     // Utiliser MD5
     const signature = crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
-    console.log('[OAuth] Signature générée (MD5 No Secret):', signature);
+    console.log('[OAuth] Signature générée (MD5 OAuth):', signature);
     
     return signature;
   }
 
   /**
    * Générer la signature HMAC-MD5 pour Business Interfaces (produits, etc.)
+   * Format: app_secret + key1value1key2value2... + app_secret
    */
-  private generateSign(params: Record<string, any>): string {
+  private generateBusinessSign(params: Record<string, any>): string {
     const signString = this.buildSignString(params);
     return crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
   }
 
   /**
-   * Construire la chaîne à signer (pour debug)
+   * Construire la chaîne à signer pour Business Interfaces
+   * Format: app_secret + key1value1key2value2... + app_secret
    */
   private buildSignString(params: Record<string, any>): string {
     // Trier les paramètres par clé
     const sortedKeys = Object.keys(params).sort();
     
-    // Construire la chaîne à signer
+    // Construire la chaîne à signer avec app_secret au début et à la fin
     let signString = this.config.appSecret;
     for (const key of sortedKeys) {
       if (params[key] !== undefined && params[key] !== null) {
