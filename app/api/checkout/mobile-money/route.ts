@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { QosicMobileMoneyService } from '@/lib/services/qosic-mobile-money.service';
 import { OrdersService } from '@/lib/services/orders.service';
+import { validateCartItems, calculateOrderTotal } from '@/lib/helpers/validate-cart';
+import { checkRateLimit } from '@/lib/helpers/rate-limiter';
 
 /**
  * API pour initier un paiement Mobile Money direct
  */
 export async function POST(request: NextRequest) {
   try {
+    // ✅ RATE LIMITING : Limiter à 5 tentatives par minute
+    const { allowed, resetTime } = checkRateLimit(request);
+    
+    if (!allowed) {
+      return NextResponse.json({ 
+        error: `Trop de tentatives. Réessayez dans ${resetTime} secondes.` 
+      }, { status: 429 });
+    }
+
     const body = await request.json();
     const { user_id, items, customer, phone } = body || {};
 
@@ -37,20 +48,32 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
-    // Calculer les montants
-    const subtotal = items.reduce((s: number, it: any) => s + (it.price * it.quantity), 0);
-    const shipping = subtotal > 50000 ? 0 : 2000;
-    const total = subtotal + shipping;
+    // ✅ VALIDATION CRITIQUE : Vérifier les prix depuis la DB
+    const validation = await validateCartItems(items);
+    
+    if (!validation.success || !validation.items) {
+      console.error('❌ Validation panier échouée:', validation.error);
+      return NextResponse.json({ 
+        error: validation.error || 'Panier invalide' 
+      }, { status: 400 });
+    }
+
+    const validatedItems = validation.items;
+
+    // Calculer les montants avec les VRAIS prix
+    const { subtotal, shipping, total } = calculateOrderTotal(validatedItems);
+
+    console.log('[Checkout MM] Montants validés:', { subtotal, shipping, total });
 
     // Générer une référence unique
     const transref = `MM-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
     console.log('[Checkout MM] Création commande:', { user_id, total, transref, phone });
 
-    // Créer la commande en attente
+    // Créer la commande en attente (avec items validés)
     const pendingOrder = await OrdersService.create({
       user_id,
-      items,
+      items: validatedItems, // ✅ Items avec prix validés depuis la DB
       shipping_address: customer?.shipping_address || {
         address: customer?.address,
         city: customer?.city,
