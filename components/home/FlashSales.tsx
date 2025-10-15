@@ -377,6 +377,7 @@ const FlashSales = () => {
                         productId={product.id}
                         productName={product.name}
                         price={product.salePrice}
+                        showQuantitySelector={false}
                       />
                     </div>
                   </CardContent>

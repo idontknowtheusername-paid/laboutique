@@ -303,6 +303,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                           productName={transformedProduct.name}
                           price={transformedProduct.price}
                           disabled={transformedProduct.status !== 'active' || (transformedProduct.track_quantity && transformedProduct.quantity <= 0)}
+                          showQuantitySelector={false}
                         />
                       </InteractiveFeedback>
                     </div>

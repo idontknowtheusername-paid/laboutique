@@ -362,6 +362,7 @@ const PersonalizedOffers = () => {
                       productId={product.id}
                       productName={product.name}
                       price={product.price}
+                      showQuantitySelector={false}
                     />
                   </div>
                 </div>

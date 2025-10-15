@@ -298,6 +298,7 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
                         productId={product.id}
                         productName={product.name}
                         price={product.price}
+                        showQuantitySelector={false}
                       />
                     </div>
                   </CardContent>
