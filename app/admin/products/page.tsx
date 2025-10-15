@@ -33,12 +33,20 @@ export default function AdminProductsPage() {
   const [items, setItems] = React.useState<AdminProduct[]>([]);
   const [search, setSearch] = React.useState('');
   const [category, setCategory] = React.useState<string>('all');
+  const [platform, setPlatform] = React.useState<string>('all');
+  const [status, setStatus] = React.useState<string>('all');
+  const [priceMin, setPriceMin] = React.useState<string>('');
+  const [priceMax, setPriceMax] = React.useState<string>('');
+  const [sortBy, setSortBy] = React.useState<string>('created_at');
+  const [sortOrder, setSortOrder] = React.useState<string>('desc');
   const [totalCount, setTotalCount] = React.useState<number>(0);
   const [page, setPage] = React.useState(1);
   const { success, error, info } = useToast();
   
   // Debounced search pour optimiser les performances
   const debouncedSearch = useDebounce(search, 300);
+  const debouncedPriceMin = useDebounce(priceMin, 500);
+  const debouncedPriceMax = useDebounce(priceMax, 500);
 
   // Test de connexion à la base de données
   async function testDatabaseConnection() {
@@ -161,9 +169,14 @@ export default function AdminProductsPage() {
     try {
       // Recherche côté serveur avec debouncing
       const filters = {
-        status: undefined, // Pas de filtre de statut pour voir tous les produits
+        status: status !== 'all' ? status : undefined,
         search: debouncedSearch || undefined,
-        category: category !== 'all' ? category : undefined
+        category: category !== 'all' ? category : undefined,
+        platform: platform !== 'all' ? platform : undefined,
+        price_min: debouncedPriceMin ? parseFloat(debouncedPriceMin) : undefined,
+        price_max: debouncedPriceMax ? parseFloat(debouncedPriceMax) : undefined,
+        sort_by: sortBy,
+        sort_order: sortOrder
       };
       
       const res = await ProductsService.getAll(
@@ -187,7 +200,7 @@ export default function AdminProductsPage() {
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, category, page, error, success]);
+  }, [debouncedSearch, category, platform, status, debouncedPriceMin, debouncedPriceMax, sortBy, sortOrder, page, error, success]);
 
   React.useEffect(() => { load(); }, [load]);
 
@@ -247,6 +260,12 @@ export default function AdminProductsPage() {
             >
               <Download className="w-4 h-4 mr-2" /> Import masse
             </Button>
+            <Button
+              variant="outline"
+              onClick={() => router.push("/admin/categories")}
+            >
+              📁 Catégories
+            </Button>
           </div>
         }
       />
@@ -272,7 +291,7 @@ export default function AdminProductsPage() {
               value={category}
               onValueChange={(v: string) => setCategory(v)}
             >
-              <SelectTrigger className="w-56">
+              <SelectTrigger className="w-48">
                 <SelectValue placeholder="Catégorie" />
               </SelectTrigger>
               <SelectContent>
@@ -283,12 +302,95 @@ export default function AdminProductsPage() {
                 <SelectItem value="beaute">Beauté</SelectItem>
               </SelectContent>
             </Select>
+            
+            <Select
+              value={platform}
+              onValueChange={(v: string) => setPlatform(v)}
+            >
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Plateforme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes</SelectItem>
+                <SelectItem value="aliexpress">AliExpress</SelectItem>
+                <SelectItem value="alibaba">AliBaba</SelectItem>
+                <SelectItem value="manual">Manuel</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select
+              value={status}
+              onValueChange={(v: string) => setStatus(v)}
+            >
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Statut" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous</SelectItem>
+                <SelectItem value="draft">Brouillon</SelectItem>
+                <SelectItem value="pending">En attente</SelectItem>
+                <SelectItem value="active">Actif</SelectItem>
+                <SelectItem value="disabled">Désactivé</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <div className="flex items-center gap-2">
+              <Input
+                type="number"
+                placeholder="Prix min"
+                value={priceMin}
+                onChange={(e) => setPriceMin(e.target.value)}
+                className="w-24"
+              />
+              <span className="text-gray-500">-</span>
+              <Input
+                type="number"
+                placeholder="Prix max"
+                value={priceMax}
+                onChange={(e) => setPriceMax(e.target.value)}
+                className="w-24"
+              />
+            </div>
+            
+            <Select
+              value={sortBy}
+              onValueChange={(v: string) => setSortBy(v)}
+            >
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Trier par" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="created_at">Date de création</SelectItem>
+                <SelectItem value="name">Nom</SelectItem>
+                <SelectItem value="price">Prix</SelectItem>
+                <SelectItem value="updated_at">Dernière modification</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select
+              value={sortOrder}
+              onValueChange={(v: string) => setSortOrder(v)}
+            >
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Ordre" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desc">Décroissant</SelectItem>
+                <SelectItem value="asc">Croissant</SelectItem>
+              </SelectContent>
+            </Select>
             <div className="ml-auto flex items-center gap-2">
               <Button
                 variant="outline"
                 onClick={() => {
                   setSearch("");
                   setCategory("all");
+                  setPlatform("all");
+                  setStatus("all");
+                  setPriceMin("");
+                  setPriceMax("");
+                  setSortBy("created_at");
+                  setSortOrder("desc");
                 }}
               >
                 Réinitialiser

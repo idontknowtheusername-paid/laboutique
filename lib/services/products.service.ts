@@ -56,10 +56,16 @@ export interface ProductFilters {
   featured?: boolean;
   min_price?: number;
   max_price?: number;
+  price_min?: number;
+  price_max?: number;
   in_stock?: boolean;
   brand?: string;
   tags?: string[];
   search?: string;
+  platform?: 'aliexpress' | 'alibaba' | 'manual';
+  source_platform?: 'aliexpress' | 'alibaba' | 'manual';
+  sort_by?: string;
+  sort_order?: 'asc' | 'desc';
 }
 
 export interface ProductSortOptions {
@@ -192,9 +198,29 @@ export class ProductsService extends BaseService {
         query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%,brand.ilike.%${filters.search}%`);
       }
 
+      // Nouveaux filtres
+      if (filters.platform || filters.source_platform) {
+        const platform = filters.platform || filters.source_platform;
+        if (platform === 'manual') {
+          query = query.is('source_platform', null);
+        } else if (platform === 'aliexpress' || platform === 'alibaba') {
+          query = query.eq('source_platform', platform);
+        }
+      }
+
+      if (filters.price_min !== undefined) {
+        query = query.gte('price', filters.price_min);
+      }
+
+      if (filters.price_max !== undefined) {
+        query = query.lte('price', filters.price_max);
+      }
+
       // Appliquer le tri
-      const ascending = sort.direction === 'asc';
-      query = query.order(sort.field, { ascending });
+      const sortField = filters.sort_by || sort.field;
+      const sortDirection = filters.sort_order || sort.direction;
+      const ascending = sortDirection === 'asc';
+      query = query.order(sortField, { ascending });
 
       const { data, error, count } = await query
         .range(offset, offset + limit - 1);
