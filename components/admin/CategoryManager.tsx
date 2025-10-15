@@ -79,7 +79,7 @@ export default function CategoryManager() {
   const { success, error } = useToast();
 
   // Charger les catégories
-  const loadCategories = async () => {
+  const loadCategories = React.useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/categories');
@@ -97,7 +97,7 @@ export default function CategoryManager() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Construire l'arborescence des catégories
   const buildCategoryTree = (flatCategories: Category[]): Category[] => {
@@ -326,7 +326,7 @@ export default function CategoryManager() {
 
   useEffect(() => {
     loadCategories();
-  }, []);
+  }, [loadCategories]);
 
   if (loading) {
     return (

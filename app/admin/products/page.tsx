@@ -169,14 +169,14 @@ export default function AdminProductsPage() {
     try {
       // Recherche côté serveur avec debouncing
       const filters = {
-        status: status !== 'all' ? status : undefined,
+        status: status !== 'all' ? status as 'active' | 'draft' | 'inactive' : undefined,
         search: debouncedSearch || undefined,
         category: category !== 'all' ? category : undefined,
-        platform: platform !== 'all' ? platform : undefined,
+        platform: platform !== 'all' ? platform as 'aliexpress' | 'alibaba' | 'manual' : undefined,
         price_min: debouncedPriceMin ? parseFloat(debouncedPriceMin) : undefined,
         price_max: debouncedPriceMax ? parseFloat(debouncedPriceMax) : undefined,
         sort_by: sortBy,
-        sort_order: sortOrder
+        sort_order: sortOrder as 'asc' | 'desc'
       };
       
       const res = await ProductsService.getAll(
