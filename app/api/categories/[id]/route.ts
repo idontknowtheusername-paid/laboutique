@@ -1,17 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://gfhuotmjoiyhtllsmnwy.supabase.co';
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmaHVvdG1qb2l5aHRsbHNtbnd5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzY4NTE2MiwiZXhwIjoyMDczMjYxMTYyfQ.eOY2qfzT2OGr7ztmBVgtEDQ8jX5Z9Cb3wOFQCvAegZk';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const supabase = createClient(supabaseUrl, serviceRoleKey, {
-      auth: { persistSession: false, autoRefreshToken: false }
-    });
+    const supabase = supabaseAdmin;
     const body = await request.json();
     
     const { name, description, parent_id, icon, color } = body;
@@ -79,9 +74,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const supabase = createClient(supabaseUrl, serviceRoleKey, {
-      auth: { persistSession: false, autoRefreshToken: false }
-    });
+    const supabase = supabaseAdmin;
     const categoryId = params.id;
 
     // Vérifier s'il y a des produits dans cette catégorie
