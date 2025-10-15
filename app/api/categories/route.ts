@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = supabaseAdmin;
     
-    const { data: categories, error } = await supabase
+    const { data: categories, error } = await (supabase as any)
       .from('categories')
       .select(`
         id,
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: category, error } = await supabase
+    const { data: category, error } = await (supabase as any)
       .from('categories')
       .insert({
         name: name.trim(),

@@ -20,7 +20,7 @@ export async function PUT(
     }
 
     // Vérifier que la catégorie existe
-    const { data: existingCategory, error: fetchError } = await supabase
+    const { data: existingCategory, error: fetchError } = await (supabase as any)
       .from('categories')
       .select('id')
       .eq('id', categoryId)
@@ -78,7 +78,7 @@ export async function DELETE(
     const categoryId = params.id;
 
     // Vérifier s'il y a des produits dans cette catégorie
-    const { data: products, error: productsError } = await supabase
+    const { data: products, error: productsError } = await (supabase as any)
       .from('products')
       .select('id')
       .eq('category_id', categoryId)
@@ -100,7 +100,7 @@ export async function DELETE(
     }
 
     // Vérifier s'il y a des sous-catégories
-    const { data: subcategories, error: subcategoriesError } = await supabase
+    const { data: subcategories, error: subcategoriesError } = await (supabase as any)
       .from('categories')
       .select('id')
       .eq('parent_id', categoryId)
@@ -122,7 +122,7 @@ export async function DELETE(
     }
 
     // Supprimer la catégorie
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await (supabase as any)
       .from('categories')
       .delete()
       .eq('id', categoryId);
