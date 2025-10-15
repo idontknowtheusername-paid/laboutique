@@ -58,25 +58,33 @@ export class AliExpressOAuthService {
 
   /**
    * Échanger le code d'autorisation contre un access_token
-   * Utilise l'endpoint OAuth 2.0 standard
+   * Utilise l'endpoint AliExpress /rest avec auth.token.security.create
    */
   async exchangeCodeForToken(code: string): Promise<AliExpressOAuthToken> {
-    console.log('[OAuth] Échange code contre access_token avec OAuth 2.0 standard');
+    console.log('[OAuth] Échange code contre access_token avec auth.token.security.create');
 
-    // Paramètres OAuth 2.0 standard (pas de signature MD5)
-    const params = {
-      grant_type: 'authorization_code',
-      client_id: this.config.appKey,
-      client_secret: this.config.appSecret,
+    const timestamp = Date.now().toString();
+    
+    // Paramètres pour auth.token.security.create
+    const params: Record<string, any> = {
+      app_key: this.config.appKey,
+      method: 'auth.token.security.create',
+      format: 'json',
+      v: '2.0',
+      sign_method: 'md5',
+      timestamp: timestamp,
       code: code,
       redirect_uri: this.config.redirectUri,
     };
 
+    // Générer la signature MD5 correcte (app_secret + params + app_secret)
+    params.sign = this.generateBusinessSign(params);
+
     try {
-      const response = await fetch(this.tokenUrl, {
+      const response = await fetch(this.restBaseUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
         },
         body: new URLSearchParams(params).toString(),
       });
@@ -93,10 +101,10 @@ export class AliExpressOAuthService {
       const data = await response.json();
       console.log('[OAuth] Réponse token complète:', JSON.stringify(data, null, 2));
 
-      // Vérifier les erreurs OAuth 2.0
-      if (data.error) {
-        console.error('[OAuth] Erreur OAuth:', data.error, data.error_description);
-        throw new Error(`OAuth Error: ${data.error} - ${data.error_description}`);
+      // Vérifier les erreurs AliExpress API
+      if (data.error_response) {
+        console.error('[OAuth] Erreur API:', data.error_response);
+        throw new Error(`API Error: ${data.error_response.code} - ${data.error_response.msg}`);
       }
 
       if (!data.access_token) {
