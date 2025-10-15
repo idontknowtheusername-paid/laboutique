@@ -79,14 +79,15 @@ export class AliExpressOAuthService {
     params.sign = this.generateNoSecretSign(params);
 
     try {
-      // Utiliser l'endpoint REST correct avec GET
-      const url = `${this.restBaseUrl}/auth/token/create?${new URLSearchParams(params).toString()}`;
+      // Essayer l'endpoint sync avec la méthode correcte
+      const url = `https://api-sg.aliexpress.com/sync`;
       
       const response = await fetch(url, {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
         },
+        body: new URLSearchParams(params).toString(),
       });
 
       // CRUCIAL: Lire les headers pour debug
