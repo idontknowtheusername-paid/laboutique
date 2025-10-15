@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Transformer les données pour inclure le nombre de produits
-    const categoriesWithCount = categories?.map(cat => ({
+    const categoriesWithCount = categories?.map((cat: any) => ({
       ...cat,
       product_count: cat.products?.[0]?.count || 0
     })) || [];
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         parent_id: parent_id || null,
         icon: icon || '📁',
         color: color || 'bg-gray-100 text-gray-800'
-      })
+      } as any)
       .select()
       .single();
 

@@ -59,6 +59,8 @@ export interface Database {
           description: string | null;
           image_url: string | null;
           parent_id: string | null;
+          icon: string | null;
+          color: string | null;
           sort_order: number;
           status: string;
           created_at: string;
@@ -71,6 +73,8 @@ export interface Database {
           description?: string | null;
           image_url?: string | null;
           parent_id?: string | null;
+          icon?: string | null;
+          color?: string | null;
           sort_order?: number;
           status?: string;
           created_at?: string;
@@ -83,6 +87,8 @@ export interface Database {
           description?: string | null;
           image_url?: string | null;
           parent_id?: string | null;
+          icon?: string | null;
+          color?: string | null;
           sort_order?: number;
           status?: string;
           created_at?: string;
