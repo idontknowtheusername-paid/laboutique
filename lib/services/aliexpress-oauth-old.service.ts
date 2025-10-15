@@ -83,11 +83,10 @@ export class AliExpressOAuthService {
       const url = `https://api-sg.aliexpress.com/sync`;
       
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
         },
-        body: new URLSearchParams(params).toString(),
       });
 
       // CRUCIAL: Lire les headers pour debug
