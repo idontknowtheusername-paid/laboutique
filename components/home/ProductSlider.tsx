@@ -65,10 +65,10 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
   const displayedProducts = products;
 
   return (
-    <section className={`py-12 ${backgroundColor}`}>
+    <section className={`py-6 md:py-8 ${backgroundColor}`}>
       <div className="container">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-6 md:mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">{title}</h2>
           {subtitle && <p className="text-gray-600 max-w-2xl mx-auto">{subtitle}</p>}
         </div>
