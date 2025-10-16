@@ -132,7 +132,7 @@ export function ImageUploader({
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-500">{items.length}/10 images</span>
             {uploading && (
-              <Badge className="bg-blue-600">
+              <Badge className="bg-orange-600">
                 {uploadProgress.total > 0 
                   ? `${uploadProgress.current}/${uploadProgress.total} images` 
                   : 'Upload...'
@@ -145,7 +145,7 @@ export function ImageUploader({
         <div
           className={`border-2 border-dashed rounded-md p-4 text-center cursor-pointer transition-colors ${
             uploading 
-              ? 'border-orange-400 bg-blue-50' 
+              ? 'border-orange-400 bg-orange-50' 
               : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
           }`}
           onClick={() => !uploading && inputRef.current?.click()}

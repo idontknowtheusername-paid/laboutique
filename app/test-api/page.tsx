@@ -92,7 +92,7 @@ export default function TestApiPage() {
                         minimumFractionDigits: 0,
                       }).format(product.price)}
                     </span>
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
+                    <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm">
                       {product.source_platform}
                     </span>
                   </div>

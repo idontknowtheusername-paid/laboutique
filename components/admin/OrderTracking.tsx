@@ -105,7 +105,7 @@ export default function OrderTracking({ orderId, currentStatus }: OrderTrackingP
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
       case 'processing':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-orange-100 text-orange-800';
       case 'shipped':
         return 'bg-indigo-100 text-indigo-800';
       case 'delivered':
@@ -200,8 +200,8 @@ export default function OrderTracking({ orderId, currentStatus }: OrderTrackingP
                     )}
                     
                     {event.estimatedDelivery && (
-                      <div className="mt-2 p-2 bg-blue-50 rounded-lg">
-                        <p className="text-sm text-blue-800">
+                      <div className="mt-2 p-2 bg-orange-50 rounded-lg">
+                        <p className="text-sm text-orange-800">
                           <strong>Livraison estimée:</strong> {event.estimatedDelivery.toLocaleDateString('fr-FR')}
                         </p>
                       </div>

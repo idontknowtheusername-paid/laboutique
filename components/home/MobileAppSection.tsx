@@ -10,7 +10,7 @@ const MobileAppSection = () => {
   return (
     <>
       {/* Desktop Version */}
-      <section className="hidden md:block py-12 bg-gradient-to-r from-jomionstore-primary to-blue-600 text-white">
+      <section className="hidden md:block py-12 bg-gradient-to-r from-jomionstore-primary to-orange-600 text-white">
       <div className="container">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {/* Content */}
@@ -22,7 +22,7 @@ const MobileAppSection = () => {
                   Téléchargez l'app JomionStore
                 </h2>
               </div>
-              <p className="text-xl text-blue-100">
+              <p className="text-xl text-orange-100">
                 Shopping plus rapide, plus facile et plus sécurisé
               </p>
             </div>
@@ -35,7 +35,7 @@ const MobileAppSection = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold">Commandes express</h3>
-                  <p className="text-sm text-blue-100">En 2 clics</p>
+                  <p className="text-sm text-orange-100">En 2 clics</p>
                 </div>
               </div>
               
@@ -45,7 +45,7 @@ const MobileAppSection = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold">Notifications exclusives</h3>
-                  <p className="text-sm text-blue-100">Offres spéciales</p>
+                  <p className="text-sm text-orange-100">Offres spéciales</p>
                 </div>
               </div>
               
@@ -55,7 +55,7 @@ const MobileAppSection = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold">Support prioritaire</h3>
-                  <p className="text-sm text-blue-100">Chat en direct</p>
+                  <p className="text-sm text-orange-100">Chat en direct</p>
                 </div>
               </div>
               
@@ -65,7 +65,7 @@ const MobileAppSection = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold">Paiement mobile</h3>
-                  <p className="text-sm text-blue-100">MTN, Orange Money</p>
+                  <p className="text-sm text-orange-100">MTN, Orange Money</p>
                 </div>
               </div>
             </div>
@@ -95,8 +95,8 @@ const MobileAppSection = () => {
                 <QrCode className="w-12 h-12 text-jomionstore-primary" />
               </div>
               <div>
-                <p className="text-sm text-blue-100">Scannez pour télécharger</p>
-                <p className="text-xs text-blue-200">Disponible sur iOS et Android</p>
+                <p className="text-sm text-orange-100">Scannez pour télécharger</p>
+                <p className="text-xs text-orange-200">Disponible sur iOS et Android</p>
               </div>
             </div>
           </div>
@@ -173,7 +173,7 @@ const MobileAppSection = () => {
     </section>
 
       {/* Mobile Version - Compact */}
-      <section className="md:hidden py-8 bg-gradient-to-r from-jomionstore-primary to-blue-600 text-white">
+      <section className="md:hidden py-8 bg-gradient-to-r from-jomionstore-primary to-orange-600 text-white">
         <div className="container">
           <div className="text-center space-y-6">
             <div className="space-y-3">
@@ -183,7 +183,7 @@ const MobileAppSection = () => {
                   Téléchargez l'app JomionStore
                 </h2>
               </div>
-              <p className="text-blue-100">
+              <p className="text-orange-100">
                 Shopping plus rapide et plus facile
               </p>
             </div>
@@ -233,8 +233,8 @@ const MobileAppSection = () => {
                 <QrCode className="w-10 h-10 text-jomionstore-primary" />
               </div>
               <div className="text-left">
-                <p className="text-sm text-blue-100">Scannez pour télécharger</p>
-                <p className="text-xs text-blue-200">iOS et Android</p>
+                <p className="text-sm text-orange-100">Scannez pour télécharger</p>
+                <p className="text-xs text-orange-200">iOS et Android</p>
               </div>
             </div>
           </div>

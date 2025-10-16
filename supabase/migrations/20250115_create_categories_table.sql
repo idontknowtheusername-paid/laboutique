@@ -60,7 +60,7 @@ CREATE TRIGGER trigger_update_category_updated_at
 
 -- Insérer quelques catégories de base
 INSERT INTO categories (name, description, icon, color) VALUES
-('Électronique', 'Appareils électroniques et accessoires', '📱', 'bg-blue-100 text-blue-800'),
+('Électronique', 'Appareils électroniques et accessoires', '📱', 'bg-orange-100 text-orange-800'),
 ('Mode', 'Vêtements et accessoires de mode', '👕', 'bg-pink-100 text-pink-800'),
 ('Maison', 'Articles pour la maison et le jardin', '🏠', 'bg-green-100 text-green-800'),
 ('Beauté', 'Produits de beauté et soins', '💄', 'bg-purple-100 text-purple-800'),

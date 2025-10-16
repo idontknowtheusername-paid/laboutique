@@ -45,7 +45,7 @@ export default function AdminEditArticlePage() {
         <AdminPageHeader
           title="Éditer article"
           subtitle="Mettre à jour le contenu"
-          actions={message ? <Badge className="bg-blue-600">{message}</Badge> : null}
+          actions={message ? <Badge className="bg-orange-600">{message}</Badge> : null}
         />
 
         <Tabs defaultValue="content" className="space-y-6">

@@ -132,7 +132,7 @@ export default function VendorDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'En cours': return 'bg-yellow-500';
-      case 'Expédié': return 'bg-blue-500';
+      case 'Expédié': return 'bg-orange-500';
       case 'Livré': return 'bg-green-500';
       case 'Annulé': return 'bg-red-500';
       default: return 'bg-gray-500';
@@ -146,7 +146,7 @@ export default function VendorDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-jomionstore-primary to-blue-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-r from-jomionstore-primary to-orange-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">B</span>
               </div>
               <div>

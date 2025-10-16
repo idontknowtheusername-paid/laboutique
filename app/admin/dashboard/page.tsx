@@ -115,7 +115,7 @@ export default function AdminDashboard() {
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-500';
-      case 'processing': return 'bg-blue-500';
+      case 'processing': return 'bg-orange-500';
       case 'shipped': return 'bg-indigo-500';
       case 'delivered': return 'bg-green-600';
       case 'cancelled': return 'bg-red-600';
@@ -239,7 +239,7 @@ export default function AdminDashboard() {
                     <div className="flex items-center gap-3">
                       <div className={`w-3 h-3 rounded-full ${
                         alert.type === 'error' ? 'bg-red-500' : 
-                        alert.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+                        alert.type === 'warning' ? 'bg-yellow-500' : 'bg-orange-500'
                       }`}></div>
                       <span className="font-medium">{alert.message}</span>
                     </div>

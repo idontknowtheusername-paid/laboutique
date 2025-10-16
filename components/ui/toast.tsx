@@ -70,7 +70,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 ? "bg-red-500 text-white"
                 : toast.type === "warning"
                 ? "bg-yellow-500 text-white"
-                : "bg-blue-500 text-white"
+                : "bg-orange-500 text-white"
             }`}
           >
             <div className="font-semibold">{toast.title}</div>

@@ -106,7 +106,7 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
       case 'error':
         return 'border-l-red-500 bg-red-50';
       default:
-        return 'border-l-blue-500 bg-blue-50';
+        return 'border-l-blue-500 bg-orange-50';
     }
   };
 
@@ -162,7 +162,7 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
                       <div className="flex items-center gap-2">
                         <p className="font-medium text-sm">{notification.title}</p>
                         {!notification.read && (
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                         )}
                       </div>
                       <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
@@ -182,7 +182,7 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
                           size="sm"
                           variant="ghost"
                           onClick={() => markAsRead(notification.id)}
-                          className="text-orange-600 hover:text-blue-700"
+                          className="text-orange-600 hover:text-orange-700"
                         >
                           <CheckCircle className="w-4 h-4" />
                         </Button>

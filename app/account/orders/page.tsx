@@ -123,11 +123,11 @@ export default function OrdersPage() {
       case "pending":
         return "bg-yellow-100 text-yellow-800";
       case "confirmed":
-        return "bg-blue-100 text-blue-800";
+        return "bg-orange-100 text-orange-800";
       case "processing":
         return "bg-purple-100 text-purple-800";
       case "shipped":
-        return "bg-blue-200 text-blue-900";
+        return "bg-orange-200 text-orange-900";
       case "delivered":
         return "bg-green-100 text-green-800";
       case "cancelled":
@@ -375,7 +375,7 @@ export default function OrdersPage() {
                                 </Button>
                               )}
                             </div>
-                            <Button className="bg-blue-600 hover:bg-orange-700" onClick={() => handleReorder(order)}>
+                            <Button className="bg-orange-600 hover:bg-orange-700" onClick={() => handleReorder(order)}>
                               Commander à nouveau
                             </Button>
                           </div>

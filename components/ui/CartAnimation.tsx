@@ -96,7 +96,7 @@ const CartAnimation: React.FC<CartAnimationProps> = ({
         {animationPhase === 'adding' && (
           <div className="mt-3">
             <div className="w-full bg-gray-200 rounded-full h-1">
-              <div className="bg-blue-500 h-1 rounded-full animate-pulse" style={{ width: '100%' }}></div>
+              <div className="bg-orange-500 h-1 rounded-full animate-pulse" style={{ width: '100%' }}></div>
             </div>
           </div>
         )}

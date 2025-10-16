@@ -106,7 +106,7 @@ export function AuthDebugInfo({ showByDefault = false }: AuthDebugInfoProps) {
               )}
               
               {loading && (
-                <div className="bg-blue-100 p-2 rounded text-blue-800">
+                <div className="bg-orange-100 p-2 rounded text-orange-800">
                   Loading authentication state...
                 </div>
               )}

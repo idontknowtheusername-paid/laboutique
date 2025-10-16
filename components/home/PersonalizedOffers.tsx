@@ -176,7 +176,7 @@ const PersonalizedOffers = () => {
     switch (level) {
       case 'Gold': return 'bg-yellow-500';
       case 'Platinum': return 'bg-purple-500';
-      case 'Diamond': return 'bg-blue-500';
+      case 'Diamond': return 'bg-orange-500';
       default: return 'bg-gray-500';
     }
   };
@@ -191,10 +191,10 @@ const PersonalizedOffers = () => {
   };
 
   return (
-    <section className="py-12 bg-gradient-to-br from-blue-50 to-blue-100">
+    <section className="py-12 bg-gradient-to-br from-orange-50 to-blue-100">
       <div className="container">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8 p-3 rounded-lg" style={{ background: '#4169E1' }}>
+        <div className="flex items-center justify-between mb-8 p-3 rounded-lg" style={{ background: '#FF5722' }}>
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-2">
               <Sparkles className="w-6 h-6 text-white" />
@@ -254,7 +254,7 @@ const PersonalizedOffers = () => {
 
                 {/* Badges harmonisés */}
                 <div className="absolute top-2 left-2 space-y-1">
-                  <Badge className="bg-blue-600 text-white text-xs">
+                  <Badge className="bg-orange-600 text-white text-xs">
                     <Sparkles className="w-3 h-3 mr-1" />
                     Pour vous
                   </Badge>
@@ -297,7 +297,7 @@ const PersonalizedOffers = () => {
                 <div className="space-y-1 sm:space-y-1.5 flex-grow">
                   {/* Raison de personnalisation (optionnelle) */}
                   {product.personalizationReason && (
-                    <p className="text-xs text-blue-700 bg-blue-100 px-2 py-1 rounded-full text-center">
+                    <p className="text-xs text-orange-700 bg-orange-100 px-2 py-1 rounded-full text-center">
                       {product.personalizationReason}
                     </p>
                   )}

@@ -301,8 +301,8 @@ export default function AdminImportProductPage() {
                     <p className="text-sm text-gray-600">Produits individuels, électronique, mode</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-lg">
+                  <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
                     🏭
                   </div>
                   <div>

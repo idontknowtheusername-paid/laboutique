@@ -268,7 +268,7 @@ const CategoryMenu = () => {
                       <div key={category.id} className="space-y-3">
                         <Link
                           href={`/category/${category.slug}`}
-                          className="flex items-center space-x-2 font-semibold text-jomionstore-primary hover:text-blue-800"
+                          className="flex items-center space-x-2 font-semibold text-jomionstore-primary hover:text-orange-800"
                         >
                           <IconComponent className="w-5 h-5" />
                           <span>{category.name}</span>
@@ -321,7 +321,7 @@ const CategoryMenu = () => {
                         <div key={child.slug} className="space-y-2">
                           <Link
                             href={`/category/${child.slug}`}
-                            className="block font-semibold text-jomionstore-primary hover:text-blue-800"
+                            className="block font-semibold text-jomionstore-primary hover:text-orange-800"
                           >
                             {child.name}
                           </Link>

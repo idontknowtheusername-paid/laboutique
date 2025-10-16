@@ -28,7 +28,7 @@ const TrustElements = () => {
       title: "Livraison rapide",
       description: "24h à Cotonou",
       color: "text-orange-500",
-      bgColor: "bg-blue-50",
+      bgColor: "bg-orange-50",
       details: "Livraison gratuite pour toute commande supérieure à 50,000 F"
     },
     {
@@ -114,12 +114,12 @@ const TrustElements = () => {
           </div>
 
           {/* Stats Section */}
-          <div className="bg-gradient-to-r from-jomionstore-primary to-blue-600 rounded-2xl p-8 md:p-12 text-white">
+          <div className="bg-gradient-to-r from-jomionstore-primary to-orange-600 rounded-2xl p-8 md:p-12 text-white">
             <div className="text-center mb-8">
               <h3 className="text-2xl md:text-3xl font-bold mb-2">
                 JomionStore en chiffres
               </h3>
-              <p className="text-blue-100">
+              <p className="text-orange-100">
                 Des résultats qui parlent d'eux-mêmes
               </p>
             </div>
@@ -133,7 +133,7 @@ const TrustElements = () => {
                   <div className="text-3xl md:text-4xl font-bold mb-2">
                     {stat.number}
                   </div>
-                  <div className="text-blue-100 text-sm">
+                  <div className="text-orange-100 text-sm">
                     {stat.label}
                   </div>
                 </div>

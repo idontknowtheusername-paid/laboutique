@@ -56,7 +56,7 @@ export default function AdminEditProductPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Éditer produit</h1>
-          {message && <Badge className="bg-blue-600">{message}</Badge>}
+          {message && <Badge className="bg-orange-600">{message}</Badge>}
         </div>
 
         <Tabs defaultValue="infos" className="space-y-6">

@@ -72,7 +72,7 @@ export default function NotFound() {
           </div>
 
           {/* Help Section */}
-          <div className="mt-8 p-6 bg-blue-50 rounded-lg">
+          <div className="mt-8 p-6 bg-orange-50 rounded-lg">
             <h3 className="font-semibold text-gray-900 mb-2">Besoin d'aide ?</h3>
             <p className="text-sm text-gray-600 mb-4">
               Si vous pensez qu'il s'agit d'une erreur, contactez notre équipe support.

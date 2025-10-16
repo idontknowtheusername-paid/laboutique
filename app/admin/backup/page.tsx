@@ -106,7 +106,7 @@ export default function AdminBackupPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed': return 'bg-green-100 text-green-800';
-      case 'running': return 'bg-blue-100 text-blue-800';
+      case 'running': return 'bg-orange-100 text-orange-800';
       case 'failed': return 'bg-red-100 text-red-800';
       case 'scheduled': return 'bg-yellow-100 text-yellow-800';
       default: return 'bg-gray-100 text-gray-800';
@@ -620,12 +620,12 @@ export default function AdminBackupPage() {
                   </p>
                 </div>
 
-                <div className="p-4 bg-blue-50 rounded-lg">
+                <div className="p-4 bg-orange-50 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <Cloud className="w-5 h-5 text-orange-600" />
-                    <span className="font-medium text-blue-800">Stockage cloud</span>
+                    <span className="font-medium text-orange-800">Stockage cloud</span>
                   </div>
-                  <p className="text-sm text-blue-700">
+                  <p className="text-sm text-orange-700">
                     Sauvegarde automatique sur AWS S3
                   </p>
                 </div>

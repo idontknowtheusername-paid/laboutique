@@ -167,17 +167,17 @@ export default function CartPage() {
 
         {/* Sync Status */}
         {(syncing || localChanges) && (
-          <div className="mb-4 p-3 bg-blue-100 border border-orange-300 rounded-lg">
+          <div className="mb-4 p-3 bg-orange-100 border border-orange-300 rounded-lg">
             <div className="flex items-center">
               {syncing ? (
                 <>
                   <div className="w-4 h-4 animate-spin rounded-full border-2 border-orange-600 border-t-transparent mr-2" />
-                  <span className="text-sm text-blue-800">Synchronisation en cours...</span>
+                  <span className="text-sm text-orange-800">Synchronisation en cours...</span>
                 </>
               ) : (
                 <>
                   <AlertCircle className="w-4 h-4 text-orange-600 mr-2" />
-                  <span className="text-sm text-blue-800">
+                  <span className="text-sm text-orange-800">
                     Modifications locales non synchronisées
                   </span>
                 </>

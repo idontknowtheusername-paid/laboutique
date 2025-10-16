@@ -54,7 +54,7 @@ const defaultIcons = [
 
 const defaultColors = [
   'bg-red-100 text-red-800',
-  'bg-blue-100 text-blue-800',
+  'bg-orange-100 text-orange-800',
   'bg-green-100 text-green-800',
   'bg-yellow-100 text-yellow-800',
   'bg-purple-100 text-purple-800',
@@ -301,7 +301,7 @@ export default function CategoryManager() {
             variant="ghost"
             size="sm"
             onClick={() => openEditDialog(category)}
-            className="text-orange-600 hover:text-blue-800"
+            className="text-orange-600 hover:text-orange-800"
           >
             <Edit className="w-4 h-4" />
           </Button>
@@ -436,7 +436,7 @@ export default function CategoryManager() {
                     key={icon}
                     onClick={() => setFormData(prev => ({ ...prev, icon }))}
                     className={`p-2 text-lg rounded border ${
-                      formData.icon === icon ? 'border-orange-500 bg-blue-50' : 'border-gray-200'
+                      formData.icon === icon ? 'border-orange-500 bg-orange-50' : 'border-gray-200'
                     }`}
                   >
                     {icon}

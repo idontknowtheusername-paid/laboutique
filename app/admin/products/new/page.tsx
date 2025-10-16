@@ -259,11 +259,11 @@ export default function AdminNewProductPage() {
         </div>
 
         {/* IMPORT ALIEXPRESS/ALIBABA - version compacte (-60%) */}
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-md p-3 shadow-md">
+        <div className="bg-gradient-to-r from-orange-500 to-purple-600 text-white rounded-md p-3 shadow-md">
           <div className="flex items-center justify-between gap-3">
             <div>
               <h2 className="text-base font-semibold mb-1">🚀 Import Rapide</h2>
-              <p className="text-blue-100 text-xs">Importez des produits depuis AliExpress ou AliBaba en un clic !</p>
+              <p className="text-orange-100 text-xs">Importez des produits depuis AliExpress ou AliBaba en un clic !</p>
             </div>
             <Button 
               variant="secondary"

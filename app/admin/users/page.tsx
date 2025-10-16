@@ -312,7 +312,7 @@ export default function AdminUsersPage() {
                             u.role === "admin"
                               ? "bg-purple-600"
                               : u.role === "vendor"
-                              ? "bg-blue-600"
+                              ? "bg-orange-600"
                               : "bg-gray-600"
                           }
                         >

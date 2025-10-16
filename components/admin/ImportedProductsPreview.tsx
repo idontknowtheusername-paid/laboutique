@@ -74,7 +74,7 @@ export default function ImportedProductsPreview() {
     if (platform === 'aliexpress') {
       return <Badge className="bg-orange-100 text-orange-800">AliExpress</Badge>;
     } else if (platform === 'alibaba') {
-      return <Badge className="bg-blue-100 text-blue-800">AliBaba</Badge>;
+      return <Badge className="bg-orange-100 text-orange-800">AliBaba</Badge>;
     }
     return null;
   };

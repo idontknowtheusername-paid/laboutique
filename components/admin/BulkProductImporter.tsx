@@ -272,7 +272,7 @@ export function BulkProductImporter() {
             <div className="space-y-2">
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                  className="bg-orange-600 h-2 rounded-full transition-all duration-300" 
                   style={{ width: `${progress}%` }}
                 ></div>
               </div>
@@ -309,7 +309,7 @@ export function BulkProductImporter() {
                       : task.status === 'error'
                       ? 'bg-red-100 text-red-800'
                       : task.status === 'processing'
-                      ? 'bg-blue-100 text-blue-800'
+                      ? 'bg-orange-100 text-orange-800'
                       : 'bg-gray-100 text-gray-800'
                   }
                 >

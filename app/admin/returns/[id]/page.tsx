@@ -127,7 +127,7 @@ export default function AdminReturnDetailPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'approved': return 'bg-blue-100 text-blue-800';
+      case 'approved': return 'bg-orange-100 text-orange-800';
       case 'rejected': return 'bg-red-100 text-red-800';
       case 'processing': return 'bg-purple-100 text-purple-800';
       case 'completed': return 'bg-green-100 text-green-800';
@@ -270,7 +270,7 @@ export default function AdminReturnDetailPage() {
               {returnRequest.notes && (
                 <div>
                   <Label className="text-sm font-medium text-gray-500">Notes du client</Label>
-                  <div className="mt-1 p-3 bg-blue-50 rounded-lg">
+                  <div className="mt-1 p-3 bg-orange-50 rounded-lg">
                     {returnRequest.notes}
                   </div>
                 </div>
@@ -356,7 +356,7 @@ export default function AdminReturnDetailPage() {
                 <Button 
                   onClick={handleComplete} 
                   disabled={updating}
-                  className="w-full bg-blue-600 hover:bg-orange-700"
+                  className="w-full bg-orange-600 hover:bg-orange-700"
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
                   Marquer comme terminé

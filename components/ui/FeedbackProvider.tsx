@@ -107,7 +107,7 @@ const FeedbackDisplay: React.FC = () => {
       <div
         className={`p-4 rounded-lg shadow-lg border-l-4 ${
           feedback.loading
-            ? 'bg-blue-100 border-orange-600 text-blue-900'
+            ? 'bg-orange-100 border-orange-600 text-orange-900'
             : feedback.success
             ? 'bg-green-50 border-green-500 text-green-800'
             : 'bg-red-50 border-red-500 text-red-800'

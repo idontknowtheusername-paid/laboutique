@@ -99,7 +99,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen bg-jomionstore-background dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 bg-gradient-to-r from-jomionstore-primary to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+          <div className="w-8 h-8 bg-gradient-to-r from-jomionstore-primary to-orange-600 rounded-lg flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-sm">B</span>
           </div>
           <p className="text-gray-600 dark:text-gray-400">Vérification des permissions...</p>
@@ -113,7 +113,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen bg-jomionstore-background dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 bg-gradient-to-r from-jomionstore-primary to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+          <div className="w-8 h-8 bg-gradient-to-r from-jomionstore-primary to-orange-600 rounded-lg flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-sm">B</span>
           </div>
           <p className="text-gray-600 dark:text-gray-400">Vérification des permissions...</p>

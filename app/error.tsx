@@ -62,7 +62,7 @@ export default function GlobalError({
             </div>
 
             {/* Help Text */}
-            <div className="mt-12 p-6 bg-blue-100 rounded-lg">
+            <div className="mt-12 p-6 bg-orange-100 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-2">Besoin d'aide ?</h3>
               <p className="text-sm text-gray-600">
                 Si le problème persiste, n'hésitez pas à contacter notre équipe support.

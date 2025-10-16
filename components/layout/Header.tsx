@@ -50,7 +50,7 @@ const Header = () => {
       title: 'Super Soldes du Week-end',
       subtitle: 'Jusqu\'à -30% sur électronique',
       href: '/category/electronique',
-      bg: 'from-jomionstore-primary to-blue-700',
+      bg: 'from-jomionstore-primary to-orange-700',
     },
     {
       id: 'a2',
@@ -184,7 +184,7 @@ const Header = () => {
       }`}
     >
       {/* Announcement Bar - TEMPORAIREMENT MASQUÉ */}
-      {/* <div className="bg-gradient-to-r from-jomionstore-primary to-blue-700 text-white py-2">
+      {/* <div className="bg-gradient-to-r from-jomionstore-primary to-orange-700 text-white py-2">
         <div className="container relative">
           <Carousel setApi={setAnnApi} opts={{ align: "start", loop: true }}>
             <CarouselContent>

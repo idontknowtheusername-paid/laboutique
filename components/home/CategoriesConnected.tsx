@@ -56,7 +56,7 @@ export default function CategoriesConnected() {
   // Couleurs de gradient basées sur le slug
   const getGradient = (slug: string): string => {
     const gradientMap: Record<string, string> = {
-      'electronique': 'from-blue-600 to-purple-600',
+      'electronique': 'from-orange-600 to-purple-600',
       'mode-beaute': 'from-pink-500 to-rose-600',
       'maison-jardin': 'from-green-500 to-teal-600',
       'sport-loisirs': 'from-orange-500 to-red-600',

@@ -489,7 +489,7 @@ const ImprovedCategoryMenu = () => {
                                 <div key={child.slug} className="space-y-2">
                                   <Link
                                     href={`/category/${child.slug}`}
-                                    className="block font-semibold text-jomionstore-primary hover:text-blue-800 transition-colors"
+                                    className="block font-semibold text-jomionstore-primary hover:text-orange-800 transition-colors"
                                   >
                                     {child.name}
                                   </Link>

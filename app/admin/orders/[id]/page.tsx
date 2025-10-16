@@ -289,7 +289,7 @@ L'équipe JomionStore`;
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-500';
-      case 'processing': return 'bg-blue-500';
+      case 'processing': return 'bg-orange-500';
       case 'shipped': return 'bg-indigo-500';
       case 'delivered': return 'bg-green-600';
       case 'cancelled': return 'bg-red-600';
@@ -568,7 +568,7 @@ L'équipe JomionStore`;
                 <div className="space-y-4">
                   {orderHistory.map((entry: any, index: number) => (
                     <div key={index} className="flex items-center space-x-4 p-4 border rounded-lg">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
                         <Clock className="w-5 h-5 text-orange-600" />
                       </div>
                       <div className="flex-1">

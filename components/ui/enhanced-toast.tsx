@@ -97,8 +97,8 @@ export const showWishlistToast = (productName: string, added: boolean = true) =>
 export const showQuickViewToast = (productName: string) => {
     toast.info(
         <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center">
-                <Eye className="w-4 h-4 text-blue-700" />
+            <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
+                <Eye className="w-4 h-4 text-orange-700" />
             </div>
             <div>
                 <p className="font-medium">Aperçu rapide</p>

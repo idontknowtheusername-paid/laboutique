@@ -313,7 +313,7 @@ export default function CheckoutPage() {
                     {/* Option 1: Checkout (Qosic) */}
                     <div className={`relative flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${
                       paymentMethod === 'checkout' 
-                        ? 'border-jomionstore-primary bg-blue-50' 
+                        ? 'border-jomionstore-primary bg-orange-50' 
                         : 'border-gray-200 hover:border-gray-300'
                     }`} onClick={() => setPaymentMethod('checkout')}>
                       <RadioGroupItem value="checkout" id="checkout" className="mt-1" />
@@ -328,7 +328,7 @@ export default function CheckoutPage() {
                             Redirection vers page sécurisée Qosic
                           </p>
                           <div className="flex flex-wrap gap-2 mt-2">
-                            <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded border border-orange-200">📱 Mobile Money</span>
+                            <span className="text-xs bg-orange-50 text-orange-700 px-2 py-1 rounded border border-orange-200">📱 Mobile Money</span>
                             <span className="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded border border-purple-200">💳 Carte bancaire</span>
                           </div>
                         </Label>
@@ -341,7 +341,7 @@ export default function CheckoutPage() {
                     {/* Option 2: Mobile Money Direct */}
                     <div className={`relative flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${
                       paymentMethod === 'mobile-money' 
-                        ? 'border-jomionstore-primary bg-blue-50' 
+                        ? 'border-jomionstore-primary bg-orange-50' 
                         : 'border-gray-200 hover:border-gray-300'
                     }`} onClick={() => setPaymentMethod('mobile-money')}>
                       <RadioGroupItem value="mobile-money" id="mobile-money" className="mt-1" />

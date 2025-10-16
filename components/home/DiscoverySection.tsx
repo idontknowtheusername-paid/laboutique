@@ -8,7 +8,7 @@ import { ArrowRight, Sparkles, Flame, Clock3, Star, Telescope } from 'lucide-rea
 
 export default function DiscoverySection() {
   const tiles = [
-    { title: 'Nouveautés', subtitle: 'Arrivages récents', href: '/products?sort=newest', icon: Clock3, tone: 'bg-blue-50 text-blue-700' },
+    { title: 'Nouveautés', subtitle: 'Arrivages récents', href: '/products?sort=newest', icon: Clock3, tone: 'bg-orange-50 text-orange-700' },
     { title: 'Tendances', subtitle: 'Populaires cette semaine', href: '/search?sort=popular', icon: Flame, tone: 'bg-orange-50 text-orange-700' },
     { title: 'Sélection', subtitle: 'Notre coup de cœur', href: '/products?featured=true', icon: Star, tone: 'bg-yellow-50 text-yellow-700' },
     { title: 'Explorer', subtitle: 'Catégories inspirantes', href: '/categories', icon: Telescope, tone: 'bg-purple-50 text-purple-700' },
@@ -23,7 +23,7 @@ export default function DiscoverySection() {
           </h2>
           <p className="text-gray-600 mt-1.5">Trouvez rapidement des idées à explorer</p>
         </div>
-        <Link href="/products" className="text-jomionstore-primary hover:text-blue-700 text-sm">Voir tout</Link>
+        <Link href="/products" className="text-jomionstore-primary hover:text-orange-700 text-sm">Voir tout</Link>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">

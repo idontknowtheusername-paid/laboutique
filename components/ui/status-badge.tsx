@@ -20,7 +20,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
             case 'new':
                 return {
                     text: 'Nouveau',
-                    className: 'bg-blue-500 text-white',
+                    className: 'bg-orange-500 text-white',
                     animation: animate ? 'animate-pulse' : ''
                 };
             case 'hot':

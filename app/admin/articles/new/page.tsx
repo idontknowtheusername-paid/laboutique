@@ -45,7 +45,7 @@ export default function AdminNewArticlePage() {
         <AdminPageHeader
           title="Nouvel article"
           subtitle="Créer un contenu éditorial"
-          actions={message ? <Badge className="bg-blue-600">{message}</Badge> : null}
+          actions={message ? <Badge className="bg-orange-600">{message}</Badge> : null}
         />
 
         <Tabs defaultValue="content" className="space-y-6">

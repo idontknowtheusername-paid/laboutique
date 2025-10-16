@@ -13,7 +13,7 @@ const categoryData = [
     slug: 'smartphones',
     image: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=300',
     productCount: 1250,
-    gradient: 'from-blue-600 to-purple-600'
+    gradient: 'from-orange-600 to-purple-600'
   },
   {
     id: '2',
@@ -69,7 +69,7 @@ const categoryData = [
     slug: 'livres-education',
     image: 'https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg?auto=compress&cs=tinysrgb&w=300',
     productCount: 1200,
-    gradient: 'from-indigo-500 to-blue-600'
+    gradient: 'from-indigo-500 to-orange-600'
   },
 ];
 

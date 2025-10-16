@@ -319,7 +319,7 @@ export function StatusIndicator({
       case 'success': return 'text-green-600 bg-green-100';
       case 'error': return 'text-red-600 bg-red-100';
       case 'warning': return 'text-yellow-600 bg-yellow-100';
-      case 'info': return 'text-orange-600 bg-blue-100';
+      case 'info': return 'text-orange-600 bg-orange-100';
     }
   };
 

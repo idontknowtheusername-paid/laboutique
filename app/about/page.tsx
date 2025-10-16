@@ -270,7 +270,7 @@ export default function AboutPage() {
         </div>
 
         {/* CTA Section */}
-        <div className="bg-gradient-to-r from-jomionstore-primary to-blue-600 rounded-xl p-8 md:p-12 text-white text-center">
+        <div className="bg-gradient-to-r from-jomionstore-primary to-orange-600 rounded-xl p-8 md:p-12 text-white text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Rejoignez l'aventure JomionStore
           </h2>

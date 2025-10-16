@@ -86,7 +86,7 @@ export default function AdminEditOrderPage() {
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-500';
-      case 'processing': return 'bg-blue-500';
+      case 'processing': return 'bg-orange-500';
       case 'shipped': return 'bg-indigo-500';
       case 'delivered': return 'bg-green-600';
       case 'cancelled': return 'bg-red-600';

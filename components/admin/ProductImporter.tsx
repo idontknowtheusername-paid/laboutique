@@ -48,7 +48,7 @@ export function ProductImporter({ onImport, onClose }: ProductImporterProps) {
       case 'aliexpress':
         return { name: 'AliExpress', color: 'bg-orange-100 text-orange-800', icon: '🛒' };
       case 'alibaba':
-        return { name: 'AliBaba', color: 'bg-blue-100 text-blue-800', icon: '🏭' };
+        return { name: 'AliBaba', color: 'bg-orange-100 text-orange-800', icon: '🏭' };
       default:
         return { name: 'Inconnu', color: 'bg-gray-100 text-gray-800', icon: '❓' };
     }
@@ -376,7 +376,7 @@ export function ProductImporter({ onImport, onClose }: ProductImporterProps) {
                 href={productData.source_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-orange-600 hover:text-blue-800 flex items-center gap-1"
+                className="text-sm text-orange-600 hover:text-orange-800 flex items-center gap-1"
               >
                 <ExternalLink className="w-3 h-3" />
                 Voir le produit original

@@ -15,7 +15,7 @@ const slides = [
     cta: 'Découvrir maintenant',
     link: '/products',
     image: 'https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    gradient: 'from-jomionstore-primary to-blue-600',
+    gradient: 'from-jomionstore-primary to-orange-600',
   },
   {
     id: 2,
@@ -55,7 +55,7 @@ const slides = [
     cta: 'Découvrir',
     link: '/payment-info',
     image: 'https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    gradient: 'from-blue-600 to-indigo-600',
+    gradient: 'from-orange-600 to-indigo-600',
   },
   {
     id: 6,

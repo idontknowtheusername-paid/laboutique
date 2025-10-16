@@ -105,7 +105,7 @@ export default function PointsPage() {
       case 'silver': return 'bg-gray-100 text-gray-800';
       case 'gold': return 'bg-yellow-100 text-yellow-800';
       case 'platinum': return 'bg-purple-100 text-purple-800';
-      case 'diamond': return 'bg-blue-100 text-blue-800';
+      case 'diamond': return 'bg-orange-100 text-orange-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -236,7 +236,7 @@ export default function PointsPage() {
                           <div className="flex items-center gap-3">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                               transaction.type === 'earned' ? 'bg-green-100' : 
-                              transaction.type === 'redeemed' ? 'bg-blue-100' : 'bg-red-100'
+                              transaction.type === 'redeemed' ? 'bg-orange-100' : 'bg-red-100'
                             }`}>
                               {transaction.type === 'earned' ? (
                                 <Star className="w-4 h-4 text-green-600" />
