@@ -12,6 +12,8 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ReviewForm } from '@/components/product/ReviewForm';
+import { ReviewList } from '@/components/product/ReviewList';
 import { 
   Star, 
   Heart, 
@@ -59,6 +61,7 @@ export default function ProductDetailPage() {
   const [similarProducts, setSimilarProducts] = useState<SliderProduct[]>([]);
   const [recentlyViewedProducts, setRecentlyViewedProducts] = useState<SliderProduct[]>([]);
   const [newProducts, setNewProducts] = useState<SliderProduct[]>([]);
+  const [reviewsRefresh, setReviewsRefresh] = useState(0);
 
   const { addToCart } = useCart();
 
@@ -550,10 +553,23 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
 
+                {/* Review Form */}
+                <ReviewForm 
+                  productId={product?.id || ''} 
+                  onSuccess={() => {
+                    setReviewsRefresh(prev => prev + 1);
+                    // Reload product to update average_rating
+                    window.location.reload();
+                  }}
+                />
+
                 {/* Individual Reviews */}
-                <div className="space-y-6">
-                  {/* Placeholder for real reviews integration */}
-                  <div className="text-center text-gray-500">Les avis seront bientôt disponibles.</div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Avis des clients</h3>
+                  <ReviewList 
+                    productId={product?.id || ''} 
+                    refreshTrigger={reviewsRefresh}
+                  />
                 </div>
               </div>
             </TabsContent>
