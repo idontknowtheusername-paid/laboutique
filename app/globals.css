@@ -70,7 +70,7 @@ script[src*="vercel"] {
 
 :root {
   /* JomionStore Custom Variables */
-  --jomionstore-primary: #1E40AF;
+  --jomionstore-primary: #FF5722;
   --jomionstore-secondary: #EA580C;
   --jomionstore-accent: #7C2D12;
   --jomionstore-background: #F8FAFC;
@@ -128,7 +128,7 @@ script[src*="vercel"] {
   }
   
   .btn-primary {
-    @apply bg-jomionstore-primary text-white hover:bg-blue-800 transition-colors duration-200 font-medium px-6 py-3 rounded-lg;
+    @apply bg-jomionstore-primary text-white hover:bg-orange-700 transition-colors duration-200 font-medium px-6 py-3 rounded-lg;
   }
   
   .btn-secondary {
@@ -160,7 +160,7 @@ script[src*="vercel"] {
   }
   
   .gradient-primary {
-    @apply bg-gradient-to-r from-jomionstore-primary to-blue-700;
+    @apply bg-gradient-to-r from-jomionstore-primary to-orange-700;
   }
   
   .gradient-secondary {
@@ -183,7 +183,7 @@ script[src*="vercel"] {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #1e3a8a;
+  background: #E64A19;
 }
 
 /* Loading skeleton animation */

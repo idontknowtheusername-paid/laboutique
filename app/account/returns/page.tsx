@@ -39,7 +39,7 @@ export default function ReturnsPage() {
               <Card>
                 <CardHeader className="flex items-center justify-between">
                   <CardTitle>Retours</CardTitle>
-                  <Button onClick={() => setCreating(v => !v)} className="bg-jomionstore-primary hover:bg-blue-700">
+                  <Button onClick={() => setCreating(v => !v)} className="bg-jomionstore-primary hover:bg-orange-700">
                     Créer une demande
                   </Button>
                 </CardHeader>
@@ -66,7 +66,7 @@ export default function ReturnsPage() {
                         </div>
                       </div>
                       <div className="md:col-span-2 flex gap-3">
-                        <Button className="bg-jomionstore-primary hover:bg-blue-700" onClick={async ()=>{
+                        <Button className="bg-jomionstore-primary hover:bg-orange-700" onClick={async ()=>{
                           if (!user?.id) return;
                           const res = await AccountService.createReturnRequest(user.id, form as any);
                           if (res.success && res.data) {

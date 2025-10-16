@@ -375,7 +375,7 @@ export default function ProductDetailPage() {
                     <div className="flex items-center space-x-2">
                       <h3 className="font-semibold">{product?.vendor?.name || 'Boutique'}</h3>
                       {true && (
-                        <Verified className="w-4 h-4 text-blue-500" />
+                        <Verified className="w-4 h-4 text-orange-500" />
                       )}
                     </div>
                     <div className="flex items-center space-x-1 text-sm text-gray-600">
@@ -430,7 +430,7 @@ export default function ProductDetailPage() {
             <div className="space-y-3">
               <Button 
                 onClick={handleAddToCart}
-                className="w-full bg-jomionstore-primary hover:bg-blue-700 h-12 text-lg"
+                className="w-full bg-jomionstore-primary hover:bg-orange-700 h-12 text-lg"
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
                 Ajouter au panier
@@ -583,7 +583,7 @@ export default function ProductDetailPage() {
                 <p className="text-gray-600 mb-6">
                   Soyez le premier à poser une question sur ce produit
                 </p>
-                <Button className="bg-jomionstore-primary hover:bg-blue-700">
+                <Button className="bg-jomionstore-primary hover:bg-orange-700">
                   Poser une question
                 </Button>
               </div>

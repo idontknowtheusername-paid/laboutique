@@ -376,7 +376,7 @@ export function ProductImporter({ onImport, onClose }: ProductImporterProps) {
                 href={productData.source_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                className="text-sm text-orange-600 hover:text-blue-800 flex items-center gap-1"
               >
                 <ExternalLink className="w-3 h-3" />
                 Voir le produit original

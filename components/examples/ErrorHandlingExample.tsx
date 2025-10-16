@@ -293,7 +293,7 @@ export const ErrorHandlingExample: React.FC = () => {
               </Button>
             </div>
             
-            {asyncLoading && <div className="text-blue-600">Loading...</div>}
+            {asyncLoading && <div className="text-orange-600">Loading...</div>}
             {asyncError && (
               <div className="text-red-600">
                 Error: {asyncError.message}

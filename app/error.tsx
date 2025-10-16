@@ -43,7 +43,7 @@ export default function GlobalError({
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button onClick={reset} className="bg-jomionstore-primary hover:bg-blue-800">
+              <Button onClick={reset} className="bg-jomionstore-primary hover:bg-orange-700">
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Réessayer
               </Button>

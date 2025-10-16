@@ -37,7 +37,7 @@ export default function ResetPasswordPage() {
                     <label className="block text-sm font-medium mb-2">Confirmer le mot de passe</label>
                     <Input type="password" required value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="********" />
                   </div>
-                  <Button type="submit" className="w-full bg-jomionstore-primary hover:bg-blue-700">Mettre à jour</Button>
+                  <Button type="submit" className="w-full bg-jomionstore-primary hover:bg-orange-700">Mettre à jour</Button>
                 </form>
               )}
               <p className="text-sm text-gray-600 mt-4 text-center">

@@ -226,7 +226,7 @@ export default function LoginPage() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-jomionstore-primary hover:bg-blue-700"
+                  className="w-full bg-jomionstore-primary hover:bg-orange-700"
                   disabled={loading || socialLoading !== null}
                 >
                   {loading ? (

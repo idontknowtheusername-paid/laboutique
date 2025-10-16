@@ -167,16 +167,16 @@ export default function CartPage() {
 
         {/* Sync Status */}
         {(syncing || localChanges) && (
-          <div className="mb-4 p-3 bg-blue-100 border border-blue-300 rounded-lg">
+          <div className="mb-4 p-3 bg-blue-100 border border-orange-300 rounded-lg">
             <div className="flex items-center">
               {syncing ? (
                 <>
-                  <div className="w-4 h-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent mr-2" />
+                  <div className="w-4 h-4 animate-spin rounded-full border-2 border-orange-600 border-t-transparent mr-2" />
                   <span className="text-sm text-blue-800">Synchronisation en cours...</span>
                 </>
               ) : (
                 <>
-                  <AlertCircle className="w-4 h-4 text-blue-600 mr-2" />
+                  <AlertCircle className="w-4 h-4 text-orange-600 mr-2" />
                   <span className="text-sm text-blue-800">
                     Modifications locales non synchronisées
                   </span>
@@ -205,7 +205,7 @@ export default function CartPage() {
               Découvrez nos produits et ajoutez-les à votre panier
             </p>
             <Link href="/">
-              <Button className="bg-jomionstore-primary hover:bg-blue-800">
+              <Button className="bg-jomionstore-primary hover:bg-orange-700">
                 Continuer mes achats
               </Button>
             </Link>
@@ -483,7 +483,7 @@ export default function CartPage() {
 
                   <Link href="/checkout">
                         <Button
-                          className="w-full bg-jomionstore-primary hover:bg-blue-800 h-12 text-lg"
+                          className="w-full bg-jomionstore-primary hover:bg-orange-700 h-12 text-lg"
                           disabled={loading || syncing || cartItems.length === 0 || error?.type === 'conflict'}
                         >
                           {loading || syncing ? (

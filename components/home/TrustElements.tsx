@@ -27,7 +27,7 @@ const TrustElements = () => {
       icon: Truck,
       title: "Livraison rapide",
       description: "24h à Cotonou",
-      color: "text-blue-500",
+      color: "text-orange-500",
       bgColor: "bg-blue-50",
       details: "Livraison gratuite pour toute commande supérieure à 50,000 F"
     },

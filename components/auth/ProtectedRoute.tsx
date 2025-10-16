@@ -137,7 +137,7 @@ function ProtectedRouteUnauthorized({
     return {
       title: 'Connexion requise',
       description: 'Vous devez être connecté pour accéder à cette page.',
-      icon: <LogIn className="w-8 h-8 text-blue-600" />
+      icon: <LogIn className="w-8 h-8 text-orange-600" />
     };
   };
 
@@ -174,7 +174,7 @@ function ProtectedRouteUnauthorized({
 
             <div className="space-y-3">
               {requireAuth && !currentRole && (
-                <Button asChild className="w-full bg-jomionstore-primary hover:bg-blue-700">
+                <Button asChild className="w-full bg-jomionstore-primary hover:bg-orange-700">
                   <Link href={loginUrl}>Se connecter</Link>
                 </Button>
               )}

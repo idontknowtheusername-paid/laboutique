@@ -37,7 +37,7 @@ export default function AdminArticlesPage() {
         <AdminPageHeader
           title="Articles"
           subtitle="Contenus éditoriaux du site"
-          actions={<Button asChild className="bg-jomionstore-primary hover:bg-blue-700"><Link href="/admin/articles/new">Nouvel article</Link></Button>}
+          actions={<Button asChild className="bg-jomionstore-primary hover:bg-orange-700"><Link href="/admin/articles/new">Nouvel article</Link></Button>}
         />
 
         <Card>

@@ -219,7 +219,7 @@ export const showProgressToast = (message: string, progress: number, id?: string
                 <p className="font-medium">{message}</p>
                 <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                     <div
-                        className="bg-blue-700 h-2 rounded-full transition-all duration-300"
+                        className="bg-orange-600 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
                     />
                 </div>

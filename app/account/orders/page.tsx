@@ -375,7 +375,7 @@ export default function OrdersPage() {
                                 </Button>
                               )}
                             </div>
-                            <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => handleReorder(order)}>
+                            <Button className="bg-blue-600 hover:bg-orange-700" onClick={() => handleReorder(order)}>
                               Commander à nouveau
                             </Button>
                           </div>
@@ -451,7 +451,7 @@ export default function OrdersPage() {
 
                 <TabsContent value="shipped">
                   <div className="text-center py-12">
-                    <Truck className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+                    <Truck className="w-16 h-16 text-orange-500 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">
                       Commandes expédiées
                     </h3>

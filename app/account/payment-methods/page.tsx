@@ -45,7 +45,7 @@ export default function PaymentMethodsPage() {
               <Card>
                 <CardHeader className="flex items-center justify-between">
                   <CardTitle>Moyens de paiement</CardTitle>
-                  <Button onClick={() => setAdding(v => !v)} className="bg-jomionstore-primary hover:bg-blue-700">
+                  <Button onClick={() => setAdding(v => !v)} className="bg-jomionstore-primary hover:bg-orange-700">
                     <Plus className="w-4 h-4 mr-2" /> Ajouter une carte
                   </Button>
                 </CardHeader>
@@ -69,7 +69,7 @@ export default function PaymentMethodsPage() {
                         <Input placeholder="123" />
                       </div>
                       <div className="md:col-span-2 flex gap-3">
-                        <Button disabled={saving} className="bg-jomionstore-primary hover:bg-blue-700" onClick={async () => {
+                        <Button disabled={saving} className="bg-jomionstore-primary hover:bg-orange-700" onClick={async () => {
                           if (!user?.id) return;
                           setSaving(true);
                           const res = await AccountService.addPaymentMethod(user.id, form as any);

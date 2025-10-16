@@ -12,7 +12,7 @@ const config: Config = {
       colors: {
         // JomionStore Custom Colors
         jomionstore: {
-          primary: '#4169E1', // Bleu royal
+          primary: '#FF5722', // Orange persimmon (Material Design)
           secondary: '#EA580C', // Orange cuivre
           accent: '#7C2D12', // Brun chocolat
           background: '#F8FAFC', // Blanc pur

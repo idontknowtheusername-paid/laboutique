@@ -166,7 +166,7 @@ const QuickAddToCart: React.FC<QuickAddToCartProps> = ({
       return `${baseClass} bg-gray-400 hover:bg-gray-400 cursor-not-allowed text-white`;
     }
 
-    return `${baseClass} bg-jomionstore-primary hover:bg-blue-700 text-white`;
+    return `${baseClass} bg-jomionstore-primary hover:bg-orange-700 text-white`;
   };
 
   return (

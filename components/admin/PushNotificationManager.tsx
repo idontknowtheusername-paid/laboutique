@@ -134,7 +134,7 @@ export default function PushNotificationManager() {
       case 'promotion': return <Target className="w-4 h-4 text-orange-500" />;
       case 'order': return <CheckCircle className="w-4 h-4 text-green-500" />;
       case 'system': return <AlertCircle className="w-4 h-4 text-red-500" />;
-      default: return <Info className="w-4 h-4 text-blue-500" />;
+      default: return <Info className="w-4 h-4 text-orange-500" />;
     }
   };
 

@@ -145,7 +145,7 @@ export function ImageUploader({
         <div
           className={`border-2 border-dashed rounded-md p-4 text-center cursor-pointer transition-colors ${
             uploading 
-              ? 'border-blue-400 bg-blue-50' 
+              ? 'border-orange-400 bg-blue-50' 
               : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
           }`}
           onClick={() => !uploading && inputRef.current?.click()}
@@ -154,8 +154,8 @@ export function ImageUploader({
           role="button"
           aria-label="Ajouter des images"
         >
-          <Upload className={`w-6 h-6 mx-auto mb-2 ${uploading ? 'text-blue-500 animate-pulse' : 'text-gray-500'}`} />
-          <p className={`text-sm ${uploading ? 'text-blue-600' : 'text-gray-600'}`}>
+          <Upload className={`w-6 h-6 mx-auto mb-2 ${uploading ? 'text-orange-500 animate-pulse' : 'text-gray-500'}`} />
+          <p className={`text-sm ${uploading ? 'text-orange-600' : 'text-gray-600'}`}>
             {uploading 
               ? 'Upload en cours...' 
               : multiple 

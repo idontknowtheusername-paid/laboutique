@@ -255,7 +255,7 @@ export default function AdminProductsPage() {
               <Download className="w-4 h-4 mr-2" /> Importer
             </Button>
             <Button
-              className="bg-jomionstore-primary hover:bg-blue-700"
+              className="bg-jomionstore-primary hover:bg-orange-700"
               onClick={() => router.push("/admin/products/bulk-import")}
             >
               <Download className="w-4 h-4 mr-2" /> Import masse

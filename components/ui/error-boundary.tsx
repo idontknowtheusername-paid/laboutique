@@ -176,7 +176,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                   {canRetry && (
                     <Button
                       onClick={this.handleRetry}
-                      className="flex-1 bg-blue-700 hover:bg-blue-800"
+                      className="flex-1 bg-orange-600 hover:bg-orange-700"
                     >
                       <RefreshCw className="w-4 h-4 mr-2" />
                       Réessayer

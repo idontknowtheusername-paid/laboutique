@@ -267,7 +267,7 @@ export default function AdminNewProductPage() {
             </div>
             <Button 
               variant="secondary"
-              className="flex items-center gap-2 bg-white text-blue-600 hover:bg-gray-100 font-medium h-9 px-4"
+              className="flex items-center gap-2 bg-white text-orange-600 hover:bg-gray-100 font-medium h-9 px-4"
               onClick={() => window.location.href = '/admin/products/import'}
             >
               <Download className="w-4 h-4" />
@@ -533,7 +533,7 @@ export default function AdminNewProductPage() {
           <Button variant="outline" onClick={()=>handleSave('draft')} disabled={saving}>
             {saving ? 'Enregistrement...' : 'Enregistrer comme brouillon'}
           </Button>
-          <Button className="bg-jomionstore-primary hover:bg-blue-700" onClick={()=>handleSave('active')} disabled={saving}>
+          <Button className="bg-jomionstore-primary hover:bg-orange-700" onClick={()=>handleSave('active')} disabled={saving}>
             {saving ? 'Publication...' : 'Publier le produit'}
           </Button>
         </div>

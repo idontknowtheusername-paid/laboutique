@@ -104,7 +104,7 @@ export default function ImportedProductsPreview() {
           <div className="flex gap-3">
             <Button
               onClick={() => window.location.href = '/admin/products/import'}
-              className="bg-jomionstore-primary hover:bg-blue-700"
+              className="bg-jomionstore-primary hover:bg-orange-700"
             >
               <Eye className="w-4 h-4 mr-2" />
               Importer un produit

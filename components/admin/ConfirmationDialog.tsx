@@ -61,7 +61,7 @@ export default function ConfirmationDialog({
     switch (variant) {
       case 'destructive': return <XCircle className="w-6 h-6 text-red-500" />;
       case 'warning': return <AlertTriangle className="w-6 h-6 text-yellow-500" />;
-      case 'info': return <Info className="w-6 h-6 text-blue-500" />;
+      case 'info': return <Info className="w-6 h-6 text-orange-500" />;
       default: return <CheckCircle className="w-6 h-6 text-green-500" />;
     }
   };

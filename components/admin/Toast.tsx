@@ -139,7 +139,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
       case 'success': return <CheckCircle className="w-5 h-5 text-green-500" />;
       case 'error': return <XCircle className="w-5 h-5 text-red-500" />;
       case 'warning': return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
-      case 'info': return <Info className="w-5 h-5 text-blue-500" />;
+      case 'info': return <Info className="w-5 h-5 text-orange-500" />;
     }
   };
 
@@ -148,7 +148,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
       case 'success': return 'border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800';
       case 'error': return 'border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800';
       case 'warning': return 'border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-800';
-      case 'info': return 'border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800';
+      case 'info': return 'border-orange-200 bg-blue-50 dark:bg-blue-900/20 dark:border-orange-800';
     }
   };
 
@@ -216,11 +216,11 @@ export function LoadingToast({
   description?: string; 
 }) {
   return (
-    <Card className="w-80 shadow-lg border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
+    <Card className="w-80 shadow-lg border-orange-200 bg-blue-50 dark:bg-blue-900/20 dark:border-orange-800">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0">
-            <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+            <Loader2 className="w-5 h-5 text-orange-500 animate-spin" />
           </div>
           
           <div className="flex-1 min-w-0">

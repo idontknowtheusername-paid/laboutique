@@ -94,7 +94,7 @@ export default function PointsPage() {
       case 'silver': return <Star className="w-6 h-6 text-gray-400" />;
       case 'gold': return <Crown className="w-6 h-6 text-yellow-500" />;
       case 'platinum': return <Trophy className="w-6 h-6 text-purple-500" />;
-      case 'diamond': return <Zap className="w-6 h-6 text-blue-500" />;
+      case 'diamond': return <Zap className="w-6 h-6 text-orange-500" />;
       default: return <Shield className="w-6 h-6 text-gray-500" />;
     }
   };
@@ -241,7 +241,7 @@ export default function PointsPage() {
                               {transaction.type === 'earned' ? (
                                 <Star className="w-4 h-4 text-green-600" />
                               ) : transaction.type === 'redeemed' ? (
-                                <Gift className="w-4 h-4 text-blue-600" />
+                                <Gift className="w-4 h-4 text-orange-600" />
                               ) : (
                                 <Shield className="w-4 h-4 text-red-600" />
                               )}

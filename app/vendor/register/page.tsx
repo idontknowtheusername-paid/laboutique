@@ -104,7 +104,7 @@ export default function VendorRegisterPage() {
                     <textarea className="w-full p-3 border rounded-lg" rows={4} placeholder="Présentez votre boutique..." />
                   </div>
 
-                  <Button type="submit" className="w-full bg-jomionstore-primary hover:bg-blue-700 h-12">Soumettre ma demande</Button>
+                  <Button type="submit" className="w-full bg-jomionstore-primary hover:bg-orange-700 h-12">Soumettre ma demande</Button>
                 </form>
               )}
             </CardContent>

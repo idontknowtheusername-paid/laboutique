@@ -225,7 +225,7 @@ export default function CheckoutPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Votre panier est vide</h2>
             <p className="text-gray-600 mb-6">Ajoutez des produits à votre panier avant de passer au paiement</p>
             <Link href="/products">
-              <Button className="bg-jomionstore-primary hover:bg-blue-800">
+              <Button className="bg-jomionstore-primary hover:bg-orange-700">
                 Découvrir nos produits
               </Button>
             </Link>
@@ -236,7 +236,7 @@ export default function CheckoutPage() {
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Commande confirmée !</h2>
             <p className="text-gray-600 mb-6">Merci pour votre achat. Vous recevrez un email de confirmation sous peu.</p>
             <Link href="/">
-              <Button className="bg-jomionstore-primary hover:bg-blue-800">Retour à l'accueil</Button>
+              <Button className="bg-jomionstore-primary hover:bg-orange-700">Retour à l'accueil</Button>
             </Link>
           </div>
         ) : (
@@ -328,7 +328,7 @@ export default function CheckoutPage() {
                             Redirection vers page sécurisée Qosic
                           </p>
                           <div className="flex flex-wrap gap-2 mt-2">
-                            <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded border border-blue-200">📱 Mobile Money</span>
+                            <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded border border-orange-200">📱 Mobile Money</span>
                             <span className="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded border border-purple-200">💳 Carte bancaire</span>
                           </div>
                         </Label>
@@ -392,7 +392,7 @@ export default function CheckoutPage() {
               <Button 
                 disabled={loading} 
                 onClick={placeOrder} 
-                className="w-full bg-jomionstore-primary hover:bg-blue-800 h-12 text-base font-semibold"
+                className="w-full bg-jomionstore-primary hover:bg-orange-700 h-12 text-base font-semibold"
               >
                 {loading ? (
                   <>

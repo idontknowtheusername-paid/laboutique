@@ -142,7 +142,7 @@ export default function SettingsPage() {
                     />
                   </div>
                   
-                  <Button onClick={handleProfileUpdate} disabled={loading} className="bg-jomionstore-primary hover:bg-blue-700">
+                  <Button onClick={handleProfileUpdate} disabled={loading} className="bg-jomionstore-primary hover:bg-orange-700">
                     {loading ? 'Mise à jour...' : 'Mettre à jour le profil'}
                   </Button>
                 </CardContent>
@@ -211,7 +211,7 @@ export default function SettingsPage() {
                         />
                       </div>
                       
-                      <Button onClick={handleNotificationUpdate} className="bg-jomionstore-primary hover:bg-blue-700">
+                      <Button onClick={handleNotificationUpdate} className="bg-jomionstore-primary hover:bg-orange-700">
                         Sauvegarder les préférences
                       </Button>
                     </>

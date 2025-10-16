@@ -35,7 +35,7 @@ export default function NotFound() {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Link href="/">
-              <Button className="bg-jomionstore-primary hover:bg-blue-700">
+              <Button className="bg-jomionstore-primary hover:bg-orange-700">
                 <Home className="w-4 h-4 mr-2" />
                 Retour à l'accueil
               </Button>

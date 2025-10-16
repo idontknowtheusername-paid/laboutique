@@ -301,7 +301,7 @@ export default function CategoryManager() {
             variant="ghost"
             size="sm"
             onClick={() => openEditDialog(category)}
-            className="text-blue-600 hover:text-blue-800"
+            className="text-orange-600 hover:text-blue-800"
           >
             <Edit className="w-4 h-4" />
           </Button>
@@ -436,7 +436,7 @@ export default function CategoryManager() {
                     key={icon}
                     onClick={() => setFormData(prev => ({ ...prev, icon }))}
                     className={`p-2 text-lg rounded border ${
-                      formData.icon === icon ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                      formData.icon === icon ? 'border-orange-500 bg-blue-50' : 'border-gray-200'
                     }`}
                   >
                     {icon}
@@ -453,7 +453,7 @@ export default function CategoryManager() {
                     key={color}
                     onClick={() => setFormData(prev => ({ ...prev, color }))}
                     className={`p-2 rounded border ${
-                      formData.color === color ? 'border-blue-500' : 'border-gray-200'
+                      formData.color === color ? 'border-orange-500' : 'border-gray-200'
                     }`}
                   >
                     <Badge className={color}>Test</Badge>

@@ -41,7 +41,7 @@ export default function AddressesPage() {
               <Card>
                 <CardHeader className="flex items-center justify-between">
                   <CardTitle>Mes adresses</CardTitle>
-                  <Button onClick={() => setAdding(v => !v)} className="bg-jomionstore-primary hover:bg-blue-700">
+                  <Button onClick={() => setAdding(v => !v)} className="bg-jomionstore-primary hover:bg-orange-700">
                     <Plus className="w-4 h-4 mr-2" /> Ajouter une adresse
                   </Button>
                 </CardHeader>
@@ -86,7 +86,7 @@ export default function AddressesPage() {
                         </div>
                       </div>
                       <div className="md:col-span-2 flex gap-3">
-                        <Button className="bg-jomionstore-primary hover:bg-blue-700" onClick={async ()=>{
+                        <Button className="bg-jomionstore-primary hover:bg-orange-700" onClick={async ()=>{
                           if (!user?.id) return;
                           const res = await AccountService.addAddress(user.id, { ...form, delivery_method: deliveryPrefs.method, delivery_instructions: deliveryPrefs.instructions } as any);
                           if (res.success && res.data) {

@@ -88,7 +88,7 @@ export default function OrderTracking({ orderId, currentStatus }: OrderTrackingP
       case 'pending':
         return <Clock className="w-5 h-5 text-yellow-500" />;
       case 'processing':
-        return <Package className="w-5 h-5 text-blue-500" />;
+        return <Package className="w-5 h-5 text-orange-500" />;
       case 'shipped':
         return <Truck className="w-5 h-5 text-indigo-500" />;
       case 'delivered':

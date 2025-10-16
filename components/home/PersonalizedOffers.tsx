@@ -233,7 +233,7 @@ const PersonalizedOffers = () => {
             style={{ scrollbarWidth: 'none' as any }}
           >
           {items.map((product) => (
-            <Card key={product.id} className="group hover-lift card-shadow h-full flex flex-col bg-white border-blue-200 snap-start shrink-0 w-[240px]">
+            <Card key={product.id} className="group hover-lift card-shadow h-full flex flex-col bg-white border-orange-200 snap-start shrink-0 w-[240px]">
               <Link href={`/product/${product.slug}`} className="relative overflow-hidden block">
                 {/* Product Image - harmonisé */}
                 <div className="aspect-square bg-gray-100 relative" style={{ minHeight: '180px' }}>
@@ -376,7 +376,7 @@ const PersonalizedOffers = () => {
                 key={i}
                 aria-label={`Aller à l'élément ${i + 1}`}
                 onClick={() => scrollToIndex(i)}
-                className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-blue-700' : 'w-2 bg-blue-300'}`}
+                className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-orange-600' : 'w-2 bg-blue-300'}`}
               />
             ))}
           </div>

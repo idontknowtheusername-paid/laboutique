@@ -91,7 +91,7 @@ export default function NotificationsPage() {
                     <Switch checked={!!prefs?.push_all} onCheckedChange={(v) => setPrefs(p => (p ? { ...p, push_all: !!v } : p))} />
                   </div>
                   <div className="flex gap-3 pt-2">
-                    <Button disabled={!prefs} className="bg-jomionstore-primary hover:bg-blue-700" onClick={async ()=>{
+                    <Button disabled={!prefs} className="bg-jomionstore-primary hover:bg-orange-700" onClick={async ()=>{
                       if (!user?.id || !prefs) return;
                       await AccountService.upsertNotificationPrefs(user.id, prefs);
                     }}>Enregistrer</Button>

@@ -139,7 +139,7 @@ export default function MobileMoneyValidationPage() {
             {/* Icône de statut */}
             <div className="flex justify-center">
               {status === 'checking' && (
-                <Loader2 className="w-16 h-16 text-blue-500 animate-spin" />
+                <Loader2 className="w-16 h-16 text-orange-500 animate-spin" />
               )}
               {status === 'success' && (
                 <CheckCircle className="w-16 h-16 text-green-500" />
@@ -203,7 +203,7 @@ export default function MobileMoneyValidationPage() {
               {status === 'success' && (
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link href={orderId ? `/account/orders/${orderId}` : '/account/orders'} className="flex-1">
-                    <Button className="w-full bg-jomionstore-primary hover:bg-blue-800">
+                    <Button className="w-full bg-jomionstore-primary hover:bg-orange-700">
                       Voir ma commande
                     </Button>
                   </Link>
@@ -218,7 +218,7 @@ export default function MobileMoneyValidationPage() {
               {status === 'failed' && (
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link href="/checkout" className="flex-1">
-                    <Button className="w-full bg-jomionstore-primary hover:bg-blue-800">
+                    <Button className="w-full bg-jomionstore-primary hover:bg-orange-700">
                       Réessayer
                     </Button>
                   </Link>

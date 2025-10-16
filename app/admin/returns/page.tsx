@@ -361,7 +361,7 @@ export default function AdminReturnsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Package className="w-5 h-5 text-blue-500" />
+                  <Package className="w-5 h-5 text-orange-500" />
                   Demandes en attente
                 </CardTitle>
               </CardHeader>

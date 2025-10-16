@@ -338,7 +338,7 @@ L'équipe JomionStore`;
               Retour
             </Button>
             <Button 
-              className="bg-jomionstore-primary hover:bg-blue-700"
+              className="bg-jomionstore-primary hover:bg-orange-700"
               onClick={() => router.push(`/admin/orders/${order.id}/edit`)}
             >
               <Edit className="w-4 h-4 mr-2" />
@@ -569,7 +569,7 @@ L'équipe JomionStore`;
                   {orderHistory.map((entry: any, index: number) => (
                     <div key={index} className="flex items-center space-x-4 p-4 border rounded-lg">
                       <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <Clock className="w-5 h-5 text-blue-600" />
+                        <Clock className="w-5 h-5 text-orange-600" />
                       </div>
                       <div className="flex-1">
                         <p className="font-medium">

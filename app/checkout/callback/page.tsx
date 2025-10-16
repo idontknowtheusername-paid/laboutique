@@ -94,7 +94,7 @@ export default function CheckoutCallbackPage() {
             {/* Icône de statut */}
             <div className="flex justify-center">
               {status === 'loading' && (
-                <Loader2 className="w-16 h-16 text-blue-500 animate-spin" />
+                <Loader2 className="w-16 h-16 text-orange-500 animate-spin" />
               )}
               {status === 'success' && (
                 <CheckCircle className="w-16 h-16 text-green-500" />
@@ -125,7 +125,7 @@ export default function CheckoutCallbackPage() {
               {status === 'success' && (
                 <>
                   <Link href={orderId ? `/account/orders/${orderId}` : '/account/orders'}>
-                    <Button className="w-full sm:w-auto bg-jomionstore-primary hover:bg-blue-800">
+                    <Button className="w-full sm:w-auto bg-jomionstore-primary hover:bg-orange-700">
                       Voir ma commande
                     </Button>
                   </Link>
@@ -140,7 +140,7 @@ export default function CheckoutCallbackPage() {
               {status === 'failed' && (
                 <>
                   <Link href="/checkout">
-                    <Button className="w-full sm:w-auto bg-jomionstore-primary hover:bg-blue-800">
+                    <Button className="w-full sm:w-auto bg-jomionstore-primary hover:bg-orange-700">
                       Réessayer
                     </Button>
                   </Link>
@@ -155,7 +155,7 @@ export default function CheckoutCallbackPage() {
               {status === 'pending' && (
                 <>
                   <Link href="/account/orders">
-                    <Button className="w-full sm:w-auto bg-jomionstore-primary hover:bg-blue-800">
+                    <Button className="w-full sm:w-auto bg-jomionstore-primary hover:bg-orange-700">
                       Mes commandes
                     </Button>
                   </Link>

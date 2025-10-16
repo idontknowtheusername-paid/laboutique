@@ -147,7 +147,7 @@ export default function AdminEditOrderPage() {
               Annuler
             </Button>
             <Button 
-              className="bg-jomionstore-primary hover:bg-blue-700"
+              className="bg-jomionstore-primary hover:bg-orange-700"
               onClick={handleSave}
               disabled={saving}
             >

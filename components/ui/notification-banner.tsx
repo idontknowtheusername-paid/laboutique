@@ -67,9 +67,9 @@ export const NotificationBanner: React.FC<NotificationBannerProps> = ({
             default:
                 return {
                     icon: <Info className="w-5 h-5" />,
-                    bgColor: 'bg-blue-50 border-blue-200',
+                    bgColor: 'bg-blue-50 border-orange-200',
                     textColor: 'text-blue-800',
-                    iconColor: 'text-blue-600'
+                    iconColor: 'text-orange-600'
                 };
         }
     };

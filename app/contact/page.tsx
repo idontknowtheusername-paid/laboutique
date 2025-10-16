@@ -255,7 +255,7 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full bg-jomionstore-primary hover:bg-blue-700 h-12">
+                  <Button type="submit" className="w-full bg-jomionstore-primary hover:bg-orange-700 h-12">
                     <Send className="w-4 h-4 mr-2" />
                     Envoyer le message
                   </Button>
@@ -347,7 +347,7 @@ export default function ContactPage() {
                   <MapPin className="w-16 h-16 text-jomionstore-primary mx-auto mb-4" />
                   <h3 className="text-xl font-bold text-gray-900 mb-2">JomionStore Headquarters</h3>
                   <p className="text-gray-600">Quartier Ganhi, Cotonou, Bénin</p>
-                  <Button className="mt-4 bg-jomionstore-primary hover:bg-blue-700">
+                  <Button className="mt-4 bg-jomionstore-primary hover:bg-orange-700">
                     Voir sur Google Maps
                   </Button>
                 </div>

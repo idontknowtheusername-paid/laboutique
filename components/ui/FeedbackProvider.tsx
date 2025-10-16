@@ -107,7 +107,7 @@ const FeedbackDisplay: React.FC = () => {
       <div
         className={`p-4 rounded-lg shadow-lg border-l-4 ${
           feedback.loading
-            ? 'bg-blue-100 border-blue-600 text-blue-900'
+            ? 'bg-blue-100 border-orange-600 text-blue-900'
             : feedback.success
             ? 'bg-green-50 border-green-500 text-green-800'
             : 'bg-red-50 border-red-500 text-red-800'
@@ -116,7 +116,7 @@ const FeedbackDisplay: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             {feedback.loading && (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-600"></div>
             )}
             {feedback.success && (
               <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">

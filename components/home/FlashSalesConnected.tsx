@@ -296,7 +296,7 @@ export default function FlashSalesConnected() {
                             className="w-full"
                           >
                             <Button
-                              className="w-full bg-jomionstore-primary hover:bg-blue-700 text-white font-semibold py-2 text-base"
+                              className="w-full bg-jomionstore-primary hover:bg-orange-700 text-white font-semibold py-2 text-base"
                               disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
                             >
                               {product.status !== 'active' || (product.track_quantity && product.quantity <= 0)
@@ -344,7 +344,7 @@ export default function FlashSalesConnected() {
           <Link href="/products?sale=true">
             <Button 
               variant="outline" 
-              className="bg-jomionstore-primary text-white border-jomionstore-primary hover:bg-blue-700 hover:border-blue-700 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-sm sm:text-base"
+              className="bg-jomionstore-primary text-white border-jomionstore-primary hover:bg-orange-700 hover:border-orange-700 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-sm sm:text-base"
               onClick={() => trackButtonClick('Voir toutes les offres flash', 'Flash Sales')}
             >
               Voir toutes les offres flash

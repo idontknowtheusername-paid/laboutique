@@ -294,7 +294,7 @@ export default function AdminCouponsPage() {
               Rafraîchir
             </Button>
             <Button 
-              className="bg-jomionstore-primary hover:bg-blue-700"
+              className="bg-jomionstore-primary hover:bg-orange-700"
               onClick={() => window.location.href = '/admin/coupons/new'}
             >
               <Plus className="w-4 h-4 mr-2" />

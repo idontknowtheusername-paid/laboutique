@@ -314,7 +314,7 @@ const ImprovedCategoryMenu = () => {
                 <SheetTrigger asChild>
                   <Button 
                     aria-label="Ouvrir les catégories" 
-                    className="bg-jomionstore-primary text-white h-9 px-3 hover:bg-blue-800 transition-colors"
+                    className="bg-jomionstore-primary text-white h-9 px-3 hover:bg-orange-700 transition-colors"
                   >
                     <Grid3X3 className="w-4 h-4 mr-2" /> 
                     Catégories
@@ -401,7 +401,7 @@ const ImprovedCategoryMenu = () => {
                   <NavigationMenuList className="flex flex-nowrap gap-1 overflow-x-auto no-scrollbar">
                     {/* All Categories Button */}
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger className="bg-jomionstore-primary text-white hover:bg-blue-800 px-5 py-2 h-auto rounded-md transition-colors">
+                      <NavigationMenuTrigger className="bg-jomionstore-primary text-white hover:bg-orange-700 px-5 py-2 h-auto rounded-md transition-colors">
                         <Grid3X3 className="w-4 h-4 mr-2" />
                         Toutes les catégories
                         {state.categories.length > 0 && (

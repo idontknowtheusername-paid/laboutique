@@ -86,7 +86,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({ productId, onSuccess }) 
         </p>
         <Button 
           onClick={() => router.push('/login?redirect=' + window.location.pathname)}
-          className="bg-jomionstore-primary hover:bg-blue-700"
+          className="bg-jomionstore-primary hover:bg-orange-700"
         >
           Se connecter
         </Button>
@@ -189,7 +189,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({ productId, onSuccess }) 
       <Button
         type="submit"
         disabled={isSubmitting || rating === 0}
-        className="w-full bg-jomionstore-primary hover:bg-blue-700 disabled:opacity-50"
+        className="w-full bg-jomionstore-primary hover:bg-orange-700 disabled:opacity-50"
       >
         {isSubmitting ? 'Publication...' : 'Publier mon avis'}
       </Button>

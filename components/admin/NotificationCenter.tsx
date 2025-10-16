@@ -93,7 +93,7 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
       case 'error':
         return <AlertCircle className="w-5 h-5 text-red-500" />;
       default:
-        return <Info className="w-5 h-5 text-blue-500" />;
+        return <Info className="w-5 h-5 text-orange-500" />;
     }
   };
 
@@ -182,7 +182,7 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
                           size="sm"
                           variant="ghost"
                           onClick={() => markAsRead(notification.id)}
-                          className="text-blue-600 hover:text-blue-700"
+                          className="text-orange-600 hover:text-blue-700"
                         >
                           <CheckCircle className="w-4 h-4" />
                         </Button>

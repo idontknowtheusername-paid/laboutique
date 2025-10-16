@@ -356,7 +356,7 @@ export default function AdminReturnDetailPage() {
                 <Button 
                   onClick={handleComplete} 
                   disabled={updating}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-blue-600 hover:bg-orange-700"
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
                   Marquer comme terminé

@@ -322,7 +322,7 @@ export default function VendorDashboard() {
           <TabsContent value="products" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">Gestion des produits</h2>
-              <Button className="bg-jomionstore-primary hover:bg-blue-700">
+              <Button className="bg-jomionstore-primary hover:bg-orange-700">
                 <Plus className="w-4 h-4 mr-2" />
                 Ajouter un produit
               </Button>
@@ -576,7 +576,7 @@ export default function VendorDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-blue-600">95%</div>
+                    <div className="text-4xl font-bold text-orange-600">95%</div>
                     <p className="text-sm text-gray-600 mt-2">Réponses aux avis</p>
                   </div>
                 </CardContent>
@@ -610,7 +610,7 @@ export default function VendorDashboard() {
                     <label className="block text-sm font-medium mb-2">Adresse</label>
                     <Input defaultValue="Cotonou, Bénin" />
                   </div>
-                  <Button className="bg-jomionstore-primary hover:bg-blue-700">
+                  <Button className="bg-jomionstore-primary hover:bg-orange-700">
                     Sauvegarder
                   </Button>
                 </CardContent>
@@ -651,7 +651,7 @@ export default function VendorDashboard() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button className="bg-jomionstore-primary hover:bg-blue-700">
+                  <Button className="bg-jomionstore-primary hover:bg-orange-700">
                     Sauvegarder
                   </Button>
                 </CardContent>

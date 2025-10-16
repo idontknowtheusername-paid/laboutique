@@ -272,7 +272,7 @@ export default function BlogPage() {
                     </Badge>
                   ))}
                 </div>
-                <Button className="bg-jomionstore-primary hover:bg-blue-800 w-fit">
+                <Button className="bg-jomionstore-primary hover:bg-orange-700 w-fit">
                   Lire l'article
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>

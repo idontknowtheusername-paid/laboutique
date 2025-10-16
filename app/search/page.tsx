@@ -696,7 +696,7 @@ export default function SearchPage() {
                       minRating: 0,
                     });
                   }}
-                  className="bg-jomionstore-primary hover:bg-blue-700"
+                  className="bg-jomionstore-primary hover:bg-orange-700"
                 >
                   Effacer les filtres
                 </Button>

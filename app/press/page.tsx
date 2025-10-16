@@ -288,7 +288,7 @@ export default function PressPage() {
                     </div>
                   </div>
                   <div className="flex space-x-3">
-                    <Button className="bg-jomionstore-primary hover:bg-blue-700">
+                    <Button className="bg-jomionstore-primary hover:bg-orange-700">
                       Lire le communiqué
                     </Button>
                     <Button variant="outline">

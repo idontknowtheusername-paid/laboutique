@@ -195,7 +195,7 @@ export default function AdminImportProductPage() {
               <Button 
                 onClick={handleImport}
                 disabled={loading || !url.trim()}
-                className="flex-1 bg-jomionstore-primary hover:bg-blue-700"
+                className="flex-1 bg-jomionstore-primary hover:bg-orange-700"
               >
                 {loading ? 'Import en cours...' : 'Importer directement'}
               </Button>
@@ -274,7 +274,7 @@ export default function AdminImportProductPage() {
                   <Button 
                     onClick={handleImportFromPreview}
                     disabled={loading}
-                    className="w-full bg-jomionstore-primary hover:bg-blue-700"
+                    className="w-full bg-jomionstore-primary hover:bg-orange-700"
                   >
                     {loading ? 'Import en cours...' : 'Importer cet article'}
                   </Button>

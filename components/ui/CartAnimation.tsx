@@ -50,7 +50,7 @@ const CartAnimation: React.FC<CartAnimationProps> = ({
           <div className="relative">
             {animationPhase === 'adding' && (
               <div className="absolute inset-0">
-                <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
               </div>
             )}
             {animationPhase === 'success' && (

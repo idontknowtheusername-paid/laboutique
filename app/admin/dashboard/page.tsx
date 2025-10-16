@@ -253,7 +253,7 @@ export default function AdminDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-blue-500" />
+                <Clock className="w-5 h-5 text-orange-500" />
                 Tâches en attente
               </CardTitle>
             </CardHeader>
