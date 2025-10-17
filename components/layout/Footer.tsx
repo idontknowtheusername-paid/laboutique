@@ -48,16 +48,16 @@ const Footer = () => {
                 </div>
               </div>
               <div className="flex space-x-2 pt-1">
-                <Button size="icon" variant="outline" className="border-gray-700 hover:border-jomionstore-secondary hover:text-jomionstore-secondary">
+                <Button size="icon" variant="outline" className="border-gray-700 text-gray-300 hover:border-jomionstore-primary hover:text-jomionstore-primary hover:bg-jomionstore-primary/10 transition-colors">
                   <Facebook className="w-4 h-4" />
                 </Button>
-                <Button size="icon" variant="outline" className="border-gray-700 hover:border-jomionstore-secondary hover:text-jomionstore-secondary">
+                <Button size="icon" variant="outline" className="border-gray-700 text-gray-300 hover:border-jomionstore-primary hover:text-jomionstore-primary hover:bg-jomionstore-primary/10 transition-colors">
                   <Twitter className="w-4 h-4" />
                 </Button>
-                <Button size="icon" variant="outline" className="border-gray-700 hover:border-jomionstore-secondary hover:text-jomionstore-secondary">
+                <Button size="icon" variant="outline" className="border-gray-700 text-gray-300 hover:border-jomionstore-primary hover:text-jomionstore-primary hover:bg-jomionstore-primary/10 transition-colors">
                   <Instagram className="w-4 h-4" />
                 </Button>
-                <Button size="icon" variant="outline" className="border-gray-700 hover:border-jomionstore-secondary hover:text-jomionstore-secondary">
+                <Button size="icon" variant="outline" className="border-gray-700 text-gray-300 hover:border-jomionstore-primary hover:text-jomionstore-primary hover:bg-jomionstore-primary/10 transition-colors">
                   <Youtube className="w-4 h-4" />
                 </Button>
               </div>
