@@ -3,8 +3,7 @@
 import React from 'react';
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
-// Import refreshUserStats from AuthContext
-import { refreshUserStats } from '@/contexts/AuthContext';
+// refreshUserStats is available through useAuth hook
 import { Loader2, AlertTriangle, RefreshCw } from "lucide-react";
 import { useSessionManager } from "@/hooks/useSessionManager";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -48,6 +47,7 @@ export default function AccountPage() {
     loading,
     error,
     refreshProfile,
+    refreshUserStats,
     statsLoading,
   } = useAuth();
 

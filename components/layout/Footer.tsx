@@ -52,7 +52,6 @@ const Footer = () => {
         toast({
           title: "Erreur d'abonnement",
           description: data.error || 'Une erreur est survenue',
-          variant: "destructive",
         });
       }
     } catch (error) {
@@ -61,7 +60,6 @@ const Footer = () => {
       toast({
         title: "Erreur de connexion",
         description: "Impossible de se connecter au serveur",
-        variant: "destructive",
       });
     } finally {
       setIsSubscribing(false);
