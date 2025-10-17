@@ -14,7 +14,7 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 
 // Optimized lazy loading components with better loading states and code splitting
 const HeroCarouselWithData = dynamic(() => import('@/components/home/HeroCarouselWithData'), {
-  loading: () => <div className="h-[250px] lg:h-[300px] bg-gray-100 animate-pulse rounded-xl" />,
+  loading: () => <div className="h-[400px] lg:h-[500px] bg-gray-100 animate-pulse rounded-xl" />,
   ssr: true // Critical above-the-fold content
 });
 
@@ -190,7 +190,7 @@ export default function HomePageContent() {
 
         <div className="pt-2">
           <section className="container mb-4">
-            <LazySection className="mb-2.5" fallback={<div className="h-[250px] lg:h-[300px] bg-gray-100 animate-pulse rounded-xl" />}>
+            <LazySection className="mb-2.5" fallback={<div className="h-[400px] lg:h-[500px] bg-gray-100 animate-pulse rounded-xl" />}>
               <HeroCarouselWithData 
                 type="promotional"
                 limit={5}

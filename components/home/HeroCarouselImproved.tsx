@@ -161,7 +161,7 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
 
   if (isLoading) {
     return (
-      <div className={`relative h-[250px] lg:h-[300px] overflow-hidden rounded-xl shadow-2xl bg-gray-200 animate-pulse ${className}`}>
+      <div className={`relative h-[400px] lg:h-[500px] overflow-hidden rounded-xl shadow-2xl bg-gray-200 animate-pulse ${className}`}>
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-jomionstore-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -174,7 +174,7 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
 
   if (displayBanners.length === 0) {
     return (
-      <div className={`relative h-[250px] lg:h-[300px] overflow-hidden rounded-xl shadow-2xl bg-gray-100 ${className}`}>
+      <div className={`relative h-[400px] lg:h-[500px] overflow-hidden rounded-xl shadow-2xl bg-gray-100 ${className}`}>
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <p className="text-gray-600">Aucune bannière disponible</p>
@@ -187,7 +187,7 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
   return (
     <div 
       ref={carouselRef} 
-      className={`relative h-[250px] lg:h-[300px] overflow-hidden rounded-xl shadow-2xl group ${className}`}
+      className={`relative h-[400px] lg:h-[500px] overflow-hidden rounded-xl shadow-2xl group ${className}`}
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
     >
@@ -224,25 +224,25 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
               <div className="container">
                 <div className="max-w-2xl text-white">
                   {/* Type Badge */}
-                  <div className="mb-4 animate-fade-in">
+                  <div className="mb-3 animate-fade-in">
                     {getTypeBadge(banner.type)}
                   </div>
                   
                   {/* Title */}
-                  <h2 className="text-4xl lg:text-6xl font-bold mb-4 animate-fade-in">
+                  <h2 className="text-4xl lg:text-5xl font-bold mb-3 animate-fade-in">
                     {banner.title}
                   </h2>
                   
                   {/* Subtitle */}
                   {banner.subtitle && (
-                    <h3 className="text-lg lg:text-xl font-light mb-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                    <h3 className="text-lg lg:text-xl font-light mb-3 animate-fade-in" style={{ animationDelay: '0.2s' }}>
                       {banner.subtitle}
                     </h3>
                   )}
                   
                   {/* Description */}
                   {banner.description && (
-                    <p className="text-base lg:text-lg mb-6 opacity-90 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                    <p className="text-base lg:text-lg mb-4 opacity-90 animate-fade-in" style={{ animationDelay: '0.4s' }}>
                       {banner.description}
                     </p>
                   )}
