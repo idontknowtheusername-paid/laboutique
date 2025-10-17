@@ -14,12 +14,14 @@ import { useFeedback } from '@/components/ui/FeedbackProvider';
 import { useAnalytics } from '@/hooks/useAnalytics';
 
 export default function FlashSalesConnected() {
-  const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 45, seconds: 30 });
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
   const [urgencyMessage, setUrgencyMessage] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [flashSale, setFlashSale] = useState<any>(null);
+  const [stockInfo, setStockInfo] = useState<any[]>([]);
   const { addToCart } = useCart();
   const { showSuccess, showError } = useFeedback();
   const { trackAddToCart, trackButtonClick } = useAnalytics();
@@ -47,70 +49,93 @@ export default function FlashSalesConnected() {
     };
   }, []);
 
-  // Charger les produits en promotion depuis le backend
+  // Charger les flash sales depuis l'API
   useEffect(() => {
-    const loadFlashSaleProducts = async () => {
+    const loadFlashSales = async () => {
       try {
         setLoading(true);
-        // Récupérer les produits avec compare_price (en promotion)
-        const response = await ProductsService.getAll({}, { limit: 10 });
         
-        if (response.success && response.data) {
-          // Filtrer les produits qui ont un compare_price (donc en promotion)
-          const saleProducts = response.data.filter(product => 
-            product.compare_price && product.compare_price > product.price
-          );
-          setProducts(saleProducts.slice(0, 30)); // Limiter à 30 produits
+        // Récupérer les flash sales actives
+        const response = await fetch('/api/flash-sales?status=active&limit=1');
+        const data = await response.json();
+        
+        if (data.success && data.data.length > 0) {
+          const activeFlashSale = data.data[0];
+          setFlashSale(activeFlashSale);
+          setProducts(activeFlashSale.products || []);
+          
+          // Charger les informations de stock
+          const stockResponse = await fetch(`/api/flash-sales/stock?flash_sale_id=${activeFlashSale.id}`);
+          const stockData = await stockResponse.json();
+          
+          if (stockData.success) {
+            setStockInfo(stockData.data);
+          }
+        } else {
+          // Fallback sur les produits avec compare_price
+          const response = await ProductsService.getAll({}, { limit: 10 });
+          
+          if (response.success && response.data) {
+            const saleProducts = response.data.filter(product => 
+              product.compare_price && product.compare_price > product.price
+            );
+            setProducts(saleProducts.slice(0, 30));
+          }
         }
       } catch (error) {
-        console.error('Erreur lors du chargement des produits Flash Sales:', error);
+        console.error('Erreur lors du chargement des Flash Sales:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    loadFlashSaleProducts();
+    loadFlashSales();
   }, []);
 
-  // Timer countdown avec messages d'urgence intelligents
+  // Timer countdown synchronisé avec la DB
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        const newTime = { ...prev };
-        
-        if (prev.seconds > 0) {
-          newTime.seconds = prev.seconds - 1;
-        } else if (prev.minutes > 0) {
-          newTime.minutes = prev.minutes - 1;
-          newTime.seconds = 59;
-        } else if (prev.hours > 0) {
-          newTime.hours = prev.hours - 1;
-          newTime.minutes = 59;
-          newTime.seconds = 59;
-        } else {
-          return { hours: 23, minutes: 59, seconds: 59 }; // Reset to 24h
-        }
+    if (!flashSale) return;
 
-        // Messages d'urgence intelligents
-        const totalMinutes = newTime.hours * 60 + newTime.minutes;
-        if (totalMinutes <= 5) {
-          setUrgencyMessage('🔥 DERNIÈRES MINUTES !');
-        } else if (totalMinutes <= 30) {
-          setUrgencyMessage('⚡ Plus que 30 minutes !');
-        } else if (totalMinutes <= 60) {
-          setUrgencyMessage('⏰ Plus qu\'une heure !');
-        } else if (totalMinutes <= 120) {
-          setUrgencyMessage('🚀 Offres bientôt terminées');
-        } else {
-          setUrgencyMessage('');
-        }
+    const updateTimer = () => {
+      const now = new Date();
+      const endDate = new Date(flashSale.end_date);
+      const timeLeftMs = endDate.getTime() - now.getTime();
 
-        return newTime;
-      });
-    }, 1000);
+      if (timeLeftMs <= 0) {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        setUrgencyMessage('🔚 VENTE TERMINÉE');
+        return;
+      }
+
+      const hours = Math.floor(timeLeftMs / (1000 * 60 * 60));
+      const minutes = Math.floor((timeLeftMs % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeLeftMs % (1000 * 60)) / 1000);
+
+      setTimeLeft({ hours, minutes, seconds });
+
+      // Messages d'urgence intelligents
+      const totalMinutes = hours * 60 + minutes;
+      if (totalMinutes <= 5) {
+        setUrgencyMessage('🔥 DERNIÈRES MINUTES !');
+      } else if (totalMinutes <= 30) {
+        setUrgencyMessage('⚡ Plus que 30 minutes !');
+      } else if (totalMinutes <= 60) {
+        setUrgencyMessage('⏰ Plus qu\'une heure !');
+      } else if (totalMinutes <= 120) {
+        setUrgencyMessage('🚀 Offres bientôt terminées');
+      } else {
+        setUrgencyMessage('');
+      }
+    };
+
+    // Mise à jour immédiate
+    updateTimer();
+
+    // Timer toutes les secondes
+    const timer = setInterval(updateTimer, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [flashSale]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-BJ', {
@@ -124,10 +149,43 @@ export default function FlashSalesConnected() {
     return Math.round(((comparePrice - price) / comparePrice) * 100);
   };
 
-  const handleAddToCart = async (product: Product) => {
+  const handleAddToCart = async (flashSaleProduct: any) => {
     try {
-      await addToCart(product.id, product.name, product.price, 1, product.images?.[0]);
-      trackAddToCart(product.id, product.name, (product.category as any)?.name || 'unknown', product.price);
+      const product = flashSaleProduct.product || flashSaleProduct;
+      
+      // Vérifier le stock disponible
+      const stockData = stockInfo.find(s => s.product_id === product.id);
+      if (stockData && !stockData.is_available) {
+        showError('Produit indisponible');
+        return;
+      }
+
+      // Utiliser le prix flash si disponible
+      const price = flashSaleProduct.flash_price || product.price;
+      
+      await addToCart(product.id, product.name, price, 1, product.images?.[0]);
+      trackAddToCart(product.id, product.name, (product.category as any)?.name || 'unknown', price);
+
+      // Mettre à jour le stock vendu
+      if (flashSale && stockData) {
+        await fetch('/api/flash-sales/stock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            flash_sale_product_id: stockData.flash_sale_product_id,
+            quantity: 1
+          })
+        });
+
+        // Recharger les informations de stock
+        const stockResponse = await fetch(`/api/flash-sales/stock?flash_sale_id=${flashSale.id}`);
+        const stockDataResponse = await stockResponse.json();
+        if (stockDataResponse.success) {
+          setStockInfo(stockDataResponse.data);
+        }
+      }
+
+      showSuccess('Produit ajouté au panier !');
     } catch (error) {
       console.error('Erreur lors de l\'ajout au panier:', error);
       showError('Erreur lors de l\'ajout au panier');
@@ -218,8 +276,11 @@ export default function FlashSalesConnected() {
               className="flex transition-transform duration-300 ease-in-out"
               style={{ transform: `translateX(-${currentIndex * 50}%)` }}
             >
-              {products.map((product) => {
-                const discount = product.compare_price ? calculateDiscount(product.price, product.compare_price) : 0;
+              {products.map((flashSaleProduct) => {
+                const product = flashSaleProduct.product || flashSaleProduct;
+                const discount = flashSaleProduct.discount_percentage || 
+                  (product.compare_price ? calculateDiscount(product.price, product.compare_price) : 0);
+                const stockData = stockInfo.find(s => s.product_id === product.id);
                 
                 return (
                   <div key={product.id} className="w-1/2 flex-shrink-0 px-2">
@@ -278,28 +339,42 @@ export default function FlashSalesConnected() {
                           <div className="space-y-2">
                             <div className="flex items-center space-x-2 flex-wrap">
                               <span className="font-bold text-xl text-jomionstore-primary">
-                                {formatPrice(product.price)}
+                                {formatPrice(flashSaleProduct.flash_price || product.price)}
                               </span>
-                              {product.compare_price && (
-                                <span className="text-base text-gray-500 line-through">
-                                  {formatPrice(product.compare_price)}
-                                </span>
-                              )}
+                              <span className="text-base text-gray-500 line-through">
+                                {formatPrice(flashSaleProduct.original_price || product.compare_price || product.price)}
+                              </span>
                             </div>
+                            
+                            {/* Barre de progression du stock */}
+                            {stockData && stockData.max_quantity && (
+                              <div className="space-y-1">
+                                <div className="flex justify-between text-xs text-gray-600">
+                                  <span>Vendu: {stockData.sold_quantity}</span>
+                                  <span>Disponible: {stockData.available_stock}</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div 
+                                    className="bg-red-500 h-2 rounded-full transition-all duration-300"
+                                    style={{ width: `${Math.min(stockData.stock_percentage, 100)}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            )}
                           </div>
 
                           <InteractiveFeedback
                             action="cart"
-                            onAction={() => handleAddToCart(product)}
-                            disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
+                            onAction={() => handleAddToCart(flashSaleProduct)}
+                            disabled={!stockData?.is_available || product.status !== 'active'}
                             productName={product.name}
                             className="w-full"
                           >
                             <Button
                               className="w-full bg-jomionstore-primary hover:bg-orange-700 text-white font-semibold py-2 text-base"
-                              disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
+                              disabled={!stockData?.is_available || product.status !== 'active'}
                             >
-                              {product.status !== 'active' || (product.track_quantity && product.quantity <= 0)
+                              {!stockData?.is_available || product.status !== 'active'
                                 ? 'Indisponible'
                                 : 'Ajouter au panier'
                               }

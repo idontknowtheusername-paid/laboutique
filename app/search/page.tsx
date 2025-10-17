@@ -139,45 +139,60 @@ export default function SearchPage() {
         }
         setError(null);
 
-        const productFilters: ProductFilters = {
-          search: searchQuery || undefined,
-          min_price:
-            filters.priceRange[0] > 0 ? filters.priceRange[0] : undefined,
-          max_price:
-            filters.priceRange[1] < 1000000 ? filters.priceRange[1] : undefined,
-          in_stock: filters.inStock || undefined,
-          brand: filters.brands.length > 0 ? filters.brands[0] : undefined, // Simplified for now
-          category_id:
-            filters.categories.length > 0 ? filters.categories[0] : undefined,
-        };
+        // Utiliser l'API de recherche avancée
+        const searchParams = new URLSearchParams({
+          q: searchQuery || '',
+          page: page.toString(),
+          limit: ITEMS_PER_PAGE.toString(),
+          sort_by: sortBy.field,
+          sort_order: sortBy.direction,
+        });
 
-        const response = await ProductsService.search(
-          searchQuery,
-          productFilters,
-          { page, limit: ITEMS_PER_PAGE },
-          sortBy
-        );
+        // Ajouter les filtres
+        if (filters.priceRange[0] > 0) {
+          searchParams.set('min_price', filters.priceRange[0].toString());
+        }
+        if (filters.priceRange[1] < 1000000) {
+          searchParams.set('max_price', filters.priceRange[1].toString());
+        }
+        if (filters.inStock) {
+          searchParams.set('in_stock', 'true');
+        }
+        if (filters.categories.length > 0) {
+          searchParams.set('category', filters.categories[0]);
+        }
 
-        if (response.success && response.data) {
+        const response = await fetch(`/api/search/advanced?${searchParams.toString()}`);
+        const data = await response.json();
+
+        if (data.success) {
           if (!append && searchQuery) saveToHistory(searchQuery);
+          
           if (append) {
-            setProducts((prev) => [...prev, ...response.data]);
+            setProducts((prev) => [...prev, ...data.data.products]);
           } else {
-            setProducts(response.data);
+            setProducts(data.data.products);
           }
-          setTotalCount(response.pagination.total);
-          setHasMore(response.pagination.hasNext);
+          
+          setTotalCount(data.data.pagination.total);
+          setHasMore(data.data.pagination.hasNext);
           setCurrentPage(page);
 
           // Extract unique brands from results for filter options
           const brands = [
             ...Array.from(
-              new Set(response.data.map((p) => p.brand).filter(Boolean))
+              new Set(data.data.products.map((p: any) => p.brand).filter(Boolean))
             ),
           ];
           setAvailableBrands(brands as string[]);
+
+          // Afficher "Did you mean" si disponible
+          if (data.data.didYouMean && !append) {
+            console.log(`Did you mean: ${data.data.didYouMean}`);
+            // TODO: Afficher une suggestion "Did you mean" dans l'UI
+          }
         } else {
-          throw new Error(response.error || "Erreur lors de la recherche");
+          throw new Error(data.error || "Erreur lors de la recherche");
         }
       } catch (error) {
         console.error("Erreur lors de la recherche:", error);

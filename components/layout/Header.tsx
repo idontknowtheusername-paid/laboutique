@@ -23,6 +23,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/co
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import ClientSafe from '@/components/ui/client-safe';
+import SearchSuggestions from '@/components/search/SearchSuggestions';
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 
@@ -32,6 +33,9 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
+  const [advancedSuggestions, setAdvancedSuggestions] = useState<any[]>([]);
+  const [trendingSearches, setTrendingSearches] = useState<string[]>([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const { getCartItemsCount } = useCart();
   const { user, profile, signOut } = useAuth();
   const pathname = usePathname();
@@ -100,18 +104,42 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Gestion des suggestions de recherche
+  // Gestion des suggestions de recherche dynamiques
   useEffect(() => {
-    if (searchQuery.length >= 2) {
-      const filtered = popularSearches.filter(term => 
-        term.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setSearchSuggestions(filtered.slice(0, 5));
-      setShowSuggestions(true);
-    } else {
-      setSearchSuggestions([]);
-      setShowSuggestions(false);
-    }
+    const fetchSuggestions = async () => {
+      if (searchQuery.length >= 2) {
+        setIsLoadingSuggestions(true);
+        try {
+          const response = await fetch(`/api/search/suggestions?q=${encodeURIComponent(searchQuery)}&limit=8`);
+          const data = await response.json();
+          
+          if (data.success) {
+            setAdvancedSuggestions(data.data.suggestions || []);
+            setTrendingSearches(data.data.trending || []);
+            setShowSuggestions(true);
+          }
+        } catch (error) {
+          console.error('Erreur lors de la récupération des suggestions:', error);
+          // Fallback sur les suggestions statiques
+          const filtered = popularSearches.filter(term => 
+            term.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+          setSearchSuggestions(filtered.slice(0, 5));
+          setShowSuggestions(true);
+        } finally {
+          setIsLoadingSuggestions(false);
+        }
+      } else {
+        setAdvancedSuggestions([]);
+        setTrendingSearches([]);
+        setSearchSuggestions([]);
+        setShowSuggestions(false);
+      }
+    };
+
+    // Debounce pour éviter trop de requêtes
+    const timeoutId = setTimeout(fetchSuggestions, 300);
+    return () => clearTimeout(timeoutId);
   }, [searchQuery, popularSearches]);
 
   const handleSearch = useCallback((e: React.FormEvent) => {
@@ -253,33 +281,15 @@ const Header = () => {
                 <Search className="w-4 h-4" />
               </Button>
               
-              {/* Suggestions de recherche */}
-              {showSuggestions && searchSuggestions.length > 0 && (
-                <div 
-                  className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1"
-                  role="listbox"
-                  aria-label="Suggestions de recherche"
-                  id="search-suggestions"
-                >
-                  <div className="p-2">
-                    <div className="text-xs text-gray-500 mb-2 px-2" id="search-help">
-                      Suggestions de recherche
-                    </div>
-                    {searchSuggestions.map((suggestion, index) => (
-                      <button
-                        key={index}
-                        type="button"
-                        onClick={() => handleSuggestionClick(suggestion)}
-                        className="w-full text-left px-2 py-2 hover:bg-gray-100 rounded text-sm"
-                        role="option"
-                        aria-selected="false"
-                        aria-label={`Rechercher ${suggestion}`}
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+              {/* Suggestions de recherche avancées */}
+              {showSuggestions && (
+                <SearchSuggestions
+                  suggestions={advancedSuggestions}
+                  trending={trendingSearches}
+                  onSuggestionClick={handleSuggestionClick}
+                  onTrendingClick={handleSuggestionClick}
+                  isLoading={isLoadingSuggestions}
+                />
               )}
             </div>
           </form>
