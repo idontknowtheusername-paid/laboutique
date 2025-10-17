@@ -87,24 +87,53 @@ export default function ContactPage() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Form submitted:', formData);
-    setIsSubmitted(true);
     
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        category: '',
-        message: ''
+    // Validation côté client
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      alert('Veuillez remplir tous les champs requis');
+      return;
+    }
+
+    if (!formData.email.includes('@') || !formData.email.includes('.')) {
+      alert('Veuillez entrer une adresse email valide');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
-    }, 3000);
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsSubmitted(true);
+        
+        // Reset form after 5 seconds
+        setTimeout(() => {
+          setIsSubmitted(false);
+          setFormData({
+            name: '',
+            email: '',
+            phone: '',
+            subject: '',
+            category: '',
+            message: ''
+          });
+        }, 5000);
+      } else {
+        alert(data.error || 'Erreur lors de l\'envoi du message');
+      }
+    } catch (error) {
+      console.error('Erreur envoi message:', error);
+      alert('Erreur de connexion. Veuillez réessayer.');
+    }
   };
 
   return (

@@ -32,37 +32,85 @@ export default function OrderTrackingPage() {
   const [orderNumber, setOrderNumber] = useState('');
   const [email, setEmail] = useState('');
   const [result, setResult] = useState<{
+    orderId: string;
+    orderNumber: string;
+    trackingNumber: string;
     status: string;
     currentStep: number;
     orderDate: string;
     estimatedDelivery: string;
-    trackingCode: string;
+    deliveryDate?: string;
     address: string;
+    totalAmount: number;
+    trackingEvents: Array<{
+      id: number;
+      status: string;
+      label: string;
+      description: string;
+      timestamp: string;
+      location: string;
+    }>;
+    customerName: string;
   } | null>(null);
+  const [isTracking, setIsTracking] = useState(false);
+  const [error, setError] = useState('');
 
-  const trackByNumber = (e: React.FormEvent) => {
+  const trackByNumber = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulation de résultat
-    setResult({
-      status: 'en_transit',
-      currentStep: 3,
-      orderDate: '12 Oct 2025',
-      estimatedDelivery: '17 Oct 2025',
-      trackingCode: trackingNumber || orderNumber,
-      address: 'Cotonou, Akpakpa'
-    });
+    
+    if (!trackingNumber) {
+      setError('Veuillez entrer un code de suivi');
+      return;
+    }
+
+    setIsTracking(true);
+    setError('');
+    setResult(null);
+
+    try {
+      const response = await fetch(`/api/orders/track?tracking=${encodeURIComponent(trackingNumber)}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setResult(data.data);
+      } else {
+        setError(data.error || 'Commande non trouvée');
+      }
+    } catch (error) {
+      console.error('Erreur suivi:', error);
+      setError('Erreur de connexion. Veuillez réessayer.');
+    } finally {
+      setIsTracking(false);
+    }
   };
 
-  const trackByEmail = (e: React.FormEvent) => {
+  const trackByEmail = async (e: React.FormEvent) => {
     e.preventDefault();
-    setResult({
-      status: 'preparing',
-      currentStep: 2,
-      orderDate: '15 Oct 2025',
-      estimatedDelivery: '20 Oct 2025',
-      trackingCode: 'CMD' + Math.floor(Math.random() * 1000000),
-      address: 'Parakou, Centre-ville'
-    });
+    
+    if (!orderNumber || !email) {
+      setError('Veuillez entrer le numéro de commande et l\'email');
+      return;
+    }
+
+    setIsTracking(true);
+    setError('');
+    setResult(null);
+
+    try {
+      const response = await fetch(`/api/orders/track?order=${encodeURIComponent(orderNumber)}&email=${encodeURIComponent(email)}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setResult(data.data);
+      } else {
+        setError(data.error || 'Commande non trouvée');
+      }
+    } catch (error) {
+      console.error('Erreur suivi:', error);
+      setError('Erreur de connexion. Veuillez réessayer.');
+    } finally {
+      setIsTracking(false);
+    }
   };
 
   const getStatusDetails = (status: string) => {
@@ -142,9 +190,9 @@ export default function OrderTrackingPage() {
                             required 
                             className="flex-1"
                           />
-                          <Button type="submit" size="lg">
+                          <Button type="submit" size="lg" disabled={isTracking}>
                             <Search className="w-5 h-5 mr-2" />
-                            Suivre
+                            {isTracking ? 'Recherche...' : 'Suivre'}
                           </Button>
                         </div>
                       </div>
@@ -185,15 +233,26 @@ export default function OrderTrackingPage() {
                             required 
                             className="flex-1"
                           />
-                          <Button type="submit" size="lg">
+                          <Button type="submit" size="lg" disabled={isTracking}>
                             <Search className="w-5 h-5 mr-2" />
-                            Suivre
+                            {isTracking ? 'Recherche...' : 'Suivre'}
                           </Button>
                         </div>
                       </div>
                     </form>
                   </TabsContent>
                 </Tabs>
+                
+                {/* Messages d'erreur */}
+                {error && (
+                  <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-center gap-2 text-red-700">
+                      <AlertCircle className="w-5 h-5" />
+                      <span className="font-medium">Erreur</span>
+                    </div>
+                    <p className="text-red-600 mt-1">{error}</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -207,7 +266,10 @@ export default function OrderTrackingPage() {
                         <Package className="w-6 h-6 text-green-700" />
                         Statut de votre commande
                       </CardTitle>
-                      <p className="text-sm text-gray-600 mt-1">Code: <strong>{result.trackingCode}</strong></p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Commande: <strong>{result.orderNumber}</strong> | 
+                        Suivi: <strong>{result.trackingNumber}</strong>
+                      </p>
                     </div>
                     <Badge className={`${getStatusDetails(result.status).color} text-white text-base px-4 py-2`}>
                       {getStatusDetails(result.status).icon}
@@ -290,40 +352,41 @@ export default function OrderTrackingPage() {
                   <div className="bg-white p-4 rounded-lg border">
                     <h4 className="font-semibold mb-3">📍 Historique de suivi</h4>
                     <div className="space-y-3">
-                      {result.currentStep >= 4 && (
-                        <div className="flex gap-3 pb-3 border-b">
-                          <div className="flex-shrink-0 w-2 h-2 bg-orange-600 rounded-full mt-1.5"></div>
-                          <div className="flex-1">
-                            <p className="text-sm font-semibold">En transit vers {result.address}</p>
-                            <p className="text-xs text-gray-600">15 Oct 2025, 14:23</p>
-                          </div>
-                        </div>
-                      )}
-                      {result.currentStep >= 3 && (
-                        <div className="flex gap-3 pb-3 border-b">
-                          <div className="flex-shrink-0 w-2 h-2 bg-purple-600 rounded-full mt-1.5"></div>
-                          <div className="flex-1">
-                            <p className="text-sm font-semibold">Colis expédié depuis Cotonou</p>
-                            <p className="text-xs text-gray-600">14 Oct 2025, 09:45</p>
-                          </div>
-                        </div>
-                      )}
-                      {result.currentStep >= 2 && (
-                        <div className="flex gap-3 pb-3 border-b">
-                          <div className="flex-shrink-0 w-2 h-2 bg-yellow-600 rounded-full mt-1.5"></div>
-                          <div className="flex-1">
-                            <p className="text-sm font-semibold">Commande en cours de préparation</p>
-                            <p className="text-xs text-gray-600">13 Oct 2025, 16:12</p>
-                          </div>
-                        </div>
-                      )}
-                      <div className="flex gap-3">
-                        <div className="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-1.5"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-semibold">Commande confirmée</p>
-                          <p className="text-xs text-gray-600">{result.orderDate}, 10:30</p>
-                        </div>
-                      </div>
+                      {result.trackingEvents
+                        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+                        .map((event, index) => {
+                          const eventDate = new Date(event.timestamp);
+                          const isLast = index === result.trackingEvents.length - 1;
+                          
+                          return (
+                            <div key={event.id} className={`flex gap-3 ${!isLast ? 'pb-3 border-b' : ''}`}>
+                              <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-1.5 ${
+                                event.status === 'delivered' ? 'bg-green-600' :
+                                event.status === 'in_transit' ? 'bg-orange-600' :
+                                event.status === 'shipped' ? 'bg-purple-600' :
+                                event.status === 'processing' ? 'bg-yellow-600' :
+                                'bg-blue-600'
+                              }`}></div>
+                              <div className="flex-1">
+                                <p className="text-sm font-semibold">{event.label}</p>
+                                <p className="text-xs text-gray-600">{event.description}</p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {eventDate.toLocaleDateString('fr-FR', {
+                                    day: '2-digit',
+                                    month: 'short',
+                                    year: 'numeric'
+                                  })}, {eventDate.toLocaleTimeString('fr-FR', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </p>
+                                {event.location && (
+                                  <p className="text-xs text-gray-500">📍 {event.location}</p>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
                     </div>
                   </div>
 

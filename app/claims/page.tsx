@@ -27,11 +27,78 @@ import Link from 'next/link';
 export default function ClaimsPage() {
   const [submitted, setSubmitted] = useState(false);
   const [claimType, setClaimType] = useState('');
+  const [formData, setFormData] = useState({
+    orderNumber: '',
+    name: '',
+    email: '',
+    phone: '',
+    description: '',
+    desiredSolution: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [claimNumber, setClaimNumber] = useState('');
 
-  const submit = (e: React.FormEvent) => {
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 5000);
+    
+    // Validation côté client
+    if (!formData.orderNumber || !claimType || !formData.name || !formData.email || !formData.description || !formData.desiredSolution) {
+      alert('Veuillez remplir tous les champs requis');
+      return;
+    }
+
+    if (!formData.email.includes('@') || !formData.email.includes('.')) {
+      alert('Veuillez entrer une adresse email valide');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/claims', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          claimType
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setClaimNumber(data.claimNumber);
+        setSubmitted(true);
+        
+        // Reset form after 10 seconds
+        setTimeout(() => {
+          setSubmitted(false);
+          setFormData({
+            orderNumber: '',
+            name: '',
+            email: '',
+            phone: '',
+            description: '',
+            desiredSolution: ''
+          });
+          setClaimType('');
+          setClaimNumber('');
+        }, 10000);
+      } else {
+        alert(data.error || 'Erreur lors de l\'enregistrement de la réclamation');
+      }
+    } catch (error) {
+      console.error('Erreur envoi réclamation:', error);
+      alert('Erreur de connexion. Veuillez réessayer.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -70,7 +137,7 @@ export default function ClaimsPage() {
                     <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
                     <h3 className="text-xl font-bold text-green-900 mb-2">Réclamation envoyée !</h3>
                     <p className="text-gray-700 mb-4">
-                      Votre réclamation a bien été enregistrée. Numéro de suivi : <strong>#{Math.floor(Math.random() * 100000)}</strong>
+                      Votre réclamation a bien été enregistrée. Numéro de suivi : <strong>#{claimNumber}</strong>
                     </p>
                     <div className="bg-green-50 p-4 rounded-lg border border-green-200 mb-4">
                       <p className="text-sm text-gray-700">
@@ -99,6 +166,8 @@ export default function ClaimsPage() {
                         </label>
                         <Input 
                           required 
+                          value={formData.orderNumber}
+                          onChange={(e) => handleInputChange('orderNumber', e.target.value)}
                           placeholder="Ex: CMD123456789" 
                           className="w-full"
                         />
@@ -128,13 +197,24 @@ export default function ClaimsPage() {
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Votre nom complet <span className="text-red-600">*</span>
                         </label>
-                        <Input required placeholder="Ex: Jean Dupont" />
+                        <Input 
+                          required 
+                          value={formData.name}
+                          onChange={(e) => handleInputChange('name', e.target.value)}
+                          placeholder="Ex: Jean Dupont" 
+                        />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Email <span className="text-red-600">*</span>
                         </label>
-                        <Input required type="email" placeholder="votre@email.com" />
+                        <Input 
+                          required 
+                          type="email" 
+                          value={formData.email}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          placeholder="votre@email.com" 
+                        />
                       </div>
                     </div>
 
@@ -142,7 +222,13 @@ export default function ClaimsPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Téléphone <span className="text-red-600">*</span>
                       </label>
-                      <Input required type="tel" placeholder="+229 XX XX XX XX" />
+                      <Input 
+                        required 
+                        type="tel" 
+                        value={formData.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        placeholder="+229 XX XX XX XX" 
+                      />
                     </div>
 
                     <div>
@@ -152,6 +238,8 @@ export default function ClaimsPage() {
                       <Textarea 
                         required 
                         rows={6} 
+                        value={formData.description}
+                        onChange={(e) => handleInputChange('description', e.target.value)}
                         placeholder="Décrivez votre problème en détail : Que s'est-il passé ? Quand ? Qu'attendez-vous comme solution ?"
                         className="w-full"
                       />
@@ -179,7 +267,11 @@ export default function ClaimsPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Solution souhaitée <span className="text-red-600">*</span>
                       </label>
-                      <Select required>
+                      <Select 
+                        required 
+                        value={formData.desiredSolution}
+                        onValueChange={(value) => handleInputChange('desiredSolution', value)}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Que souhaitez-vous ?" />
                         </SelectTrigger>
@@ -194,9 +286,14 @@ export default function ClaimsPage() {
                       </Select>
                     </div>
 
-                    <Button type="submit" className="w-full" size="lg">
+                    <Button 
+                      type="submit" 
+                      className="w-full" 
+                      size="lg"
+                      disabled={isSubmitting}
+                    >
                       <MessageSquare className="w-5 h-5 mr-2" />
-                      Envoyer la réclamation
+                      {isSubmitting ? 'Envoi en cours...' : 'Envoyer la réclamation'}
                     </Button>
                   </form>
                 )}

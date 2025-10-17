@@ -3,9 +3,8 @@
 import React from 'react';
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
-// TODO: Import or define refreshUserStats if not present
-// import { refreshUserStats } from '@/contexts/AuthContext';
-const refreshUserStats = async () => {};
+// Import refreshUserStats from AuthContext
+import { refreshUserStats } from '@/contexts/AuthContext';
 import { Loader2, AlertTriangle, RefreshCw } from "lucide-react";
 import { useSessionManager } from "@/hooks/useSessionManager";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
