@@ -25,20 +25,10 @@ const HeroCarouselWithData: React.FC<HeroCarouselWithDataProps> = ({
 }) => {
   const { banners, isLoading, error } = useHeroBanners(type, limit);
 
-  if (error) {
-    console.error('Error loading hero banners:', error);
-    // Fallback to default banners
-    return (
-      <HeroCarouselImproved
-        banners={[]}
-        autoRotate={autoRotate}
-        showControls={showControls}
-        showIndicators={showIndicators}
-        showProgress={showProgress}
-        className={className}
-      />
-    );
-  }
+  // Debug logs
+  console.log('HeroCarouselWithData - banners:', banners);
+  console.log('HeroCarouselWithData - isLoading:', isLoading);
+  console.log('HeroCarouselWithData - error:', error);
 
   return (
     <HeroCarouselImproved

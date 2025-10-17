@@ -60,6 +60,62 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
       priority: 1,
       is_active: true,
       created_at: new Date().toISOString()
+    },
+    {
+      id: 'fallback-2',
+      title: 'Électronique Premium',
+      subtitle: 'Les dernières technologies à votre portée',
+      description: 'Smartphones, laptops, TV intelligentes et bien plus encore avec garantie officielle.',
+      cta_text: 'Voir la collection',
+      cta_link: '/category/electronique',
+      image_url: 'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      gradient: 'from-jomionstore-secondary to-orange-600',
+      type: 'category',
+      priority: 2,
+      is_active: true,
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 'fallback-3',
+      title: 'Mode & Style',
+      subtitle: 'Express your unique style',
+      description: 'Découvrez les dernières tendances mode pour homme, femme et enfant.',
+      cta_text: 'Shopping mode',
+      cta_link: '/category/mode-beaute',
+      image_url: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      gradient: 'from-purple-600 to-pink-600',
+      type: 'category',
+      priority: 3,
+      is_active: true,
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 'fallback-4',
+      title: 'Livraison Gratuite',
+      subtitle: 'À Cotonou et environs',
+      description: 'Commandez maintenant et recevez gratuitement vos produits sous 24h.',
+      cta_text: 'En savoir plus',
+      cta_link: '/delivery-info',
+      image_url: 'https://images.pexels.com/photos/4393021/pexels-photo-4393021.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      gradient: 'from-green-600 to-teal-600',
+      type: 'service',
+      priority: 4,
+      is_active: true,
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 'fallback-5',
+      title: 'Paiement Sécurisé',
+      subtitle: 'Vos transactions sont protégées',
+      description: 'Cartes bancaires, Mobile Money, virement. Toutes vos données sont chiffrées et sécurisées.',
+      cta_text: 'Découvrir',
+      cta_link: '/payment-info',
+      image_url: 'https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      gradient: 'from-orange-600 to-indigo-600',
+      type: 'service',
+      priority: 5,
+      is_active: true,
+      created_at: new Date().toISOString()
     }
   ];
 
@@ -105,8 +161,13 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
     return () => clearInterval(interval);
   }, [isAutoPlaying, isVisible, nextSlide, displayBanners.length]);
 
-  // Load banners from API
+  // Load banners from API only if no banners provided
   useEffect(() => {
+    if (banners.length > 0) {
+      setIsLoading(false);
+      return;
+    }
+
     const fetchBanners = async () => {
       try {
         setIsLoading(true);
@@ -124,11 +185,7 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
       }
     };
 
-    if (banners.length === 0) {
-      fetchBanners();
-    } else {
-      setIsLoading(false);
-    }
+    fetchBanners();
   }, [banners.length]);
 
   const getTypeIcon = (type: string) => {
