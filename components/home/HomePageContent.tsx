@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Header from '@/components/layout/Header';
 import ImprovedCategoryMenu from '@/components/layout/ImprovedCategoryMenu';
+import CallToActionSection from '@/components/home/CallToActionSection';
 import Footer from '@/components/layout/Footer';
 import { ProductsService, CategoriesService, Product, Category } from '@/lib/services';
 import { ProductSkeleton } from '@/components/ui/loading-skeleton';
@@ -187,6 +188,7 @@ export default function HomePageContent() {
       <main className="min-h-screen bg-jomionstore-background">
         <Header />
         <ImprovedCategoryMenu />
+        <CallToActionSection />
 
         <div className="pt-2">
           <section className="container mb-4">
