@@ -45,7 +45,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="canonical" href="https://www.jomionstore.com" />
-        <meta name="theme-color" content="#1E40AF" />
+        <meta name="theme-color" content="#FF5722" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="JomionStore" />
