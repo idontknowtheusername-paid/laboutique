@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Script de test pour vérifier que toutes les APIs fonctionnent
-const baseUrl = 'http://localhost:3000';
+const baseUrl = 'http://localhost:3001';
 
 async function testAPI(endpoint, method = 'GET', data = null) {
   try {
