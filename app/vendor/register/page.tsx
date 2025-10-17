@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckCircle, Store, Upload, Shield, TrendingUp } from 'lucide-react';
+import { CheckCircle, Store, Upload, Shield, TrendingUp, Mail, Phone } from 'lucide-react';
 import Link from 'next/link';
 
 export default function VendorRegisterPage() {
@@ -67,7 +67,7 @@ export default function VendorRegisterPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Téléphone *</label>
-                      <Input required placeholder="+229 XX XX XX XX" />
+                      <Input required placeholder="01 64 35 40 89" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Ville *</label>
@@ -137,6 +137,29 @@ export default function VendorRegisterPage() {
                 <Link href="/vendor/dashboard">
                   <Button variant="outline" className="w-full">Accéder au dashboard</Button>
                 </Link>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Besoin d'aide ?</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <p className="text-sm text-gray-600">
+                  Des questions sur l'inscription vendeur ?
+                </p>
+                <div className="flex items-center space-x-2 text-sm">
+                  <Mail className="w-4 h-4 text-jomionstore-primary" />
+                  <a href="mailto:hub@jomionstore.com" className="text-jomionstore-primary hover:underline">
+                    hub@jomionstore.com
+                  </a>
+                </div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <Phone className="w-4 h-4 text-jomionstore-primary" />
+                  <a href="tel:0164354089" className="text-jomionstore-primary hover:underline">
+                    01 64 35 40 89
+                  </a>
+                </div>
               </CardContent>
             </Card>
           </div>

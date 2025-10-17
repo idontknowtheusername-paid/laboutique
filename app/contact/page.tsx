@@ -31,13 +31,13 @@ const contactInfo = [
   {
     icon: Phone,
     title: 'Téléphone',
-    details: ['+229 XX XX XX XX', '+229 YY YY YY YY'],
+    details: ['01 64 35 40 89'],
     color: 'text-jomionstore-secondary'
   },
   {
     icon: Mail,
     title: 'Email',
-    details: ['contact@jomionstore.com', 'support@jomionstore.com'],
+    details: ['contact@jomionstore.com', 'info@jomionstore.com'],
     color: 'text-jomionstore-accent'
   },
   {
@@ -205,7 +205,7 @@ export default function ContactPage() {
                       <Input
                         value={formData.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
-                        placeholder="+229 XX XX XX XX"
+                        placeholder="01 64 35 40 89"
                       />
                     </div>
                     <div>

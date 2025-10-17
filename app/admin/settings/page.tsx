@@ -70,7 +70,7 @@ export default function AdminSettingsPage() {
               <div>
                 <label className="block text-sm mb-2">Email de contact</label>
                 <Input
-                  value={get("general.contact_email", "contact@example.com")}
+                  value={get("general.contact_email", "contact@jomionstore.com")}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     set("general.contact_email", e.target.value)
                   }
