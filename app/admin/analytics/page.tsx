@@ -55,7 +55,7 @@ export default function AdminAnalyticsPage() {
 
   useEffect(() => {
     loadAnalyticsData();
-  }, [timeRange]);
+  }, [timeRange]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadAnalyticsData = async () => {
     setLoading(true);

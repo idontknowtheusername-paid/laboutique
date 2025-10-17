@@ -272,6 +272,7 @@ const Header = () => {
                         onClick={() => handleSuggestionClick(suggestion)}
                         className="w-full text-left px-2 py-2 hover:bg-gray-100 rounded text-sm"
                         role="option"
+                        aria-selected="false"
                         aria-label={`Rechercher ${suggestion}`}
                       >
                         {suggestion}

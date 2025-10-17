@@ -97,7 +97,7 @@ export default function CategoryManager() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [error]);
 
   // Construire l'arborescence des catégories
   const buildCategoryTree = (flatCategories: Category[]): Category[] => {

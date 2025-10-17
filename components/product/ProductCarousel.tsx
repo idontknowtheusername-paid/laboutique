@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
@@ -57,16 +57,16 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
   };
 
   // Update scroll buttons state
-  const updateScrollButtons = () => {
+  const updateScrollButtons = useCallback(() => {
     if (!scrollContainerRef.current) return;
     
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
     setCanScrollLeft(scrollLeft > 0);
     setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-  };
+  }, []);
 
   // Handle scroll
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     updateScrollButtons();
     
     // Calculate current index based on scroll position
@@ -76,7 +76,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
       const newIndex = Math.round(scrollLeft / cardWidth);
       setCurrentIndex(newIndex);
     }
-  };
+  }, [updateScrollButtons]);
 
   // Scroll to specific index
   const scrollToIndex = (index: number) => {
@@ -140,7 +140,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
       container.addEventListener('scroll', handleScroll, { passive: true });
       return () => container.removeEventListener('scroll', handleScroll);
     }
-  }, [products]);
+  }, [products, handleScroll, updateScrollButtons]);
 
   // Pause auto-play on hover (desktop)
   const handleMouseEnter = () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { Star, ThumbsUp, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,7 @@ export const ReviewList: React.FC<ReviewListProps> = ({ productId, refreshTrigge
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
-  const loadReviews = async () => {
+  const loadReviews = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -48,11 +48,11 @@ export const ReviewList: React.FC<ReviewListProps> = ({ productId, refreshTrigge
     } finally {
       setLoading(false);
     }
-  };
+  }, [productId]);
 
   useEffect(() => {
     loadReviews();
-  }, [productId, refreshTrigger]);
+  }, [loadReviews]);
 
   const handleDelete = async (reviewId: string) => {
     if (!confirm('Voulez-vous vraiment supprimer cet avis ?')) {

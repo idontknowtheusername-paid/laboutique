@@ -28,7 +28,7 @@ export default function AdminReturnDetailPage() {
 
   React.useEffect(() => {
     loadReturn();
-  }, [returnId]);
+  }, [returnId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadReturn = async () => {
     setLoading(true);

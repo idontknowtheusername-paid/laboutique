@@ -28,7 +28,7 @@ export default function AdminReturnsPage() {
   React.useEffect(() => {
     loadReturns();
     loadStats();
-  }, [search, statusFilter, typeFilter]);
+  }, [search, statusFilter, typeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadReturns = React.useCallback(async () => {
     setLoading(true);

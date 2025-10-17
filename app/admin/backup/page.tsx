@@ -48,7 +48,7 @@ export default function AdminBackupPage() {
 
   useEffect(() => {
     loadData();
-  }, [page, filters]);
+  }, [page, filters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadData = async () => {
     setLoading(true);

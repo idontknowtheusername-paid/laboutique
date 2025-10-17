@@ -106,7 +106,7 @@ export default function MobileMoneyValidationPage() {
   // Vérification initiale
   useEffect(() => {
     verifyPayment(false);
-  }, []);
+  }, [verifyPayment]);
 
   // Vérifications automatiques périodiques
   useEffect(() => {
