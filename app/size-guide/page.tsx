@@ -231,7 +231,7 @@ export default function SizeGuidePage() {
               </div>
               <p className="text-sm text-gray-600 mt-4">
                 💬 <strong>Besoin d'aide ?</strong> Contactez-nous : 
-                <a href="tel:0164354089" className="text-jomionstore-primary hover:underline ml-1">01 64 35 40 89</a> | 
+                <a href="tel:+2290164354089" className="text-jomionstore-primary hover:underline ml-1">+229 01 64 35 40 89</a> | 
                 <a href="mailto:contact@jomionstore.com" className="text-jomionstore-primary hover:underline ml-1">contact@jomionstore.com</a>
               </p>
             </CardContent>

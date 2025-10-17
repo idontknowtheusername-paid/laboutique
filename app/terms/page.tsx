@@ -490,7 +490,7 @@ export default function TermsPage() {
               <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                 <p className="mb-0"><strong>JomionStore - Service Client</strong></p>
                 <p className="mb-0">Email : <a href="mailto:contact@jomionstore.com" className="text-jomionstore-primary hover:underline font-semibold">contact@jomionstore.com</a></p>
-                <p className="mb-0">Téléphone : <a href="tel:0164354089" className="text-jomionstore-primary hover:underline">01 64 35 40 89</a></p>
+                <p className="mb-0">Téléphone : <a href="tel:+2290164354089" className="text-jomionstore-primary hover:underline">+229 01 64 35 40 89</a></p>
                 <p className="mb-0">Adresse : Quartier Ganhi, Cotonou, République du Bénin</p>
                 <p className="mb-0">Horaires : Lundi - Vendredi : 8h - 18h | Samedi : 9h - 16h</p>
               </div>

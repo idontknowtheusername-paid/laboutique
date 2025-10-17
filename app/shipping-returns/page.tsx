@@ -358,7 +358,7 @@ export default function ShippingReturnsPage() {
                 <div className="bg-white p-4 rounded-lg border">
                   <p className="font-semibold mb-2">📞 Par téléphone</p>
                   <p className="text-jomionstore-primary font-semibold">
-                    <a href="tel:0164354089" className="hover:underline">01 64 35 40 89</a>
+                    <a href="tel:+2290164354089" className="hover:underline">+229 01 64 35 40 89</a>
                   </p>
                   <p className="text-xs text-gray-600">Lun-Ven : 8h-18h | Sam : 9h-16h</p>
                 </div>

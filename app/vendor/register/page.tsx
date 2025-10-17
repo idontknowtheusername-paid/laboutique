@@ -67,7 +67,7 @@ export default function VendorRegisterPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Téléphone *</label>
-                      <Input required placeholder="01 64 35 40 89" />
+                      <Input required placeholder="+229 01 64 35 40 89" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Ville *</label>
@@ -156,8 +156,8 @@ export default function VendorRegisterPage() {
                 </div>
                 <div className="flex items-center space-x-2 text-sm">
                   <Phone className="w-4 h-4 text-jomionstore-primary" />
-                  <a href="tel:0164354089" className="text-jomionstore-primary hover:underline">
-                    01 64 35 40 89
+                  <a href="tel:+2290164354089" className="text-jomionstore-primary hover:underline">
+                    +229 01 64 35 40 89
                   </a>
                 </div>
               </CardContent>

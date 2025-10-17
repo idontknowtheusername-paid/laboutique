@@ -219,7 +219,7 @@ export default function PrivacyPage() {
               <h4 className="font-semibold mt-4">Comment exercer vos droits ?</h4>
               <p>
                 Contactez-nous par email : <a href="mailto:contact@jomionstore.com" className="text-jomionstore-primary hover:underline font-semibold">contact@jomionstore.com</a><br />
-                Téléphone : <a href="tel:0164354089" className="text-jomionstore-primary hover:underline">01 64 35 40 89</a><br />
+                Téléphone : <a href="tel:+2290164354089" className="text-jomionstore-primary hover:underline">+229 01 64 35 40 89</a><br />
                 Ou via votre espace <strong>Mon compte &gt; Paramètres &gt; Confidentialité</strong>
               </p>
               <p className="text-sm text-gray-600">
@@ -288,7 +288,7 @@ export default function PrivacyPage() {
               <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                 <p className="mb-0"><strong>JomionStore - Protection des Données</strong></p>
                 <p className="mb-0">Email : <a href="mailto:contact@jomionstore.com" className="text-jomionstore-primary hover:underline font-semibold">contact@jomionstore.com</a></p>
-                <p className="mb-0">Téléphone : <a href="tel:0164354089" className="text-jomionstore-primary hover:underline">01 64 35 40 89</a></p>
+                <p className="mb-0">Téléphone : <a href="tel:+2290164354089" className="text-jomionstore-primary hover:underline">+229 01 64 35 40 89</a></p>
                 <p className="mb-0">Adresse : Quartier Ganhi, Cotonou, République du Bénin</p>
               </div>
               <p className="text-sm text-gray-600 mb-0">

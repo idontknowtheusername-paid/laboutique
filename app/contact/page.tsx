@@ -31,7 +31,7 @@ const contactInfo = [
   {
     icon: Phone,
     title: 'Téléphone',
-    details: ['01 64 35 40 89'],
+    details: ['+229 01 64 35 40 89'],
     color: 'text-jomionstore-secondary'
   },
   {
@@ -205,7 +205,7 @@ export default function ContactPage() {
                       <Input
                         value={formData.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
-                        placeholder="01 64 35 40 89"
+                        placeholder="+229 01 64 35 40 89"
                       />
                     </div>
                     <div>

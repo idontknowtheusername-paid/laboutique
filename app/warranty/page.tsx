@@ -232,7 +232,7 @@ export default function WarrantyPage() {
                   <ul className="text-sm space-y-1">
                     <li>• <strong>Mon compte</strong> &gt; Mes commandes &gt; Demander un retour</li>
                     <li>• Ou : <a href="mailto:contact@jomionstore.com" className="text-jomionstore-primary hover:underline">contact@jomionstore.com</a></li>
-                    <li>• Tél : <a href="tel:0164354089" className="text-jomionstore-primary hover:underline">01 64 35 40 89</a></li>
+                    <li>• Tél : <a href="tel:+2290164354089" className="text-jomionstore-primary hover:underline">+229 01 64 35 40 89</a></li>
                   </ul>
                 </div>
 
@@ -395,7 +395,7 @@ export default function WarrantyPage() {
                   </h5>
                   <p className="text-sm text-gray-700 mb-2">Service client disponible :</p>
                   <p className="font-semibold text-jomionstore-primary mb-1">
-                    <a href="tel:0164354089" className="hover:underline">01 64 35 40 89</a>
+                    <a href="tel:+2290164354089" className="hover:underline">+229 01 64 35 40 89</a>
                   </p>
                   <p className="text-xs text-gray-600">Lun-Ven : 8h-18h | Sam : 9h-16h</p>
                 </div>

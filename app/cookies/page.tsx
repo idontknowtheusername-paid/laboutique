@@ -517,7 +517,7 @@ export default function CookiesPage() {
                     <strong>Email :</strong> <a href="mailto:contact@jomionstore.com" className="text-jomionstore-primary hover:underline">contact@jomionstore.com</a>
                   </p>
                   <p>
-                    <strong>Téléphone :</strong> <a href="tel:0164354089" className="text-jomionstore-primary hover:underline">01 64 35 40 89</a>
+                    <strong>Téléphone :</strong> <a href="tel:+2290164354089" className="text-jomionstore-primary hover:underline">+229 01 64 35 40 89</a>
                   </p>
                   <p>
                     <strong>Adresse :</strong> Quartier Ganhi, Cotonou, République du Bénin
