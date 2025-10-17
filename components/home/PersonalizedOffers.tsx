@@ -191,7 +191,7 @@ const PersonalizedOffers = () => {
   };
 
   return (
-    <section className="py-12 bg-gradient-to-br from-orange-50 to-blue-100">
+    <section className="py-12 bg-gradient-to-br from-orange-50 to-orange-100">
       <div className="container">
         {/* Header */}
         <div className="flex items-center justify-between mb-8 p-3 rounded-lg" style={{ background: '#FF5722' }}>
@@ -376,7 +376,7 @@ const PersonalizedOffers = () => {
                 key={i}
                 aria-label={`Aller à l'élément ${i + 1}`}
                 onClick={() => scrollToIndex(i)}
-                className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-orange-600' : 'w-2 bg-blue-300'}`}
+                className={`h-2 rounded-full transition-all ${i === current ? 'w-6 bg-orange-600' : 'w-2 bg-orange-300'}`}
               />
             ))}
           </div>
