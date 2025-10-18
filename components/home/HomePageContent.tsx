@@ -190,7 +190,7 @@ export default function HomePageContent() {
         <ImprovedCategoryMenu />
         <CallToActionSection />
 
-        <div className="pt-2">
+        <div className="pt-20">
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<div className="h-[250px] lg:h-[300px] bg-gray-100 animate-pulse rounded-xl" />}>
               <HeroCarouselWithData 
