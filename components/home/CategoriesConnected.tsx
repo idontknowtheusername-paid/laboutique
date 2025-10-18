@@ -2,17 +2,63 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Search, Filter, SortAsc } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { CategoriesService, Category } from '@/lib/services';
 import Image from 'next/image';
+
+// Définition des groupes logiques
+const CATEGORY_GROUPS = {
+  'tech': {
+    name: 'Technologie & Électronique',
+    icon: '💻',
+    color: 'from-blue-500 to-purple-600',
+    categories: ['electronique', 'telephones-accessoires', 'ordinateurs-tablettes', 'audio-video', 'gaming-vr']
+  },
+  'mode': {
+    name: 'Mode & Beauté',
+    icon: '👗',
+    color: 'from-pink-500 to-rose-600',
+    categories: ['mode-beaute', 'vetements-homme', 'vetements-femme', 'vetements-enfant', 'chaussures', 'sacs-maroquinerie', 'montres-bijoux', 'cosmetiques-soins']
+  },
+  'maison': {
+    name: 'Maison & Jardin',
+    icon: '🏠',
+    color: 'from-green-500 to-teal-600',
+    categories: ['maison-jardin', 'mobilier', 'electromenager', 'luminaires', 'cuisine-salle-bain', 'jardinage-outils']
+  },
+  'sport': {
+    name: 'Sport & Loisirs',
+    icon: '⚽',
+    color: 'from-orange-500 to-red-600',
+    categories: ['sport-loisirs', 'fitness-musculation', 'sports-exterieur', 'jeux-jouets', 'instruments-musique']
+  },
+  'lifestyle': {
+    name: 'Lifestyle & Bien-être',
+    icon: '🌟',
+    color: 'from-emerald-500 to-teal-600',
+    categories: ['sante-bien-etre', 'bebe-enfant', 'livre-papeterie', 'voyage-bagages', 'animaux-accessoires']
+  },
+  'automotive': {
+    name: 'Automobile & Outils',
+    icon: '🚗',
+    color: 'from-gray-600 to-slate-700',
+    categories: ['automobile-moto', 'outils-bricolage']
+  }
+};
 
 export default function CategoriesConnected() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<'name' | 'products'>('products');
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage] = useState(12); // Afficher 12 catégories par page
+
+  const [subcategories, setSubcategories] = useState<Record<string, Category[]>>({});
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -21,12 +67,23 @@ export default function CategoriesConnected() {
         const response = await CategoriesService.getWithProductCount();
         
         if (response.success && response.data) {
-          // Prendre toutes les catégories principales avec le plus de produits
-          const allCategories = response.data
-            .filter(cat => !cat.parent_id) // Seulement les catégories principales
+          // Séparer les catégories principales et les sous-catégories
+          const mainCategories = response.data
+            .filter(cat => !cat.parent_id)
             .sort((a, b) => (b.product_count || 0) - (a.product_count || 0));
             
-          setCategories(allCategories);
+          const subcategoriesMap: Record<string, Category[]> = {};
+          response.data
+            .filter(cat => cat.parent_id)
+            .forEach(subcat => {
+              if (!subcategoriesMap[subcat.parent_id!]) {
+                subcategoriesMap[subcat.parent_id!] = [];
+              }
+              subcategoriesMap[subcat.parent_id!].push(subcat);
+            });
+            
+          setCategories(mainCategories);
+          setSubcategories(subcategoriesMap);
         }
       } catch (error) {
         console.error('Erreur lors du chargement des catégories:', error);
@@ -116,11 +173,37 @@ export default function CategoriesConnected() {
     return gradientMap[slug] || 'from-gray-500 to-gray-700';
   };
 
+  // Logique de filtrage et tri
+  const filteredCategories = categories
+    .filter(cat => {
+      // Filtrage par groupe
+      const groupMatch = !selectedGroup || CATEGORY_GROUPS[selectedGroup as keyof typeof CATEGORY_GROUPS]?.categories.includes(cat.slug);
+      
+      // Filtrage par recherche
+      const searchMatch = !searchTerm || 
+        cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        cat.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      return groupMatch && searchMatch;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'name') {
+        return a.name.localeCompare(b.name);
+      } else {
+        return (b.product_count || 0) - (a.product_count || 0);
+      }
+    });
+
   // Logique de pagination
-  const totalPages = Math.ceil(categories.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentCategories = categories.slice(startIndex, endIndex);
+  const currentCategories = filteredCategories.slice(startIndex, endIndex);
+
+  // Reset page when group changes
+  React.useEffect(() => {
+    setCurrentPage(0);
+  }, [selectedGroup]);
 
   const nextPage = () => {
     setCurrentPage((prev) => (prev + 1) % totalPages);
@@ -171,51 +254,166 @@ export default function CategoriesConnected() {
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Parcourir par Catégorie</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-gray-600 max-w-2xl mx-auto mb-6">
             Explorez notre large gamme de produits organisés par catégorie pour trouver exactement ce que vous cherchez
           </p>
+          
+          {/* Search and Filter Bar */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-6 max-w-4xl mx-auto">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                type="text"
+                placeholder="Rechercher une catégorie..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <div className="flex gap-2">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'name' | 'products')}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-jomionstore-primary"
+              >
+                <option value="products">Trier par popularité</option>
+                <option value="name">Trier par nom</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Group Selection */}
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            <button
+              onClick={() => setSelectedGroup(null)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                selectedGroup === null
+                  ? 'bg-jomionstore-primary text-white shadow-lg'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Toutes ({categories.length})
+            </button>
+            {Object.entries(CATEGORY_GROUPS).map(([key, group]) => {
+              const groupCategories = categories.filter(cat => group.categories.includes(cat.slug));
+              return (
+                <button
+                  key={key}
+                  onClick={() => setSelectedGroup(key)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    selectedGroup === key
+                      ? 'bg-jomionstore-primary text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {group.icon} {group.name} ({groupCategories.length})
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Categories Grid - Responsive pour toutes les catégories */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-8">
-          {currentCategories.map((category) => (
-            <Link key={category.id} href={`/category/${category.slug}`}>
-              <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden h-full">
-                <CardContent className="p-0">
-                  <div className="relative aspect-square">
-                    {/* Background Image */}
-                    <div className="absolute inset-0">
-                      <Image
-                        src={category.image_url || getDefaultImage(category.slug)}
-                        alt={category.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    
-                    {/* Gradient Overlay */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${getGradient(category.slug)} opacity-80 group-hover:opacity-70 transition-opacity`} />
-                    
-                    {/* Content */}
-                    <div className="absolute inset-0 flex flex-col justify-end p-3 text-white">
-                      <h3 className="font-bold text-sm sm:text-base mb-1 group-hover:scale-105 transition-transform leading-tight">
-                        {category.name}
-                      </h3>
-                      <p className="text-xs opacity-90">
-                        {category.product_count || 0} produit{(category.product_count || 0) !== 1 ? 's' : ''}
-                      </p>
-                    </div>
+        {/* Results Indicator */}
+        {(selectedGroup || searchTerm) && (
+          <div className="mb-6 p-4 bg-white rounded-lg shadow-sm border">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {selectedGroup && (
+                  <span className="text-2xl">{CATEGORY_GROUPS[selectedGroup as keyof typeof CATEGORY_GROUPS].icon}</span>
+                )}
+                <div>
+                  <h3 className="font-semibold text-gray-900">
+                    {selectedGroup 
+                      ? CATEGORY_GROUPS[selectedGroup as keyof typeof CATEGORY_GROUPS].name
+                      : `Résultats pour "${searchTerm}"`
+                    }
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {filteredCategories.length} catégorie{filteredCategories.length !== 1 ? 's' : ''} trouvée{filteredCategories.length !== 1 ? 's' : ''}
+                    {selectedGroup && searchTerm && ' (filtrées)'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setSelectedGroup(null);
+                  setSearchTerm('');
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
 
-                    {/* Arrow Icon */}
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="bg-white/20 backdrop-blur rounded-full p-1.5">
-                        <ArrowRight className="w-3 h-3 text-white" />
+        {/* Categories Grid - Responsive pour toutes les catégories */}
+        <div className="space-y-8">
+          {currentCategories.map((category) => (
+            <div key={category.id} className="bg-white rounded-xl shadow-sm border p-6">
+              {/* Main Category */}
+              <Link href={`/category/${category.slug}`}>
+                <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden mb-4">
+                  <CardContent className="p-0">
+                    <div className="relative aspect-video">
+                      {/* Background Image */}
+                      <div className="absolute inset-0">
+                        <Image
+                          src={category.image_url || getDefaultImage(category.slug)}
+                          alt={category.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      
+                      {/* Gradient Overlay */}
+                      <div className={`absolute inset-0 bg-gradient-to-br ${getGradient(category.slug)} opacity-80 group-hover:opacity-70 transition-opacity`} />
+                      
+                      {/* Content */}
+                      <div className="absolute inset-0 flex flex-col justify-center items-center text-white p-6">
+                        <h3 className="font-bold text-2xl mb-2 group-hover:scale-105 transition-transform text-center">
+                          {category.name}
+                        </h3>
+                        <p className="text-sm opacity-90 text-center">
+                          {category.product_count || 0} produit{(category.product_count || 0) !== 1 ? 's' : ''}
+                        </p>
+                      </div>
+
+                      {/* Arrow Icon */}
+                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="bg-white/20 backdrop-blur rounded-full p-2">
+                          <ArrowRight className="w-5 h-5 text-white" />
+                        </div>
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              {/* Subcategories */}
+              {subcategories[category.id] && subcategories[category.id].length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-600 mb-3">Sous-catégories :</h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    {subcategories[category.id].map((subcategory) => (
+                      <Link key={subcategory.id} href={`/category/${subcategory.slug}`}>
+                        <div className="group p-3 rounded-lg border hover:border-jomionstore-primary hover:bg-orange-50 transition-all duration-200">
+                          <div className="text-center">
+                            <div className="text-2xl mb-1">{subcategory.icon || '📁'}</div>
+                            <h5 className="text-xs font-medium text-gray-900 group-hover:text-jomionstore-primary transition-colors leading-tight">
+                              {subcategory.name}
+                            </h5>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {subcategory.product_count || 0} produit{(subcategory.product_count || 0) !== 1 ? 's' : ''}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>
-            </Link>
+                </div>
+              )}
+            </div>
           ))}
         </div>
 
