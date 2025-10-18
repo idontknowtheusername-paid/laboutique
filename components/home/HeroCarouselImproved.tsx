@@ -120,6 +120,12 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
   ];
 
   const displayBanners = banners.length > 0 ? banners : fallbackBanners;
+  
+  // Debug logs
+  console.log('HeroCarouselImproved - banners prop:', banners);
+  console.log('HeroCarouselImproved - displayBanners:', displayBanners);
+  console.log('HeroCarouselImproved - displayBanners.length:', displayBanners.length);
+  console.log('HeroCarouselImproved - currentSlide:', currentSlide);
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % displayBanners.length);
@@ -161,31 +167,31 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
     return () => clearInterval(interval);
   }, [isAutoPlaying, isVisible, nextSlide, displayBanners.length]);
 
-  // Load banners from API only if no banners provided
+  // Set loading to false immediately if banners are provided
   useEffect(() => {
     if (banners.length > 0) {
       setIsLoading(false);
-      return;
-    }
-
-    const fetchBanners = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch('/api/hero-banners?limit=5');
-        const data = await response.json();
-        
-        if (data.success && data.data) {
-          // Banners are passed as props, so we don't need to set them here
-          // This is just for loading state management
+    } else {
+      // Only try to load from API if no banners provided
+      const fetchBanners = async () => {
+        try {
+          setIsLoading(true);
+          const response = await fetch('/api/hero-banners?limit=5');
+          const data = await response.json();
+          
+          if (data.success && data.data) {
+            // Banners are passed as props, so we don't need to set them here
+            // This is just for loading state management
+          }
+        } catch (error) {
+          console.error('Error fetching hero banners:', error);
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        console.error('Error fetching hero banners:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      };
 
-    fetchBanners();
+      fetchBanners();
+    }
   }, [banners.length]);
 
   const getTypeIcon = (type: string) => {
