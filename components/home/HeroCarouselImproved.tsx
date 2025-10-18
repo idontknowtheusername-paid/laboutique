@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Play, Pause, Star, Clock, Tag } from 'lucide-react';
+import { Play, Pause, Star, Clock, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
@@ -120,19 +120,9 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
   ];
 
   const displayBanners = banners.length > 0 ? banners : fallbackBanners;
-  
-  // Debug logs
-  console.log('HeroCarouselImproved - banners prop:', banners);
-  console.log('HeroCarouselImproved - displayBanners:', displayBanners);
-  console.log('HeroCarouselImproved - displayBanners.length:', displayBanners.length);
-  console.log('HeroCarouselImproved - currentSlide:', currentSlide);
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % displayBanners.length);
-  }, [displayBanners.length]);
-
-  const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + displayBanners.length) % displayBanners.length);
   }, [displayBanners.length]);
 
   const goToSlide = useCallback((index: number) => {
@@ -327,28 +317,8 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
         ))}
       </div>
 
-      {/* Navigation Controls */}
-      {showControls && displayBanners.length > 1 && (
-        <>
-          {/* Previous Button */}
-          <button
-            onClick={prevSlide}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100"
-            aria-label="Slide précédent"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-
-          {/* Next Button */}
-          <button
-            onClick={nextSlide}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100"
-            aria-label="Slide suivant"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-        </>
-      )}
+      {/* Navigation Controls - DISABLED */}
+      {/* Flèches de défilement supprimées - Auto-défilement uniquement */}
 
       {/* Play/Pause Button */}
       {displayBanners.length > 1 && (
