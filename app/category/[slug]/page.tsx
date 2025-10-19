@@ -271,7 +271,7 @@ export default function DynamicCategoryPage() {
   useEffect(() => {
     const active: string[] = [];
     // Seulement afficher le filtre prix si ce n'est pas la plage par défaut
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 999999) {
+    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000) {
       active.push(
         `Prix: ${filters.priceRange[0]} - ${filters.priceRange[1]} XOF`
       );
