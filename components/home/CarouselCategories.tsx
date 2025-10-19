@@ -78,18 +78,6 @@ export default function CarouselCategories() {
   
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Configuration responsive SIMPLIFIÉE
-  const getItemsPerSlide = () => {
-    if (typeof window === 'undefined') return 8;
-    if (window.innerWidth < 640) return 4; // Mobile: 2x2
-    if (window.innerWidth < 768) return 6; // Small tablet: 3x2
-    if (window.innerWidth < 1024) return 8; // Tablet: 4x2
-    if (window.innerWidth < 1280) return 10; // Desktop: 5x2
-    return 12; // Large desktop: 6x2
-  };
-
-  const [itemsPerSlide, setItemsPerSlide] = useState(8);
-
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -113,16 +101,6 @@ export default function CarouselCategories() {
     loadCategories();
   }, []);
 
-  // Gestion du responsive
-  useEffect(() => {
-    const handleResize = () => {
-      setItemsPerSlide(getItemsPerSlide());
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   // Filtrage des catégories
   const filteredCategories = categories.filter(cat => {
     const groupMatch = !selectedGroup || CATEGORY_TO_GROUP[cat.slug] === selectedGroup;
@@ -132,6 +110,28 @@ export default function CarouselCategories() {
     
     return groupMatch && searchMatch;
   });
+
+  // Configuration responsive SIMPLIFIÉE - 2 lignes horizontales
+  const getItemsPerSlide = () => {
+    if (typeof window === 'undefined') return 8;
+    if (window.innerWidth < 640) return 4; // Mobile: 2x2
+    if (window.innerWidth < 768) return 6; // Small tablet: 3x2
+    if (window.innerWidth < 1024) return 8; // Tablet: 4x2
+    if (window.innerWidth < 1280) return 10; // Desktop: 5x2
+    return 12; // Large desktop: 6x2
+  };
+
+  const [itemsPerSlide, setItemsPerSlide] = useState(8);
+
+  // Gestion du responsive
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerSlide(getItemsPerSlide());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const totalSlides = Math.ceil(filteredCategories.length / itemsPerSlide);
 
@@ -271,7 +271,7 @@ export default function CarouselCategories() {
             <ChevronRight className="w-6 h-6" />
           </Button>
 
-          {/* Carousel */}
+          {/* Carousel - VERSION SIMPLIFIÉE */}
           <div
             className="overflow-hidden"
             onMouseEnter={() => setIsHovered(true)}
@@ -280,8 +280,7 @@ export default function CarouselCategories() {
             <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{
-                transform: `translateX(-${currentSlide * 100}%)`,
-                width: `${totalSlides * 100}%`
+                transform: `translateX(-${currentSlide * 100}%)`
               }}
             >
               {Array.from({ length: totalSlides }, (_, slideIndex) => {
@@ -290,8 +289,9 @@ export default function CarouselCategories() {
                 const slideCategories = filteredCategories.slice(startIndex, endIndex);
                 
                 return (
-                  <div key={slideIndex} className="w-full flex-shrink-0">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 px-4">
+                  <div key={slideIndex} className="w-full flex-shrink-0 px-4">
+                    {/* Grille responsive - 2 lignes horizontales */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
                       {slideCategories.map((category) => {
                         const group = CATEGORY_TO_GROUP[category.slug];
                         const groupConfig = group ? CATEGORY_GROUPS[group] : null;
@@ -299,7 +299,7 @@ export default function CarouselCategories() {
                         return (
                           <Link key={category.id} href={`/category/${category.slug}`}>
                             <div className="group flex flex-col items-center cursor-pointer">
-                              {/* Circular Card - SIMPLIFIÉE */}
+                              {/* Circular Card - SIMPLE */}
                               <div className="relative w-20 h-20 mb-3 group-hover:scale-110 transition-transform duration-300">
                                 {/* Image de fond */}
                                 <div className="absolute inset-0 rounded-full overflow-hidden">
