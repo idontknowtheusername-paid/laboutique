@@ -101,8 +101,11 @@ export default function DynamicCategoryPage() {
 
       const productFilters: ProductFilters = {
         category_id: category.id,
-        min_price: filters.priceRange[0] > 0 ? filters.priceRange[0] : undefined,
-        max_price: filters.priceRange[1] < 999999 ? filters.priceRange[1] : undefined,
+        // Ne pas appliquer de filtres de prix si c'est la plage par défaut
+        min_price: (filters.priceRange[0] > 0 || filters.priceRange[1] < 999999) ? 
+          (filters.priceRange[0] > 0 ? filters.priceRange[0] : undefined) : undefined,
+        max_price: (filters.priceRange[0] > 0 || filters.priceRange[1] < 999999) ? 
+          (filters.priceRange[1] < 999999 ? filters.priceRange[1] : undefined) : undefined,
         in_stock: filters.inStock || undefined,
         brand: filters.brands.length > 0 ? filters.brands.join(",") : undefined,
         tags: filters.tags.length > 0 ? filters.tags : undefined,
