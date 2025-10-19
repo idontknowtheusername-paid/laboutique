@@ -10,89 +10,22 @@ import Image from 'next/image';
 
 // Configuration des groupes thématiques
 const CATEGORY_GROUPS = {
-  'tech': {
-    name: 'Technologie',
-    icon: '💻',
-    color: 'from-blue-500 to-purple-600',
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200',
-    textColor: 'text-blue-700'
-  },
-  'mode': {
-    name: 'Mode & Beauté',
-    icon: '👗',
-    color: 'from-pink-500 to-rose-600',
-    bgColor: 'bg-pink-50',
-    borderColor: 'border-pink-200',
-    textColor: 'text-pink-700'
-  },
-  'maison': {
-    name: 'Maison & Jardin',
-    icon: '🏠',
-    color: 'from-green-500 to-teal-600',
-    bgColor: 'bg-green-50',
-    borderColor: 'border-green-200',
-    textColor: 'text-green-700'
-  },
-  'sport': {
-    name: 'Sport & Loisirs',
-    icon: '⚽',
-    color: 'from-orange-500 to-red-600',
-    bgColor: 'bg-orange-50',
-    borderColor: 'border-orange-200',
-    textColor: 'text-orange-700'
-  },
-  'lifestyle': {
-    name: 'Lifestyle',
-    icon: '🌟',
-    color: 'from-emerald-500 to-teal-600',
-    bgColor: 'bg-emerald-50',
-    borderColor: 'border-emerald-200',
-    textColor: 'text-emerald-700'
-  },
-  'automotive': {
-    name: 'Auto & Outils',
-    icon: '🚗',
-    color: 'from-gray-600 to-slate-700',
-    bgColor: 'bg-gray-50',
-    borderColor: 'border-gray-200',
-    textColor: 'text-gray-700'
-  }
+  'tech': { icon: '💻', color: 'from-blue-500 to-purple-600' },
+  'mode': { icon: '👗', color: 'from-pink-500 to-rose-600' },
+  'maison': { icon: '🏠', color: 'from-green-500 to-teal-600' },
+  'sport': { icon: '⚽', color: 'from-orange-500 to-red-600' },
+  'lifestyle': { icon: '🌟', color: 'from-emerald-500 to-teal-600' },
+  'automotive': { icon: '🚗', color: 'from-gray-600 to-slate-700' }
 };
 
 // Mapping des catégories vers les groupes
 const CATEGORY_TO_GROUP: Record<string, keyof typeof CATEGORY_GROUPS> = {
-  'electronique': 'tech',
-  'telephones-accessoires': 'tech',
-  'ordinateurs-tablettes': 'tech',
-  'audio-video': 'tech',
-  'gaming-vr': 'tech',
-  'mode-beaute': 'mode',
-  'vetements-homme': 'mode',
-  'vetements-femme': 'mode',
-  'vetements-enfant': 'mode',
-  'chaussures': 'mode',
-  'sacs-maroquinerie': 'mode',
-  'montres-bijoux': 'mode',
-  'cosmetiques-soins': 'mode',
-  'maison-jardin': 'maison',
-  'mobilier': 'maison',
-  'electromenager': 'maison',
-  'luminaires': 'maison',
-  'cuisine-salle-bain': 'maison',
-  'jardinage-outils': 'maison',
-  'sport-loisirs': 'sport',
-  'fitness-musculation': 'sport',
-  'sports-exterieur': 'sport',
-  'jeux-jouets': 'sport',
-  'instruments-musique': 'sport',
-  'sante-bien-etre': 'lifestyle',
-  'bebe-enfant': 'lifestyle',
-  'livre-papeterie': 'lifestyle',
-  'voyage-bagages': 'lifestyle',
-  'animaux-accessoires': 'lifestyle',
-  'automobile-moto': 'automotive',
-  'outils-bricolage': 'automotive'
+  'electronique': 'tech', 'telephones-accessoires': 'tech', 'ordinateurs-tablettes': 'tech', 'audio-video': 'tech', 'gaming-vr': 'tech',
+  'mode-beaute': 'mode', 'vetements-homme': 'mode', 'vetements-femme': 'mode', 'vetements-enfant': 'mode', 'chaussures': 'mode', 'sacs-maroquinerie': 'mode', 'montres-bijoux': 'mode', 'cosmetiques-soins': 'mode',
+  'maison-jardin': 'maison', 'mobilier': 'maison', 'electromenager': 'maison', 'luminaires': 'maison', 'cuisine-salle-bain': 'maison', 'jardinage-outils': 'maison',
+  'sport-loisirs': 'sport', 'fitness-musculation': 'sport', 'sports-exterieur': 'sport', 'jeux-jouets': 'sport', 'instruments-musique': 'sport',
+  'sante-bien-etre': 'lifestyle', 'bebe-enfant': 'lifestyle', 'livre-papeterie': 'lifestyle', 'voyage-bagages': 'lifestyle', 'animaux-accessoires': 'lifestyle',
+  'automobile-moto': 'automotive', 'outils-bricolage': 'automotive'
 };
 
 // Images par défaut pour les catégories
@@ -143,21 +76,19 @@ export default function CarouselCategories() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   
-  const carouselRef = useRef<HTMLDivElement>(null);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Configuration responsive - SIMPLIFIÉE
-  const getGridConfig = () => {
-    if (typeof window === 'undefined') return { cols: 4, rows: 2, itemsPerSlide: 8 };
-    
-    if (window.innerWidth < 640) return { cols: 2, rows: 2, itemsPerSlide: 4 }; // Mobile: 2x2
-    if (window.innerWidth < 768) return { cols: 3, rows: 2, itemsPerSlide: 6 }; // Small tablet: 3x2
-    if (window.innerWidth < 1024) return { cols: 4, rows: 2, itemsPerSlide: 8 }; // Tablet: 4x2
-    if (window.innerWidth < 1280) return { cols: 5, rows: 2, itemsPerSlide: 10 }; // Desktop: 5x2
-    return { cols: 6, rows: 2, itemsPerSlide: 12 }; // Large desktop: 6x2
+  // Configuration responsive SIMPLIFIÉE
+  const getItemsPerSlide = () => {
+    if (typeof window === 'undefined') return 8;
+    if (window.innerWidth < 640) return 4; // Mobile: 2x2
+    if (window.innerWidth < 768) return 6; // Small tablet: 3x2
+    if (window.innerWidth < 1024) return 8; // Tablet: 4x2
+    if (window.innerWidth < 1280) return 10; // Desktop: 5x2
+    return 12; // Large desktop: 6x2
   };
 
-  const [gridConfig, setGridConfig] = useState(getGridConfig());
+  const [itemsPerSlide, setItemsPerSlide] = useState(8);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -185,7 +116,7 @@ export default function CarouselCategories() {
   // Gestion du responsive
   useEffect(() => {
     const handleResize = () => {
-      setGridConfig(getGridConfig());
+      setItemsPerSlide(getItemsPerSlide());
     };
 
     window.addEventListener('resize', handleResize);
@@ -202,7 +133,7 @@ export default function CarouselCategories() {
     return groupMatch && searchMatch;
   });
 
-  const totalSlides = Math.ceil(filteredCategories.length / gridConfig.itemsPerSlide);
+  const totalSlides = Math.ceil(filteredCategories.length / itemsPerSlide);
 
   const nextSlide = () => {
     setCurrentSlide(prev => (prev + 1) % totalSlides);
@@ -225,7 +156,7 @@ export default function CarouselCategories() {
     if (isAutoPlaying && !isHovered && totalSlides > 1) {
       autoPlayRef.current = setInterval(() => {
         setCurrentSlide(prev => (prev + 1) % totalSlides);
-      }, 4000); // Change slide every 4 seconds
+      }, 4000);
     } else if (autoPlayRef.current) {
       clearInterval(autoPlayRef.current);
     }
@@ -294,7 +225,7 @@ export default function CarouselCategories() {
               <option value="">Tous les groupes</option>
               {Object.entries(CATEGORY_GROUPS).map(([key, group]) => (
                 <option key={key} value={key}>
-                  {group.icon} {group.name}
+                  {group.icon} {key.charAt(0).toUpperCase() + key.slice(1)}
                 </option>
               ))}
             </select>
@@ -313,7 +244,7 @@ export default function CarouselCategories() {
         <div className="text-center mb-8">
           <p className="text-gray-600">
             {filteredCategories.length} catégorie{filteredCategories.length !== 1 ? 's' : ''} trouvée{filteredCategories.length !== 1 ? 's' : ''}
-            {selectedGroup && ` dans ${CATEGORY_GROUPS[selectedGroup as keyof typeof CATEGORY_GROUPS]?.name}`}
+            {selectedGroup && ` dans ${selectedGroup.charAt(0).toUpperCase() + selectedGroup.slice(1)}`}
           </p>
         </div>
 
@@ -342,7 +273,6 @@ export default function CarouselCategories() {
 
           {/* Carousel */}
           <div
-            ref={carouselRef}
             className="overflow-hidden"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -355,28 +285,23 @@ export default function CarouselCategories() {
               }}
             >
               {Array.from({ length: totalSlides }, (_, slideIndex) => {
-                const startIndex = slideIndex * gridConfig.itemsPerSlide;
-                const endIndex = startIndex + gridConfig.itemsPerSlide;
+                const startIndex = slideIndex * itemsPerSlide;
+                const endIndex = startIndex + itemsPerSlide;
                 const slideCategories = filteredCategories.slice(startIndex, endIndex);
                 
                 return (
                   <div key={slideIndex} className="w-full flex-shrink-0">
-                    <div 
-                      className="grid gap-6 px-4"
-                      style={{ 
-                        gridTemplateColumns: `repeat(${gridConfig.cols}, 1fr)`,
-                        gridTemplateRows: `repeat(${gridConfig.rows}, 1fr)`
-                      }}
-                    >
-                      {slideCategories.map((category, index) => {
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 px-4">
+                      {slideCategories.map((category) => {
                         const group = CATEGORY_TO_GROUP[category.slug];
                         const groupConfig = group ? CATEGORY_GROUPS[group] : null;
                         
                         return (
                           <Link key={category.id} href={`/category/${category.slug}`}>
                             <div className="group flex flex-col items-center cursor-pointer">
-                              {/* Circular Card */}
+                              {/* Circular Card - SIMPLIFIÉE */}
                               <div className="relative w-20 h-20 mb-3 group-hover:scale-110 transition-transform duration-300">
+                                {/* Image de fond */}
                                 <div className="absolute inset-0 rounded-full overflow-hidden">
                                   <Image
                                     src={category.image_url || getDefaultImage(category.slug)}
@@ -389,28 +314,16 @@ export default function CarouselCategories() {
                                 {/* Gradient Overlay */}
                                 <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${groupConfig?.color || 'from-gray-500 to-gray-700'} opacity-80 group-hover:opacity-70 transition-opacity`} />
                                 
-                                {/* Icon */}
+                                {/* Icon au centre */}
                                 <div className="absolute inset-0 flex items-center justify-center text-white text-2xl group-hover:scale-110 transition-transform duration-300">
                                   {groupConfig?.icon || '📁'}
                                 </div>
-
-                                {/* Badge for popular categories */}
-                                {category.product_count && category.product_count > 100 && (
-                                  <div className="absolute -top-1 -right-1 bg-yellow-400 text-yellow-900 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                                    ★
-                                  </div>
-                                )}
                               </div>
                               
-                              {/* Category Name */}
-                              <h3 className="text-sm font-medium text-gray-900 group-hover:text-jomionstore-primary transition-colors text-center leading-tight mb-1">
+                              {/* Nom de la catégorie */}
+                              <h3 className="text-sm font-medium text-gray-900 group-hover:text-jomionstore-primary transition-colors text-center leading-tight">
                                 {category.name}
                               </h3>
-                              
-                              {/* Product Count */}
-                              <p className="text-xs text-gray-500 text-center">
-                                {category.product_count || 0} produit{(category.product_count || 0) !== 1 ? 's' : ''}
-                              </p>
                             </div>
                           </Link>
                         );
