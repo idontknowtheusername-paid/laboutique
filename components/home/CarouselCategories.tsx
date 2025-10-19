@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, Search, Play, Pause } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { CategoriesService, Category } from '@/lib/services';
 import Image from 'next/image';
 
@@ -70,8 +69,6 @@ const getDefaultImage = (slug: string): string => {
 export default function CarouselCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
@@ -101,15 +98,8 @@ export default function CarouselCategories() {
     loadCategories();
   }, []);
 
-  // Filtrage des catégories
-  const filteredCategories = categories.filter(cat => {
-    const groupMatch = !selectedGroup || CATEGORY_TO_GROUP[cat.slug] === selectedGroup;
-    const searchMatch = !searchTerm || 
-      cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cat.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return groupMatch && searchMatch;
-  });
+  // Utilisation directe des catégories sans filtrage
+  const filteredCategories = categories;
 
   // Configuration responsive SIMPLIFIÉE - 2 lignes horizontales
   const getItemsPerSlide = () => {
@@ -143,9 +133,6 @@ export default function CarouselCategories() {
     setCurrentSlide(prev => (prev - 1 + totalSlides) % totalSlides);
   };
 
-  const goToSlide = (slideIndex: number) => {
-    setCurrentSlide(slideIndex);
-  };
 
   const toggleAutoPlay = () => {
     setIsAutoPlaying(!isAutoPlaying);
@@ -198,55 +185,9 @@ export default function CarouselCategories() {
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
             🛍️ Parcourir par Catégorie
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Trouvez exactement ce que vous cherchez parmi nos {categories.length} catégories
-          </p>
         </div>
 
-        {/* Search and Filter Bar */}
-        <div className="flex flex-col lg:flex-row gap-4 mb-8 max-w-6xl mx-auto">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <Input
-              type="text"
-              placeholder="Rechercher une catégorie..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-12 text-lg"
-            />
-          </div>
-          
-          <div className="flex gap-2">
-            <select
-              value={selectedGroup || ''}
-              onChange={(e) => setSelectedGroup(e.target.value || null)}
-              className="px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-jomionstore-primary h-12"
-            >
-              <option value="">Tous les groupes</option>
-              {Object.entries(CATEGORY_GROUPS).map(([key, group]) => (
-                <option key={key} value={key}>
-                  {group.icon} {key.charAt(0).toUpperCase() + key.slice(1)}
-                </option>
-              ))}
-            </select>
-            
-            <Button
-              variant="outline"
-              onClick={toggleAutoPlay}
-              className="h-12 px-4"
-            >
-              {isAutoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-            </Button>
-          </div>
-        </div>
 
-        {/* Results Count */}
-        <div className="text-center mb-8">
-          <p className="text-gray-600">
-            {filteredCategories.length} catégorie{filteredCategories.length !== 1 ? 's' : ''} trouvée{filteredCategories.length !== 1 ? 's' : ''}
-            {selectedGroup && ` dans ${selectedGroup.charAt(0).toUpperCase() + selectedGroup.slice(1)}`}
-          </p>
-        </div>
 
         {/* Carousel Container */}
         <div className="relative max-w-7xl mx-auto">
@@ -335,22 +276,6 @@ export default function CarouselCategories() {
             </div>
           </div>
 
-          {/* Pagination Dots */}
-          {totalSlides > 1 && (
-            <div className="flex justify-center mt-8 gap-2">
-              {Array.from({ length: totalSlides }, (_, index) => (
-                <button
-                  key={index}
-                  onClick={() => goToSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentSlide
-                      ? 'bg-jomionstore-primary scale-125'
-                      : 'bg-gray-300 hover:bg-gray-400'
-                  }`}
-                />
-              ))}
-            </div>
-          )}
         </div>
 
         {/* View All Button */}
