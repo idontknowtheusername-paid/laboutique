@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Search, Filter, Grid, List, ChevronDown, Star, TrendingUp, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, Filter, Play, Pause } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CategoriesService, Category } from '@/lib/services';
 import Image from 'next/image';
 
-// Configuration des groupes thématiques avec icônes et couleurs
+// Configuration des groupes thématiques
 const CATEGORY_GROUPS = {
   'tech': {
     name: 'Technologie',
@@ -135,12 +135,29 @@ const getDefaultImage = (slug: string): string => {
   return imageMap[slug] || 'https://images.pexels.com/photos/230544/pexels-photo-230544.jpeg?auto=compress&cs=tinysrgb&w=400';
 };
 
-export default function MegaCategoriesGrid() {
+export default function CarouselCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Configuration responsive
+  const getItemsPerSlide = () => {
+    if (typeof window === 'undefined') return 8;
+    if (window.innerWidth < 640) return 4; // Mobile: 2x4
+    if (window.innerWidth < 768) return 6; // Small tablet: 2x3
+    if (window.innerWidth < 1024) return 8; // Tablet: 2x4
+    if (window.innerWidth < 1280) return 10; // Desktop: 2x5
+    return 12; // Large desktop: 2x6
+  };
+
+  const [itemsPerSlide, setItemsPerSlide] = useState(getItemsPerSlide());
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -165,6 +182,33 @@ export default function MegaCategoriesGrid() {
     loadCategories();
   }, []);
 
+  // Gestion du responsive
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerSlide(getItemsPerSlide());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Auto-play logic
+  useEffect(() => {
+    if (isAutoPlaying && !isHovered && categories.length > itemsPerSlide) {
+      autoPlayRef.current = setInterval(() => {
+        setCurrentSlide(prev => (prev + 1) % Math.ceil(categories.length / itemsPerSlide));
+      }, 4000); // Change slide every 4 seconds
+    } else if (autoPlayRef.current) {
+      clearInterval(autoPlayRef.current);
+    }
+
+    return () => {
+      if (autoPlayRef.current) {
+        clearInterval(autoPlayRef.current);
+      }
+    };
+  }, [isAutoPlaying, isHovered, categories.length, itemsPerSlide]);
+
   // Filtrage des catégories
   const filteredCategories = categories.filter(cat => {
     const groupMatch = !selectedGroup || CATEGORY_TO_GROUP[cat.slug] === selectedGroup;
@@ -175,15 +219,23 @@ export default function MegaCategoriesGrid() {
     return groupMatch && searchMatch;
   });
 
-  // Grouper les catégories par groupe thématique
-  const groupedCategories = filteredCategories.reduce((acc, category) => {
-    const group = CATEGORY_TO_GROUP[category.slug] || 'other';
-    if (!acc[group]) {
-      acc[group] = [];
-    }
-    acc[group].push(category);
-    return acc;
-  }, {} as Record<string, Category[]>);
+  const totalSlides = Math.ceil(filteredCategories.length / itemsPerSlide);
+
+  const nextSlide = () => {
+    setCurrentSlide(prev => (prev + 1) % totalSlides);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide(prev => (prev - 1 + totalSlides) % totalSlides);
+  };
+
+  const goToSlide = (slideIndex: number) => {
+    setCurrentSlide(slideIndex);
+  };
+
+  const toggleAutoPlay = () => {
+    setIsAutoPlaying(!isAutoPlaying);
+  };
 
   if (loading) {
     return (
@@ -194,11 +246,11 @@ export default function MegaCategoriesGrid() {
             <div className="h-4 bg-gray-200 rounded w-96 mx-auto animate-pulse"></div>
           </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {[...Array(12)].map((_, i) => (
+          <div className="flex justify-center gap-4">
+            {[...Array(8)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="aspect-square bg-gray-200 rounded-xl mb-3"></div>
-                <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+                <div className="w-20 h-20 bg-gray-200 rounded-full mb-3"></div>
+                <div className="h-4 bg-gray-200 rounded w-16 mx-auto"></div>
               </div>
             ))}
           </div>
@@ -248,19 +300,11 @@ export default function MegaCategoriesGrid() {
             </select>
             
             <Button
-              variant={viewMode === 'grid' ? 'default' : 'outline'}
-              onClick={() => setViewMode('grid')}
+              variant="outline"
+              onClick={toggleAutoPlay}
               className="h-12 px-4"
             >
-              <Grid className="w-4 h-4" />
-            </Button>
-            
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'outline'}
-              onClick={() => setViewMode('list')}
-              className="h-12 px-4"
-            >
-              <List className="w-4 h-4" />
+              {isAutoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
             </Button>
           </div>
         </div>
@@ -273,103 +317,123 @@ export default function MegaCategoriesGrid() {
           </p>
         </div>
 
-        {/* Categories Grid */}
-        {viewMode === 'grid' ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 max-w-7xl mx-auto">
-            {filteredCategories.map((category) => {
-              const group = CATEGORY_TO_GROUP[category.slug];
-              const groupConfig = group ? CATEGORY_GROUPS[group] : null;
-              
-              return (
-                <Link key={category.id} href={`/category/${category.slug}`}>
-                  <Card className="group hover:shadow-xl transition-all duration-300 overflow-hidden h-full border-2 hover:border-jomionstore-primary hover:scale-105">
-                    <CardContent className="p-0">
-                      <div className="relative aspect-square">
-                        {/* Background Image */}
-                        <div className="absolute inset-0">
-                          <Image
-                            src={category.image_url || getDefaultImage(category.slug)}
-                            alt={category.name}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-300"
-                          />
-                        </div>
-                        
-                        {/* Gradient Overlay */}
-                        <div className={`absolute inset-0 bg-gradient-to-br ${groupConfig?.color || 'from-gray-500 to-gray-700'} opacity-80 group-hover:opacity-70 transition-opacity`} />
-                        
-                        {/* Content */}
-                        <div className="absolute inset-0 flex flex-col justify-center items-center text-white p-4 text-center">
-                          <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">
-                            {groupConfig?.icon || '📁'}
-                          </div>
-                          <h3 className="font-bold text-sm sm:text-base mb-1 group-hover:scale-105 transition-transform leading-tight">
-                            {category.name}
-                          </h3>
-                          <p className="text-xs opacity-90">
-                            {category.product_count || 0} produit{(category.product_count || 0) !== 1 ? 's' : ''}
-                          </p>
-                        </div>
+        {/* Carousel Container */}
+        <div className="relative max-w-7xl mx-auto">
+          {/* Navigation Arrows */}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={prevSlide}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-lg hover:bg-gray-50"
+            disabled={totalSlides <= 1}
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={nextSlide}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-lg hover:bg-gray-50"
+            disabled={totalSlides <= 1}
+          >
+            <ChevronRight className="w-6 h-6" />
+          </Button>
 
-                        {/* Badge */}
-                        {category.product_count && category.product_count > 100 && (
-                          <div className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full">
-                            <TrendingUp className="w-3 h-3 inline mr-1" />
-                            Populaire
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              );
-            })}
-          </div>
-        ) : (
-          /* List View */
-          <div className="max-w-4xl mx-auto space-y-4">
-            {Object.entries(groupedCategories).map(([groupKey, groupCategories]) => {
-              const groupConfig = CATEGORY_GROUPS[groupKey as keyof typeof CATEGORY_GROUPS];
-              
-              return (
-                <div key={groupKey} className="bg-white rounded-xl shadow-sm border p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-2xl">{groupConfig?.icon || '📁'}</span>
-                    <h3 className="text-xl font-bold text-gray-900">{groupConfig?.name || 'Autres'}</h3>
-                    <span className="text-sm text-gray-500">({groupCategories.length})</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {groupCategories.map((category) => (
-                      <Link key={category.id} href={`/category/${category.slug}`}>
-                        <div className="group p-4 rounded-lg border hover:border-jomionstore-primary hover:bg-orange-50 transition-all duration-200">
-                          <div className="flex items-center gap-3">
-                            <div className="text-2xl">{groupConfig?.icon || '📁'}</div>
-                            <div className="flex-1">
-                              <h4 className="font-medium text-gray-900 group-hover:text-jomionstore-primary transition-colors">
+          {/* Carousel */}
+          <div
+            ref={carouselRef}
+            className="overflow-hidden"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            <div
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{
+                transform: `translateX(-${currentSlide * 100}%)`,
+                width: `${totalSlides * 100}%`
+              }}
+            >
+              {Array.from({ length: totalSlides }, (_, slideIndex) => (
+                <div key={slideIndex} className="w-full flex-shrink-0">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 px-4">
+                    {filteredCategories
+                      .slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
+                      .map((category) => {
+                        const group = CATEGORY_TO_GROUP[category.slug];
+                        const groupConfig = group ? CATEGORY_GROUPS[group] : null;
+                        
+                        return (
+                          <Link key={category.id} href={`/category/${category.slug}`}>
+                            <div className="group flex flex-col items-center cursor-pointer">
+                              {/* Circular Card */}
+                              <div className="relative w-20 h-20 mb-3 group-hover:scale-110 transition-transform duration-300">
+                                <div className="absolute inset-0 rounded-full overflow-hidden">
+                                  <Image
+                                    src={category.image_url || getDefaultImage(category.slug)}
+                                    alt={category.name}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                                
+                                {/* Gradient Overlay */}
+                                <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${groupConfig?.color || 'from-gray-500 to-gray-700'} opacity-80 group-hover:opacity-70 transition-opacity`} />
+                                
+                                {/* Icon */}
+                                <div className="absolute inset-0 flex items-center justify-center text-white text-2xl group-hover:scale-110 transition-transform duration-300">
+                                  {groupConfig?.icon || '📁'}
+                                </div>
+
+                                {/* Badge for popular categories */}
+                                {category.product_count && category.product_count > 100 && (
+                                  <div className="absolute -top-1 -right-1 bg-yellow-400 text-yellow-900 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                                    ★
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {/* Category Name */}
+                              <h3 className="text-sm font-medium text-gray-900 group-hover:text-jomionstore-primary transition-colors text-center leading-tight mb-1">
                                 {category.name}
-                              </h4>
-                              <p className="text-sm text-gray-500">
+                              </h3>
+                              
+                              {/* Product Count */}
+                              <p className="text-xs text-gray-500 text-center">
                                 {category.product_count || 0} produit{(category.product_count || 0) !== 1 ? 's' : ''}
                               </p>
                             </div>
-                            <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-jomionstore-primary transition-colors rotate-[-90deg]" />
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
+                          </Link>
+                        );
+                      })}
                   </div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        )}
+
+          {/* Pagination Dots */}
+          {totalSlides > 1 && (
+            <div className="flex justify-center mt-8 gap-2">
+              {Array.from({ length: totalSlides }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === currentSlide
+                      ? 'bg-jomionstore-primary scale-125'
+                      : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* View All Button */}
         <div className="text-center mt-12">
           <Link href="/categories">
             <Button size="lg" className="bg-jomionstore-primary hover:bg-orange-700 text-white px-8 py-4 text-lg">
-              <Sparkles className="w-5 h-5 mr-2" />
               Voir toutes les catégories ({categories.length})
             </Button>
           </Link>
