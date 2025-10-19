@@ -46,10 +46,12 @@ export default function DynamicCategoryPage() {
   // State
   const [category, setCategory] = useState<Category | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [hasMore, setHasMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Filters and sorting
   const [sortBy, setSortBy] = useState<ProductSortOptions>({
@@ -72,6 +74,9 @@ export default function DynamicCategoryPage() {
   // Load category data
   const loadCategory = useCallback(async () => {
     try {
+      setLoading(true);
+      setError(null);
+      
       const response = await CategoriesService.getBySlug(slug);
       if (response.success && response.data) {
         setCategory(response.data);
@@ -80,91 +85,96 @@ export default function DynamicCategoryPage() {
       }
     } catch (error) {
       console.error("Erreur lors du chargement de la catégorie:", error);
-      // setError removed: handled by React Query
+      setError("Erreur lors du chargement de la catégorie");
+    } finally {
+      setLoading(false);
     }
   }, [slug]);
 
-  // React Query: fetch products with caching and SWR
-  const { useQuery } = require("@tanstack/react-query");
-  const {
-    data: productsData,
-    isLoading: loading,
-    isError,
-    error: queryError,
-    refetch,
-    isFetching,
-  } = useQuery({
-    queryKey: [
-      "products",
-      category?.id,
-      filters.priceRange,
-      filters.brands,
-      filters.tags,
-      filters.inStock,
-      filters.minRating,
-      sortBy,
-      currentPage,
-    ],
-    queryFn: async () => {
-      if (!category)
-        return { data: [], pagination: { total: 0, hasNext: false } };
+  // Load products
+  const loadProducts = useCallback(async () => {
+    if (!category) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+
       const productFilters: ProductFilters = {
         category_id: category.id,
-        min_price:
-          filters.priceRange[0] > 0 ? filters.priceRange[0] : undefined,
-        max_price:
-          filters.priceRange[1] < 1000000 ? filters.priceRange[1] : undefined,
+        min_price: filters.priceRange[0] > 0 ? filters.priceRange[0] : undefined,
+        max_price: filters.priceRange[1] < 1000000 ? filters.priceRange[1] : undefined,
         in_stock: filters.inStock || undefined,
         brand: filters.brands.length > 0 ? filters.brands.join(",") : undefined,
         tags: filters.tags.length > 0 ? filters.tags : undefined,
       };
+
       const response = await ProductsService.getAll(
         productFilters,
         { page: currentPage, limit: ITEMS_PER_PAGE },
         sortBy
       );
-      return response;
-    },
-    keepPreviousData: true,
-    staleTime: 1000 * 60, // 1 min
-    enabled: !!category,
-  });
 
-  useEffect(() => {
-    if (productsData && productsData.data) {
-      setProducts(productsData.data);
-      setTotalCount(productsData.pagination.total);
-      setHasMore(productsData.pagination.hasNext);
-      // Extract unique brands and tags for filter UI
-      const brandsSet = new Set(
-        (productsData.data as Product[])
-          .map((p: Product) => p.brand)
-          .filter(Boolean)
-      );
-      setAvailableBrands(Array.from(brandsSet) as string[]);
-      const tags = (productsData.data as Product[]).flatMap(
-        (p: Product) => p.tags || []
-      );
-      setAvailableTags(Array.from(new Set(tags)));
+      if (response.success && response.data) {
+        if (currentPage === 1) {
+          setProducts(response.data);
+        } else {
+          setProducts(prev => [...prev, ...response.data]);
+        }
+        
+        setTotalCount(response.pagination.total);
+        setHasMore(response.pagination.hasNext);
+
+        // Extract unique brands and tags for filter UI
+        const brandsSet = new Set(
+          response.data
+            .map((p: Product) => p.brand)
+            .filter(Boolean)
+        );
+        setAvailableBrands(Array.from(brandsSet) as string[]);
+        
+        const tags = response.data.flatMap(
+          (p: Product) => p.tags || []
+        );
+        setAvailableTags(Array.from(new Set(tags)));
+      } else {
+        throw new Error(response.error || "Erreur lors du chargement des produits");
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement des produits:", error);
+      setError("Erreur lors du chargement des produits");
+    } finally {
+      setLoading(false);
     }
-    // eslint-disable-next-line
-  }, [productsData]);
+  }, [category, filters, sortBy, currentPage]);
+
+  // Load category on mount
+  useEffect(() => {
+    loadCategory();
+  }, [loadCategory]);
+
+  // Load products when category or filters change
+  useEffect(() => {
+    if (category) {
+      loadProducts();
+    }
+  }, [category, filters, sortBy, currentPage, loadProducts]);
 
   // Handle load more (pagination)
   const handleLoadMore = useCallback(() => {
     if (hasMore && !loadingMore) {
+      setLoadingMore(true);
       setCurrentPage((prev) => prev + 1);
     }
-  }, [hasMore, loadingMore, setCurrentPage]);
+  }, [hasMore, loadingMore]);
 
   // Retry handler for error state
   const handleRetry = useCallback(() => {
     if (category) {
-      refetch();
+      loadProducts();
     } else {
       loadCategory();
     }
-  }, [category, refetch, loadCategory]);
+  }, [category, loadProducts, loadCategory]);
 
   // Handle sort change
   const handleSortChange = useCallback((value: string) => {
@@ -274,13 +284,6 @@ export default function DynamicCategoryPage() {
     setActiveFilters(active);
   }, [filters]);
 
-  // Load category on mount
-  useEffect(() => {
-    loadCategory();
-  }, [loadCategory]);
-
-  // Effect removed: product loading is fully handled by React Query
-
   // Sync filters state with URL on mount
   useEffect(() => {
     setFilters(parseFiltersFromUrl());
@@ -310,7 +313,7 @@ export default function DynamicCategoryPage() {
   };
 
   // Loading state
-  if (isFetching && !category) {
+  if (loading && !category) {
     return (
       <div className="min-h-screen bg-jomionstore-background">
         <Header />
@@ -332,7 +335,7 @@ export default function DynamicCategoryPage() {
   }
 
   // Error state
-  if ((queryError || isError) && !category) {
+  if (error && !category) {
     return (
       <div className="min-h-screen bg-jomionstore-background">
         <Header />
@@ -341,7 +344,7 @@ export default function DynamicCategoryPage() {
           <ErrorState
             type="generic"
             title="Erreur de chargement"
-            message={queryError || undefined}
+            message={error}
             onRetry={handleRetry}
           />
         </div>
@@ -603,7 +606,7 @@ export default function DynamicCategoryPage() {
                         totalCount !== 1 ? "s" : ""
                       } trouvé${totalCount !== 1 ? "s" : ""}`}
                 </span>
-                {(queryError || isError) && (
+                {error && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -623,10 +626,7 @@ export default function DynamicCategoryPage() {
               products={products}
               backgroundColor="bg-transparent"
               isLoading={loading}
-              error={
-                queryError ||
-                (isError ? (queryError as Error)?.message : undefined)
-              }
+              error={error}
               onRetry={handleRetry}
               hasMore={hasMore}
               onLoadMore={handleLoadMore}
@@ -642,5 +642,3 @@ export default function DynamicCategoryPage() {
     </div>
   );
 }
-
-
