@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAliExpressOAuthService } from '@/lib/services/aliexpress-oauth.service';
 
 // Force Node.js runtime pour accéder aux variables d'environnement
 export const runtime = 'nodejs';
@@ -39,6 +38,8 @@ export async function GET(request: NextRequest) {
 
     // Échanger le code contre un access_token
     console.log('[OAuth Callback] Échange code contre token...');
+    // Import dynamique pour éviter les erreurs de build
+    const { getAliExpressOAuthService } = await import('@/lib/services/aliexpress-oauth.service');
     const oauthService = getAliExpressOAuthService();
     
     const token = await oauthService.exchangeCodeForToken(code);

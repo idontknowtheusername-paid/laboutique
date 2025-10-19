@@ -6,17 +6,24 @@ const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !serviceRoleKey) {
-  console.error('❌ SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY manquant dans .env.local');
-  throw new Error('Configuration Supabase manquante - Vérifiez votre fichier .env.local');
+  console.warn('⚠️ SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY manquant dans .env.local');
+  // Ne pas lancer d'erreur pendant le build, seulement un warning
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Configuration Supabase manquante - Vérifiez votre fichier .env.local');
+  }
 }
 
 // Server-side Supabase client with service role for RLS-protected operations
-export const supabaseAdmin = createClient<Database>(supabaseUrl, serviceRoleKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-  },
-});
+export const supabaseAdmin = createClient<Database>(
+  supabaseUrl || 'https://placeholder.supabase.co', 
+  serviceRoleKey || 'placeholder-key', 
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  }
+);
 
 export const isSupabaseAdminConfigured = () => {
   return Boolean(supabaseUrl && serviceRoleKey && supabaseUrl.includes('.supabase.co'));

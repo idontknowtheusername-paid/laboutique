@@ -626,7 +626,7 @@ export default function DynamicCategoryPage() {
               products={products}
               backgroundColor="bg-transparent"
               isLoading={loading}
-              error={error}
+              error={error || undefined}
               onRetry={handleRetry}
               hasMore={hasMore}
               onLoadMore={handleLoadMore}

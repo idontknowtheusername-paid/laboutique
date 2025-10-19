@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { getAliExpressOAuthService } from '@/lib/services/aliexpress-oauth.service';
 
 export const runtime = 'nodejs';
 
@@ -8,6 +7,8 @@ export const runtime = 'nodejs';
  */
 export async function GET() {
   try {
+    // Import dynamique pour éviter les erreurs de build
+    const { getAliExpressOAuthService } = await import('@/lib/services/aliexpress-oauth.service');
     const oauthService = getAliExpressOAuthService();
     
     // Vérifier si un token existe
