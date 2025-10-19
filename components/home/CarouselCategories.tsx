@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, Search, Filter, Play, Pause } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { ChevronLeft, ChevronRight, Search, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CategoriesService, Category } from '@/lib/services';
@@ -147,17 +146,18 @@ export default function CarouselCategories() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Configuration responsive
-  const getItemsPerSlide = () => {
-    if (typeof window === 'undefined') return 8;
-    if (window.innerWidth < 640) return 4; // Mobile: 2x4
-    if (window.innerWidth < 768) return 6; // Small tablet: 2x3
-    if (window.innerWidth < 1024) return 8; // Tablet: 2x4
-    if (window.innerWidth < 1280) return 10; // Desktop: 2x5
-    return 12; // Large desktop: 2x6
+  // Configuration responsive - SIMPLIFIÉE
+  const getGridConfig = () => {
+    if (typeof window === 'undefined') return { cols: 4, rows: 2, itemsPerSlide: 8 };
+    
+    if (window.innerWidth < 640) return { cols: 2, rows: 2, itemsPerSlide: 4 }; // Mobile: 2x2
+    if (window.innerWidth < 768) return { cols: 3, rows: 2, itemsPerSlide: 6 }; // Small tablet: 3x2
+    if (window.innerWidth < 1024) return { cols: 4, rows: 2, itemsPerSlide: 8 }; // Tablet: 4x2
+    if (window.innerWidth < 1280) return { cols: 5, rows: 2, itemsPerSlide: 10 }; // Desktop: 5x2
+    return { cols: 6, rows: 2, itemsPerSlide: 12 }; // Large desktop: 6x2
   };
 
-  const [itemsPerSlide, setItemsPerSlide] = useState(getItemsPerSlide());
+  const [gridConfig, setGridConfig] = useState(getGridConfig());
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -185,29 +185,12 @@ export default function CarouselCategories() {
   // Gestion du responsive
   useEffect(() => {
     const handleResize = () => {
-      setItemsPerSlide(getItemsPerSlide());
+      setGridConfig(getGridConfig());
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  // Auto-play logic
-  useEffect(() => {
-    if (isAutoPlaying && !isHovered && categories.length > itemsPerSlide) {
-      autoPlayRef.current = setInterval(() => {
-        setCurrentSlide(prev => (prev + 1) % Math.ceil(categories.length / itemsPerSlide));
-      }, 4000); // Change slide every 4 seconds
-    } else if (autoPlayRef.current) {
-      clearInterval(autoPlayRef.current);
-    }
-
-    return () => {
-      if (autoPlayRef.current) {
-        clearInterval(autoPlayRef.current);
-      }
-    };
-  }, [isAutoPlaying, isHovered, categories.length, itemsPerSlide]);
 
   // Filtrage des catégories
   const filteredCategories = categories.filter(cat => {
@@ -219,7 +202,7 @@ export default function CarouselCategories() {
     return groupMatch && searchMatch;
   });
 
-  const totalSlides = Math.ceil(filteredCategories.length / itemsPerSlide);
+  const totalSlides = Math.ceil(filteredCategories.length / gridConfig.itemsPerSlide);
 
   const nextSlide = () => {
     setCurrentSlide(prev => (prev + 1) % totalSlides);
@@ -236,6 +219,23 @@ export default function CarouselCategories() {
   const toggleAutoPlay = () => {
     setIsAutoPlaying(!isAutoPlaying);
   };
+
+  // Auto-play logic
+  useEffect(() => {
+    if (isAutoPlaying && !isHovered && totalSlides > 1) {
+      autoPlayRef.current = setInterval(() => {
+        setCurrentSlide(prev => (prev + 1) % totalSlides);
+      }, 4000); // Change slide every 4 seconds
+    } else if (autoPlayRef.current) {
+      clearInterval(autoPlayRef.current);
+    }
+
+    return () => {
+      if (autoPlayRef.current) {
+        clearInterval(autoPlayRef.current);
+      }
+    };
+  }, [isAutoPlaying, isHovered, totalSlides]);
 
   if (loading) {
     return (
@@ -354,12 +354,21 @@ export default function CarouselCategories() {
                 width: `${totalSlides * 100}%`
               }}
             >
-              {Array.from({ length: totalSlides }, (_, slideIndex) => (
-                <div key={slideIndex} className="w-full flex-shrink-0">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 px-4">
-                    {filteredCategories
-                      .slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
-                      .map((category) => {
+              {Array.from({ length: totalSlides }, (_, slideIndex) => {
+                const startIndex = slideIndex * gridConfig.itemsPerSlide;
+                const endIndex = startIndex + gridConfig.itemsPerSlide;
+                const slideCategories = filteredCategories.slice(startIndex, endIndex);
+                
+                return (
+                  <div key={slideIndex} className="w-full flex-shrink-0">
+                    <div 
+                      className="grid gap-6 px-4"
+                      style={{ 
+                        gridTemplateColumns: `repeat(${gridConfig.cols}, 1fr)`,
+                        gridTemplateRows: `repeat(${gridConfig.rows}, 1fr)`
+                      }}
+                    >
+                      {slideCategories.map((category, index) => {
                         const group = CATEGORY_TO_GROUP[category.slug];
                         const groupConfig = group ? CATEGORY_GROUPS[group] : null;
                         
@@ -406,9 +415,10 @@ export default function CarouselCategories() {
                           </Link>
                         );
                       })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
