@@ -206,20 +206,40 @@ export default function DynamicCategoryPage() {
   const clamp = (val: number, min: number, max: number) =>
     Math.max(min, Math.min(max, val));
   const parseFiltersFromUrl = () => {
-    let priceMin = Number(searchParams.get("min_price"));
-    let priceMax = Number(searchParams.get("max_price"));
+    const minPriceParam = searchParams.get("min_price");
+    const maxPriceParam = searchParams.get("max_price");
+    
+    // Si aucun paramètre de prix dans l'URL, utiliser la plage par défaut
+    if (!minPriceParam && !maxPriceParam) {
+      return {
+        priceRange: [0, 1000000] as [number, number],
+        brands: searchParams.get("brands")?.split(",").filter(Boolean) || [],
+        tags: searchParams.get("tags")?.split(",").filter(Boolean) || [],
+        inStock: searchParams.get("in_stock") === "1",
+        minRating: Number(searchParams.get("min_rating")) || 0,
+      };
+    }
+    
+    // Si des paramètres de prix existent, les utiliser
+    let priceMin = Number(minPriceParam);
+    let priceMax = Number(maxPriceParam);
+    
     // Handle NaN or invalid values
     if (isNaN(priceMin)) priceMin = 0;
     if (isNaN(priceMax)) priceMax = 1000000;
+    
     // Clamp to allowed range
     priceMin = clamp(priceMin, 0, 1000000);
     priceMax = clamp(priceMax, 0, 1000000);
+    
     // Auto-correct if min > max
     if (priceMin > priceMax) [priceMin, priceMax] = [priceMax, priceMin];
+    
     const brands = searchParams.get("brands")?.split(",").filter(Boolean) || [];
     const tags = searchParams.get("tags")?.split(",").filter(Boolean) || [];
     const inStock = searchParams.get("in_stock") === "1";
     const minRating = Number(searchParams.get("min_rating")) || 0;
+    
     return {
       priceRange: [priceMin, priceMax] as [number, number],
       brands,
