@@ -102,7 +102,7 @@ export default function DynamicCategoryPage() {
       const productFilters: ProductFilters = {
         category_id: category.id,
         min_price: filters.priceRange[0] > 0 ? filters.priceRange[0] : undefined,
-        max_price: filters.priceRange[1] < 1000000 ? filters.priceRange[1] : undefined,
+        max_price: filters.priceRange[1] < 999999 ? filters.priceRange[1] : undefined,
         in_stock: filters.inStock || undefined,
         brand: filters.brands.length > 0 ? filters.brands.join(",") : undefined,
         tags: filters.tags.length > 0 ? filters.tags : undefined,
@@ -267,7 +267,8 @@ export default function DynamicCategoryPage() {
   // Update active filters display
   useEffect(() => {
     const active: string[] = [];
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000) {
+    // Seulement afficher le filtre prix si ce n'est pas la plage par défaut
+    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 999999) {
       active.push(
         `Prix: ${filters.priceRange[0]} - ${filters.priceRange[1]} XOF`
       );
