@@ -33,7 +33,7 @@ const TrendingProducts = dynamic(() => import('@/components/home/TrendingProduct
   ssr: false
 });
 
-const CategoriesConnected = dynamic(() => import('@/components/home/CategoriesConnected'), {
+const MegaCategoriesGrid = dynamic(() => import('@/components/home/MegaCategoriesGrid'), {
   loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
   ssr: false
 });
@@ -152,6 +152,11 @@ export default function HomePageContent() {
             </LazySection>
           </section>
 
+          {/* Mega Categories Section - Positioned early for better UX */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <MegaCategoriesGrid />
+          </LazySection>
+
           <section className="container mb-4">
             <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
               <FlashSalesConnected />
@@ -214,10 +219,6 @@ export default function HomePageContent() {
 
 
 
-
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoriesConnected />
-          </LazySection>
 
           <LazySection className="mb-2.5" fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-xl" />}>
             <TrustElements />
