@@ -2,10 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Product, ProductsService } from '@/lib/services';
-import { ProductCard } from '@/components/products/ProductCard';
+// Import des composants UI nécessaires pour les cartes produits
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ChevronLeft, ChevronRight, Star, Heart, Eye } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface CategorySectionProps {
   categoryId: string;
@@ -16,6 +19,58 @@ interface CategorySectionProps {
   viewAllLink: string;
   className?: string;
 }
+
+// Composant ProductCard simple pour les sections de catégories
+const ProductCard = ({ product }: { product: Product }) => {
+  const discount = product.compare_price && product.compare_price > product.price
+    ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
+    : 0;
+
+  return (
+    <Card className="group hover:shadow-lg transition-shadow duration-300">
+      <CardContent className="p-0">
+        <Link href={`/product/${product.slug}`}>
+          <div className="relative aspect-square overflow-hidden rounded-t-lg">
+            <Image
+              src={product.images?.[0] || '/placeholder-product.jpg'}
+              alt={product.name}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+            {discount > 0 && (
+              <Badge className="absolute top-2 left-2 bg-red-500 text-white">
+                -{discount}%
+              </Badge>
+            )}
+          </div>
+          <div className="p-4">
+            <h3 className="font-medium text-sm line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">
+              {product.name}
+            </h3>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <span className="text-lg font-bold text-gray-900">
+                  {product.price.toLocaleString()} XOF
+                </span>
+                {product.compare_price && product.compare_price > product.price && (
+                  <span className="text-sm text-gray-500 line-through">
+                    {product.compare_price.toLocaleString()} XOF
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center space-x-1">
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <span className="text-sm text-gray-600">
+                  {product.average_rating?.toFixed(1) || '0.0'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </Link>
+      </CardContent>
+    </Card>
+  );
+};
 
 export default function CategorySection({
   categoryId,
@@ -38,14 +93,10 @@ export default function CategorySection({
         setLoading(true);
         setError(null);
         
-        const response = await ProductsService.getAll({
-          category_id: categoryId,
-          limit: maxItems,
-          status: 'active'
-        });
+        const response = await ProductsService.getByCategoryForHomepage(categoryId, maxItems);
 
         if (response.success && response.data) {
-          setProducts(response.data.items || []);
+          setProducts(response.data);
         } else {
           setError(response.error || 'Erreur lors du chargement des produits');
         }

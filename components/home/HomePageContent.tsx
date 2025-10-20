@@ -38,6 +38,11 @@ const CarouselCategories = dynamic(() => import('@/components/home/CarouselCateg
   ssr: false
 });
 
+const CategorySection = dynamic(() => import('@/components/home/CategorySection'), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
 const TrustElements = dynamic(() => import('@/components/home/TrustElements'), {
   loading: () => <div className="h-32 bg-gray-100 animate-pulse rounded-xl" />,
   ssr: false
@@ -219,6 +224,18 @@ export default function HomePageContent() {
 
 
 
+
+          {/* TEST: Section Électronique */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategorySection
+              categoryId="electronique" // Utiliser le slug de la catégorie
+              title="Électronique & High-Tech"
+              subtitle="Smartphones, ordinateurs, accessoires tech"
+              type="carousel"
+              maxItems={8}
+              viewAllLink="/category/electronique"
+            />
+          </LazySection>
 
           <LazySection className="mb-2.5" fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-xl" />}>
             <TrustElements />
