@@ -39,6 +39,11 @@ const CarouselCategories = dynamic(() => import('@/components/home/CarouselCateg
 });
 
 
+const CategoryProductsGrid = dynamic(() => import('@/components/home/CategoryProductsGrid'), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
 const TrustElements = dynamic(() => import('@/components/home/TrustElements'), {
   loading: () => <div className="h-32 bg-gray-100 animate-pulse rounded-xl" />,
   ssr: false
@@ -221,13 +226,54 @@ export default function HomePageContent() {
 
 
 
-          {/* TEST: Section Électronique avec ProductGrid existant */}
+          {/* SECTIONS PRINCIPALES - 5 CATÉGORIES IMPORTANTES */}
+          
+          {/* 1. Électronique */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <ProductGrid
+            <CategoryProductsGrid
+              categorySlug="electronique"
               title="Électronique & High-Tech"
               subtitle="Smartphones, ordinateurs, accessoires tech"
-              products={[]} // Sera chargé dynamiquement
-              viewAllLink="/category/electronique"
+              maxItems={8}
+            />
+          </LazySection>
+
+          {/* 2. Mode & Beauté */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="mode-beaute"
+              title="Mode & Beauté"
+              subtitle="Vêtements, chaussures, cosmétiques"
+              maxItems={8}
+            />
+          </LazySection>
+
+          {/* 3. Maison & Jardin */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="maison-jardin"
+              title="Maison & Jardin"
+              subtitle="Mobilier, décoration, jardinage"
+              maxItems={8}
+            />
+          </LazySection>
+
+          {/* 4. Téléphones & Accessoires */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="telephones-accessoires"
+              title="Téléphones & Accessoires"
+              subtitle="Smartphones, coques, chargeurs"
+              maxItems={8}
+            />
+          </LazySection>
+
+          {/* 5. Sport & Loisirs */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="sport-loisirs"
+              title="Sport & Loisirs"
+              subtitle="Équipements sportifs, jeux, loisirs"
               maxItems={8}
             />
           </LazySection>
