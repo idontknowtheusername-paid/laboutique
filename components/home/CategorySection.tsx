@@ -93,10 +93,16 @@ export default function CategorySection({
         setLoading(true);
         setError(null);
         
-        const response = await ProductsService.getByCategoryForHomepage(categoryId, maxItems);
+        const response = await ProductsService.getAll(
+          {
+            category_id: categoryId,
+            status: 'active'
+          },
+          { limit: maxItems }
+        );
 
         if (response.success && response.data) {
-          setProducts(response.data);
+          setProducts((response.data as any).data || []);
         } else {
           setError(response.error || 'Erreur lors du chargement des produits');
         }
