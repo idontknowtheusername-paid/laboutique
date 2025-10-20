@@ -278,6 +278,270 @@ export default function HomePageContent() {
             />
           </LazySection>
 
+          {/* SECTIONS SECONDAIRES - 8 CATÉGORIES MOYENNES */}
+          
+          {/* 6. Audio & Vidéo */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="audio-video"
+              title="Audio & Vidéo"
+              subtitle="Écouteurs, enceintes, TV"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 7. Gaming & VR */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="gaming-vr"
+              title="Gaming & VR"
+              subtitle="Jeux vidéo, consoles, VR"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 8. Vêtements Homme */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="vetements-homme"
+              title="Vêtements Homme"
+              subtitle="Mode masculine"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 9. Vêtements Femme */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="vetements-femme"
+              title="Vêtements Femme"
+              subtitle="Mode féminine"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 10. Chaussures */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="chaussures"
+              title="Chaussures"
+              subtitle="Toutes chaussures"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 11. Sacs & Maroquinerie */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="sacs-maroquinerie"
+              title="Sacs & Maroquinerie"
+              subtitle="Sacs, portefeuilles"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 12. Montres & Bijoux */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="montres-bijoux"
+              title="Montres & Bijoux"
+              subtitle="Montres, bijoux"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 13. Cosmétiques & Soins */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="cosmetiques-soins"
+              title="Cosmétiques & Soins"
+              subtitle="Beauté et soins"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* SECTIONS SPÉCIALISÉES - 18 CATÉGORIES RESTANTES */}
+          
+          {/* 14. Mobilier */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="mobilier"
+              title="Mobilier"
+              subtitle="Meubles et décoration"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 15. Électroménager */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="electromenager"
+              title="Électroménager"
+              subtitle="Appareils ménagers"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 16. Luminaires */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="luminaires"
+              title="Luminaires"
+              subtitle="Éclairage et lampes"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 17. Cuisine & Salle de bain */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="cuisine-salle-bain"
+              title="Cuisine & Salle de bain"
+              subtitle="Équipements cuisine et salle de bain"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 18. Jardinage & Outils */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="jardinage-outils"
+              title="Jardinage & Outils"
+              subtitle="Outils et jardinage"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 19. Fitness & Musculation */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="fitness-musculation"
+              title="Fitness & Musculation"
+              subtitle="Équipements fitness"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 20. Sports d'extérieur */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="sports-exterieur"
+              title="Sports d'extérieur"
+              subtitle="Sports outdoor"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 21. Jeux & Jouets */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="jeux-jouets"
+              title="Jeux & Jouets"
+              subtitle="Jouets et jeux"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 22. Instruments de musique */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="instruments-musique"
+              title="Instruments de musique"
+              subtitle="Musique et instruments"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 23. Livre & Papeterie */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="livre-papeterie"
+              title="Livre & Papeterie"
+              subtitle="Livres et fournitures"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 24. Santé & Bien-être */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="sante-bien-etre"
+              title="Santé & Bien-être"
+              subtitle="Santé et bien-être"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 25. Bébé & Enfant */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="bebe-enfant"
+              title="Bébé & Enfant"
+              subtitle="Produits bébé"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 26. Automobile & Moto */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="automobile-moto"
+              title="Automobile & Moto"
+              subtitle="Auto et moto"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 27. Outils & Bricolage */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="outils-bricolage"
+              title="Outils & Bricolage"
+              subtitle="Outils et bricolage"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 28. Voyage & Bagages */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="voyage-bagages"
+              title="Voyage & Bagages"
+              subtitle="Voyage et bagages"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 29. Animaux & Accessoires */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="animaux-accessoires"
+              title="Animaux & Accessoires"
+              subtitle="Animaux et accessoires"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 30. Ordinateurs & Tablettes */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="ordinateurs-tablettes"
+              title="Ordinateurs & Tablettes"
+              subtitle="Laptops, PC, tablettes"
+              maxItems={6}
+            />
+          </LazySection>
+
+          {/* 31. Vêtements Enfant */}
+          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <CategoryProductsGrid
+              categorySlug="vetements-enfant"
+              title="Vêtements Enfant"
+              subtitle="Mode enfant"
+              maxItems={6}
+            />
+          </LazySection>
+
           <LazySection className="mb-2.5" fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-xl" />}>
             <TrustElements />
           </LazySection>
