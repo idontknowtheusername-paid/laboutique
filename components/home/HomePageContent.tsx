@@ -231,7 +231,7 @@ export default function HomePageContent() {
 
 
 
-          {/* SECTIONS PRINCIPALES - 5 CATÉGORIES IMPORTANTES */}
+          {/* 🏆 ZONE PREMIUM - 5 CATÉGORIES IMPORTANTES */}
           
           {/* 1. Électronique - CARROUSEL */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
@@ -243,9 +243,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 2. Mode & Beauté - GRILLE */}
+          {/* 2. Mode & Beauté - CARROUSEL */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsGrid
+            <CategoryProductsCarousel
               categorySlug="mode-beaute"
               title="Mode & Beauté"
               subtitle="Vêtements, chaussures, cosmétiques"
@@ -253,9 +253,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 3. Maison & Jardin - CARROUSEL */}
+          {/* 3. Maison & Jardin - GRILLE (pause visuelle) */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsCarousel
+            <CategoryProductsGrid
               categorySlug="maison-jardin"
               title="Maison & Jardin"
               subtitle="Mobilier, décoration, jardinage"
@@ -263,9 +263,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 4. Téléphones & Accessoires - GRILLE */}
+          {/* 4. Téléphones & Accessoires - CARROUSEL */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsGrid
+            <CategoryProductsCarousel
               categorySlug="telephones-accessoires"
               title="Téléphones & Accessoires"
               subtitle="Smartphones, coques, chargeurs"
@@ -283,7 +283,7 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* SECTIONS SECONDAIRES - 8 CATÉGORIES MOYENNES */}
+          {/* 🎯 ZONE PRINCIPALE - 8 CATÉGORIES MOYENNES */}
           
           {/* 6. Audio & Vidéo - CARROUSEL */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
@@ -295,9 +295,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 7. Gaming & VR - GRILLE */}
+          {/* 7. Gaming & VR - CARROUSEL */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsGrid
+            <CategoryProductsCarousel
               categorySlug="gaming-vr"
               title="Gaming & VR"
               subtitle="Jeux vidéo, consoles, VR"
@@ -305,9 +305,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 8. Vêtements Homme - CARROUSEL */}
+          {/* 8. Vêtements Homme - GRILLE */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsCarousel
+            <CategoryProductsGrid
               categorySlug="vetements-homme"
               title="Vêtements Homme"
               subtitle="Mode masculine"
@@ -315,7 +315,7 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 9. Vêtements Femme - GRILLE */}
+          {/* 9. Vêtements Femme - GRILLE (double grille = densité) */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
               categorySlug="vetements-femme"
@@ -335,9 +335,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 11. Sacs & Maroquinerie - GRILLE */}
+          {/* 11. Sacs & Maroquinerie - CARROUSEL */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsGrid
+            <CategoryProductsCarousel
               categorySlug="sacs-maroquinerie"
               title="Sacs & Maroquinerie"
               subtitle="Sacs, portefeuilles"
@@ -345,9 +345,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 12. Montres & Bijoux - CARROUSEL */}
+          {/* 12. Montres & Bijoux - GRILLE */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsCarousel
+            <CategoryProductsGrid
               categorySlug="montres-bijoux"
               title="Montres & Bijoux"
               subtitle="Montres, bijoux"
@@ -355,9 +355,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 13. Cosmétiques & Soins - GRILLE */}
+          {/* 13. Cosmétiques & Soins - CARROUSEL */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsGrid
+            <CategoryProductsCarousel
               categorySlug="cosmetiques-soins"
               title="Cosmétiques & Soins"
               subtitle="Beauté et soins"
@@ -365,7 +365,7 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* SECTIONS SPÉCIALISÉES - 18 CATÉGORIES RESTANTES */}
+          {/* 🔍 ZONE DÉCOUVERTE - 12 CATÉGORIES SPÉCIALISÉES */}
           
           {/* 14. Mobilier - GRILLE */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
@@ -377,9 +377,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 15. Électroménager - CARROUSEL */}
+          {/* 15. Électroménager - GRILLE (double grille = densité) */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsCarousel
+            <CategoryProductsGrid
               categorySlug="electromenager"
               title="Électroménager"
               subtitle="Appareils ménagers"
@@ -387,9 +387,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 16. Luminaires - GRILLE */}
+          {/* 16. Luminaires - CARROUSEL */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsGrid
+            <CategoryProductsCarousel
               categorySlug="luminaires"
               title="Luminaires"
               subtitle="Éclairage et lampes"
@@ -427,9 +427,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 20. Sports d'extérieur - GRILLE */}
+          {/* 20. Sports d'extérieur - CARROUSEL */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsGrid
+            <CategoryProductsCarousel
               categorySlug="sports-exterieur"
               title="Sports d'extérieur"
               subtitle="Sports outdoor"
@@ -437,9 +437,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 21. Jeux & Jouets - CARROUSEL */}
+          {/* 21. Jeux & Jouets - GRILLE */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsCarousel
+            <CategoryProductsGrid
               categorySlug="jeux-jouets"
               title="Jeux & Jouets"
               subtitle="Jouets et jeux"
@@ -447,9 +447,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 22. Instruments de musique - GRILLE */}
+          {/* 22. Instruments de musique - CARROUSEL */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsGrid
+            <CategoryProductsCarousel
               categorySlug="instruments-musique"
               title="Instruments de musique"
               subtitle="Musique et instruments"
@@ -487,6 +487,8 @@ export default function HomePageContent() {
             />
           </LazySection>
 
+          {/* 🎪 ZONE FINALE - 6 CATÉGORIES FINALES */}
+          
           {/* 26. Automobile & Moto - GRILLE */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
@@ -507,9 +509,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 28. Voyage & Bagages - GRILLE */}
+          {/* 28. Voyage & Bagages - CARROUSEL */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsGrid
+            <CategoryProductsCarousel
               categorySlug="voyage-bagages"
               title="Voyage & Bagages"
               subtitle="Voyage et bagages"
@@ -517,9 +519,9 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          {/* 29. Animaux & Accessoires - CARROUSEL */}
+          {/* 29. Animaux & Accessoires - GRILLE */}
           <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
-            <CategoryProductsCarousel
+            <CategoryProductsGrid
               categorySlug="animaux-accessoires"
               title="Animaux & Accessoires"
               subtitle="Animaux et accessoires"
