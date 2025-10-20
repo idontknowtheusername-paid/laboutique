@@ -93,9 +93,20 @@ export default function CategorySection({
         setLoading(true);
         setError(null);
         
+        // D'abord, récupérer l'ID de la catégorie par son slug
+        const { CategoriesService } = await import('@/lib/services');
+        const categoryResponse = await CategoriesService.getBySlug(categoryId);
+        
+        if (!categoryResponse.success || !categoryResponse.data) {
+          setError('Catégorie non trouvée');
+          return;
+        }
+        
+        const categoryUuid = categoryResponse.data.id;
+        
         const response = await ProductsService.getAll(
           {
-            category_id: categoryId,
+            category_id: categoryUuid,
             status: 'active'
           },
           { limit: maxItems }
