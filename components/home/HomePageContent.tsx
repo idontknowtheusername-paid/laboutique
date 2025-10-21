@@ -231,9 +231,6 @@ export default function HomePageContent() {
 
 
 
-          {/* 🧪 TEST COMPOSANT */}
-          <LazySection className="mb-2.5" fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-xl" />}>
-          </LazySection>
 
           {/* 🏆 ZONE PREMIUM - 5 CATÉGORIES IMPORTANTES */}
           
