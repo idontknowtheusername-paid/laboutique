@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, CheckCircle, AlertCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, CheckCircle, AlertCircle, Gift, Star, Shield, Truck, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -68,177 +68,295 @@ const Footer = () => {
 
   return (
     <footer className="bg-gray-900 text-white">
-      {/* Compact Newsletter (2 cols on mobile) */}
-      <div className="bg-jomionstore-primary py-6">
+      {/* Newsletter Section - Intégrée au footer */}
+      <div className="bg-gradient-to-r from-gray-800 to-gray-700 py-12">
         <div className="container">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 items-center">
-            <h3 className="col-span-2 sm:col-span-1 text-lg font-semibold text-white">
-              Recevez nos offres
-            </h3>
-            <form onSubmit={handleNewsletterSubmit} className="flex gap-2 col-span-2 sm:col-span-2">
-              <Input 
-                type="email" 
-                placeholder="Votre email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-white text-gray-900 h-10 flex-1" 
-                disabled={isSubscribing}
-                required
-              />
-              <Button 
-                type="submit"
-                className="bg-jomionstore-secondary hover:bg-orange-600 h-10 px-6"
-                disabled={isSubscribing}
-              >
-                {isSubscribing ? '...' : 'S\'abonner'}
-              </Button>
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Mail className="w-8 h-8 text-orange-400" />
+                <h3 className="text-2xl md:text-3xl font-bold text-white">
+                  Restez informé de nos offres
+                </h3>
+              </div>
+              <p className="text-gray-300 text-lg mb-2">
+                Recevez des offres exclusives, codes promo et nouveautés
+              </p>
+              <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
+                <div className="flex items-center gap-1">
+                  <Gift className="w-4 h-4 text-orange-400" />
+                  <span>Codes promo exclusifs</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Star className="w-4 h-4 text-orange-400" />
+                  <span>Nouveautés en avant-première</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Shield className="w-4 h-4 text-orange-400" />
+                  <span>Pas de spam, désabonnement facile</span>
+                </div>
+              </div>
+            </div>
+            
+            <form onSubmit={handleNewsletterSubmit} className="max-w-2xl mx-auto">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex-1">
+                  <Input 
+                    type="email" 
+                    placeholder="Entrez votre adresse email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="bg-white text-gray-900 h-12 text-base border-0 focus:ring-2 focus:ring-orange-400" 
+                    disabled={isSubscribing}
+                    required
+                  />
+                </div>
+                <Button 
+                  type="submit"
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 h-12 px-8 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+                  disabled={isSubscribing}
+                >
+                  {isSubscribing ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Abonnement...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>S'abonner</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+              
+              {/* Status Messages */}
+              {subscriptionStatus === 'success' && (
+                <div className="mt-4 flex items-center justify-center gap-2 text-green-300 text-sm bg-green-900/20 rounded-lg p-3">
+                  <CheckCircle className="w-5 h-5" />
+                  <span>Abonnement réussi ! Vérifiez votre email pour confirmer.</span>
+                </div>
+              )}
+              
+              {subscriptionStatus === 'error' && (
+                <div className="mt-4 flex items-center justify-center gap-2 text-red-300 text-sm bg-red-900/20 rounded-lg p-3">
+                  <AlertCircle className="w-5 h-5" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
             </form>
           </div>
-          
-          {/* Status Messages */}
-          {subscriptionStatus === 'success' && (
-            <div className="mt-3 flex items-center gap-2 text-green-200 text-sm">
-              <CheckCircle className="w-4 h-4" />
-              <span>Abonnement réussi ! Vérifiez votre email.</span>
-            </div>
-          )}
-          
-          {subscriptionStatus === 'error' && (
-            <div className="mt-3 flex items-center gap-2 text-red-200 text-sm">
-              <AlertCircle className="w-4 h-4" />
-              <span>{errorMessage}</span>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Multi-columns even on mobile */}
-      <div className="py-10">
+      {/* Footer Links - Amélioré */}
+      <div className="py-12 bg-gray-900">
         <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {/* Brand */}
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <span className="relative h-8 w-8">
-                  <Image src="/logo-mono.svg" alt="JomionStore" fill className="object-contain" sizes="32px" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Brand - Amélioré */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <span className="relative h-10 w-10">
+                  <Image src="/logo-mono.svg" alt="JomionStore" fill className="object-contain" sizes="40px" />
                 </span>
-                <span className="font-semibold">JomionStore</span>
-              </div>
-              <div className="space-y-2 text-gray-300 text-xs">
-                <div className="flex items-center space-x-2">
-                  <MapPin className="w-4 h-4 text-jomionstore-secondary" />
-                  <span>Cotonou, Bénin</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Phone className="w-4 h-4 text-jomionstore-secondary" />
-                  <span>+229 01 64 35 40 89</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Mail className="w-4 h-4 text-jomionstore-secondary" />
-                  <span>contact@jomionstore.com</span>
+                <div>
+                  <span className="text-xl font-bold text-white">JomionStore</span>
+                  <p className="text-sm text-gray-400">Centre commercial digital du Bénin</p>
                 </div>
               </div>
-              <div className="flex space-x-2 pt-1">
+              
+              <p className="text-gray-300 text-sm leading-relaxed">
+                Votre destination shopping en ligne au Bénin. Des milliers de produits authentiques 
+                avec livraison rapide et service client exceptionnel.
+              </p>
+              
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3 text-gray-300">
+                  <MapPin className="w-5 h-5 text-orange-400 flex-shrink-0" />
+                  <span className="text-sm">Cotonou, Bénin</span>
+                </div>
+                <div className="flex items-center space-x-3 text-gray-300">
+                  <Phone className="w-5 h-5 text-orange-400 flex-shrink-0" />
+                  <span className="text-sm">+229 01 64 35 40 89</span>
+                </div>
+                <div className="flex items-center space-x-3 text-gray-300">
+                  <Mail className="w-5 h-5 text-orange-400 flex-shrink-0" />
+                  <span className="text-sm">contact@jomionstore.com</span>
+                </div>
+              </div>
+              
+              <div className="flex space-x-3 pt-2">
                 <Button 
                   size="icon" 
                   variant="outline" 
-                  className="border-gray-700 text-gray-300 hover:border-jomionstore-primary hover:text-jomionstore-primary hover:bg-jomionstore-primary/10 transition-colors"
+                  className="border-gray-600 text-gray-300 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-400/10 transition-all duration-300"
                   asChild
                 >
                   <Link href="https://facebook.com/jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Facebook">
-                    <Facebook className="w-4 h-4" />
+                    <Facebook className="w-5 h-5" />
                   </Link>
                 </Button>
                 <Button 
                   size="icon" 
                   variant="outline" 
-                  className="border-gray-700 text-gray-300 hover:border-jomionstore-primary hover:text-jomionstore-primary hover:bg-jomionstore-primary/10 transition-colors"
+                  className="border-gray-600 text-gray-300 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-400/10 transition-all duration-300"
                   asChild
                 >
                   <Link href="https://twitter.com/jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Twitter">
-                    <Twitter className="w-4 h-4" />
+                    <Twitter className="w-5 h-5" />
                   </Link>
                 </Button>
                 <Button 
                   size="icon" 
                   variant="outline" 
-                  className="border-gray-700 text-gray-300 hover:border-jomionstore-primary hover:text-jomionstore-primary hover:bg-jomionstore-primary/10 transition-colors"
+                  className="border-gray-600 text-gray-300 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-400/10 transition-all duration-300"
                   asChild
                 >
                   <Link href="https://instagram.com/jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Instagram">
-                    <Instagram className="w-4 h-4" />
+                    <Instagram className="w-5 h-5" />
                   </Link>
                 </Button>
                 <Button 
                   size="icon" 
                   variant="outline" 
-                  className="border-gray-700 text-gray-300 hover:border-jomionstore-primary hover:text-jomionstore-primary hover:bg-jomionstore-primary/10 transition-colors"
+                  className="border-gray-600 text-gray-300 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-400/10 transition-all duration-300"
                   asChild
                 >
                   <Link href="https://youtube.com/@jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur YouTube">
-                    <Youtube className="w-4 h-4" />
+                    <Youtube className="w-5 h-5" />
                   </Link>
                 </Button>
               </div>
             </div>
 
-            {/* Shop */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-semibold">Boutique</h4>
-              <nav className="grid grid-cols-2 gap-2 text-gray-300 text-xs">
-                <Link href="/categories" className="hover:text-white">Catégories</Link>
-                <Link href="/search" className="hover:text-white">Recherche</Link>
-                <Link href="/help" className="hover:text-white">Aide</Link>
-                <Link href="/shipping-returns" className="hover:text-white">Livraison</Link>
-                <Link href="/order-tracking" className="hover:text-white">Suivi</Link>
-                <Link href="/warranty" className="hover:text-white">Garantie</Link>
+            {/* Shopping */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Truck className="w-5 h-5 text-orange-400" />
+                Shopping
+              </h4>
+              <nav className="space-y-3">
+                <Link href="/categories" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Toutes les catégories
+                </Link>
+                <Link href="/search" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Recherche avancée
+                </Link>
+                <Link href="/flash-sales" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Ventes flash
+                </Link>
+                <Link href="/new-arrivals" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Nouveautés
+                </Link>
+                <Link href="/best-sellers" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Meilleures ventes
+                </Link>
+                <Link href="/wishlist" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Ma liste de souhaits
+                </Link>
+              </nav>
+            </div>
+
+            {/* Service Client */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Shield className="w-5 h-5 text-orange-400" />
+                Service Client
+              </h4>
+              <nav className="space-y-3">
+                <Link href="/help" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Centre d'aide
+                </Link>
+                <Link href="/shipping-returns" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Livraison & Retours
+                </Link>
+                <Link href="/order-tracking" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Suivi de commande
+                </Link>
+                <Link href="/warranty" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Garantie produits
+                </Link>
+                <Link href="/contact" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Nous contacter
+                </Link>
+                <Link href="/faq" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  FAQ
+                </Link>
               </nav>
             </div>
 
             {/* Entreprise */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-semibold">Entreprise</h4>
-              <nav className="grid grid-cols-2 gap-2 text-gray-300 text-xs">
-                <Link href="/about" className="hover:text-white">À propos</Link>
-                <Link href="/press" className="hover:text-white">Presse</Link>
-                <Link href="/careers" className="hover:text-white">Carrières</Link>
-                <Link href="/blog" className="hover:text-white">Blog</Link>
-                <Link href="/contact" className="hover:text-white">Contact</Link>
-                <Link href="/investors" className="hover:text-white">Investisseurs</Link>
-              </nav>
-            </div>
-
-            {/* Légal */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-semibold">Légal</h4>
-              <nav className="grid grid-cols-2 gap-2 text-gray-300 text-xs">
-                <Link href="/terms" className="hover:text-white">Conditions</Link>
-                <Link href="/privacy" className="hover:text-white">Confidentialité</Link>
-                <Link href="/cookies" className="hover:text-white">Cookies</Link>
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Star className="w-5 h-5 text-orange-400" />
+                Entreprise
+              </h4>
+              <nav className="space-y-3">
+                <Link href="/about" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  À propos de nous
+                </Link>
+                <Link href="/blog" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Blog & Actualités
+                </Link>
+                <Link href="/careers" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Rejoignez-nous
+                </Link>
+                <Link href="/press" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Presse
+                </Link>
+                <Link href="/terms" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Conditions d'utilisation
+                </Link>
+                <Link href="/privacy" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Politique de confidentialité
+                </Link>
               </nav>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-gray-800">
-        <div className="container py-5">
-          <div className="grid grid-cols-2 md:grid-cols-3 items-center gap-3">
-            <p className="col-span-2 md:col-span-1 text-xs text-gray-400">
-              © {new Date().getFullYear()} JomionStore • Fait avec ❤️ au Bénin
-            </p>
-            <div className="flex items-center gap-2 justify-start md:justify-center">
-              <span className="text-xs text-gray-400">Nous acceptons</span>
+      {/* Bottom Bar - Amélioré */}
+      <div className="border-t border-gray-700 bg-gray-800">
+        <div className="container py-6">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-2 text-sm text-gray-400">
+              <p>© {new Date().getFullYear()} JomionStore</p>
+              <span className="hidden sm:inline">•</span>
+              <p>Fait avec ❤️ au Bénin</p>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-400">Moyens de paiement acceptés :</span>
               <div className="flex items-center gap-2">
-                <div className="w-7 h-5 bg-orange-600 rounded text-white text-[10px] flex items-center justify-center font-bold">VISA</div>
-                <div className="w-7 h-5 bg-red-600 rounded text-white text-[10px] flex items-center justify-center font-bold">MC</div>
-                <div className="w-7 h-5 bg-yellow-500 rounded text-white text-[10px] flex items-center justify-center font-bold">MTN</div>
-                <div className="w-7 h-5 bg-red-500 rounded text-white text-[10px] flex items-center justify-center font-bold">AIR</div>
+                <div className="w-8 h-6 bg-gradient-to-r from-blue-600 to-blue-800 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
+                  VISA
+                </div>
+                <div className="w-8 h-6 bg-gradient-to-r from-red-600 to-red-800 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
+                  MC
+                </div>
+                <div className="w-8 h-6 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
+                  MTN
+                </div>
+                <div className="w-8 h-6 bg-gradient-to-r from-red-500 to-red-700 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
+                  AIR
+                </div>
+                <div className="w-8 h-6 bg-gradient-to-r from-green-600 to-green-800 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
+                  MOOV
+                </div>
               </div>
             </div>
-            <div className="hidden md:flex justify-end text-xs text-gray-500">
-              <span>© JomionStore</span>
+            
+            <div className="flex items-center gap-4 text-sm text-gray-400">
+              <Link href="/terms" className="hover:text-orange-400 transition-colors">
+                Conditions
+              </Link>
+              <Link href="/privacy" className="hover:text-orange-400 transition-colors">
+                Confidentialité
+              </Link>
+              <Link href="/cookies" className="hover:text-orange-400 transition-colors">
+                Cookies
+              </Link>
             </div>
           </div>
         </div>
