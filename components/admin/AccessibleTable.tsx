@@ -156,7 +156,7 @@ export function AccessibleTableHeaderCell({
     <th 
       className={cn(
         "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
-        sortable && "cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500",
+        sortable && "cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500",
         className
       )}
       scope={scope}

@@ -30,7 +30,7 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   const getIcon = (type: string) => {
     switch (type) {
       case 'product':
-        return <Search className="w-4 h-4 text-blue-500" />;
+        return <Search className="w-4 h-4 text-orange-500" />;
       case 'category':
         return <Tag className="w-4 h-4 text-green-500" />;
       case 'brand':
@@ -45,7 +45,7 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   const getBadgeColor = (type: string) => {
     switch (type) {
       case 'product':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-orange-100 text-orange-800';
       case 'category':
         return 'bg-green-100 text-green-800';
       case 'brand':

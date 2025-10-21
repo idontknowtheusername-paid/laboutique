@@ -106,7 +106,7 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
       case 'error':
         return 'border-l-red-500 bg-red-50';
       default:
-        return 'border-l-blue-500 bg-orange-50';
+        return 'border-l-orange-500 bg-orange-50';
     }
   };
 
@@ -153,7 +153,7 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
                 <div
                   key={notification.id}
                   className={`p-3 rounded-lg border-l-4 ${getNotificationColor(notification.type)} ${
-                    !notification.read ? 'ring-2 ring-blue-200' : ''
+                    !notification.read ? 'ring-2 ring-orange-200' : ''
                   }`}
                 >
                   <div className="flex items-start gap-3">
