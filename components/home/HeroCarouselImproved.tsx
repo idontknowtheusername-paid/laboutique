@@ -111,7 +111,7 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
       cta_text: 'Découvrir',
       cta_link: '/payment-info',
       image_url: 'https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      gradient: 'from-orange-600 to-indigo-600',
+      gradient: 'from-orange-600 to-red-600',
       type: 'service',
       priority: 5,
       is_active: true,
