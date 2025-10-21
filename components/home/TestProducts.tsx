@@ -12,17 +12,25 @@ export default function TestProducts() {
       try {
         setLoading(true);
         
+        console.log('🧪 TestProducts - Starting load...');
+        
         // Test simple - récupérer tous les produits actifs
         const response = await ProductsService.getAll(
           { status: 'active' },
           { limit: 5 }
         );
 
+        console.log('🧪 TestProducts - Response:', response);
+
         if (response.success && response.data) {
-          setProducts((response.data as any).data || []);
+          const productsData = (response.data as any).data || [];
+          console.log('🧪 TestProducts - Products data:', productsData);
+          setProducts(productsData);
+        } else {
+          console.error('🧪 TestProducts - Error:', response.error);
         }
       } catch (err) {
-        console.error('Test error:', err);
+        console.error('🧪 TestProducts - Exception:', err);
       } finally {
         setLoading(false);
       }
