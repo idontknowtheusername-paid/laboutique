@@ -35,7 +35,12 @@ export default function CategoryProductsCarousel({
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
 
+  // Log simple pour vérifier que le composant se charge
+  console.log('🚀 CategoryProductsCarousel loaded for:', categorySlug, title);
+
   useEffect(() => {
+    console.log('🔄 useEffect triggered for:', categorySlug);
+    
     const loadProducts = async () => {
       try {
         setLoading(true);
