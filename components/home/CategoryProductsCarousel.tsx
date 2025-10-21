@@ -51,6 +51,12 @@ export default function CategoryProductsCarousel({
         const categoryId = categoryResponse.data.id;
         
         // Test direct avec une requête simple
+        console.log('🔍 CategoryProductsCarousel - Loading products for:', {
+          categorySlug,
+          categoryId,
+          maxItems
+        });
+        
         const response = await ProductsService.getAll(
           {
             category_id: categoryId,
@@ -58,6 +64,8 @@ export default function CategoryProductsCarousel({
           },
           { limit: maxItems }
         );
+        
+        console.log('🔍 CategoryProductsCarousel - Response:', response);
 
         if (response.success && response.data) {
           const productsData = (response.data as any).data || [];

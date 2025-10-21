@@ -40,6 +40,12 @@ export default function CategoryProductsGrid({
         const categoryId = categoryResponse.data.id;
         
         // Récupérer les produits de la catégorie
+        console.log('🔍 CategoryProductsGrid - Loading products for:', {
+          categorySlug,
+          categoryId,
+          maxItems
+        });
+        
         const response = await ProductsService.getAll(
           {
             category_id: categoryId,
@@ -47,6 +53,8 @@ export default function CategoryProductsGrid({
           },
           { limit: maxItems }
         );
+        
+        console.log('🔍 CategoryProductsGrid - Response:', response);
 
         if (response.success && response.data) {
           setProducts((response.data as any).data || []);
