@@ -9,7 +9,7 @@ import Image from 'next/image';
 
 // Configuration des groupes thématiques
 const CATEGORY_GROUPS = {
-  'tech': { icon: '💻', color: 'from-blue-500 to-purple-600' },
+  'tech': { icon: '💻', color: 'from-orange-500 to-red-600' },
   'mode': { icon: '👗', color: 'from-pink-500 to-rose-600' },
   'maison': { icon: '🏠', color: 'from-green-500 to-teal-600' },
   'sport': { icon: '⚽', color: 'from-orange-500 to-red-600' },

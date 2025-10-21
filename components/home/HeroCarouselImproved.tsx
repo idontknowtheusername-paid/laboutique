@@ -210,7 +210,7 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
       case 'new':
         return <Badge variant="default" className="bg-green-500">Nouveau</Badge>;
       case 'service':
-        return <Badge variant="secondary" className="bg-blue-500">Service</Badge>;
+        return <Badge variant="secondary" className="bg-orange-500">Service</Badge>;
       case 'category':
         return <Badge variant="outline" className="border-white text-white">Catégorie</Badge>;
       default:
