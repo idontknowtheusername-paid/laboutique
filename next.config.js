@@ -102,7 +102,7 @@ const nextConfig = {
     return config;
   },
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
+    removeConsole: false, // Keep console logs for debugging
   },
   poweredByHeader: false,
   compress: true,
