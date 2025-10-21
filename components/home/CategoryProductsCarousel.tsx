@@ -70,10 +70,10 @@ export default function CategoryProductsCarousel({
         console.log('🔍 CategoryProductsCarousel - Response.data.data:', (response.data as any).data);
 
         if (response.success && response.data) {
-          const productsData = (response.data as any).data || [];
+          // CORRECTION : Utiliser response.data directement comme les anciennes sections
+          const productsData = response.data || [];
           console.log('🔍 CategoryProductsCarousel - Products data:', productsData);
           console.log('🔍 CategoryProductsCarousel - Products count:', productsData.length);
-          // Forcer l'affichage même si vide pour debug
           setProducts(productsData);
           if (productsData.length === 0) {
             setError('Aucun produit trouvé pour cette catégorie');

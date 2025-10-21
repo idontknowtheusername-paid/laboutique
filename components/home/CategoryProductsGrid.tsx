@@ -59,7 +59,8 @@ export default function CategoryProductsGrid({
         console.log('🔍 CategoryProductsGrid - Response.data.data:', (response.data as any).data);
 
         if (response.success && response.data) {
-          setProducts((response.data as any).data || []);
+          // CORRECTION : Utiliser response.data directement comme les anciennes sections
+          setProducts(response.data || []);
         } else {
           setError(response.error || 'Erreur lors du chargement des produits');
         }
