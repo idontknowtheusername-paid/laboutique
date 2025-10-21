@@ -41,7 +41,10 @@ export default function CategoryProductsCarousel({
         setLoading(true);
         setError(null);
         
+        console.log('🔍 CategoryProductsCarousel - Loading products for category:', categorySlug);
+        
         const categoryResponse = await CategoriesService.getBySlug(categorySlug);
+        console.log('📂 Category response:', categoryResponse);
         
         if (!categoryResponse.success || !categoryResponse.data) {
           setError('Catégorie non trouvée');
@@ -49,6 +52,7 @@ export default function CategoryProductsCarousel({
         }
         
         const categoryId = categoryResponse.data.id;
+        console.log('🆔 Category ID:', categoryId);
         
         const response = await ProductsService.getAll(
           {
@@ -57,15 +61,20 @@ export default function CategoryProductsCarousel({
           },
           { limit: maxItems }
         );
+        
+        console.log('📦 Products response:', response);
 
         if (response.success && response.data) {
-          setProducts((response.data as any).data || []);
+          const productsData = (response.data as any).data || [];
+          console.log('✅ Products loaded:', productsData.length, 'products');
+          setProducts(productsData);
         } else {
+          console.error('❌ Error loading products:', response.error);
           setError(response.error || 'Erreur lors du chargement des produits');
         }
       } catch (err) {
+        console.error('💥 Exception in loadProducts:', err);
         setError('Erreur de connexion');
-        console.error('Erreur chargement produits catégorie:', err);
       } finally {
         setLoading(false);
       }
