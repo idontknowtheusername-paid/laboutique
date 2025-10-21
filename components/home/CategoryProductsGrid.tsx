@@ -55,6 +55,8 @@ export default function CategoryProductsGrid({
         );
         
         console.log('🔍 CategoryProductsGrid - Response:', response);
+        console.log('🔍 CategoryProductsGrid - Response.data:', response.data);
+        console.log('🔍 CategoryProductsGrid - Response.data.data:', (response.data as any).data);
 
         if (response.success && response.data) {
           setProducts((response.data as any).data || []);

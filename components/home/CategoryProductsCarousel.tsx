@@ -66,6 +66,8 @@ export default function CategoryProductsCarousel({
         );
         
         console.log('🔍 CategoryProductsCarousel - Response:', response);
+        console.log('🔍 CategoryProductsCarousel - Response.data:', response.data);
+        console.log('🔍 CategoryProductsCarousel - Response.data.data:', (response.data as any).data);
 
         if (response.success && response.data) {
           const productsData = (response.data as any).data || [];
