@@ -69,6 +69,8 @@ export default function CategoryProductsCarousel({
 
         if (response.success && response.data) {
           const productsData = (response.data as any).data || [];
+          console.log('🔍 CategoryProductsCarousel - Products data:', productsData);
+          console.log('🔍 CategoryProductsCarousel - Products count:', productsData.length);
           // Forcer l'affichage même si vide pour debug
           setProducts(productsData);
           if (productsData.length === 0) {
@@ -159,6 +161,7 @@ export default function CategoryProductsCarousel({
 
   // Empty state
   if (!loading && products.length === 0) {
+    console.log('🔍 CategoryProductsCarousel - Empty state triggered');
     return (
       <section className={`py-6 bg-white ${className}`}>
         <div className="container">
@@ -177,6 +180,8 @@ export default function CategoryProductsCarousel({
     );
   }
 
+  console.log('🔍 CategoryProductsCarousel - Rendering with products:', products.length);
+  
   return (
     <section className={`py-6 bg-white ${className}`}>
       <div className="container">
