@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import TestProducts from './TestProducts';
 import Header from '@/components/layout/Header';
 import ImprovedCategoryMenu from '@/components/layout/ImprovedCategoryMenu';
 import Footer from '@/components/layout/Footer';
@@ -230,6 +231,11 @@ export default function HomePageContent() {
 
 
 
+
+          {/* 🧪 TEST COMPOSANT */}
+          <LazySection className="mb-2.5" fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-xl" />}>
+            <TestProducts />
+          </LazySection>
 
           {/* 🏆 ZONE PREMIUM - 5 CATÉGORIES IMPORTANTES */}
           
