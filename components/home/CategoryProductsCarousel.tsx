@@ -35,21 +35,13 @@ export default function CategoryProductsCarousel({
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
 
-  // Log simple pour vérifier que le composant se charge
-  console.log('🚀 CategoryProductsCarousel loaded for:', categorySlug, title);
-
   useEffect(() => {
-    console.log('🔄 useEffect triggered for:', categorySlug);
-    
     const loadProducts = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        console.log('🔍 CategoryProductsCarousel - Loading products for category:', categorySlug);
-        
         const categoryResponse = await CategoriesService.getBySlug(categorySlug);
-        console.log('📂 Category response:', categoryResponse);
         
         if (!categoryResponse.success || !categoryResponse.data) {
           setError('Catégorie non trouvée');
@@ -57,8 +49,8 @@ export default function CategoryProductsCarousel({
         }
         
         const categoryId = categoryResponse.data.id;
-        console.log('🆔 Category ID:', categoryId);
         
+        // Test direct avec une requête simple
         const response = await ProductsService.getAll(
           {
             category_id: categoryId,
@@ -66,20 +58,20 @@ export default function CategoryProductsCarousel({
           },
           { limit: maxItems }
         );
-        
-        console.log('📦 Products response:', response);
 
         if (response.success && response.data) {
           const productsData = (response.data as any).data || [];
-          console.log('✅ Products loaded:', productsData.length, 'products');
+          // Forcer l'affichage même si vide pour debug
           setProducts(productsData);
+          if (productsData.length === 0) {
+            setError('Aucun produit trouvé pour cette catégorie');
+          }
         } else {
-          console.error('❌ Error loading products:', response.error);
           setError(response.error || 'Erreur lors du chargement des produits');
         }
       } catch (err) {
-        console.error('💥 Exception in loadProducts:', err);
         setError('Erreur de connexion');
+        console.error('Erreur chargement produits catégorie:', err);
       } finally {
         setLoading(false);
       }
