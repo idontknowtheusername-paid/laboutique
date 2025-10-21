@@ -29,7 +29,7 @@ const TrustElements = () => {
       description: "24h à Cotonou",
       color: "text-orange-500",
       bgColor: "bg-orange-50",
-      details: "Livraison gratuite pour toute commande supérieure à 50,000 F"
+      details: "Livraison à partir de 1000f"
     },
     {
       icon: RefreshCw,
