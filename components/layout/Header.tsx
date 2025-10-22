@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Search, User, Heart, ShoppingCart, Menu, X, Crown, Package, CreditCard, MapPin, Bell, Settings, TicketPercent, Wallet, Shield, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -238,15 +239,17 @@ const Header = () => {
       {/* Main Header */}
       <div className="container py-4">
         <div className="flex items-center justify-between">
-          {/* Logo - Nom seulement */}
-          <Link href="/" className="flex items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-jomionstore-primary">
-                JomionStore
-              </h1>
-              <p className="text-xs text-gray-500 -mt-1">
-                Centre commercial digital
-              </p>
+          {/* Logo - Image */}
+          <Link href="/" className="flex items-center space-x-3">
+            <div className="relative h-12 w-32">
+              <Image
+                src="/logo.png"
+                alt="JomionStore"
+                fill
+                className="object-contain"
+                sizes="128px"
+                priority
+              />
             </div>
           </Link>
 

@@ -84,7 +84,7 @@ export default function GlobalLoading() {
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-jomionstore-primary to-orange-600 animate-spin-slow"></div>
                 <div className="absolute inset-1 rounded-xl bg-white flex items-center justify-center">
                   <Image
-                    src="/logo.svg"
+                    src="/logo.png"
                     alt="JomionStore"
                     width={64}
                     height={64}
