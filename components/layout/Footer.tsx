@@ -157,7 +157,7 @@ const Footer = () => {
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
                 <span className="relative h-10 w-10">
-                  <Image src="/logo-mono.svg" alt="JomionStore" fill className="object-contain" sizes="40px" />
+                  <Image src="/logo-jomion.png" alt="JomionStore" fill className="object-contain" sizes="40px" />
                 </span>
                 <div>
                   <span className="text-xl font-bold text-white">JomionStore</span>
