@@ -241,7 +241,7 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo - image */}
           <Link href="/" className="flex items-center">
-            <span className="relative h-10 w-36 sm:w-44">
+            <span className="relative h-10 w-36 sm:w-44 bg-white rounded-md p-1 flex items-center justify-center shadow-sm">
               <Image
                 src="/logo-jomion.png"
                 alt="JomionStore - Centre commercial digital"

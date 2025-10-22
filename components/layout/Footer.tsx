@@ -156,7 +156,7 @@ const Footer = () => {
             {/* Brand - Amélioré */}
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
-                <span className="relative h-10 w-10">
+                <span className="relative h-10 w-10 bg-white rounded-md p-1 flex items-center justify-center shadow-sm">
                   <Image src="/logo-jomion.png" alt="JomionStore" fill className="object-contain" sizes="40px" />
                 </span>
                 <div>
