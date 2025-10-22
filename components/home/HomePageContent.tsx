@@ -54,6 +54,11 @@ const TrustElements = dynamic(() => import('@/components/home/TrustElements'), {
   ssr: false
 });
 
+const PartnersSection = dynamic(() => import('@/components/home/PartnersSection'), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
+
 export default function HomePageContent() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -552,6 +557,11 @@ export default function HomePageContent() {
 
           <LazySection className="mb-2.5" fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-xl" />}>
             <TrustElements />
+          </LazySection>
+
+          {/* Section Partenaires */}
+          <LazySection className="mb-0" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+            <PartnersSection />
           </LazySection>
         </div>
 
