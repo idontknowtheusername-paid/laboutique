@@ -241,16 +241,15 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo - image */}
           <Link href="/" className="flex items-center">
-            <span className="relative h-10 w-36 sm:w-44 bg-white rounded-md p-1 flex items-center justify-center shadow-sm">
-              <Image
-                src="/images/logo-header.png"
-                alt="JomionStore - Centre commercial digital"
-                fill
-                className="object-contain"
-                sizes="(max-width: 640px) 120px, 200px"
-                priority
-              />
-            </span>
+            <Image
+              src="/images/logo-header.png"
+              alt="JomionStore - Centre commercial digital"
+              width={144}
+              height={40}
+              className="h-10 w-auto"
+              sizes="(max-width: 640px) 120px, 200px"
+              priority
+            />
             <span className="sr-only">JomionStore - Centre commercial digital</span>
           </Link>
 

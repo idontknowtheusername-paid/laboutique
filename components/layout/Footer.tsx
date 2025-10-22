@@ -156,9 +156,14 @@ const Footer = () => {
             {/* Brand - Amélioré */}
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
-                <span className="relative h-10 w-10 bg-white rounded-md p-1 flex items-center justify-center shadow-sm">
-                  <Image src="/images/logo-header.png" alt="JomionStore" fill className="object-contain" sizes="40px" />
-                </span>
+                <Image 
+                  src="/images/logo-header.png" 
+                  alt="JomionStore" 
+                  width={40}
+                  height={40}
+                  className="h-10 w-auto"
+                  sizes="40px" 
+                />
                 <div>
                   <span className="text-xl font-bold text-white">JomionStore</span>
                   <p className="text-sm text-gray-400">Centre commercial digital du Bénin</p>
