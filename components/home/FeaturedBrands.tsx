@@ -4,32 +4,32 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 
-const brands = [
+const defaultBrands = [
   // Marques internationales populaires en Afrique de l'Ouest
-  { name: 'Samsung', logo: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=100', products: '2,100+' },
-  { name: 'Apple', logo: 'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=100', products: '1,250+' },
-  { name: 'Tecno', logo: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=100', products: '1,800+' },
-  { name: 'Infinix', logo: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=100', products: '1,500+' },
-  { name: 'Itel', logo: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=100', products: '1,200+' },
-  { name: 'Huawei', logo: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=100', products: '950+' },
-  { name: 'Xiaomi', logo: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=100', products: '1,100+' },
-  { name: 'Oppo', logo: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=100', products: '800+' },
-  { name: 'Vivo', logo: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=100', products: '750+' },
-  { name: 'OnePlus', logo: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=100', products: '450+' },
-  { name: 'Realme', logo: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=100', products: '600+' },
-  { name: 'Nokia', logo: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=100', products: '400+' },
-  { name: 'Sony', logo: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=100', products: '650+' },
-  { name: 'LG', logo: 'https://images.pexels.com/photos/2062431/pexels-photo-2062431.jpeg?auto=compress&cs=tinysrgb&w=100', products: '890+' },
-  { name: 'HP', logo: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=100', products: '380+' },
-  { name: 'Dell', logo: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=100', products: '450+' },
-  { name: 'Lenovo', logo: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=100', products: '520+' },
-  { name: 'Asus', logo: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=100', products: '350+' },
-  { name: 'Canon', logo: 'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=100', products: '320+' },
-  { name: 'JBL', logo: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=100', products: '280+' },
-  { name: 'Bose', logo: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=100', products: '180+' },
-  { name: 'Panasonic', logo: 'https://images.pexels.com/photos/1444416/pexels-photo-1444416.jpeg?auto=compress&cs=tinysrgb&w=100', products: '420+' },
-  { name: 'Philips', logo: 'https://images.pexels.com/photos/1444416/pexels-photo-1444416.jpeg?auto=compress&cs=tinysrgb&w=100', products: '380+' },
-  { name: 'TCL', logo: 'https://images.pexels.com/photos/1444416/pexels-photo-1444416.jpeg?auto=compress&cs=tinysrgb&w=100', products: '320+' }
+  { name: 'Samsung', logo: '/images/partners/samsung-logo.svg', products: '2,100+' },
+  { name: 'Apple', logo: '/images/partners/apple-logo.svg', products: '1,250+' },
+  { name: 'Tecno', logo: '/images/partners/placeholder-logo.svg', products: '1,800+' },
+  { name: 'Infinix', logo: '/images/partners/placeholder-logo.svg', products: '1,500+' },
+  { name: 'Itel', logo: '/images/partners/placeholder-logo.svg', products: '1,200+' },
+  { name: 'Huawei', logo: '/images/partners/placeholder-logo.svg', products: '950+' },
+  { name: 'Xiaomi', logo: '/images/partners/placeholder-logo.svg', products: '1,100+' },
+  { name: 'Oppo', logo: '/images/partners/placeholder-logo.svg', products: '800+' },
+  { name: 'Vivo', logo: '/images/partners/placeholder-logo.svg', products: '750+' },
+  { name: 'OnePlus', logo: '/images/partners/placeholder-logo.svg', products: '450+' },
+  { name: 'Realme', logo: '/images/partners/placeholder-logo.svg', products: '600+' },
+  { name: 'Nokia', logo: '/images/partners/placeholder-logo.svg', products: '400+' },
+  { name: 'Sony', logo: '/images/partners/placeholder-logo.svg', products: '650+' },
+  { name: 'LG', logo: '/images/partners/placeholder-logo.svg', products: '890+' },
+  { name: 'HP', logo: '/images/partners/placeholder-logo.svg', products: '380+' },
+  { name: 'Dell', logo: '/images/partners/placeholder-logo.svg', products: '450+' },
+  { name: 'Lenovo', logo: '/images/partners/placeholder-logo.svg', products: '520+' },
+  { name: 'Asus', logo: '/images/partners/placeholder-logo.svg', products: '350+' },
+  { name: 'Canon', logo: '/images/partners/placeholder-logo.svg', products: '320+' },
+  { name: 'JBL', logo: '/images/partners/placeholder-logo.svg', products: '280+' },
+  { name: 'Bose', logo: '/images/partners/placeholder-logo.svg', products: '180+' },
+  { name: 'Panasonic', logo: '/images/partners/placeholder-logo.svg', products: '420+' },
+  { name: 'Philips', logo: '/images/partners/placeholder-logo.svg', products: '380+' },
+  { name: 'TCL', logo: '/images/partners/placeholder-logo.svg', products: '320+' }
 ];
 
 const FeaturedBrands = () => {
@@ -41,6 +41,10 @@ const FeaturedBrands = () => {
   const [mouseStart, setMouseStart] = useState<number | null>(null);
   const [mouseEnd, setMouseEnd] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+
+  // Utiliser les marques par défaut
+  const brands = defaultBrands;
 
   // Configuration du carousel responsive
   const getItemsPerSlide = () => {
@@ -198,13 +202,28 @@ const FeaturedBrands = () => {
                         >
                           <div className="space-y-4">
                             <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full overflow-hidden relative">
-                              <Image
-                                src={brand.logo}
-                                alt={brand.name}
-                                fill
-                                sizes="64px"
-                                className="object-cover group-hover:scale-110 transition-transform duration-300"
-                              />
+                              {imageErrors.has(slideIndex * itemsPerSlide + index) ? (
+                                <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-orange-50 to-orange-100 rounded-full border border-orange-200">
+                                  <div className="text-center">
+                                    <span className="text-lg font-bold text-orange-600 block">{brand.name.charAt(0)}</span>
+                                  </div>
+                                </div>
+                              ) : (
+                                <Image
+                                  src={brand.logo}
+                                  alt={brand.name}
+                                  fill
+                                  sizes="64px"
+                                  className="object-cover group-hover:scale-110 transition-transform duration-300"
+                                  onError={() => {
+                                    console.log(`Erreur de chargement du logo pour ${brand.name}: ${brand.logo}`);
+                                    setImageErrors(prev => new Set([...prev, slideIndex * itemsPerSlide + index]));
+                                  }}
+                                  onLoad={() => {
+                                    console.log(`Logo chargé avec succès pour ${brand.name}: ${brand.logo}`);
+                                  }}
+                                />
+                              )}
                             </div>
                             <div>
                               <h3 className="font-bold text-gray-900 group-hover:text-jomionstore-primary transition-colors">

@@ -1,86 +1,118 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
+import { VendorsService, Vendor } from '@/lib/services/vendors.service';
 
 const PartnersSection = () => {
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const partners = [
+  // Partenaires par défaut avec des logos fiables
+  const defaultPartners = [
     {
       name: 'Alibaba',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Alibaba-Logo.png',
+      logo: '/images/partners/alibaba-logo.png',
       category: 'Marketplace',
       description: 'Plateforme B2B mondiale'
     },
     {
       name: 'AliExpress',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/AliExpress-Logo.png',
+      logo: '/images/partners/aliexpress-logo.png',
       category: 'E-commerce',
       description: 'Marketplace international'
     },
     {
       name: 'MTN',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/MTN-Logo.png',
+      logo: '/images/partners/mtn-logo.png',
       category: 'Télécoms',
       description: 'Opérateur mobile'
     },
     {
       name: 'Moov',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Moov-Africa-Logo.png',
+      logo: '/images/partners/moov-logo.png',
       category: 'Télécoms',
       description: 'Opérateur mobile'
     },
     {
       name: 'Visa',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Visa-Logo.png',
+      logo: '/images/partners/visa-logo.png',
       category: 'Paiement',
       description: 'Cartes de crédit'
     },
     {
       name: 'Mastercard',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Mastercard-Logo.png',
+      logo: '/images/partners/mastercard-logo.png',
       category: 'Paiement',
       description: 'Cartes de crédit'
     },
     {
       name: 'PayPal',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/PayPal-Logo.png',
+      logo: '/images/partners/paypal-logo.png',
       category: 'Paiement',
       description: 'Paiement en ligne'
     },
     {
       name: 'DHL',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/DHL-Logo.png',
+      logo: '/images/partners/dhl-logo.png',
       category: 'Logistique',
       description: 'Transport express'
     },
     {
       name: 'FedEx',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/FedEx-Logo.png',
+      logo: '/images/partners/fedex-logo.png',
       category: 'Logistique',
       description: 'Services de livraison'
     },
     {
       name: 'Samsung',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Samsung-Logo.png',
+      logo: '/images/partners/samsung-logo.png',
       category: 'Électronique',
       description: 'Technologie'
     },
     {
       name: 'Apple',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Apple-Logo.png',
+      logo: '/images/partners/apple-logo.png',
       category: 'Électronique',
       description: 'Technologie'
     },
     {
       name: 'Nike',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Nike-Logo.png',
+      logo: '/images/partners/nike-logo.png',
       category: 'Mode',
       description: 'Équipement sportif'
     }
   ];
+
+  // Charger les vendors depuis la base de données
+  useEffect(() => {
+    const loadVendors = async () => {
+      try {
+        const response = await VendorsService.getPopular(12);
+        if (response.success && response.data) {
+          setVendors(response.data);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des vendors:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadVendors();
+  }, []);
+
+  // Combiner les vendors de la DB avec les partenaires par défaut
+  const partners = vendors.length > 0 
+    ? vendors.map(vendor => ({
+        name: vendor.name,
+        logo: vendor.logo_url || `/images/partners/${vendor.slug}-logo.png`,
+        category: 'Partenaire',
+        description: vendor.description || 'Partenaire de confiance'
+      }))
+    : defaultPartners;
 
   return (
     <section className="py-16 bg-white border-t border-gray-100">
@@ -101,39 +133,59 @@ const PartnersSection = () => {
 
         {/* Partners Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 mb-12">
-          {partners.map((partner, index) => (
-            <div
-              key={index}
-              className="group relative bg-white rounded-xl border border-gray-200 p-6 hover:border-orange-200 hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center min-h-[120px]"
-            >
-              <div className="relative w-full h-16 mb-3">
-                {imageErrors.has(index) ? (
-                  <div className="flex items-center justify-center w-full h-full bg-gray-100 rounded-lg">
-                    <span className="text-2xl font-bold text-gray-400">{partner.name.charAt(0)}</span>
-                  </div>
-                ) : (
-                  <Image
-                    src={partner.logo}
-                    alt={`Logo ${partner.name}`}
-                    fill
-                    className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
-                    onError={() => {
-                      setImageErrors(prev => new Set([...prev, index]));
-                    }}
-                  />
-                )}
+          {loading ? (
+            // Skeleton loading
+            Array.from({ length: 12 }).map((_, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col items-center justify-center min-h-[120px] animate-pulse"
+              >
+                <div className="w-16 h-16 bg-gray-200 rounded-lg mb-3"></div>
+                <div className="w-20 h-4 bg-gray-200 rounded"></div>
               </div>
-              
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-orange-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-end justify-center pb-4">
-                <div className="text-center">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-1">{partner.name}</h4>
-                  <p className="text-xs text-gray-600">{partner.description}</p>
+            ))
+          ) : (
+            partners.map((partner, index) => (
+              <div
+                key={index}
+                className="group relative bg-white rounded-xl border border-gray-200 p-6 hover:border-orange-200 hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center min-h-[120px]"
+              >
+                <div className="relative w-full h-16 mb-3">
+                  {imageErrors.has(index) ? (
+                    <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+                      <div className="text-center">
+                        <span className="text-2xl font-bold text-orange-600 block">{partner.name.charAt(0)}</span>
+                        <span className="text-xs text-orange-500 font-medium">{partner.name}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <Image
+                      src={partner.logo}
+                      alt={`Logo ${partner.name}`}
+                      fill
+                      className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
+                      onError={() => {
+                        console.log(`Erreur de chargement du logo pour ${partner.name}: ${partner.logo}`);
+                        setImageErrors(prev => new Set([...prev, index]));
+                      }}
+                      onLoad={() => {
+                        console.log(`Logo chargé avec succès pour ${partner.name}: ${partner.logo}`);
+                      }}
+                    />
+                  )}
+                </div>
+                
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-orange-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-end justify-center pb-4">
+                  <div className="text-center">
+                    <h4 className="text-sm font-semibold text-gray-900 mb-1">{partner.name}</h4>
+                    <p className="text-xs text-gray-600">{partner.description}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         {/* Stats */}
