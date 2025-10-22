@@ -1,80 +1,82 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 
 const PartnersSection = () => {
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+
   const partners = [
     {
       name: 'Alibaba',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Alibaba_Group_logo.svg/2560px-Alibaba_Group_logo.svg.png',
+      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Alibaba-Logo.png',
       category: 'Marketplace',
       description: 'Plateforme B2B mondiale'
     },
     {
       name: 'AliExpress',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/AliExpress_logo.svg/2560px-AliExpress_logo.svg.png',
+      logo: 'https://1000logos.net/wp-content/uploads/2020/09/AliExpress-Logo.png',
       category: 'E-commerce',
       description: 'Marketplace international'
     },
     {
       name: 'MTN',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/MTN_Group_logo.svg/2560px-MTN_Group_logo.svg.png',
+      logo: 'https://1000logos.net/wp-content/uploads/2020/09/MTN-Logo.png',
       category: 'Télécoms',
       description: 'Opérateur mobile'
     },
     {
       name: 'Moov',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Moov_Africa_logo.svg/2560px-Moov_Africa_logo.svg.png',
+      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Moov-Africa-Logo.png',
       category: 'Télécoms',
       description: 'Opérateur mobile'
     },
     {
       name: 'Visa',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png',
+      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Visa-Logo.png',
       category: 'Paiement',
       description: 'Cartes de crédit'
     },
     {
       name: 'Mastercard',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/2560px-Mastercard-logo.svg.png',
+      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Mastercard-Logo.png',
       category: 'Paiement',
       description: 'Cartes de crédit'
     },
     {
       name: 'PayPal',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/2560px-PayPal.svg.png',
+      logo: 'https://1000logos.net/wp-content/uploads/2020/09/PayPal-Logo.png',
       category: 'Paiement',
       description: 'Paiement en ligne'
     },
     {
       name: 'DHL',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/DHL_Express_logo.svg/2560px-DHL_Express_logo.svg.png',
+      logo: 'https://1000logos.net/wp-content/uploads/2020/09/DHL-Logo.png',
       category: 'Logistique',
       description: 'Transport express'
     },
     {
       name: 'FedEx',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/FedEx_Express_logo.svg/2560px-FedEx_Express_logo.svg.png',
+      logo: 'https://1000logos.net/wp-content/uploads/2020/09/FedEx-Logo.png',
       category: 'Logistique',
       description: 'Services de livraison'
     },
     {
       name: 'Samsung',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/2560px-Samsung_Logo.svg.png',
+      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Samsung-Logo.png',
       category: 'Électronique',
       description: 'Technologie'
     },
     {
       name: 'Apple',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/2560px-Apple_logo_black.svg.png',
+      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Apple-Logo.png',
       category: 'Électronique',
       description: 'Technologie'
     },
     {
       name: 'Nike',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/2560px-Logo_NIKE.svg.png',
+      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Nike-Logo.png',
       category: 'Mode',
       description: 'Équipement sportif'
     }
@@ -104,14 +106,23 @@ const PartnersSection = () => {
               key={index}
               className="group relative bg-white rounded-xl border border-gray-200 p-6 hover:border-orange-200 hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center min-h-[120px]"
             >
-              <div className="relative w-full h-12 mb-3">
-                <Image
-                  src={partner.logo}
-                  alt={`Logo ${partner.name}`}
-                  fill
-                  className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
-                />
+              <div className="relative w-full h-16 mb-3">
+                {imageErrors.has(index) ? (
+                  <div className="flex items-center justify-center w-full h-full bg-gray-100 rounded-lg">
+                    <span className="text-2xl font-bold text-gray-400">{partner.name.charAt(0)}</span>
+                  </div>
+                ) : (
+                  <Image
+                    src={partner.logo}
+                    alt={`Logo ${partner.name}`}
+                    fill
+                    className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
+                    onError={() => {
+                      setImageErrors(prev => new Set([...prev, index]));
+                    }}
+                  />
+                )}
               </div>
               
               {/* Hover overlay */}
