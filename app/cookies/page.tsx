@@ -363,8 +363,13 @@ export default function CookiesPage() {
                   Lors de votre première visite, un bandeau apparaît pour vous permettre d'accepter ou de refuser 
                   les cookies optionnels. Vous pouvez modifier vos préférences à tout moment.
                 </p>
-                <Button className="bg-jomionstore-primary hover:bg-orange-700">
-                  Gérer mes préférences cookies
+                <Button 
+                  className="bg-jomionstore-primary hover:bg-orange-700"
+                  asChild
+                >
+                  <Link href="/cookie-preferences">
+                    Gérer mes préférences cookies
+                  </Link>
                 </Button>
               </div>
 

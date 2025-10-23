@@ -4,6 +4,7 @@ import Script from 'next/script';
 import { AppProviders } from "@/components/providers/AppProviders";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import GlobalCartAnimation from '@/components/ui/GlobalCartAnimation';
+import CookieBanner from '@/components/layout/CookieBanner';
 
 export const metadata: Metadata = {
   title: "JomionStore - Benin Elite Shopping Experience",
@@ -62,6 +63,7 @@ export default function RootLayout({
         <AppProviders>
           {children}
           <GlobalCartAnimation />
+          <CookieBanner />
         </AppProviders>
         <SpeedInsights />
         

@@ -287,6 +287,9 @@ const Footer = () => {
                 <Link href="/faq" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
                   FAQ
                 </Link>
+                <Link href="/cookies" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  Gestion des cookies
+                </Link>
               </nav>
             </div>
 
