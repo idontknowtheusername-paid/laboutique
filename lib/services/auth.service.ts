@@ -300,6 +300,33 @@ export class AuthService extends BaseService {
   }
 
   /**
+   * Vérifier et traiter le token de réinitialisation depuis l'URL
+   */
+  static async handlePasswordResetFromUrl(): Promise<ServiceResponse<{ isValid: boolean; error?: string }>> {
+    try {
+      // Vérifier si on a une session active (utilisateur connecté via le lien)
+      const { data: { session }, error: sessionError } = await this.getSupabaseClient().auth.getSession();
+      
+      if (sessionError) {
+        return this.createResponse({ isValid: false, error: 'Session invalide' });
+      }
+
+      if (!session) {
+        return this.createResponse({ isValid: false, error: 'Aucune session active' });
+      }
+
+      // Vérifier si l'utilisateur a le bon statut pour la réinitialisation
+      if (session.user && session.user.email_confirmed_at) {
+        return this.createResponse({ isValid: true });
+      } else {
+        return this.createResponse({ isValid: false, error: 'Email non vérifié' });
+      }
+    } catch (error) {
+      return this.createResponse({ isValid: false, error: this.handleError(error) });
+    }
+  }
+
+  /**
    * Connexion avec Google
    */
   static async signInWithGoogle(): Promise<ServiceResponse<{ url: string }>> {

@@ -27,6 +27,7 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
+  const successMessage = searchParams.get('message');
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -148,6 +149,16 @@ export default function LoginPage() {
             </CardHeader>
             <CardContent className="space-y-6">
 
+
+              {/* Success Message */}
+              {successMessage === 'password-reset-success' && (
+                <Alert className="border-green-200 bg-green-50">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-green-800">
+                    Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.
+                  </AlertDescription>
+                </Alert>
+              )}
 
               {/* Error Display */}
               {(error || authError) && (
