@@ -6,6 +6,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import GlobalCartAnimation from '@/components/ui/GlobalCartAnimation';
 import CookieBanner from '@/components/layout/CookieBanner';
 import NewsletterPopupManager from '@/components/layout/NewsletterPopupManager';
+import PopupManager from '@/components/layout/PopupManager';
 
 export const metadata: Metadata = {
   title: "JomionStore - Benin Elite Shopping Experience",
@@ -66,6 +67,7 @@ export default function RootLayout({
           <GlobalCartAnimation />
           <CookieBanner />
           <NewsletterPopupManager />
+          <PopupManager />
         </AppProviders>
         <SpeedInsights />
         
