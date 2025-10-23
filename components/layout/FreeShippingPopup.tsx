@@ -17,7 +17,7 @@ export default function FreeShippingPopup({ onClose, cartTotal }: FreeShippingPo
 
   useEffect(() => {
     // Vérifier si le pop-up doit s'afficher
-    if (cartTotal >= 20000 && cartTotal < 50000) {
+    if (cartTotal >= 20000 && cartTotal < 75000) {
       setIsVisible(true);
     }
   }, [cartTotal]);
@@ -30,13 +30,13 @@ export default function FreeShippingPopup({ onClose, cartTotal }: FreeShippingPo
     }, 300);
   };
 
-  const remainingAmount = 50000 - cartTotal;
+  const remainingAmount = 75000 - cartTotal;
 
   if (!isVisible) return null;
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <Card className={`w-full max-w-md relative border-2 border-blue-500 shadow-2xl transition-all duration-300 ${
+      <Card className={`w-full max-w-sm relative border-2 border-blue-500 shadow-2xl transition-all duration-300 ${
         isLeaving ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
       }`}>
         <button
@@ -47,7 +47,7 @@ export default function FreeShippingPopup({ onClose, cartTotal }: FreeShippingPo
           <X className="w-5 h-5 text-blue-600" />
         </button>
         
-        <CardContent className="p-8 text-center">
+        <CardContent className="p-6 text-center">
           {/* Header avec icône */}
           <div className="flex items-center justify-center mb-4">
             <div className="bg-gradient-to-r from-blue-500 to-green-500 p-3 rounded-full">
@@ -59,8 +59,8 @@ export default function FreeShippingPopup({ onClose, cartTotal }: FreeShippingPo
             LIVRAISON GRATUITE
           </Badge>
 
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            🚚 Livraison gratuite à portée de main !
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
+            🚚 Livraison gratuite !
           </h2>
           
           <p className="text-gray-600 mb-4">
@@ -71,16 +71,16 @@ export default function FreeShippingPopup({ onClose, cartTotal }: FreeShippingPo
           <div className="mb-6">
             <div className="flex justify-between text-sm text-gray-600 mb-2">
               <span>Votre panier</span>
-              <span>{cartTotal.toLocaleString()} F / 50 000 F</span>
+              <span>{cartTotal.toLocaleString()} F / 75 000 F</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3">
               <div 
                 className="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-500"
-                style={{ width: `${(cartTotal / 50000) * 100}%` }}
+                style={{ width: `${(cartTotal / 75000) * 100}%` }}
               ></div>
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              {Math.round((cartTotal / 50000) * 100)}% complété
+              {Math.round((cartTotal / 75000) * 100)}% complété
             </div>
           </div>
 
@@ -95,38 +95,22 @@ export default function FreeShippingPopup({ onClose, cartTotal }: FreeShippingPo
           </div>
 
           {/* Avantages de la livraison gratuite */}
-          <div className="space-y-2 mb-6 text-left">
-            <div className="flex items-center text-sm text-gray-600">
-              <Truck className="w-4 h-4 text-blue-500 mr-2" />
+          <div className="space-y-1 mb-4 text-left">
+            <div className="flex items-center text-xs text-gray-600">
+              <Truck className="w-3 h-3 text-blue-500 mr-2" />
               Livraison gratuite partout en Côte d'Ivoire
             </div>
-            <div className="flex items-center text-sm text-gray-600">
-              <Truck className="w-4 h-4 text-blue-500 mr-2" />
+            <div className="flex items-center text-xs text-gray-600">
+              <Truck className="w-3 h-3 text-blue-500 mr-2" />
               Livraison en 24-48h
-            </div>
-            <div className="flex items-center text-sm text-gray-600">
-              <Truck className="w-4 h-4 text-blue-500 mr-2" />
-              Suivi en temps réel
-            </div>
-          </div>
-
-          {/* Suggestions de produits */}
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h3 className="text-sm font-semibold text-gray-700 mb-2">
-              💡 Suggestions pour atteindre la livraison gratuite :
-            </h3>
-            <div className="text-xs text-gray-600 space-y-1">
-              <p>• Accessoires téléphone (5 000 - 15 000 F)</p>
-              <p>• Câbles et chargeurs (3 000 - 8 000 F)</p>
-              <p>• Coques et protections (2 000 - 10 000 F)</p>
             </div>
           </div>
 
           {/* Boutons d'action */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <Button 
               onClick={handleClose}
-              className="w-full bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-bold py-3 rounded-lg transition-all duration-300 transform hover:scale-105"
+              className="w-full bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-bold py-2 rounded-lg transition-all duration-300"
             >
               <ArrowRight className="w-4 h-4 mr-2" />
               Continuer mes achats
@@ -135,7 +119,7 @@ export default function FreeShippingPopup({ onClose, cartTotal }: FreeShippingPo
             <Button 
               variant="outline" 
               onClick={handleClose}
-              className="w-full border-blue-300 text-blue-600 hover:bg-blue-50"
+              className="w-full border-blue-300 text-blue-600 hover:bg-blue-50 py-2"
             >
               Voir le panier
             </Button>
@@ -143,7 +127,7 @@ export default function FreeShippingPopup({ onClose, cartTotal }: FreeShippingPo
 
           {/* Message d'encouragement */}
           <p className="text-xs text-gray-500 mt-4">
-            * Livraison gratuite valable dès 50 000 F d'achat
+            * Livraison gratuite valable dès 75 000 F d'achat
           </p>
         </CardContent>
       </Card>

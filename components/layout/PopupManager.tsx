@@ -22,7 +22,7 @@ export default function PopupManager() {
 
   // Simuler un panier pour le pop-up de livraison gratuite
   // En production, cela viendrait du contexte du panier
-  const mockCartTotal = 35000; // 35 000 F
+  const mockCartTotal = 45000; // 45 000 F
 
   useEffect(() => {
     // Vérifier le total du panier pour le pop-up de livraison gratuite
