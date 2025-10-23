@@ -5,6 +5,7 @@ import { AppProviders } from "@/components/providers/AppProviders";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import GlobalCartAnimation from '@/components/ui/GlobalCartAnimation';
 import CookieBanner from '@/components/layout/CookieBanner';
+import NewsletterPopupManager from '@/components/layout/NewsletterPopupManager';
 
 export const metadata: Metadata = {
   title: "JomionStore - Benin Elite Shopping Experience",
@@ -64,6 +65,7 @@ export default function RootLayout({
           {children}
           <GlobalCartAnimation />
           <CookieBanner />
+          <NewsletterPopupManager />
         </AppProviders>
         <SpeedInsights />
         
