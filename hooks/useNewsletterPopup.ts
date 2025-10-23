@@ -25,8 +25,8 @@ export function useNewsletterPopup(): NewsletterPopupState {
         const now = new Date();
         const daysSinceLastSeen = Math.floor((now.getTime() - lastSeen.getTime()) / (1000 * 60 * 60 * 24));
         
-        // Afficher le pop-up si ça fait plus de 7 jours
-        if (daysSinceLastSeen >= 7) {
+        // Afficher le pop-up si ça fait plus de 2 jours
+        if (daysSinceLastSeen >= 2) {
           setHasSeenPopup(false);
         } else {
           setHasSeenPopup(true);
@@ -40,7 +40,7 @@ export function useNewsletterPopup(): NewsletterPopupState {
     if (!hasSeenPopup) {
       const timer = setTimeout(() => {
         setIsVisible(true);
-      }, 3000); // Afficher après 3 secondes
+      }, 15000); // Afficher après 15 secondes
 
       return () => clearTimeout(timer);
     }
