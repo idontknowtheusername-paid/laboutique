@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import DiscountPopup from './DiscountPopup';
 import FlashSalePopup from './FlashSalePopup';
@@ -22,12 +22,24 @@ export default function PopupManager() {
 
   // Simuler un panier pour le pop-up de livraison gratuite
   // En production, cela viendrait du contexte du panier
-  const mockCartTotal = 25000; // 25 000 F (déclenche le pop-up car < 75k)
+  const [mockCartTotal, setMockCartTotal] = useState(0);
+
+  useEffect(() => {
+    // Simuler l'ajout d'articles au panier après 3 secondes
+    // Cela simule un comportement plus réaliste
+    const timer = setTimeout(() => {
+      setMockCartTotal(15000); // 15 000 F (déclenche le pop-up)
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // Vérifier le total du panier pour le pop-up de livraison gratuite
-    freeShippingPopup.checkCartTotal(mockCartTotal);
-  }, [freeShippingPopup]);
+    if (mockCartTotal > 0) {
+      freeShippingPopup.checkCartTotal(mockCartTotal);
+    }
+  }, [mockCartTotal, freeShippingPopup]);
 
   // Déterminer quels pop-ups peuvent s'afficher selon la page
   const isHomePage = pathname === '/';

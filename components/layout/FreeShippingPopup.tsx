@@ -19,7 +19,9 @@ export default function FreeShippingPopup({ onClose, cartTotal }: FreeShippingPo
 
   useEffect(() => {
     // Vérifier si le pop-up doit s'afficher quand panier < 75 000 F
-    if (cartTotal > 0 && cartTotal < 75000) {
+    // Seuil minimum : 10 000 F pour éviter les paniers vides
+    // Seuil maximum : 75 000 F pour la livraison gratuite
+    if (cartTotal >= 10000 && cartTotal < 75000) {
       setIsVisible(true);
     }
   }, [cartTotal]);
