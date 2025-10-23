@@ -26,8 +26,8 @@ export function useFreeShippingPopup(): FreeShippingPopupState {
   }, []);
 
   const checkCartTotal = (total: number) => {
-    // Afficher le pop-up si le panier est entre 20k et 74k F et qu'on ne l'a pas encore montré
-    if (total >= 20000 && total < 75000 && !hasShownThisSession) {
+    // Afficher le pop-up si le panier est < 75k F et qu'on ne l'a pas encore montré
+    if (total > 0 && total < 75000 && !hasShownThisSession) {
       setShouldShow(true);
       setIsVisible(true);
     }

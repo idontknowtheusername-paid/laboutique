@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { X, Truck, ShoppingCart, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,12 +13,13 @@ interface FreeShippingPopupProps {
 }
 
 export default function FreeShippingPopup({ onClose, cartTotal }: FreeShippingPopupProps) {
+  const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
 
   useEffect(() => {
-    // Vérifier si le pop-up doit s'afficher
-    if (cartTotal >= 20000 && cartTotal < 75000) {
+    // Vérifier si le pop-up doit s'afficher quand panier < 75 000 F
+    if (cartTotal > 0 && cartTotal < 75000) {
       setIsVisible(true);
     }
   }, [cartTotal]);
@@ -28,6 +30,11 @@ export default function FreeShippingPopup({ onClose, cartTotal }: FreeShippingPo
       setIsVisible(false);
       onClose();
     }, 300);
+  };
+
+  const handleViewCart = () => {
+    handleClose();
+    router.push('/cart');
   };
 
   const remainingAmount = 75000 - cartTotal;
@@ -118,7 +125,7 @@ export default function FreeShippingPopup({ onClose, cartTotal }: FreeShippingPo
             
             <Button 
               variant="outline" 
-              onClick={handleClose}
+              onClick={handleViewCart}
               className="w-full border-blue-300 text-blue-600 hover:bg-blue-50 py-2"
             >
               Voir le panier
