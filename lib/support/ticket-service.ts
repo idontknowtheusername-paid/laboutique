@@ -25,7 +25,7 @@ export class TicketService {
       };
 
       const { data, error } = await supabase
-        .from('support_tickets')
+        .from('support_tickets' as any)
         .insert([{
           ...ticket,
           created_at: new Date().toISOString(),
@@ -52,7 +52,7 @@ export class TicketService {
   async getTicketsForAdmin(): Promise<{ success: boolean; tickets?: SupportTicket[]; error?: string }> {
     try {
       const { data, error } = await supabase
-        .from('support_tickets')
+        .from('support_tickets' as any)
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -89,7 +89,7 @@ export class TicketService {
   ): Promise<{ success: boolean; error?: string }> {
     try {
       const { error } = await supabase
-        .from('support_tickets')
+        .from('support_tickets' as any)
         .update({
           status,
           admin_notes: adminNotes,

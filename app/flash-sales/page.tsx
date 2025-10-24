@@ -92,6 +92,38 @@ export default function FlashSalesPage() {
   const [itemsPerPage] = useState(12);
   const [totalCount, setTotalCount] = useState(0);
 
+  // Formater le temps restant
+  const formatTimeRemaining = useCallback((ms: number) => {
+    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (days > 0) return `${days}j ${hours}h`;
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    return `${minutes}m`;
+  }, []);
+
+  // Calculer les statistiques
+  const calculateStats = useCallback((products: FlashSaleProduct[]) => {
+    const totalProducts = products.length;
+    const totalDiscount = products.reduce((sum, product) => 
+      sum + ((product.compare_price || product.price) - product.price), 0
+    );
+    const averageDiscount = totalProducts > 0 ? totalDiscount / totalProducts : 0;
+    
+    // Trouver la fin de vente la plus proche
+    const endTimes = products.map(p => new Date(p.flash_sale_end).getTime());
+    const nearestEnd = Math.min(...endTimes);
+    const timeRemaining = nearestEnd - new Date().getTime();
+    
+    setStats({
+      total_products: totalProducts,
+      total_discount: totalDiscount,
+      average_discount: Math.round(averageDiscount),
+      time_remaining: timeRemaining > 0 ? formatTimeRemaining(timeRemaining) : 'Terminé'
+    });
+  }, [formatTimeRemaining]);
+
   // Charger les ventes flash
   const loadFlashSales = useCallback(async () => {
     try {
@@ -143,7 +175,7 @@ export default function FlashSalesPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [calculateStats]);
 
   // Charger les catégories
   const loadCategories = useCallback(async () => {
@@ -166,36 +198,6 @@ export default function FlashSalesPage() {
   }, [isHydrated, loadFlashSales, loadCategories]);
 
   // Calculer les statistiques
-  const calculateStats = (products: FlashSaleProduct[]) => {
-    const totalProducts = products.length;
-    const totalDiscount = products.reduce((sum, product) => 
-      sum + ((product.compare_price || product.price) - product.price), 0
-    );
-    const averageDiscount = totalProducts > 0 ? totalDiscount / totalProducts : 0;
-    
-    // Trouver la fin de vente la plus proche
-    const endTimes = products.map(p => new Date(p.flash_sale_end).getTime());
-    const nearestEnd = Math.min(...endTimes);
-    const timeRemaining = nearestEnd - new Date().getTime();
-    
-    setStats({
-      total_products: totalProducts,
-      total_discount: totalDiscount,
-      average_discount: averageDiscount,
-      time_remaining: timeRemaining > 0 ? formatTimeRemaining(timeRemaining) : 'Terminé'
-    });
-  };
-
-  // Formater le temps restant
-  const formatTimeRemaining = (ms: number) => {
-    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-    
-    if (days > 0) return `${days}j ${hours}h`;
-    if (hours > 0) return `${hours}h ${minutes}m`;
-    return `${minutes}m`;
-  };
 
   // Filtrer et trier les produits
   const filteredAndSortedProducts = useMemo(() => {

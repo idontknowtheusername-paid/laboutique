@@ -18,16 +18,18 @@ export class ChatService {
     userName?: string;
   }): Promise<{ success: boolean; conversationId?: string; error?: string }> {
     try {
-      const { data, error } = await supabase
+      const conversationData = {
+        user_id: userInfo?.userId || null,
+        user_email: userInfo?.userEmail || null,
+        user_name: userInfo?.userName || null,
+        status: 'active',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const { data, error } = await (supabase as any)
         .from('support_conversations')
-        .insert([{
-          user_id: userInfo?.userId,
-          user_email: userInfo?.userEmail,
-          user_name: userInfo?.userName,
-          status: 'active',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }])
+        .insert(conversationData)
         .select()
         .single();
 
@@ -120,7 +122,7 @@ export class ChatService {
     try {
       const messageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('support_messages')
         .insert([{
           id: messageId,
@@ -154,7 +156,7 @@ export class ChatService {
 
   private async getConversationHistory(conversationId: string): Promise<SupportMessage[]> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('support_messages')
         .select('*')
         .eq('conversation_id', conversationId)
@@ -189,7 +191,7 @@ export class ChatService {
 
       // Récupérer les infos utilisateur de la conversation
       const { data: conversation } = await supabase
-        .from('support_conversations')
+        .from('support_conversations' as any)
         .select('user_id, user_email, user_name')
         .eq('id', conversationId)
         .single();
@@ -207,7 +209,7 @@ export class ChatService {
 
       // Mettre à jour le statut de la conversation
       await supabase
-        .from('support_conversations')
+        .from('support_conversations' as any)
         .update({ 
           status: 'escalated',
           updated_at: new Date().toISOString(),
@@ -222,7 +224,7 @@ export class ChatService {
   async getConversation(conversationId: string): Promise<{ success: boolean; conversation?: SupportConversation; error?: string }> {
     try {
       const { data: conversation, error: convError } = await supabase
-        .from('support_conversations')
+        .from('support_conversations' as any)
         .select('*')
         .eq('id', conversationId)
         .single();

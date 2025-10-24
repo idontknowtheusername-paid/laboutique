@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageSquare, X, Ticket, CheckCircle } from 'lucide-react';
 import ChatWindow from './ChatWindow';
@@ -20,13 +20,7 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
   const [chatService] = useState(() => new ChatService(mistralApiKey));
   const { user } = useAuth();
 
-  useEffect(() => {
-    if (isOpen && !conversation) {
-      initializeConversation();
-    }
-  }, [isOpen]);
-
-  const initializeConversation = async () => {
+  const initializeConversation = useCallback(async () => {
     setIsLoading(true);
     try {
       const result = await chatService.createConversation({
@@ -46,7 +40,13 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [chatService, user]);
+
+  useEffect(() => {
+    if (isOpen && !conversation) {
+      initializeConversation();
+    }
+  }, [isOpen, conversation, initializeConversation]);
 
   const handleSendMessage = async (message: string) => {
     if (!conversation) return;
