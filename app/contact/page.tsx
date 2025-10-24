@@ -52,23 +52,30 @@ const supportOptions = [
   {
     icon: MessageSquare,
     title: 'Chat en direct',
-    description: 'Discutez avec notre équipe support',
+    description: 'Discutez avec notre équipe support (redirige vers le formulaire)',
     action: 'Démarrer le chat',
-    available: true
+    available: true,
+    onClick: () => {
+      // Pour l'instant, rediriger vers le formulaire de contact
+      // TODO: Intégrer un système de chat en temps réel
+      document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' });
+    }
   },
   {
     icon: Headphones,
     title: 'Support téléphonique',
     description: 'Appelez-nous pour une assistance immédiate',
     action: 'Appeler maintenant',
-    available: true
+    available: true,
+    href: 'tel:+2290164354089'
   },
   {
     icon: Mail,
     title: 'Email support',
     description: 'Envoyez-nous un email détaillé',
     action: 'Envoyer un email',
-    available: true
+    available: true,
+    href: 'mailto:contact@jomionstore.com?subject=Support Client'
   }
 ];
 
@@ -82,6 +89,7 @@ export default function ContactPage() {
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -100,6 +108,8 @@ export default function ContactPage() {
       alert('Veuillez entrer une adresse email valide');
       return;
     }
+
+    setIsSubmitting(true);
 
     try {
       const response = await fetch('/api/contact', {
@@ -133,6 +143,8 @@ export default function ContactPage() {
     } catch (error) {
       console.error('Erreur envoi message:', error);
       alert('Erreur de connexion. Veuillez réessayer.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -183,7 +195,7 @@ export default function ContactPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <Card>
+          <Card id="contact-form">
             <CardHeader>
               <CardTitle className="text-2xl">Envoyez-nous un message</CardTitle>
             </CardHeader>
@@ -284,9 +296,22 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full bg-jomionstore-primary hover:bg-orange-700 h-12">
-                    <Send className="w-4 h-4 mr-2" />
-                    Envoyer le message
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-jomionstore-primary hover:bg-orange-700 h-12"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        Envoi en cours...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        Envoyer le message
+                      </>
+                    )}
                   </Button>
                 </form>
               )}
@@ -312,9 +337,25 @@ export default function ContactPage() {
                         <h3 className="font-semibold text-gray-900">{option.title}</h3>
                         <p className="text-sm text-gray-600">{option.description}</p>
                       </div>
-                      <Button variant="outline" size="sm">
-                        {option.action}
-                      </Button>
+                      {option.href ? (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          asChild
+                        >
+                          <a href={option.href} className="flex items-center">
+                            {option.action}
+                          </a>
+                        </Button>
+                      ) : (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={option.onClick}
+                        >
+                          {option.action}
+                        </Button>
+                      )}
                     </div>
                   );
                 })}
@@ -376,8 +417,19 @@ export default function ContactPage() {
                   <MapPin className="w-16 h-16 text-jomionstore-primary mx-auto mb-4" />
                   <h3 className="text-xl font-bold text-gray-900 mb-2">JomionStore Headquarters</h3>
                   <p className="text-gray-600">Quartier Ganhi, Cotonou, Bénin</p>
-                  <Button className="mt-4 bg-jomionstore-primary hover:bg-orange-700">
-                    Voir sur Google Maps
+                  <Button 
+                    className="mt-4 bg-jomionstore-primary hover:bg-orange-700"
+                    asChild
+                  >
+                    <a 
+                      href="https://www.google.com/maps/search/Quartier+Ganhi,+Cotonou,+Bénin" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center"
+                    >
+                      <MapPin className="w-4 h-4 mr-2" />
+                      Voir sur Google Maps
+                    </a>
                   </Button>
                 </div>
               </div>
