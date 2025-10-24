@@ -65,10 +65,12 @@ export default function MessageBubble({ message, isTyping = false }: MessageBubb
           isUser ? 'rounded-br-md' : 'rounded-bl-md'
         )}>
           {isTyping ? (
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="flex items-center gap-1 py-1">
+              <div className="flex items-center gap-0.5">
+                <div className="w-1.5 h-1.5 bg-gray-500 rounded-full animate-pulse" style={{ animationDelay: '0ms', animationDuration: '1.2s' }} />
+                <div className="w-1.5 h-1.5 bg-gray-500 rounded-full animate-pulse" style={{ animationDelay: '200ms', animationDuration: '1.2s' }} />
+                <div className="w-1.5 h-1.5 bg-gray-500 rounded-full animate-pulse" style={{ animationDelay: '400ms', animationDuration: '1.2s' }} />
+              </div>
             </div>
           ) : (
             <p className="whitespace-pre-wrap">{message.content}</p>
