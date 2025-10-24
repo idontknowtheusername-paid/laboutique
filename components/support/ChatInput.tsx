@@ -57,9 +57,14 @@ export default function ChatInput({
   };
 
   useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.focus();
-    }
+    // Focus seulement si le composant est monté et visible
+    const timer = setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   return (

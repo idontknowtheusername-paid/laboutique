@@ -50,8 +50,18 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
   }, [isOpen, conversation, initializeConversation]);
 
   const handleSendMessage = async (message: string) => {
+    console.log('handleSendMessage appelé avec:', message);
+    console.log('Conversation actuelle:', conversation);
+    
     if (!conversation) {
-      console.log('Aucune conversation active');
+      console.log('Aucune conversation active - tentative de création...');
+      await initializeConversation();
+      // Attendre un peu pour que la conversation soit créée
+      setTimeout(() => {
+        if (conversation) {
+          handleSendMessage(message);
+        }
+      }, 1000);
       return;
     }
 

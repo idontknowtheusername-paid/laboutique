@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { X, Minimize2, Maximize2, MessageSquare, Ticket } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ChatWindowProps {
   conversation: SupportConversation | null;
@@ -202,8 +203,4 @@ export default function ChatWindow({
       </Card>
     </div>
   );
-}
-
-function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(' ');
 }
