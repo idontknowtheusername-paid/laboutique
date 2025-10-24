@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, CheckCircle, AlertCircle, Gift, Star, Shield, Truck, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +16,17 @@ const Footer = () => {
   const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const { toast } = useToast();
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (user) {
+      router.push('/account/wishlist');
+    } else {
+      router.push('/auth/login');
+    }
+  };
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -250,15 +263,18 @@ const Footer = () => {
                 <Link href="/flash-sales" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
                   Ventes flash
                 </Link>
-                <Link href="/new-arrivals" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                <Link href="/#trending-products" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
                   Nouveautés
                 </Link>
-                <Link href="/best-sellers" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                <Link href="/#best-sellers" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
                   Meilleures ventes
                 </Link>
-                <Link href="/wishlist" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                <button 
+                  onClick={handleWishlistClick}
+                  className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm text-left"
+                >
                   Ma liste de souhaits
-                </Link>
+                </button>
               </nav>
             </div>
 

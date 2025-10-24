@@ -173,7 +173,7 @@ export default function HomePageContent() {
             <CarouselCategories />
           </LazySection>
 
-          <section className="container mb-4">
+          <section id="flash-sales" className="container mb-4">
             <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
               <FlashSalesConnected />
             </LazySection>
@@ -193,7 +193,7 @@ export default function HomePageContent() {
             </LazySection>
           </section>
 
-          <section className="container mb-4">
+          <section id="trending-products" className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
               <ProductGrid
                 title="Nouveautés"
@@ -206,7 +206,7 @@ export default function HomePageContent() {
             </LazySection>
           </section>
 
-          <section className="container mb-4">
+          <section id="best-sellers" className="container mb-4">
             <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
               <ProductGrid
                 title="Top Ventes"
