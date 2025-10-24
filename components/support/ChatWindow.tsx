@@ -17,6 +17,8 @@ interface ChatWindowProps {
   isOpen: boolean;
   isLoading?: boolean;
   isTyping?: boolean;
+  error?: string | null;
+  onClearError?: () => void;
 }
 
 export default function ChatWindow({
@@ -25,7 +27,9 @@ export default function ChatWindow({
   onClose,
   isOpen,
   isLoading = false,
-  isTyping = false
+  isTyping = false,
+  error = null,
+  onClearError
 }: ChatWindowProps) {
   const [isMinimized, setIsMinimized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -183,6 +187,14 @@ export default function ChatWindow({
                     />
                   )}
                   
+                  {error && (
+                    <div className="flex justify-center">
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2 max-w-xs">
+                        <p className="text-sm text-yellow-800">{error}</p>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div ref={messagesEndRef} />
                 </>
               )}
@@ -197,6 +209,7 @@ export default function ChatWindow({
                   ? "Un ticket a été créé. Un agent vous contactera bientôt."
                   : "Tapez votre message..."
               }
+              onInputChange={onClearError}
             />
           </>
         )}

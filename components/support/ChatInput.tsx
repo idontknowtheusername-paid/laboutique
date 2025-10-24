@@ -9,12 +9,14 @@ interface ChatInputProps {
   onSendMessage: (message: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  onInputChange?: () => void;
 }
 
 export default function ChatInput({ 
   onSendMessage, 
   disabled = false, 
-  placeholder = "Tapez votre message..." 
+  placeholder = "Tapez votre message...",
+  onInputChange
 }: ChatInputProps) {
   const [message, setMessage] = useState('');
   const [isComposing, setIsComposing] = useState(false);
@@ -40,6 +42,7 @@ export default function ChatInput({
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
+    onInputChange?.(); // Réinitialiser l'erreur quand l'utilisateur tape
     
     // Auto-resize textarea
     if (textareaRef.current) {

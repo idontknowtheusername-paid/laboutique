@@ -18,6 +18,7 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
   const [conversation, setConversation] = useState<SupportConversation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [chatService] = useState(() => new ChatService(mistralApiKey));
   const { user } = useAuth();
 
@@ -53,6 +54,9 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
     console.log('handleSendMessage appelé avec:', message);
     console.log('Conversation actuelle:', conversation);
     
+    // Réinitialiser l'erreur
+    setError(null);
+    
     // Si pas de conversation, en créer une d'abord
     if (!conversation) {
       console.log('Aucune conversation active - création...');
@@ -65,15 +69,31 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
         });
 
         if (result.success && result.conversationId) {
+          // Attendre un peu pour que la conversation soit bien créée
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
           const convResult = await chatService.getConversation(result.conversationId);
           if (convResult.success && convResult.conversation) {
             setConversation(convResult.conversation);
             // Maintenant envoyer le message
             await sendMessageToConversation(convResult.conversation.id, message);
+          } else {
+            console.error('Erreur récupération conversation:', convResult.error);
+            setError('Problème de connexion, utilisation du mode de secours...');
+            // Fallback: utiliser l'API Mistral directe
+            await sendMessageDirectly(message);
           }
+        } else {
+          console.error('Erreur création conversation:', result.error);
+          setError('Problème de connexion, utilisation du mode de secours...');
+          // Fallback: utiliser l'API Mistral directe
+          await sendMessageDirectly(message);
         }
       } catch (error) {
         console.error('Erreur création conversation:', error);
+        setError('Problème de connexion, utilisation du mode de secours...');
+        // Fallback: utiliser l'API Mistral directe
+        await sendMessageDirectly(message);
       } finally {
         setIsLoading(false);
       }
@@ -82,6 +102,54 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
 
     // Envoyer le message à la conversation existante
     await sendMessageToConversation(conversation.id, message);
+  };
+
+  // Fonction de fallback pour utiliser l'API Mistral directe
+  const sendMessageDirectly = async (message: string) => {
+    console.log('Fallback: Envoi direct via API Mistral');
+    setIsTyping(true);
+    
+    try {
+      const response = await fetch('/api/support/mistral', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: message,
+          conversationHistory: conversation?.messages.map(m => `${m.sender}: ${m.content}`) || []
+        })
+      });
+
+      const data = await response.json();
+      console.log('Réponse API Mistral directe:', data);
+      
+      if (data.success && data.data && data.data.content) {
+        // Créer un message temporaire pour l'affichage
+        const tempMessage = {
+          id: Date.now().toString(),
+          content: data.data.content,
+          sender: 'ai' as const,
+          timestamp: new Date(),
+          conversationId: 'temp',
+          isTyping: false
+        };
+        
+        // Mettre à jour l'état local
+        setConversation(prev => prev ? {
+          ...prev,
+          messages: [...prev.messages, tempMessage]
+        } : null);
+      } else {
+        console.error('Erreur API Mistral directe:', data.error);
+        setError('Impossible de contacter l\'assistant. Veuillez réessayer plus tard.');
+      }
+    } catch (error) {
+      console.error('Erreur fallback Mistral:', error);
+      setError('Erreur de connexion. Veuillez réessayer plus tard.');
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const sendMessageToConversation = async (conversationId: string, message: string) => {
@@ -100,16 +168,22 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
         if (updatedConv.success && updatedConv.conversation) {
           setConversation(updatedConv.conversation);
         }
-
+        
         // Si escalade, afficher notification
         if (result.shouldEscalate) {
           console.log('Conversation escaladée vers un ticket');
         }
       } else {
         console.error('Erreur lors de l\'envoi du message:', result.error);
+        setError('Problème de connexion, utilisation du mode de secours...');
+        // Fallback vers l'API Mistral directe
+        await sendMessageDirectly(message);
       }
     } catch (error) {
       console.error('Erreur envoi message:', error);
+      setError('Problème de connexion, utilisation du mode de secours...');
+      // Fallback vers l'API Mistral directe
+      await sendMessageDirectly(message);
     } finally {
       setIsTyping(false);
     }
@@ -117,6 +191,7 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
 
   const handleClose = () => {
     setIsOpen(false);
+    setError(null); // Réinitialiser l'erreur à la fermeture
   };
 
   const getStatusColor = () => {
@@ -183,6 +258,8 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
         isOpen={isOpen}
         isLoading={isLoading}
         isTyping={isTyping}
+        error={error}
+        onClearError={() => setError(null)}
       />
     </>
   );
