@@ -53,28 +53,48 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
     console.log('handleSendMessage appelé avec:', message);
     console.log('Conversation actuelle:', conversation);
     
+    // Si pas de conversation, en créer une d'abord
     if (!conversation) {
-      console.log('Aucune conversation active - tentative de création...');
-      await initializeConversation();
-      // Attendre un peu pour que la conversation soit créée
-      setTimeout(() => {
-        if (conversation) {
-          handleSendMessage(message);
+      console.log('Aucune conversation active - création...');
+      setIsLoading(true);
+      try {
+        const result = await chatService.createConversation({
+          userId: user?.id,
+          userEmail: user?.email,
+          userName: user?.user_metadata?.full_name || user?.email?.split('@')[0],
+        });
+
+        if (result.success && result.conversationId) {
+          const convResult = await chatService.getConversation(result.conversationId);
+          if (convResult.success && convResult.conversation) {
+            setConversation(convResult.conversation);
+            // Maintenant envoyer le message
+            await sendMessageToConversation(convResult.conversation.id, message);
+          }
         }
-      }, 1000);
+      } catch (error) {
+        console.error('Erreur création conversation:', error);
+      } finally {
+        setIsLoading(false);
+      }
       return;
     }
 
+    // Envoyer le message à la conversation existante
+    await sendMessageToConversation(conversation.id, message);
+  };
+
+  const sendMessageToConversation = async (conversationId: string, message: string) => {
     console.log('Envoi du message:', message);
     setIsTyping(true);
     
     try {
-      const result = await chatService.sendMessage(conversation.id, message);
+      const result = await chatService.sendMessage(conversationId, message);
       console.log('Résultat envoi message:', result);
       
       if (result.success && result.message) {
         // Mettre à jour la conversation avec le nouveau message
-        const updatedConv = await chatService.getConversation(conversation.id);
+        const updatedConv = await chatService.getConversation(conversationId);
         console.log('Conversation mise à jour:', updatedConv);
         
         if (updatedConv.success && updatedConv.conversation) {

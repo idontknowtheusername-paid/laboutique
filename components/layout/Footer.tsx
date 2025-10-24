@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import TestSupportWidget from '@/components/support/TestSupportWidget';
+import SupportWidget from '@/components/support/SupportWidget';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
@@ -390,8 +390,8 @@ const Footer = () => {
       </div>
     </footer>
     
-    {/* Support Widget - TEST */}
-    <TestSupportWidget />
+    {/* Support Widget */}
+    {mistralApiKey && <SupportWidget mistralApiKey={mistralApiKey} />}
     </>
   );
 };
