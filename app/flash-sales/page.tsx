@@ -44,16 +44,16 @@ import { useHydration } from '@/hooks/useHydration';
 import { useFeedback } from '@/components/ui/FeedbackProvider';
 import { useAnalytics } from '@/hooks/useAnalytics';
 
-interface FlashSaleProduct extends Product {
+interface FlashSaleProduct extends Omit<Product, 'sku' | 'track_quantity' | 'vendor_id' | 'featured'> {
   flash_sale_price: number;
   discount_percentage: number;
   flash_sale_end: string;
   stock_remaining: number;
   is_flash_sale: boolean;
-  sku?: string;
-  track_quantity?: boolean;
-  vendor_id?: string;
-  featured?: boolean;
+  sku: string;
+  track_quantity: boolean;
+  vendor_id: string;
+  featured: boolean;
 }
 
 interface FlashSaleStats {
@@ -119,7 +119,11 @@ export default function FlashSalesPage() {
           category: { id: '1', name: 'Électronique', slug: 'electronique' },
           description: 'iPhone 15 Pro Max avec puce A17 Pro',
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          sku: 'IPH15PM256',
+          track_quantity: true,
+          vendor_id: 'apple',
+          featured: true
         },
         {
           id: '2',
@@ -140,7 +144,11 @@ export default function FlashSalesPage() {
           category: { id: '1', name: 'Électronique', slug: 'electronique' },
           description: 'Samsung Galaxy S24 Ultra avec S Pen',
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          sku: 'SGS24U512',
+          track_quantity: true,
+          vendor_id: 'samsung',
+          featured: true
         },
         {
           id: '3',
@@ -161,7 +169,11 @@ export default function FlashSalesPage() {
           category: { id: '2', name: 'Informatique', slug: 'informatique' },
           description: 'MacBook Air M3 avec puce M3',
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          sku: 'MBA13M3',
+          track_quantity: true,
+          vendor_id: 'apple',
+          featured: true
         },
         {
           id: '4',
@@ -182,7 +194,11 @@ export default function FlashSalesPage() {
           category: { id: '3', name: 'Audio', slug: 'audio' },
           description: 'AirPods Pro avec réduction de bruit active',
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          sku: 'APP2G',
+          track_quantity: true,
+          vendor_id: 'apple',
+          featured: false
         },
         {
           id: '5',
@@ -203,7 +219,11 @@ export default function FlashSalesPage() {
           category: { id: '4', name: 'Mode', slug: 'mode' },
           description: 'Chaussures Nike Air Max 270 confortables',
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          sku: 'NAM270',
+          track_quantity: true,
+          vendor_id: 'nike',
+          featured: false
         }
       ];
 
