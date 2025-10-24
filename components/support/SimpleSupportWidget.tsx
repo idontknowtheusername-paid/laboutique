@@ -111,13 +111,25 @@ export default function SimpleSupportWidget({ mistralApiKey }: SimpleSupportWidg
     <>
       {/* Bouton flottant */}
       {!isOpen && (
-        <Button
-          onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-jomionstore-primary hover:bg-jomionstore-primary/90"
-          size="lg"
-        >
-          <MessageSquare className="w-6 h-6" />
-        </Button>
+        <div className="fixed bottom-6 right-6 z-40">
+          <Button
+            onClick={() => setIsOpen(true)}
+            className={cn(
+              "h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300",
+              "bg-jomionstore-primary hover:bg-jomionstore-primary/90 text-white",
+              "flex items-center justify-center relative group"
+            )}
+            size="lg"
+          >
+            <MessageSquare className="w-6 h-6" />
+            
+            {/* Tooltip */}
+            <div className="absolute right-16 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+              Support Jomion
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-0 h-0 border-l-4 border-l-gray-900 border-t-4 border-t-transparent border-b-4 border-b-transparent" />
+            </div>
+          </Button>
+        </div>
       )}
 
       {/* Fenêtre de chat */}
