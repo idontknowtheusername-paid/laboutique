@@ -124,9 +124,9 @@ export default function SimpleSupportWidget({ mistralApiKey }: SimpleSupportWidg
             <MessageSquare className="w-6 h-6" />
             
             {/* Tooltip */}
-            <div className="absolute right-16 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-              Support Jomion
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-0 h-0 border-l-4 border-l-gray-900 border-t-4 border-t-transparent border-b-4 border-b-transparent" />
+            <div className="absolute right-16 top-1/2 -translate-y-1/2 bg-white text-gray-900 text-sm px-4 py-2 rounded-lg shadow-lg border border-gray-200 opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap z-50">
+              <span className="font-medium">Support Jomion</span>
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-0 h-0 border-l-4 border-l-white border-t-4 border-t-transparent border-b-4 border-b-transparent" />
             </div>
           </Button>
         </div>
