@@ -320,7 +320,7 @@ export class AnalyticsService extends BaseService {
       if (error) throw error;
 
       // Simuler les sources de trafic
-      const sources = ['Google', 'Facebook', 'Instagram', 'Direct', 'Email', 'Referral'];
+      const sources = ['Google', 'Apple', 'Instagram', 'Direct', 'Email', 'Referral'];
       const sourceData: { [key: string]: any } = {};
 
       sources.forEach(source => {

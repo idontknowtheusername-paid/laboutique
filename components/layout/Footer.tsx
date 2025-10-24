@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, CheckCircle, AlertCircle, Gift, Star, Shield, Truck, ArrowRight } from 'lucide-react';
+import { Mail, Phone, MapPin, Apple, Twitter, Instagram, Youtube, CheckCircle, AlertCircle, Gift, Star, Shield, Truck, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -197,8 +197,8 @@ const Footer = () => {
                   className="border-gray-600 text-gray-300 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-400/10 transition-all duration-300"
                   asChild
                 >
-                  <Link href="https://facebook.com/jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Facebook">
-                    <Facebook className="w-5 h-5" />
+                  <Link href="https://apple.com" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Apple">
+                    <Apple className="w-5 h-5" />
                   </Link>
                 </Button>
                 <Button 

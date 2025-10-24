@@ -30,7 +30,7 @@ const DynamicMeta: React.FC<DynamicMetaProps> = ({
     "url": url,
   "logo": `${url}/images/logo.png`,
     "sameAs": [
-      "https://facebook.com/jomionstore",
+      "https://apple.com",
       "https://instagram.com/jomionstore",
       "https://twitter.com/jomionstore"
     ],
@@ -59,7 +59,7 @@ const DynamicMeta: React.FC<DynamicMetaProps> = ({
       <meta name="language" content="fr" />
       <meta name="revisit-after" content="7 days" />
       
-      {/* Open Graph / Facebook */}
+      {/* Open Graph / Apple */}
       <meta property="og:type" content={type} />
       <meta property="og:url" content={url} />
       <meta property="og:title" content={fullTitle} />

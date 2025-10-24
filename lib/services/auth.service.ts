@@ -353,14 +353,14 @@ export class AuthService extends BaseService {
   }
 
   /**
-   * Connexion avec Facebook
+   * Connexion avec Apple
    */
-  static async signInWithFacebook(): Promise<ServiceResponse<{ url: string }>> {
+  static async signInWithApple(): Promise<ServiceResponse<{ url: string }>> {
     try {
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
       const redirectTo = appUrl ? `${appUrl}/auth/callback` : undefined;
       const { data, error } = await this.getSupabaseClient().auth.signInWithOAuth({
-        provider: 'facebook',
+        provider: 'apple',
         options: {
           redirectTo
         }
@@ -372,7 +372,7 @@ export class AuthService extends BaseService {
     } catch (error) {
       const message = this.handleError(error);
       const hint = message.includes('provider is not enabled')
-        ? 'Provider non activé dans Supabase Auth. Activez Facebook et configurez les clés.'
+        ? 'Provider non activé dans Supabase Auth. Activez Apple et configurez les clés.'
         : undefined;
       return this.createResponse({ url: '' }, hint ? `${message}. ${hint}` : message);
     }
