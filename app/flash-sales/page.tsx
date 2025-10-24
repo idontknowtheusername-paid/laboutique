@@ -98,179 +98,44 @@ export default function FlashSalesPage() {
       setLoading(true);
       setError(null);
 
-      // Données mockées pour tester la page
-      const mockProducts: FlashSaleProduct[] = [
-        {
-          id: '1',
-          name: 'iPhone 15 Pro Max 256GB',
-          slug: 'iphone-15-pro-max-256gb',
-          images: ['/images/placeholder-product.jpg'],
-          brand: 'Apple',
-          price: 450000, // Prix flash
-          compare_price: 650000, // Prix original
-          flash_sale_price: 450000,
-          discount_percentage: 31,
-          flash_sale_end: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24h
-          stock_remaining: 5,
-          is_flash_sale: true,
-          average_rating: 4.8,
-          quantity: 5,
-          status: 'active',
-          category: { id: '1', name: 'Électronique', slug: 'electronique' },
-          description: 'iPhone 15 Pro Max avec puce A17 Pro',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          sku: 'IPH15PM256',
-          track_quantity: true,
-          vendor_id: 'apple',
-          featured: true
-        },
-        {
-          id: '2',
-          name: 'Samsung Galaxy S24 Ultra 512GB',
-          slug: 'samsung-galaxy-s24-ultra-512gb',
-          images: ['/images/placeholder-product.jpg'],
-          brand: 'Samsung',
-          price: 380000,
-          compare_price: 550000,
-          flash_sale_price: 380000,
-          discount_percentage: 31,
-          flash_sale_end: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(), // 12h
-          stock_remaining: 8,
-          is_flash_sale: true,
-          average_rating: 4.6,
-          quantity: 8,
-          status: 'active',
-          category: { id: '1', name: 'Électronique', slug: 'electronique' },
-          description: 'Samsung Galaxy S24 Ultra avec S Pen',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          sku: 'SGS24U512',
-          track_quantity: true,
-          vendor_id: 'samsung',
-          featured: true
-        },
-        {
-          id: '3',
-          name: 'MacBook Air M3 13" 256GB',
-          slug: 'macbook-air-m3-13-256gb',
-          images: ['/images/placeholder-product.jpg'],
-          brand: 'Apple',
-          price: 750000,
-          compare_price: 950000,
-          flash_sale_price: 750000,
-          discount_percentage: 21,
-          flash_sale_end: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(), // 6h
-          stock_remaining: 3,
-          is_flash_sale: true,
-          average_rating: 4.9,
-          quantity: 3,
-          status: 'active',
-          category: { id: '2', name: 'Informatique', slug: 'informatique' },
-          description: 'MacBook Air M3 avec puce M3',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          sku: 'MBA13M3',
-          track_quantity: true,
-          vendor_id: 'apple',
-          featured: true
-        },
-        {
-          id: '4',
-          name: 'AirPods Pro 2ème génération',
-          slug: 'airpods-pro-2eme-generation',
-          images: ['/images/placeholder-product.jpg'],
-          brand: 'Apple',
-          price: 85000,
-          compare_price: 120000,
-          flash_sale_price: 85000,
-          discount_percentage: 29,
-          flash_sale_end: new Date(Date.now() + 18 * 60 * 60 * 1000).toISOString(), // 18h
-          stock_remaining: 15,
-          is_flash_sale: true,
-          average_rating: 4.7,
-          quantity: 15,
-          status: 'active',
-          category: { id: '3', name: 'Audio', slug: 'audio' },
-          description: 'AirPods Pro avec réduction de bruit active',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          sku: 'APP2G',
-          track_quantity: true,
-          vendor_id: 'apple',
-          featured: false
-        },
-        {
-          id: '5',
-          name: 'Nike Air Max 270',
-          slug: 'nike-air-max-270',
-          images: ['/images/placeholder-product.jpg'],
-          brand: 'Nike',
-          price: 45000,
-          compare_price: 75000,
-          flash_sale_price: 45000,
-          discount_percentage: 40,
-          flash_sale_end: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(), // 8h
-          stock_remaining: 12,
-          is_flash_sale: true,
-          average_rating: 4.5,
-          quantity: 12,
-          status: 'active',
-          category: { id: '4', name: 'Mode', slug: 'mode' },
-          description: 'Chaussures Nike Air Max 270 confortables',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          sku: 'NAM270',
-          track_quantity: true,
-          vendor_id: 'nike',
-          featured: false
-        }
-      ];
+      const response = await fetch('/api/flash-sales?status=active&limit=100');
+      if (!response.ok) {
+        throw new Error('Erreur lors du chargement des ventes flash');
+      }
 
-      setProducts(mockProducts);
-      setTotalCount(mockProducts.length);
+      const data = await response.json();
       
-      // Calculer les statistiques
-      calculateStats(mockProducts);
-
-      // Essayer aussi de charger les vraies données en arrière-plan
-      try {
-        const response = await fetch('/api/flash-sales?status=active&limit=100');
-        if (response.ok) {
-          const data = await response.json();
-          
-          if (data.success && data.data && data.data.length > 0) {
-            // L'API retourne des flash sales avec des produits imbriqués
-            const flashSaleProducts: FlashSaleProduct[] = [];
-            
-            data.data.forEach((sale: any) => {
-              if (sale.products && sale.products.length > 0) {
-                sale.products.forEach((fsp: any) => {
-                  if (fsp.product) {
-                    flashSaleProducts.push({
-                      ...fsp.product,
-                      flash_sale_price: fsp.flash_price,
-                      discount_percentage: Math.round(((fsp.original_price - fsp.flash_price) / fsp.original_price) * 100),
-                      flash_sale_end: sale.end_date,
-                      stock_remaining: fsp.max_quantity || 999,
-                      is_flash_sale: true,
-                      price: fsp.flash_price, // Prix de vente flash
-                      compare_price: fsp.original_price // Prix original
-                    });
-                  }
+      if (data.success && data.data) {
+        // L'API retourne des flash sales avec des produits imbriqués
+        // Structure: data.data[].products[] = flash_sale_products avec product imbriqué
+        const flashSaleProducts: FlashSaleProduct[] = [];
+        
+        data.data.forEach((sale: any) => {
+          if (sale.products && sale.products.length > 0) {
+            sale.products.forEach((fsp: any) => {
+              if (fsp.product) {
+                flashSaleProducts.push({
+                  ...fsp.product,
+                  flash_sale_price: fsp.flash_price,
+                  discount_percentage: Math.round(((fsp.original_price - fsp.flash_price) / fsp.original_price) * 100),
+                  flash_sale_end: sale.end_date,
+                  stock_remaining: fsp.max_quantity || 999,
+                  is_flash_sale: true,
+                  price: fsp.flash_price, // Prix de vente flash
+                  compare_price: fsp.original_price // Prix original
                 });
               }
             });
-
-            if (flashSaleProducts.length > 0) {
-              setProducts(flashSaleProducts);
-              setTotalCount(flashSaleProducts.length);
-              calculateStats(flashSaleProducts);
-            }
           }
-        }
-      } catch (apiError) {
-        console.log('API flash-sales non disponible, utilisation des données mockées');
+        });
+
+        setProducts(flashSaleProducts);
+        setTotalCount(flashSaleProducts.length);
+        
+        // Calculer les statistiques
+        calculateStats(flashSaleProducts);
+      } else {
+        throw new Error(data.error || 'Erreur lors du chargement');
       }
     } catch (err) {
       console.error('Error loading flash sales:', err);
