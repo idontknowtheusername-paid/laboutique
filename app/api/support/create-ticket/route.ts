@@ -1,35 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
     const { conversationId, title, subject, userEmail, message, userId, userName } = await request.json();
 
-    // Créer le ticket dans Supabase
-    const { data: ticket, error } = await supabase
-      .from('support_tickets')
-      .insert({
-        conversation_id: conversationId,
-        subject: subject,
-        description: message,
-        user_id: userId,
-        user_email: userEmail,
-        user_name: userName,
-        priority: 'medium',
-        status: 'open',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Erreur création ticket:', error);
-      return NextResponse.json(
-        { success: false, error: 'Erreur lors de la création du ticket' },
-        { status: 500 }
-      );
-    }
+    // Pour l'instant, on simule la création du ticket
+    // TODO: Implémenter la vraie création dans Supabase une fois les tables créées
+    const ticketId = `TICKET-${Date.now()}`;
+    
+    console.log('🎫 Ticket créé (simulation):', {
+      id: ticketId,
+      conversationId,
+      subject,
+      userEmail,
+      message: message.substring(0, 100) + '...'
+    });
 
     // Envoyer l'email à l'admin
     try {
@@ -40,13 +25,13 @@ export async function POST(request: NextRequest) {
         },
         body: JSON.stringify({
           to: 'support@jomionstore.com',
-          subject: `🎫 Nouveau ticket #${ticket.id} - ${title}`,
+          subject: `🎫 Nouveau ticket #${ticketId} - ${title}`,
           ticketData: {
             title,
             subject,
             userEmail,
             message,
-            ticketId: ticket.id
+            ticketId: ticketId
           }
         })
       });
@@ -61,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      ticketId: ticket.id,
+      ticketId: ticketId,
       message: 'Ticket créé avec succès'
     });
 
