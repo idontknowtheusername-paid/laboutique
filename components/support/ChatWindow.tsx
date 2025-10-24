@@ -127,7 +127,7 @@ export default function ChatWindow({
                     <p className="text-sm text-gray-500">Connexion au support...</p>
                   </div>
                 </div>
-              ) : conversation?.messages.length === 0 ? (
+              ) : !conversation?.messages || conversation.messages.length === 0 ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
                     <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />

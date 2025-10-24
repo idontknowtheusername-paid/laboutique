@@ -49,24 +49,33 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
   }, [isOpen, conversation, initializeConversation]);
 
   const handleSendMessage = async (message: string) => {
-    if (!conversation) return;
+    if (!conversation) {
+      console.log('Aucune conversation active');
+      return;
+    }
 
+    console.log('Envoi du message:', message);
     setIsTyping(true);
+    
     try {
       const result = await chatService.sendMessage(conversation.id, message);
+      console.log('Résultat envoi message:', result);
       
       if (result.success && result.message) {
         // Mettre à jour la conversation avec le nouveau message
         const updatedConv = await chatService.getConversation(conversation.id);
+        console.log('Conversation mise à jour:', updatedConv);
+        
         if (updatedConv.success && updatedConv.conversation) {
           setConversation(updatedConv.conversation);
         }
 
         // Si escalade, afficher notification
         if (result.shouldEscalate) {
-          // Ici vous pouvez ajouter une notification toast
           console.log('Conversation escaladée vers un ticket');
         }
+      } else {
+        console.error('Erreur lors de l\'envoi du message:', result.error);
       }
     } catch (error) {
       console.error('Erreur envoi message:', error);
