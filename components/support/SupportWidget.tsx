@@ -16,6 +16,7 @@ interface SupportWidgetProps {
 export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [conversation, setConversation] = useState<SupportConversation | null>(null);
+  const [messages, setMessages] = useState<Array<{id: string, content: string, sender: 'user' | 'ai'}>>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,12 +53,19 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
 
   const handleSendMessage = async (message: string) => {
     console.log('handleSendMessage appelé avec:', message);
-    console.log('Conversation actuelle:', conversation);
     
     // Réinitialiser l'erreur
     setError(null);
     
-    // Si pas de conversation, en créer une d'abord
+    // Ajouter le message utilisateur en mémoire
+    const userMessage = {
+      id: Date.now().toString(),
+      content: message,
+      sender: 'user' as const
+    };
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Si pas de conversation, en créer une d'abord (pour le tracking)
     if (!conversation) {
       console.log('Aucune conversation active - création...');
       setIsLoading(true);
@@ -69,39 +77,29 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
         });
 
         if (result.success && result.conversationId) {
-          // Attendre un peu pour que la conversation soit bien créée
-          await new Promise(resolve => setTimeout(resolve, 500));
-          
-          const convResult = await chatService.getConversation(result.conversationId);
-          if (convResult.success && convResult.conversation) {
-            setConversation(convResult.conversation);
-            // Maintenant envoyer le message
-            await sendMessageToConversation(convResult.conversation.id, message);
-          } else {
-            console.error('Erreur récupération conversation:', convResult.error);
-            setError('Problème de connexion, utilisation du mode de secours...');
-            // Fallback: utiliser l'API Mistral directe
-            await sendMessageDirectly(message);
-          }
-        } else {
-          console.error('Erreur création conversation:', result.error);
-          setError('Problème de connexion, utilisation du mode de secours...');
-          // Fallback: utiliser l'API Mistral directe
-          await sendMessageDirectly(message);
+          // Créer un objet conversation minimal pour le tracking
+          const newConversation = {
+            id: result.conversationId,
+            userId: user?.id,
+            userEmail: user?.email,
+            userName: user?.user_metadata?.full_name || user?.email?.split('@')[0],
+            status: 'active' as const,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            messages: []
+          };
+          setConversation(newConversation);
         }
       } catch (error) {
         console.error('Erreur création conversation:', error);
-        setError('Problème de connexion, utilisation du mode de secours...');
-        // Fallback: utiliser l'API Mistral directe
-        await sendMessageDirectly(message);
+        // Continue même si la création échoue
       } finally {
         setIsLoading(false);
       }
-      return;
     }
 
-    // Envoyer le message à la conversation existante
-    await sendMessageToConversation(conversation.id, message);
+    // Envoyer le message via l'API Mistral directe
+    await sendMessageDirectly(message);
   };
 
   // Fonction de fallback pour utiliser l'API Mistral directe
