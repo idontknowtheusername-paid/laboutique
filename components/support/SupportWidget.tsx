@@ -7,6 +7,7 @@ import ChatWindow from './ChatWindow';
 import { SupportConversation } from '@/types/support';
 import { useAuth } from '@/contexts/AuthContext';
 import { ChatService } from '@/lib/support/chat-service';
+import { cn } from '@/lib/utils';
 
 interface SupportWidgetProps {
   mistralApiKey: string;
@@ -155,8 +156,4 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
       />
     </>
   );
-}
-
-function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(' ');
 }
