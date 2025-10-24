@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import SupportWidget from '@/components/support/SupportWidget';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
@@ -18,6 +19,7 @@ const Footer = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const router = useRouter();
+  const mistralApiKey = process.env.NEXT_PUBLIC_MISTRAL_API_KEY || '';
 
   const handleWishlistClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -80,7 +82,8 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <>
+      <footer className="bg-gray-900 text-white">
       {/* Newsletter Section - Intégrée au footer */}
       <div className="bg-gradient-to-r from-gray-800 to-gray-700 py-12">
         <div className="container">
@@ -386,6 +389,10 @@ const Footer = () => {
         </div>
       </div>
     </footer>
+    
+    {/* Support Widget */}
+    {mistralApiKey && <SupportWidget mistralApiKey={mistralApiKey} />}
+    </>
   );
 };
 
