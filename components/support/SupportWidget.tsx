@@ -102,9 +102,9 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
     await sendMessageDirectly(message);
   };
 
-  // Fonction de fallback pour utiliser l'API Mistral directe
+  // Fonction principale pour envoyer les messages via l'API Mistral directe
   const sendMessageDirectly = async (message: string) => {
-    console.log('Fallback: Envoi direct via API Mistral');
+    console.log('Envoi direct via API Mistral');
     setIsTyping(true);
     
     try {
@@ -115,35 +115,27 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
         },
         body: JSON.stringify({
           message: message,
-          conversationHistory: conversation?.messages.map(m => `${m.sender}: ${m.content}`) || []
+          conversationHistory: messages.map(m => `${m.sender}: ${m.content}`)
         })
       });
 
       const data = await response.json();
-      console.log('Réponse API Mistral directe:', data);
+      console.log('Réponse API Mistral:', data);
       
       if (data.success && data.data && data.data.content) {
-        // Créer un message temporaire pour l'affichage
-        const tempMessage = {
-          id: Date.now().toString(),
+        // Ajouter la réponse de l'IA en mémoire
+        const aiMessage = {
+          id: (Date.now() + 1).toString(),
           content: data.data.content,
-          sender: 'ai' as const,
-          timestamp: new Date(),
-          conversationId: 'temp',
-          isTyping: false
+          sender: 'ai' as const
         };
-        
-        // Mettre à jour l'état local
-        setConversation(prev => prev ? {
-          ...prev,
-          messages: [...prev.messages, tempMessage]
-        } : null);
+        setMessages(prev => [...prev, aiMessage]);
       } else {
-        console.error('Erreur API Mistral directe:', data.error);
+        console.error('Erreur API Mistral:', data.error);
         setError('Impossible de contacter l\'assistant. Veuillez réessayer plus tard.');
       }
     } catch (error) {
-      console.error('Erreur fallback Mistral:', error);
+      console.error('Erreur API Mistral:', error);
       setError('Erreur de connexion. Veuillez réessayer plus tard.');
     } finally {
       setIsTyping(false);
