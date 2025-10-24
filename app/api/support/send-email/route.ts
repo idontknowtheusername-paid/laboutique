@@ -9,8 +9,8 @@ export async function POST(request: NextRequest) {
     const transporter = nodemailer.createTransporter({
       service: 'gmail',
       auth: {
-        user: process.env.ADMIN_EMAIL || 'support@jomionstore.com',
-        pass: process.env.ADMIN_EMAIL_PASSWORD
+        user: process.env.SUPPORT_EMAIL || 'support@jomionstore.com',
+        pass: process.env.SUPPORT_EMAIL_PASSWORD
       }
     });
 
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // Envoyer l'email
     const info = await transporter.sendMail({
-      from: `"Support JomionStore" <${process.env.ADMIN_EMAIL || 'support@jomionstore.com'}>`,
+      from: `"Support JomionStore" <${process.env.SUPPORT_EMAIL || 'support@jomionstore.com'}>`,
       to: to,
       subject: subject,
       html: htmlContent

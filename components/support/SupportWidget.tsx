@@ -21,6 +21,7 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showTicketModal, setShowTicketModal] = useState(false);
+  const [showTicketConfirmation, setShowTicketConfirmation] = useState(false);
   const [ticketData, setTicketData] = useState({
     title: '',
     subject: '',
@@ -146,8 +147,11 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
         };
         setMessages(prev => [...prev, aiMessage]);
         
-        // Vérifier si l'IA suggère de créer un ticket
-        if (data.data.shouldEscalate || shouldCreateTicket(data.data.content)) {
+        // Vérifier si l'IA suggère de créer un ticket OU si l'utilisateur le demande
+        const isExplicitTicketRequest = isExplicitTicketRequest(message);
+        const shouldEscalate = data.data.shouldEscalate || shouldCreateTicket(data.data.content) || shouldCreateTicket(message);
+        
+        if (shouldEscalate) {
           // Préparer les données du ticket
           setTicketData({
             title: generateTicketTitle(message),
@@ -155,7 +159,14 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
             userEmail: user?.email || '',
             message: message
           });
-          setShowTicketModal(true);
+          
+          if (isExplicitTicketRequest) {
+            // Demande explicite : demander confirmation
+            setShowTicketConfirmation(true);
+          } else {
+            // Suggestion de l'IA : ouvrir directement le popup
+            setShowTicketModal(true);
+          }
         }
       } else {
         console.error('Erreur API Mistral:', data.error);
@@ -176,16 +187,31 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
   };
 
   // Fonctions utilitaires pour la détection d'escalade
-  const shouldCreateTicket = (aiResponse: string): boolean => {
+  const isExplicitTicketRequest = (text: string): boolean => {
+    const explicitTicketRequests = [
+      'je veux un ticket', 'créer un ticket', 'ouvrir un ticket',
+      'je demande un ticket', 'j\'ai besoin d\'un ticket',
+      'peux-tu créer un ticket', 'peux tu créer un ticket',
+      'je veux parler à un humain', 'je veux parler à quelqu\'un',
+      'je veux contacter le support', 'je veux contacter support'
+    ];
+    
+    const lowerText = text.toLowerCase();
+    return explicitTicketRequests.some(keyword => 
+      lowerText.includes(keyword)
+    );
+  };
+
+  const shouldCreateTicket = (text: string): boolean => {
     const escalationKeywords = [
-      'créer un ticket', 'agent humain', 'escalader', 'ticket',
       'remboursement', 'plainte', 'problème', 'erreur', 'bug',
       'ne fonctionne pas', 'livraison', 'commande', 'paiement',
       'urgent', 'insatisfait', 'déçu', 'mauvais', 'cassé'
     ];
     
+    const lowerText = text.toLowerCase();
     return escalationKeywords.some(keyword => 
-      aiResponse.toLowerCase().includes(keyword.toLowerCase())
+      lowerText.includes(keyword)
     );
   };
 
@@ -329,6 +355,39 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
         error={error}
         onClearError={() => setError(null)}
       />
+
+      {/* Modal de confirmation pour demande explicite */}
+      {showTicketConfirmation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              🎫 Confirmer la création du ticket
+            </h3>
+            
+            <p className="text-gray-600 mb-6">
+              Vous souhaitez créer un ticket de support. Voulez-vous continuer ?
+            </p>
+            
+            <div className="flex justify-end space-x-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowTicketConfirmation(false)}
+              >
+                Annuler
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowTicketConfirmation(false);
+                  setShowTicketModal(true);
+                }}
+                className="bg-jomionstore-primary hover:bg-orange-700"
+              >
+                Oui, créer le ticket
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal de création de ticket */}
       {showTicketModal && (
