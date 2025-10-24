@@ -33,10 +33,18 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
       });
 
       if (result.success && result.conversationId) {
-        const convResult = await chatService.getConversation(result.conversationId);
-        if (convResult.success && convResult.conversation) {
-          setConversation(convResult.conversation);
-        }
+        // Créer un objet conversation minimal pour le tracking (sans messages)
+        const newConversation = {
+          id: result.conversationId,
+          userId: user?.id,
+          userEmail: user?.email,
+          userName: user?.user_metadata?.full_name || user?.email?.split('@')[0],
+          status: 'active' as const,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          messages: []
+        };
+        setConversation(newConversation);
       }
     } catch (error) {
       console.error('Erreur initialisation conversation:', error);
@@ -142,42 +150,6 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
     }
   };
 
-  const sendMessageToConversation = async (conversationId: string, message: string) => {
-    console.log('Envoi du message:', message);
-    setIsTyping(true);
-    
-    try {
-      const result = await chatService.sendMessage(conversationId, message);
-      console.log('Résultat envoi message:', result);
-      
-      if (result.success && result.message) {
-        // Mettre à jour la conversation avec le nouveau message
-        const updatedConv = await chatService.getConversation(conversationId);
-        console.log('Conversation mise à jour:', updatedConv);
-        
-        if (updatedConv.success && updatedConv.conversation) {
-          setConversation(updatedConv.conversation);
-        }
-        
-        // Si escalade, afficher notification
-        if (result.shouldEscalate) {
-          console.log('Conversation escaladée vers un ticket');
-        }
-      } else {
-        console.error('Erreur lors de l\'envoi du message:', result.error);
-        setError('Problème de connexion, utilisation du mode de secours...');
-        // Fallback vers l'API Mistral directe
-        await sendMessageDirectly(message);
-      }
-    } catch (error) {
-      console.error('Erreur envoi message:', error);
-      setError('Problème de connexion, utilisation du mode de secours...');
-      // Fallback vers l'API Mistral directe
-      await sendMessageDirectly(message);
-    } finally {
-      setIsTyping(false);
-    }
-  };
 
   const handleClose = () => {
     setIsOpen(false);
@@ -243,6 +215,7 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
       {/* Chat Window */}
       <ChatWindow
         conversation={conversation}
+        messages={messages}
         onSendMessage={handleSendMessage}
         onClose={handleClose}
         isOpen={isOpen}
