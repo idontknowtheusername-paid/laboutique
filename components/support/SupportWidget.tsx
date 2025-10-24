@@ -20,6 +20,13 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showTicketModal, setShowTicketModal] = useState(false);
+  const [ticketData, setTicketData] = useState({
+    title: '',
+    subject: '',
+    userEmail: '',
+    message: ''
+  });
   const [chatService] = useState(() => new ChatService(mistralApiKey));
   const { user } = useAuth();
 
@@ -138,6 +145,18 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
           sender: 'ai' as const
         };
         setMessages(prev => [...prev, aiMessage]);
+        
+        // Vérifier si l'IA suggère de créer un ticket
+        if (data.data.shouldEscalate || shouldCreateTicket(data.data.content)) {
+          // Préparer les données du ticket
+          setTicketData({
+            title: generateTicketTitle(message),
+            subject: generateTicketSubject(message),
+            userEmail: user?.email || '',
+            message: message
+          });
+          setShowTicketModal(true);
+        }
       } else {
         console.error('Erreur API Mistral:', data.error);
         setError('Impossible de contacter l\'assistant. Veuillez réessayer plus tard.');
@@ -154,6 +173,92 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
   const handleClose = () => {
     setIsOpen(false);
     setError(null); // Réinitialiser l'erreur à la fermeture
+  };
+
+  // Fonctions utilitaires pour la détection d'escalade
+  const shouldCreateTicket = (aiResponse: string): boolean => {
+    const escalationKeywords = [
+      'créer un ticket', 'agent humain', 'escalader', 'ticket',
+      'remboursement', 'plainte', 'problème', 'erreur', 'bug',
+      'ne fonctionne pas', 'livraison', 'commande', 'paiement',
+      'urgent', 'insatisfait', 'déçu', 'mauvais', 'cassé'
+    ];
+    
+    return escalationKeywords.some(keyword => 
+      aiResponse.toLowerCase().includes(keyword.toLowerCase())
+    );
+  };
+
+  const generateTicketTitle = (userMessage: string): string => {
+    if (userMessage.toLowerCase().includes('remboursement')) {
+      return 'Demande de remboursement';
+    } else if (userMessage.toLowerCase().includes('livraison')) {
+      return 'Problème de livraison';
+    } else if (userMessage.toLowerCase().includes('commande')) {
+      return 'Question sur commande';
+    } else if (userMessage.toLowerCase().includes('paiement')) {
+      return 'Problème de paiement';
+    } else {
+      return 'Demande de support';
+    }
+  };
+
+  const generateTicketSubject = (userMessage: string): string => {
+    if (userMessage.toLowerCase().includes('remboursement')) {
+      return 'Remboursement';
+    } else if (userMessage.toLowerCase().includes('livraison')) {
+      return 'Livraison';
+    } else if (userMessage.toLowerCase().includes('commande')) {
+      return 'Commande';
+    } else if (userMessage.toLowerCase().includes('paiement')) {
+      return 'Paiement';
+    } else {
+      return 'Support général';
+    }
+  };
+
+  // Fonction pour créer le ticket
+  const handleCreateTicket = async () => {
+    if (!ticketData.userEmail || !ticketData.title || !ticketData.message) {
+      setError('Veuillez remplir tous les champs');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/support/create-ticket', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          conversationId: conversation?.id || 'temp',
+          title: ticketData.title,
+          subject: ticketData.subject,
+          userEmail: ticketData.userEmail,
+          message: ticketData.message,
+          userId: user?.id,
+          userName: user?.user_metadata?.full_name || user?.email?.split('@')[0]
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        // Ajouter un message de confirmation
+        const confirmationMessage = {
+          id: Date.now().toString(),
+          content: `✅ Ticket créé avec succès ! Un agent vous contactera à ${ticketData.userEmail} dans les 24h.`,
+          sender: 'ai' as const
+        };
+        setMessages(prev => [...prev, confirmationMessage]);
+        setShowTicketModal(false);
+      } else {
+        setError('Erreur lors de la création du ticket');
+      }
+    } catch (error) {
+      console.error('Erreur création ticket:', error);
+      setError('Erreur lors de la création du ticket');
+    }
   };
 
   const getStatusColor = () => {
@@ -224,6 +329,82 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
         error={error}
         onClearError={() => setError(null)}
       />
+
+      {/* Modal de création de ticket */}
+      {showTicketModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              🎫 Créer un ticket de support
+            </h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Titre
+                </label>
+                <input
+                  type="text"
+                  value={ticketData.title}
+                  onChange={(e) => setTicketData(prev => ({ ...prev, title: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-jomionstore-primary"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Sujet
+                </label>
+                <input
+                  type="text"
+                  value={ticketData.subject}
+                  onChange={(e) => setTicketData(prev => ({ ...prev, subject: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-jomionstore-primary"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={ticketData.userEmail}
+                  onChange={(e) => setTicketData(prev => ({ ...prev, userEmail: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-jomionstore-primary"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Message
+                </label>
+                <textarea
+                  value={ticketData.message}
+                  onChange={(e) => setTicketData(prev => ({ ...prev, message: e.target.value }))}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-jomionstore-primary"
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-3 mt-6">
+              <Button
+                variant="outline"
+                onClick={() => setShowTicketModal(false)}
+              >
+                Annuler
+              </Button>
+              <Button
+                onClick={handleCreateTicket}
+                className="bg-jomionstore-primary hover:bg-orange-700"
+              >
+                Créer le ticket
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
