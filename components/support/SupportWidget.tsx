@@ -148,7 +148,7 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
         setMessages(prev => [...prev, aiMessage]);
         
         // Vérifier si l'IA suggère de créer un ticket OU si l'utilisateur le demande
-        const isExplicitTicketRequest = isExplicitTicketRequest(message);
+        const isExplicitRequest = isExplicitTicketRequest(message);
         const shouldEscalate = data.data.shouldEscalate || shouldCreateTicket(data.data.content) || shouldCreateTicket(message);
         
         if (shouldEscalate) {
@@ -160,7 +160,7 @@ export default function SupportWidget({ mistralApiKey }: SupportWidgetProps) {
             message: message
           });
           
-          if (isExplicitTicketRequest) {
+          if (isExplicitRequest) {
             // Demande explicite : demander confirmation
             setShowTicketConfirmation(true);
           } else {
