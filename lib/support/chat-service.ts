@@ -167,7 +167,7 @@ export class ChatService {
         return [];
       }
 
-      return data.map(msg => ({
+      return data.map((msg: any) => ({
         id: msg.id,
         content: msg.content,
         sender: msg.sender,
@@ -190,8 +190,8 @@ export class ChatService {
       const description = `Message utilisateur: ${userMessage}\n\nRéponse IA: ${aiResponse}\n\nEscaladé automatiquement.`;
 
       // Récupérer les infos utilisateur de la conversation
-      const { data: conversation } = await supabase
-        .from('support_conversations' as any)
+      const { data: conversation } = await (supabase as any)
+        .from('support_conversations')
         .select('user_id, user_email, user_name')
         .eq('id', conversationId)
         .single();
@@ -208,8 +208,8 @@ export class ChatService {
       );
 
       // Mettre à jour le statut de la conversation
-      await supabase
-        .from('support_conversations' as any)
+      await (supabase as any)
+        .from('support_conversations')
         .update({ 
           status: 'escalated',
           updated_at: new Date().toISOString(),
@@ -223,8 +223,8 @@ export class ChatService {
 
   async getConversation(conversationId: string): Promise<{ success: boolean; conversation?: SupportConversation; error?: string }> {
     try {
-      const { data: conversation, error: convError } = await supabase
-        .from('support_conversations' as any)
+      const { data: conversation, error: convError } = await (supabase as any)
+        .from('support_conversations')
         .select('*')
         .eq('id', conversationId)
         .single();

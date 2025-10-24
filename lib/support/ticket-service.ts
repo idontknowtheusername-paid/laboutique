@@ -24,8 +24,8 @@ export class TicketService {
         userName: userInfo.userName,
       };
 
-      const { data, error } = await supabase
-        .from('support_tickets' as any)
+      const { data, error } = await (supabase as any)
+        .from('support_tickets')
         .insert([{
           ...ticket,
           created_at: new Date().toISOString(),
@@ -51,8 +51,8 @@ export class TicketService {
 
   async getTicketsForAdmin(): Promise<{ success: boolean; tickets?: SupportTicket[]; error?: string }> {
     try {
-      const { data, error } = await supabase
-        .from('support_tickets' as any)
+      const { data, error } = await (supabase as any)
+        .from('support_tickets')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -60,7 +60,7 @@ export class TicketService {
         return { success: false, error: error.message };
       }
 
-      const tickets: SupportTicket[] = data.map(ticket => ({
+      const tickets: SupportTicket[] = data.map((ticket: any) => ({
         id: ticket.id,
         conversationId: ticket.conversation_id,
         subject: ticket.subject,
@@ -88,8 +88,8 @@ export class TicketService {
     adminNotes?: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await supabase
-        .from('support_tickets' as any)
+      const { error } = await (supabase as any)
+        .from('support_tickets')
         .update({
           status,
           admin_notes: adminNotes,
