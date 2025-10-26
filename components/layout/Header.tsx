@@ -241,16 +241,19 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo - image */}
           <Link href="/" className="flex items-center">
-            <Image
-              src="/images/logo-header.png"
-              alt="JomionStore - Centre commercial digital"
-              width={144}
-              height={40}
-              className="h-10 w-auto"
-              sizes="(max-width: 640px) 120px, 200px"
-              priority
-            />
-            <span className="sr-only">JomionStore - Centre commercial digital</span>
+            <span className="relative h-10 w-36 sm:w-44">
+              <Image
+                src="/logo-header.png"
+                alt="JomionStore - Centre commercial digital"
+                fill
+                className="object-contain"
+                sizes="(max-width: 640px) 120px, 200px"
+                priority
+              />
+            </span>
+            <span className="sr-only">
+              JomionStore - Centre commercial digital
+            </span>
           </Link>
 
           {/* Search Bar */}
@@ -265,7 +268,9 @@ const Header = () => {
                 type="text"
                 placeholder="Rechercher des produits, marques et catégories..."
                 value={searchQuery}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setSearchQuery(e.target.value)
+                }
                 onFocus={() => setShowSuggestions(searchQuery.length >= 2)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 className="pr-12 h-12 text-base border-2 border-gray-200 focus:border-jomionstore-primary rounded-lg"
@@ -283,7 +288,7 @@ const Header = () => {
               >
                 <Search className="w-4 h-4" />
               </Button>
-              
+
               {/* Suggestions de recherche avancées */}
               {showSuggestions && (
                 <SearchSuggestions
@@ -301,7 +306,7 @@ const Header = () => {
 
           <div className="flex items-center space-x-4">
             {/* Account or Admin */}
-            {profile?.role === 'admin' ? (
+            {profile?.role === "admin" ? (
               // Admin: Crown icon, direct link to dashboard, no dropdown
               <Link href="/admin/dashboard">
                 <Button
@@ -311,7 +316,9 @@ const Header = () => {
                   aria-label="Accéder au tableau de bord administrateur"
                 >
                   <Crown className="w-6 h-6" />
-                  <span className="hidden lg:block text-sm font-medium">Admin</span>
+                  <span className="hidden lg:block text-sm font-medium">
+                    Admin
+                  </span>
                 </Button>
               </Link>
             ) : (
@@ -321,7 +328,11 @@ const Header = () => {
                     <Button
                       variant="ghost"
                       className="flex items-center space-x-2 text-gray-700 hover:text-jomionstore-primary"
-                      aria-label={user ? "Menu du compte utilisateur" : "Se connecter ou créer un compte"}
+                      aria-label={
+                        user
+                          ? "Menu du compte utilisateur"
+                          : "Se connecter ou créer un compte"
+                      }
                       aria-expanded="false"
                     >
                       <User className="w-5 h-5" />
@@ -330,7 +341,9 @@ const Header = () => {
                           {user ? "Connecté" : "Se connecter"}
                         </div>
                         <div className="text-sm font-medium">
-                          {user ? user.user_metadata?.first_name || "Mon profil" : "Mon compte"}
+                          {user
+                            ? user.user_metadata?.first_name || "Mon profil"
+                            : "Mon compte"}
                         </div>
                       </div>
                     </Button>
@@ -339,13 +352,19 @@ const Header = () => {
                     {user ? (
                       <>
                         <DropdownMenuItem asChild>
-                          <Link href="/account/profile" className="flex items-center gap-2">
+                          <Link
+                            href="/account/profile"
+                            className="flex items-center gap-2"
+                          >
                             <User className="w-4 h-4" />
                             Mon profil
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => signOut()} className="text-red-600 hover:text-red-700">
+                        <DropdownMenuItem
+                          onClick={() => signOut()}
+                          className="text-red-600 hover:text-red-700"
+                        >
                           Se déconnecter
                         </DropdownMenuItem>
                       </>
@@ -365,7 +384,7 @@ const Header = () => {
             )}
 
             {/* Wishlist (hide for admin) */}
-            {profile?.role !== 'admin' && (
+            {profile?.role !== "admin" && (
               <Link href="/wishlist" className="relative">
                 <Button
                   variant="ghost"
@@ -384,12 +403,14 @@ const Header = () => {
                 variant="ghost"
                 size="icon"
                 className="text-gray-700 hover:text-jomionstore-primary"
-                aria-label={`Voir le panier${cartItemsCount > 0 ? ` (${cartItemsCount} articles)` : ''}`}
+                aria-label={`Voir le panier${
+                  cartItemsCount > 0 ? ` (${cartItemsCount} articles)` : ""
+                }`}
               >
                 <ShoppingCart className="w-6 h-6" />
                 <ClientSafe>
                   {cartItemsCount > 0 && (
-                    <Badge 
+                    <Badge
                       className="absolute -top-2 -right-2 bg-jomionstore-secondary text-white text-xs px-2 py-1"
                       aria-label={`${cartItemsCount} articles dans le panier`}
                     >
@@ -403,9 +424,9 @@ const Header = () => {
             {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="md:hidden"
                   aria-label="Ouvrir le menu de navigation mobile"
                 >
@@ -423,8 +444,8 @@ const Header = () => {
         </div>
 
         {/* Mobile Search */}
-        <form 
-          onSubmit={handleSearch} 
+        <form
+          onSubmit={handleSearch}
           className="md:hidden mt-4"
           role="search"
           aria-label="Recherche de produits mobile"

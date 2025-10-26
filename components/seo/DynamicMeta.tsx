@@ -25,27 +25,27 @@ const DynamicMeta: React.FC<DynamicMetaProps> = ({
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "JomionStore",
-    "description": description,
-    "url": url,
-  "logo": `${url}/images/logo.png`,
-    "sameAs": [
+    name: "JomionStore",
+    description: description,
+    url: url,
+    logo: `${url}/logo-jomion.png`,
+    sameAs: [
       "https://apple.com",
       "https://instagram.com/jomionstore",
-      "https://twitter.com/jomionstore"
+      "https://twitter.com/jomionstore",
     ],
-    "contactPoint": {
+    contactPoint: {
       "@type": "ContactPoint",
-      "telephone": "+229-XX-XX-XX-XX",
-      "contactType": "customer service",
-      "areaServed": "BJ",
-      "availableLanguage": ["French", "English"]
+      telephone: "+229-XX-XX-XX-XX",
+      contactType: "customer service",
+      areaServed: "BJ",
+      availableLanguage: ["French", "English"],
     },
-    "address": {
+    address: {
       "@type": "PostalAddress",
-      "addressCountry": "BJ",
-      "addressLocality": "Cotonou"
-    }
+      addressCountry: "BJ",
+      addressLocality: "Cotonou",
+    },
   };
 
   return (
@@ -58,7 +58,7 @@ const DynamicMeta: React.FC<DynamicMetaProps> = ({
       <meta name="robots" content="index, follow" />
       <meta name="language" content="fr" />
       <meta name="revisit-after" content="7 days" />
-      
+
       {/* Open Graph / Apple */}
       <meta property="og:type" content={type} />
       <meta property="og:url" content={url} />
@@ -67,7 +67,7 @@ const DynamicMeta: React.FC<DynamicMetaProps> = ({
       <meta property="og:image" content={image} />
       <meta property="og:site_name" content="JomionStore" />
       <meta property="og:locale" content="fr_BJ" />
-      
+
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:url" content={url} />
@@ -76,28 +76,57 @@ const DynamicMeta: React.FC<DynamicMetaProps> = ({
       <meta name="twitter:image" content={image} />
       <meta name="twitter:site" content="@jomionstore" />
       <meta name="twitter:creator" content="@jomionstore" />
-      
+
       {/* Mobile */}
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta name="theme-color" content="#3b82f6" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       <meta name="apple-mobile-web-app-title" content="JomionStore" />
-      
+
       {/* Canonical */}
       <link rel="canonical" href={url} />
-      
+
       {/* Favicon */}
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-      
+      <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/apple-touch-icon.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/favicon-32x32.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/favicon-16x16.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="192x192"
+        href="/android-chrome-192.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="512x512"
+        href="/android-chrome-512.png"
+      />
+      <meta property="og:image" content="/og-image-1200x630.png" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+
       {/* Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData)
+          __html: JSON.stringify(structuredData),
         }}
       />
     </Head>
