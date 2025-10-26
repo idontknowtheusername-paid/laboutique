@@ -241,15 +241,8 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo - image */}
           <Link href="/" className="flex items-center header-logo">
-            <img
-              src="/logo-header.svg"
-              alt="JomionStore - Centre commercial digital"
-              className="h-11 md:h-16 w-auto object-contain"
-              style={{ width: 'auto', height: '45px' }}
-              // sizes handled via CSS classes (Tailwind)
-            />
-            <span className="sr-only">
-              JomionStore - Centre commercial digital
+            <span className="text-lg md:text-2xl font-extrabold tracking-tight text-gray-900">
+              JomionStore
             </span>
           </Link>
 
