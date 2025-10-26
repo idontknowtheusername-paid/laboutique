@@ -240,17 +240,16 @@ const Header = () => {
       <div className="container py-4">
         <div className="flex items-center justify-between">
           {/* Logo - image */}
-          <Link href="/" className="flex items-center">
-            <span className="relative h-10 w-36 sm:w-44">
-              <Image
-                src="/logo-header.svg"
-                alt="JomionStore - Centre commercial digital"
-                fill
-                className="object-contain"
-                sizes="(max-width: 640px) 120px, 200px"
-                priority
-              />
-            </span>
+          <Link href="/" className="flex items-center header-logo">
+            <Image
+              src="/logo-header.svg"
+              alt="JomionStore - Centre commercial digital"
+              width={220}
+              height={64}
+              className="h-11 md:h-16 w-auto object-contain"
+              sizes="(max-width:640px) 100px, (min-width:768px) 180px"
+              priority
+            />
             <span className="sr-only">
               JomionStore - Centre commercial digital
             </span>
