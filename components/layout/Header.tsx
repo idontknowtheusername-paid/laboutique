@@ -243,7 +243,7 @@ const Header = () => {
           <Link href="/" className="flex items-center">
             <span className="relative h-10 w-36 sm:w-44">
               <Image
-                src="/logo-header.png"
+                src="/logo-header.svg"
                 alt="JomionStore - Centre commercial digital"
                 fill
                 className="object-contain"
