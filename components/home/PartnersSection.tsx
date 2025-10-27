@@ -90,13 +90,6 @@ const PartnersSection = () => {
           <Badge variant="outline" className="mb-4 text-orange-600 border-orange-200 bg-orange-50">
             Nos Partenaires
           </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Des partenaires de confiance
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Nous collaborons avec les plus grandes marques mondiales pour vous offrir 
-            les meilleurs produits et services
-          </p>
         </div>
 
         {/* Partners Grid */}
@@ -104,11 +97,11 @@ const PartnersSection = () => {
           {partners.map((partner, index) => (
             <div
               key={index}
-              className="group relative bg-white rounded-xl border border-gray-200 p-6 hover:border-orange-200 hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center min-h-[120px]"
+              className="flex items-center justify-center"
             >
-              <div className="relative w-full h-16 mb-3">
+              <div className="relative w-full h-20">
                 {imageErrors.has(index) ? (
-                  <div className="flex items-center justify-center w-full h-full bg-gray-100 rounded-lg">
+                  <div className="flex items-center justify-center w-full h-full">
                     <span className="text-2xl font-bold text-gray-400">{partner.name.charAt(0)}</span>
                   </div>
                 ) : (
@@ -116,7 +109,7 @@ const PartnersSection = () => {
                     src={partner.logo}
                     alt={`Logo ${partner.name}`}
                     fill
-                    className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                    className="object-contain"
                     sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
                     onError={() => {
                       setImageErrors(prev => new Set([...prev, index]));
@@ -125,13 +118,7 @@ const PartnersSection = () => {
                 )}
               </div>
               
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-orange-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-end justify-center pb-4">
-                <div className="text-center">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-1">{partner.name}</h4>
-                  <p className="text-xs text-gray-600">{partner.description}</p>
-                </div>
-              </div>
+
             </div>
           ))}
         </div>
@@ -166,17 +153,17 @@ const PartnersSection = () => {
           </div>
         </div>
 
-        {/* CTA */}
+        {/* CTA Partner Application */}
         <div className="text-center mt-12">
-          <p className="text-gray-600 mb-4">
-            Vous souhaitez devenir partenaire ?
-          </p>
-          <button className="inline-flex items-center px-6 py-3 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 transition-colors duration-200">
-            Devenir partenaire
+          <a 
+            href="mailto:partnerships@laboutiqueb.com" 
+            className="inline-flex items-center px-6 py-3 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 transition-colors duration-200"
+          >
+            Postuler à notre programme partenaire
             <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
-          </button>
+          </a>
         </div>
       </div>
     </section>
