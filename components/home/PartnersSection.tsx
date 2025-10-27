@@ -9,82 +9,77 @@ const PartnersSection = () => {
 
   const partners = [
     {
-      name: 'Alibaba',
-      // local file to be added: public/images/partners/alibaba.jpg
-      logo: '/images/partners/alibaba.jpg',
-      category: 'Marketplace',
-      description: 'Plateforme B2B mondiale'
+      name: "Alibaba",
+      logo: "/images/partners/alibaba.jpg",
+      category: "Marketplace",
+      description: "Plateforme B2B mondiale",
     },
     {
-      name: 'AliExpress',
-      // local file to be added: public/images/partners/aliexpress.jpg
-      logo: '/images/partners/aliexpress.jpg',
-      category: 'E-commerce',
-      description: 'Marketplace international'
+      name: "AliExpress",
+      logo: "/images/partners/aliexpress.jpg",
+      category: "E-commerce",
+      description: "Marketplace international",
     },
     {
-      name: 'MTN',
-      // local file added: public/images/partners/mtn.png
-      logo: '/images/partners/mtn.png',
-      category: 'Télécoms',
-      description: 'Opérateur mobile'
+      name: "MTN",
+      logo: "/images/partners/mtn.png",
+      category: "Télécoms",
+      description: "Opérateur mobile",
     },
     {
-      name: 'Moov',
-      // local file added: public/images/partners/moov.jpg
-      logo: '/images/partners/moov.jpg',
-      category: 'Télécoms',
-      description: 'Opérateur mobile'
+      name: "Moov",
+      logo: "/images/partners/moov.jpg",
+      category: "Télécoms",
+      description: "Opérateur mobile",
     },
     {
-      name: 'Visa',
-      // local file to be added: public/images/partners/visa.jpg
-      logo: '/images/partners/visa.jpg',
-      category: 'Paiement',
-      description: 'Cartes de crédit'
+      name: "Visa",
+      logo: "/images/partners/visa.jpg",
+      category: "Paiement",
+      description: "Cartes de crédit",
     },
     {
-      name: 'Mastercard',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Mastercard-Logo.png',
-      category: 'Paiement',
-      description: 'Cartes de crédit'
+      name: "Mastercard",
+      logo: "/images/partners/mastercard.jpg",
+      category: "Paiement",
+      description: "Cartes de crédit",
     },
     {
-      name: 'PayPal',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/PayPal-Logo.png',
-      category: 'Paiement',
-      description: 'Paiement en ligne'
+      name: "PayPal",
+      logo: "/images/partners/paypal.jpg",
+      category: "Paiement",
+      description: "Paiement en ligne",
     },
     {
-      name: 'DHL',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/DHL-Logo.png',
-      category: 'Logistique',
-      description: 'Transport express'
+      name: "DHL",
+      logo: "/images/partners/dhl.jpg",
+      category: "Logistique",
+      description: "Transport express",
     },
     {
-      name: 'FedEx',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/FedEx-Logo.png',
-      category: 'Logistique',
-      description: 'Services de livraison'
+      name: "FedEx",
+      logo: "/images/partners/fedex.jpg",
+      category: "Logistique",
+      description: "Services de livraison",
     },
     {
-      name: 'Samsung',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Samsung-Logo.png',
-      category: 'Électronique',
-      description: 'Technologie'
+      name: "Samsung",
+      logo: "/images/partners/samsung.jpg",
+      category: "Électronique",
+      description: "Technologie",
     },
     {
-      name: 'Apple',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Apple-Logo.png',
-      category: 'Électronique',
-      description: 'Technologie'
+      name: "Apple",
+      logo: "/images/partners/apple.jpg",
+      category: "Électronique",
+      description: "Technologie",
     },
     {
-      name: 'Nike',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Nike-Logo.png',
-      category: 'Mode',
-      description: 'Équipement sportif'
-    }
+      name: "Nike",
+      logo: "/images/partners/nike.jpg",
+      category: "Mode",
+      description: "Équipement sportif",
+    },
   ];
 
   return (
