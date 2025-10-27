@@ -22,13 +22,15 @@ const PartnersSection = () => {
     },
     {
       name: 'MTN',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/MTN-Logo.png',
+      // local file added: public/images/partners/mtn.png
+      logo: '/images/partners/mtn.png',
       category: 'Télécoms',
       description: 'Opérateur mobile'
     },
     {
       name: 'Moov',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Moov-Africa-Logo.png',
+      // local file added: public/images/partners/moov.jpg
+      logo: '/images/partners/moov.jpg',
       category: 'Télécoms',
       description: 'Opérateur mobile'
     },
