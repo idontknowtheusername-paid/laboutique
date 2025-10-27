@@ -10,13 +10,15 @@ const PartnersSection = () => {
   const partners = [
     {
       name: 'Alibaba',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Alibaba-Logo.png',
+      // local file to be added: public/images/partners/alibaba.jpg
+      logo: '/images/partners/alibaba.jpg',
       category: 'Marketplace',
       description: 'Plateforme B2B mondiale'
     },
     {
       name: 'AliExpress',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/AliExpress-Logo.png',
+      // local file to be added: public/images/partners/aliexpress.jpg
+      logo: '/images/partners/aliexpress.jpg',
       category: 'E-commerce',
       description: 'Marketplace international'
     },
@@ -36,7 +38,8 @@ const PartnersSection = () => {
     },
     {
       name: 'Visa',
-      logo: 'https://1000logos.net/wp-content/uploads/2020/09/Visa-Logo.png',
+      // local file to be added: public/images/partners/visa.jpg
+      logo: '/images/partners/visa.jpg',
       category: 'Paiement',
       description: 'Cartes de crédit'
     },
