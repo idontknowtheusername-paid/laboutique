@@ -87,10 +87,14 @@ export function BulkProductImporter() {
         throw new Error(result.error || 'Erreur lors de l\'import');
       }
 
-      // Validation stricte : catégorie et vendeur
-      if (!result.data?.category_id || !result.data?.vendor_id) {
+      // Vérifier que le produit a été créé avec succès
+      // L'API retourne soit category_id (prévisualisation) soit category (objet complet après création)
+      const hasCategoryId = result.data?.category_id || result.data?.category?.id;
+      const hasVendorId = result.data?.vendor_id || result.data?.vendor?.id;
+
+      if (!hasCategoryId || !hasVendorId) {
         task.status = 'error';
-        const errorDetails = `Catégorie: ${result.data?.category_id || 'manquante'}, Vendeur: ${result.data?.vendor_id || 'manquant'}`;
+        const errorDetails = `Catégorie: ${hasCategoryId || 'manquante'}, Vendeur: ${hasVendorId || 'manquant'}`;
         task.error = `Catégorie ou vendeur non attribué. ${errorDetails}`;
         setError(`Catégorie ou vendeur non attribué. Veuillez vérifier la configuration des catégories et vendeurs dans l'admin. Détails: ${errorDetails}`);
       } else {
