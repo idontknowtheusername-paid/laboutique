@@ -34,16 +34,33 @@ export default function AdminEditProductPage() {
     })();
   }, [productId]);
 
-  async function save(patch: Partial<Product>) {
+  async function save(additionalPatch: Partial<Product> = {}) {
     if (!product) return;
     setSaving(true);
     setMessage('');
-    const res = await ProductsService.update({ id: product.id, ...patch } as UpdateProductData);
+
+    // Fusionner les modifications du state avec le patch additionnel
+    const updateData = {
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      description: product.description,
+      short_description: product.short_description,
+      sku: product.sku,
+      price: product.price,
+      quantity: product.quantity,
+      status: product.status,
+      meta_title: product.meta_title,
+      meta_description: product.meta_description,
+      ...additionalPatch // Le patch additionnel écrase si nécessaire
+    };
+
+    const res = await ProductsService.update(updateData as UpdateProductData);
     setSaving(false);
     if (res.success && res.data) {
       setProduct(res.data as Product);
       setMessage('Produit mis à jour.');
-      showSuccessToast('Produit publié avec succès !');
+      showSuccessToast('Produit mis à jour avec succès !');
     } else {
       setMessage(res.error || 'Erreur de sauvegarde');
       showErrorToast(res.error || 'Erreur de sauvegarde');
