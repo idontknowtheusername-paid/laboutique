@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^3.0.1",
     "@hookform/resolvers": "^5.2.1",
     "@next/swc-wasm-nodejs": "13.5.1",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -65,10 +66,10 @@
     "input-otp": "^1.2.4",
     "ioredis": "^5.8.0",
     "lucide-react": "^0.446.0",
-    "next": "^13.5.1",
+    "next": "^16.0.0",
     "next-themes": "^0.3.0",
     "nodemailer": "^7.0.10",
-    "postcss": "8.4.30",
+    "postcss": "^8.5.6",
     "puppeteer": "^24.22.3",
     "react": "^18.2.0",
     "react-day-picker": "^8.10.1",

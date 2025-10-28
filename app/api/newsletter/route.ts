@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
+import { BrevoService } from '@/lib/services/brevo.service';
 
 export async function POST(request: NextRequest) {
   try {
@@ -64,8 +65,8 @@ export async function POST(request: NextRequest) {
       throw insertError;
     }
 
-    // TODO: Envoyer email de confirmation via Resend/Zoho
-    // await sendNewsletterConfirmation(email);
+    // Envoyer l'email de bienvenue via Brevo
+    await BrevoService.sendNewsletterWelcome(email);
 
     return NextResponse.json({
       success: true,

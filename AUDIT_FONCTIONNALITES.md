@@ -12,7 +12,7 @@
 **Problème**:
 - Bouton "S'abonner" sans `onClick` ni `onSubmit`
 - Pas d'API backend pour newsletter
-- Email non capturé/sauvegardé
+- Email non capturé/sauvegardé ..
 
 **Impact**: Utilisateurs ne peuvent pas s'abonner à la newsletter
 

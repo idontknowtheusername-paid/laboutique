@@ -241,9 +241,14 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo - image */}
           <Link href="/" className="flex items-center header-logo">
-            <span className="text-lg md:text-2xl font-extrabold tracking-tight text-gray-900">
-              JomionStore
-            </span>
+            <Image
+              src="/images/latestlogo.jpg"
+              alt="JomionStore"
+              width={180}
+              height={60}
+              className="h-12 w-auto"
+              priority
+            />
           </Link>
 
           {/* Search Bar */}
