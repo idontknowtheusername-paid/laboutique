@@ -11,7 +11,7 @@ import { ProductsService } from '@/lib/services/products.service';
 import { Download, Search, Eye, Edit, RefreshCw, Plus, Trash2 } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
-import ImportedProductsPreview from '@/components/admin/ImportedProductsPreview';
+// ImportedProductsPreview supprimé - tous les produits sont dans la liste principale
 import { useToast } from '@/components/admin/Toast';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 
@@ -35,6 +35,7 @@ export default function AdminProductsPage() {
   const [category, setCategory] = React.useState<string>('all');
   const [platform, setPlatform] = React.useState<string>('all');
   const [status, setStatus] = React.useState<string>('all');
+  const [categories, setCategories] = React.useState<Array<{ id: string, name: string }>>([]);
   const [priceMin, setPriceMin] = React.useState<string>('');
   const [priceMax, setPriceMax] = React.useState<string>('');
   const [sortBy, setSortBy] = React.useState<string>('created_at');
@@ -187,7 +188,7 @@ export default function AdminProductsPage() {
       if (res.success && res.data) {
         setItems(res.data as any as AdminProduct[]);
         setTotalCount(res.pagination?.total || 0);
-        success('Données chargées', `${res.data.length} produits chargés`);
+        // Toast supprimé - trop verbeux
       } else {
         error('Erreur de chargement', res.error || 'Impossible de charger les produits');
         setItems([]);
@@ -201,6 +202,26 @@ export default function AdminProductsPage() {
       setLoading(false);
     }
   }, [debouncedSearch, category, platform, status, debouncedPriceMin, debouncedPriceMax, sortBy, sortOrder, page, error, success]);
+
+  // Charger les catégories au montage
+  React.useEffect(() => {
+    async function loadCategories() {
+      try {
+        const { data, error } = await (ProductsService as any).getSupabaseClient()
+          .from('categories')
+          .select('id, name')
+          .eq('status', 'active')
+          .order('name');
+
+        if (!error && data) {
+          setCategories(data);
+        }
+      } catch (err) {
+        console.error('Erreur chargement catégories:', err);
+      }
+    }
+    loadCategories();
+  }, []);
 
   React.useEffect(() => { load(); }, [load]);
 
@@ -270,17 +291,16 @@ export default function AdminProductsPage() {
         }
       />
 
-      {/* Preview des produits importés */}
-      <ImportedProductsPreview />
+      {/* Carrousel supprimé - tous les produits sont dans la liste principale */}
 
       <Card>
         <CardContent className="p-0">
           <AdminToolbar>
-            <div className="relative w-full md:w-72">
+            <div className="relative w-full md:w-80">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 className="pl-10"
-                placeholder="Rechercher un produit"
+                placeholder="Rechercher (nom, SKU, description...)"
                 value={search}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setSearch(e.target.value)
@@ -295,11 +315,10 @@ export default function AdminProductsPage() {
                 <SelectValue placeholder="Catégorie" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Toutes</SelectItem>
-                <SelectItem value="electronique">Électronique</SelectItem>
-                <SelectItem value="mode">Mode</SelectItem>
-                <SelectItem value="maison">Maison</SelectItem>
-                <SelectItem value="beaute">Beauté</SelectItem>
+                <SelectItem value="all">Toutes les catégories</SelectItem>
+                {categories.map(cat => (
+                  <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
             
@@ -433,7 +452,38 @@ export default function AdminProductsPage() {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {items.map((p) => (
+                {loading ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <RefreshCw className="w-8 h-8 animate-spin text-gray-400" />
+                        <p className="text-gray-500">Chargement des produits...</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : items.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="text-6xl">📦</div>
+                        <p className="text-gray-500 font-medium">Aucun produit trouvé</p>
+                        <p className="text-sm text-gray-400">
+                          {search || category !== 'all' || platform !== 'all' || status !== 'all'
+                            ? 'Essayez de modifier vos filtres'
+                            : 'Commencez par importer ou créer des produits'}
+                        </p>
+                        <div className="flex gap-2 mt-4">
+                          <Button onClick={() => router.push('/admin/products/import')}>
+                            Importer un produit
+                          </Button>
+                          <Button variant="outline" onClick={() => router.push('/admin/products/new')}>
+                            Créer manuellement
+                          </Button>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : items.map((p) => (
                   <tr key={p.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="font-medium text-gray-900 dark:text-white">{p.name}</div>
