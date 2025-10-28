@@ -23,6 +23,18 @@ const nextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "via.placeholder.com" },
       { protocol: "http", hostname: "via.placeholder.com" },
+      // AliExpress image domains
+      { protocol: "https", hostname: "ae01.alicdn.com" },
+      { protocol: "https", hostname: "ae04.alicdn.com" },
+      { protocol: "https", hostname: "**.alicdn.com" },
+      { protocol: "https", hostname: "img.alicdn.com" },
+      { protocol: "https", hostname: "ae-pic-a1.aliexpress-media.com" },
+      { protocol: "https", hostname: "**.aliexpress-media.com" },
+      // Alibaba image domains
+      { protocol: "https", hostname: "sc01.alicdn.com" },
+      { protocol: "https", hostname: "sc02.alicdn.com" },
+      { protocol: "https", hostname: "sc04.alicdn.com" },
+      { protocol: "https", hostname: "s.alicdn.com" },
     ],
   },
 

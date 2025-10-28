@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         sku: mockProductData.sku,
         category_id: categories[0].id, // Utiliser la première catégorie
         vendor_id: vendors[0].id, // Utiliser le premier vendeur
-        status: publishDirectly ? 'active' : 'draft',
+        status: 'active' as 'active' | 'draft',
         source_url: mockProductData.source_url,
         source_platform: mockProductData.source_platform
       });

@@ -11,6 +11,7 @@ import { ProductsService, UpdateProductData, Product } from '@/lib/services/prod
 import { Badge } from '@/components/ui/badge';
 import WysiwygEditor from '@/components/admin/WysiwygEditor';
 import { showSuccessToast, showErrorToast } from '@/components/ui/enhanced-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function AdminEditProductPage() {
   const params = useParams();
@@ -111,6 +112,37 @@ export default function AdminEditProductPage() {
                   <label className="block text-sm mb-2">Quantité</label>
                   <Input type="number" value={product.quantity} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setProduct({ ...product, quantity: Number(e.target.value) })} />
                 </div>
+              <div>
+                <label className="block text-sm mb-2">Statut</label>
+                <Select
+                  value={product.status}
+                  onValueChange={(value: 'active' | 'draft' | 'archived') => setProduct({ ...product, status: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner un statut" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Actif
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="draft">
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                        Brouillon
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="archived">
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                        Archivé
+                      </span>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               </CardContent>
             </Card>
           </TabsContent>
