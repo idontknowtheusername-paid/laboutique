@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { ProductsService } from '@/lib/services/products.service';
 
-export async function GET(request: NextRequest, context: { params: { slug: string } }) {
+export async function GET(
+	request: NextRequest,
+	context: { params: Promise<{ slug: string }> }
+): Promise<Response> {
 	try {
-		const slug = context.params.slug;
+		const params = await context.params;
+		const slug = params.slug;
 		const result = await ProductsService.getBySlug(slug);
 
 		if (!result.success || !result.data) {

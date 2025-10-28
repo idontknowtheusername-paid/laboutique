@@ -3,13 +3,14 @@ import { supabaseAdmin } from '@/lib/supabase-server';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  context: { params: Promise<{ id: string }> }
+): Promise<Response> {
   try {
     const supabase = supabaseAdmin;
     const body = await request.json();
     
     const { name, description, parent_id, icon, color } = body;
+    const params = await context.params;
     const categoryId = params.id;
 
     if (!name?.trim()) {
@@ -71,10 +72,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  context: { params: Promise<{ id: string }> }
+): Promise<Response> {
   try {
     const supabase = supabaseAdmin;
+    const params = await context.params;
     const categoryId = params.id;
 
     // Vérifier s'il y a des produits dans cette catégorie

@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Turbopack configuration (required for Next.js 16)
-  turbopack: {},
+  turbopack: {
+    root: "/Users/bv/Desktop/laboutiqueB",
+  },
 
   typescript: {
     ignoreBuildErrors: false,

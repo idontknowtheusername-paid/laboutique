@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OrdersService } from '@/lib/services';
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  _: NextRequest,
+  context: { params: Promise<{ id: string }> }
+): Promise<Response> {
   try {
+    const params = await context.params;
     const orderRes = await OrdersService.getById(params.id);
     if (!orderRes.success || !orderRes.data) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
