@@ -237,16 +237,16 @@ const Header = () => {
       </div> */}
 
       {/* Main Header */}
-      <div className="container py-4">
-        <div className="flex items-center justify-between">
+      <div className="container py-3 md:py-4">
+        <div className="flex items-center justify-between gap-4">
           {/* Logo - image */}
-          <Link href="/" className="flex items-center header-logo">
+          <Link href="/" className="flex items-center header-logo flex-shrink-0">
             <Image
               src="/images/latestlogo.jpg"
               alt="JomionStore"
-              width={180}
-              height={60}
-              className="h-12 w-auto"
+              width={200}
+              height={70}
+              className="h-14 sm:h-16 md:h-20 w-auto object-contain"
               priority
             />
           </Link>
