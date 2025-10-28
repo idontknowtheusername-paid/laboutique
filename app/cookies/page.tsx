@@ -1,7 +1,6 @@
 'use client';
-export const revalidate = 300;
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
 import Footer from '@/components/layout/Footer';

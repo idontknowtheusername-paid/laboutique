@@ -47,8 +47,10 @@ export default function WysiwygEditor({
           branding: false,
           statusbar: false,
           resize: false,
-          readonly: disabled,
           setup: (editor: any) => {
+            if (disabled) {
+              editor.mode.set('readonly');
+            }
             editor.on('change', () => {
               const content = editor.getContent();
               onChange(content);

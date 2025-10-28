@@ -114,7 +114,7 @@ export default function OrderTrackingPage() {
   };
 
   const getStatusDetails = (status: string) => {
-    const statuses: Record<string, { label: string; color: string; icon: JSX.Element }> = {
+    const statuses: Record<string, { label: string; color: string; icon: React.ReactElement }> = {
       confirmed: { label: 'Confirmée', color: 'bg-blue-600', icon: <CheckCircle className="w-5 h-5" /> },
       preparing: { label: 'En préparation', color: 'bg-yellow-600', icon: <Box className="w-5 h-5" /> },
       shipped: { label: 'Expédiée', color: 'bg-purple-600', icon: <Package className="w-5 h-5" /> },

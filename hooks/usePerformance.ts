@@ -55,7 +55,7 @@ export function usePerformance(componentName: string) {
     func: T,
     delay: number
   ): T => {
-    const timeoutRef = useRef<NodeJS.Timeout>();
+    const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
     
     return ((...args: Parameters<T>) => {
       clearTimeout(timeoutRef.current);

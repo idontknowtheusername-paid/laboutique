@@ -1,6 +1,5 @@
 // server component
 
-import React from 'react';
 import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
@@ -8,13 +7,13 @@ import Footer from '@/components/layout/Footer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Users, 
-  Target, 
-  Award, 
-  Globe, 
-  Truck, 
-  Shield, 
+import {
+  Users,
+  Target,
+  Award,
+  Globe,
+  Truck,
+  Shield,
   Heart,
   Star,
   CheckCircle,
@@ -54,19 +53,19 @@ const values = [
 
 const team = [
   {
-    name: 'Koffi Mensah',
+    name: 'Joel CHAYE',
     role: 'CEO & Fondateur',
     image: 'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=300',
-    description: 'Entrepreneur passionné avec 15 ans d\'expérience dans le e-commerce africain.'
+    description: 'Entrepreneur passionné avec plus de 15 ans d\'expérience dans le e-commerce africain.'
   },
   {
-    name: 'Aminata Diallo',
-    role: 'Directrice Technique',
+    name: 'Beyond System',
+    role: 'Developpeur',
     image: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=300',
     description: 'Experte en technologies web et intelligence artificielle, diplômée MIT.'
   },
   {
-    name: 'Jean-Baptiste Kouassi',
+    name: 'Monsieur P',
     role: 'Directeur Commercial',
     image: 'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=300',
     description: 'Spécialiste du développement commercial en Afrique de l\'Ouest depuis 12 ans.'
@@ -81,14 +80,12 @@ const milestones = [
   { year: '2024', title: 'Vision internationale', description: 'Expansion prévue en Afrique de l\'Ouest' }
 ];
 
-export const revalidate = 300;
-
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-jomionstore-background">
       <Header />
       <CategoryMenu />
-      
+
       <div className="container py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
@@ -107,7 +104,7 @@ export default function AboutPage() {
             <span className="block text-jomionstore-primary">au Bénin</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            JomionStore révolutionne l'expérience e-commerce en Afrique de l'Ouest en tant que 
+            JomionStore révolutionne l'expérience e-commerce en Afrique de l'Ouest en tant que
             centre commercial digital qui connecte les meilleurs vendeurs avec des millions de clients.
           </p>
         </div>
@@ -144,8 +141,8 @@ export default function AboutPage() {
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Notre Mission</h2>
                 <p className="text-gray-600 leading-relaxed">
-                  Démocratiser l'accès au commerce électronique en Afrique de l'Ouest en créant 
-                  une plateforme inclusive, sécurisée et innovante qui permet à chacun de vendre 
+                  Démocratiser l'accès au commerce électronique en Afrique de l'Ouest en créant
+                  une plateforme inclusive, sécurisée et innovante qui permet à chacun de vendre
                   et d'acheter facilement, tout en stimulant l'économie locale.
                 </p>
               </div>
@@ -160,8 +157,8 @@ export default function AboutPage() {
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Notre Vision</h2>
                 <p className="text-gray-600 leading-relaxed">
-                  Devenir le centre commercial digital de référence en Afrique de l'Ouest, 
-                  reconnue pour son excellence, son innovation et son impact positif sur 
+                  Devenir le centre commercial digital de référence en Afrique de l'Ouest,
+                  reconnue pour son excellence, son innovation et son impact positif sur
                   le développement économique et social de la région.
                 </p>
               </div>
@@ -177,7 +174,7 @@ export default function AboutPage() {
               Les principes qui guident chacune de nos actions et décisions
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => {
               const IconComponent = value.icon;
@@ -209,7 +206,7 @@ export default function AboutPage() {
 
           <div className="relative">
             <div className="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 h-full w-0.5 bg-jomionstore-primary/20"></div>
-            
+
             <div className="space-y-8">
               {milestones.map((milestone, index) => (
                 <div key={index} className={`flex items-center ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
@@ -224,11 +221,11 @@ export default function AboutPage() {
                       </CardContent>
                     </Card>
                   </div>
-                  
+
                   <div className="relative z-10 w-8 h-8 bg-jomionstore-primary rounded-full flex items-center justify-center mx-4">
                     <CheckCircle className="w-4 h-4 text-white" />
                   </div>
-                  
+
                   <div className="flex-1 hidden md:block"></div>
                 </div>
               ))}

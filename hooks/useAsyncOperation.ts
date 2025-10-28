@@ -244,7 +244,7 @@ export function useAsyncOperations() {
 export function useLoadingState(initialLoading = false) {
   const [loading, setLoading] = useState(initialLoading);
   const [error, setError] = useState<Error | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const startLoading = useCallback(() => {
     setLoading(true);

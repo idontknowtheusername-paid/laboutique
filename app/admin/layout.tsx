@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -226,7 +226,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                 };
                 
                 return (
-                  <React.Fragment key={item.href}>
+                  <div key={item.href}>
                     {showSeparator && (
                       <div className="my-4">
                         <div className="px-3 py-1">
@@ -250,7 +250,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                       <Icon className="w-4 h-4" />
                       {item.label}
                     </Link>
-                  </React.Fragment>
+                  </div>
                 );
               })}
             </nav>
