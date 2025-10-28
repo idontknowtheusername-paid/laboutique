@@ -180,12 +180,14 @@ export default function AdminOrdersPage() {
         <CardContent className="p-0">
           <AdminToolbar>
             <div className="relative w-full md:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" aria-hidden="true" />
               <Input 
                 className="pl-10" 
                 placeholder="Rechercher (commande, client)" 
                 value={search} 
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)} 
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+                aria-label="Rechercher des commandes"
+                type="search"
               />
             </div>
             <Select value={status} onValueChange={(v: string) => setStatus(v)}>
@@ -221,7 +223,8 @@ export default function AdminOrdersPage() {
           <CardTitle>Liste des commandes</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          {/* Version desktop */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
@@ -319,6 +322,51 @@ export default function AdminOrdersPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Version mobile */}
+          <div className="md:hidden space-y-4 p-4">
+            {loading ? (
+              <div className="flex flex-col items-center gap-3 py-12">
+                <RefreshCw className="w-8 h-8 animate-spin text-gray-400" />
+                <p className="text-gray-500">Chargement...</p>
+              </div>
+            ) : orders.length === 0 ? (
+              <div className="flex flex-col items-center gap-3 py-12">
+                <div className="text-6xl">📦</div>
+                <p className="text-gray-500 font-medium">Aucune commande</p>
+              </div>
+            ) : orders.map((o) => (
+              <Card key={o.id} className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-medium">{o.order_number || `#${o.id.slice(0, 8)}`}</h3>
+                      <p className="text-sm text-gray-600">{o.user?.first_name} {o.user?.last_name}</p>
+                      <p className="text-xs text-gray-500">{new Date(o.created_at).toLocaleDateString('fr-FR')}</p>
+                    </div>
+                    <Badge className={getStatusColor(o.status)}>{o.status}</Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t">
+                    <span className="font-bold">
+                      {new Intl.NumberFormat('fr-BJ', {
+                        style: 'currency',
+                        currency: 'XOF',
+                        minimumFractionDigits: 0,
+                      }).format(o.total_amount)}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleViewOrder(o.id)}
+                    >
+                      <Eye className="w-4 h-4 mr-1" /> Voir
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
           </div>
           
           {/* Pagination */}

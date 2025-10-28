@@ -189,7 +189,6 @@ export default function AdminProductsPage() {
       if (res.success && res.data) {
         setItems(res.data as any as AdminProduct[]);
         setTotalCount(res.pagination?.total || 0);
-        // Toast supprimé - trop verbeux
       } else {
         error('Erreur de chargement', res.error || 'Impossible de charger les produits');
         setItems([]);
@@ -202,7 +201,7 @@ export default function AdminProductsPage() {
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, category, platform, status, debouncedPriceMin, debouncedPriceMax, sortBy, sortOrder, page, error, success]);
+  }, [debouncedSearch, category, platform, status, debouncedPriceMin, debouncedPriceMax, sortBy, sortOrder, page, error]);
 
   // Charger les catégories au montage
   React.useEffect(() => {
@@ -298,7 +297,7 @@ export default function AdminProductsPage() {
         <CardContent className="p-0">
           <AdminToolbar>
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" aria-hidden="true" />
               <Input
                 className="pl-10"
                 placeholder="Rechercher (nom, SKU, description...)"
@@ -306,6 +305,8 @@ export default function AdminProductsPage() {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setSearch(e.target.value)
                 }
+                aria-label="Rechercher des produits"
+                type="search"
               />
             </div>
             <Select
@@ -435,7 +436,8 @@ export default function AdminProductsPage() {
           <CardTitle>Produits</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          {/* Version desktop */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
@@ -527,6 +529,8 @@ export default function AdminProductsPage() {
                               alert("Slug du produit manquant.");
                             }
                           }}
+                          aria-label={`Voir le produit ${p.name}`}
+                          title="Voir le produit"
                         >
                           <Eye className="w-4 h-4" />
                         </Button>
@@ -534,6 +538,8 @@ export default function AdminProductsPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => router.push(`/admin/products/${p.id}/edit`)}
+                          aria-label={`Modifier le produit ${p.name}`}
+                          title="Modifier le produit"
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
@@ -542,6 +548,8 @@ export default function AdminProductsPage() {
                           size="sm"
                           onClick={() => handleDeleteProduct(p.id, p.name)}
                           className="text-red-600 hover:text-red-800"
+                          aria-label={`Supprimer le produit ${p.name}`}
+                          title="Supprimer le produit"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -551,6 +559,59 @@ export default function AdminProductsPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Version mobile */}
+          <div className="md:hidden space-y-4 p-4">
+            {loading ? (
+              <div className="flex flex-col items-center gap-3 py-12">
+                <RefreshCw className="w-8 h-8 animate-spin text-gray-400" />
+                <p className="text-gray-500">Chargement...</p>
+              </div>
+            ) : items.length === 0 ? (
+              <div className="flex flex-col items-center gap-3 py-12">
+                <div className="text-6xl">📦</div>
+                <p className="text-gray-500 font-medium">Aucun produit</p>
+              </div>
+            ) : items.map((p) => (
+              <Card key={p.id} className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-sm line-clamp-2">{p.name}</h3>
+                      <p className="text-xs text-gray-500 mt-1">{p.category?.name || "—"}</p>
+                    </div>
+                    <Badge className={statusColor(p.status)}>{p.status || "active"}</Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-lg">
+                      {new Intl.NumberFormat("fr-BJ", {
+                        style: "currency",
+                        currency: "XOF",
+                        minimumFractionDigits: 0,
+                      }).format(p.price || 0)}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => p.slug && window.open(`/product/${p.slug}`, "_blank")}
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => router.push(`/admin/products/${p.id}/edit`)}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
           </div>
           
           {/* Pagination */}
