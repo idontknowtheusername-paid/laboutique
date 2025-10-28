@@ -23,6 +23,7 @@ CREATE POLICY "Service role full access" ON aliexpress_oauth_tokens
   USING (auth.role() = 'service_role');
 
 -- Insérer le token actuel
+-- Note: Les tokens AliExpress durent 30 jours (access_token) et 60 jours (refresh_token)
 INSERT INTO aliexpress_oauth_tokens (
   access_token,
   refresh_token,
@@ -31,6 +32,6 @@ INSERT INTO aliexpress_oauth_tokens (
 ) VALUES (
   '50000200a38OmG7gApzuUDh3kUCjQZvSCckgUeoSVEJDypxEVU16567057PwKYy65YY2',
   NULL,
-  NOW() + INTERVAL '24 hours',
+  NOW() + INTERVAL '30 days',
   'Bearer'
 ) ON CONFLICT DO NOTHING;
