@@ -1,18 +1,18 @@
 'use client';
 
-import React, { useEffect, useState, Suspense, lazy } from 'react';
-
-// Lazy load des graphiques pour améliorer les performances
-const ResponsiveContainer = lazy(() => import('recharts').then(m => ({ default: m.ResponsiveContainer })));
-const AreaChart = lazy(() => import('recharts').then(m => ({ default: m.AreaChart })));
-const Area = lazy(() => import('recharts').then(m => ({ default: m.Area })));
-const CartesianGrid = lazy(() => import('recharts').then(m => ({ default: m.CartesianGrid })));
-const XAxis = lazy(() => import('recharts').then(m => ({ default: m.XAxis })));
-const YAxis = lazy(() => import('recharts').then(m => ({ default: m.YAxis })));
-const Tooltip = lazy(() => import('recharts').then(m => ({ default: m.Tooltip })));
-const PieChart = lazy(() => import('recharts').then(m => ({ default: m.PieChart })));
-const Pie = lazy(() => import('recharts').then(m => ({ default: m.Pie })));
-const Cell = lazy(() => import('recharts').then(m => ({ default: m.Cell })));
+import React, { useEffect, useState } from 'react';
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 import { Users, ShoppingCart, DollarSign, Package, TrendingUp, Star, Bell, AlertTriangle, Clock, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -319,8 +319,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               {salesData.length > 0 ? (
-                <Suspense fallback={<div className="flex items-center justify-center h-[300px]"><RefreshCw className="w-6 h-6 animate-spin text-gray-400" /></div>}>
-                  <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300}>
                   <AreaChart data={salesData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
@@ -329,7 +328,6 @@ export default function AdminDashboard() {
                     <Area type="monotone" dataKey="revenue" stroke="#1E40AF" fill="#1E40AF" fillOpacity={0.1} />
                   </AreaChart>
                 </ResponsiveContainer>
-                </Suspense>
               ) : (
                   <div className="flex flex-col items-center justify-center h-[300px] text-gray-500 gap-3">
                     <div className="text-5xl">📈</div>
@@ -346,8 +344,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               {categoryData.length > 0 ? (
-                <Suspense fallback={<div className="flex items-center justify-center h-[300px]"><RefreshCw className="w-6 h-6 animate-spin text-gray-400" /></div>}>
-                  <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie data={categoryData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}>
                       {categoryData.map((entry, index) => (
@@ -357,7 +354,6 @@ export default function AdminDashboard() {
                     <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
-                </Suspense>
               ) : (
                   <div className="flex flex-col items-center justify-center h-[300px] text-gray-500 gap-3">
                     <div className="text-5xl">📊</div>
