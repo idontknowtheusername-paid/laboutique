@@ -117,23 +117,26 @@ export default function AdminOrdersPage() {
   const load = React.useCallback(async () => {
     setLoading(true);
     try {
-      // Recherche côté serveur avec debouncing
-      const searchParams = {
+      // Pagination et recherche côté serveur
+      const filters: any = {
         search: debouncedSearch || undefined,
-        status: status === 'all' ? undefined : status,
-        page,
-        limit: 10
+        status: status === 'all' ? undefined : (status as any)
       };
       
-      const res = await OrdersService.getRecent(100);
+      const res = await OrdersService.getAll(filters, { page, limit: 20 });
+
       if (res.success && res.data) {
         setOrders(res.data);
-        setTotalPages(Math.ceil(res.data.length / 10));
+        setTotalPages(res.pagination?.totalPages || 1);
       } else {
         error('Erreur de chargement', res.error || 'Impossible de charger les commandes');
+        setOrders([]);
+        setTotalPages(1);
       }
     } catch (err) {
       error('Erreur inattendue', 'Une erreur est survenue lors du chargement des commandes');
+      setOrders([]);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
@@ -143,8 +146,7 @@ export default function AdminOrdersPage() {
     load();
   }, [load]);
 
-  // Plus besoin de filtrage côté client car la recherche se fait côté serveur
-  const filteredOrders = orders;
+  // Recherche et filtrage côté serveur - pas de filtrage client nécessaire
 
   const getStatusColor = (status?: string) => {
     switch (status) {
@@ -216,7 +218,7 @@ export default function AdminOrdersPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Liste des commandes ({filteredOrders.length})</CardTitle>
+          <CardTitle>Liste des commandes</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -244,7 +246,30 @@ export default function AdminOrdersPage() {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {filteredOrders.map((o) => (
+                {loading ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <RefreshCw className="w-8 h-8 animate-spin text-gray-400" />
+                        <p className="text-gray-500">Chargement des commandes...</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : orders.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="text-6xl">📦</div>
+                        <p className="text-gray-500 font-medium">Aucune commande trouvée</p>
+                        <p className="text-sm text-gray-400">
+                          {search || status !== 'all'
+                            ? 'Essayez de modifier vos filtres'
+                            : 'Les commandes apparaîtront ici'}
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : orders.map((o) => (
                   <tr key={o.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="font-medium text-gray-900 dark:text-white">{o.order_number || `#${o.id.slice(0, 8)}`}</div>
@@ -307,12 +332,12 @@ export default function AdminOrdersPage() {
               Précédent
             </Button>
             
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-sm font-medium text-gray-700">
                 Page {page} sur {totalPages}
               </span>
-              <span className="text-sm text-gray-500">
-                ({filteredOrders.length} commandes)
+              <span className="text-xs text-gray-500">
+                {orders.length} commandes sur cette page
               </span>
             </div>
             

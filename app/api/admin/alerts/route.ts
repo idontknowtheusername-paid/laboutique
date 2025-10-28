@@ -1,51 +1,68 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { NotificationsService } from '@/lib/services/notifications.service';
-import { InventoryService } from '@/lib/services/inventory.service';
-import { PaymentsService } from '@/lib/services/payments.service';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const type = searchParams.get('type');
+    const alerts = [];
 
-    let alerts = [];
+    // Alertes de stock bas (produits avec quantity < 10)
+    try {
+      const { data: lowStockProducts } = await supabaseAdmin
+        .from('products')
+        .select('id, name, quantity')
+        .lt('quantity', 10)
+        .eq('status', 'active')
+        .limit(5);
 
-    // Alertes de stock
-    if (!type || type === 'stock') {
-      const stockAlerts = await InventoryService.getStockAlerts();
-      if (stockAlerts.success && stockAlerts.data) {
-        alerts.push(...stockAlerts.data.map(alert => ({
-          id: `stock-${alert.id}`,
+      if (lowStockProducts && lowStockProducts.length > 0) {
+        alerts.push({
+          id: 'low-stock',
           type: 'warning',
-          message: `${alert.product_name} - Stock: ${alert.current_stock}`,
-          count: 1,
-          created_at: alert.created_at,
-          resolved: false
-        })));
+          message: `${lowStockProducts.length} produits en stock faible`,
+          count: lowStockProducts.length
+        });
       }
+    } catch (err) {
+      console.warn('Erreur alertes stock:', err);
     }
 
-    // Alertes de paiement
-    if (!type || type === 'payment') {
-      const paymentAlerts = await PaymentsService.getPaymentAlerts();
-      if (paymentAlerts.success && paymentAlerts.data) {
-        alerts.push(...paymentAlerts.data.map(alert => ({
-          id: `payment-${alert.id}`,
-          type: 'error',
-          message: `Paiement échoué - Commande ${alert.order_number}`,
-          count: 1,
-          created_at: alert.created_at,
-          resolved: false
-        })));
+    // Alertes commandes en attente
+    try {
+      const { data: pendingOrders, count } = await supabaseAdmin
+        .from('orders')
+        .select('id', { count: 'exact' })
+        .eq('status', 'pending');
+
+      if (count && count > 0) {
+        alerts.push({
+          id: 'pending-orders',
+          type: 'info',
+          message: `${count} commandes en attente de traitement`,
+          count
+        });
       }
+    } catch (err) {
+      console.warn('Erreur alertes commandes:', err);
     }
 
-    // Alertes générales
-    if (!type || type === 'general') {
-      const generalAlerts = await NotificationsService.getAlerts();
-      if (generalAlerts.success && generalAlerts.data) {
-        alerts.push(...generalAlerts.data);
+    // Alertes produits sans catégorie
+    try {
+      const { data: uncategorized, count } = await supabaseAdmin
+        .from('products')
+        .select('id', { count: 'exact' })
+        .is('category_id', null)
+        .eq('status', 'active');
+
+      if (count && count > 0) {
+        alerts.push({
+          id: 'uncategorized',
+          type: 'warning',
+          message: `${count} produits sans catégorie`,
+          count
+        });
       }
+    } catch (err) {
+      console.warn('Erreur alertes catégories:', err);
     }
 
     return NextResponse.json({
@@ -57,41 +74,11 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Admin alerts API error:', error);
     return NextResponse.json({
-      success: false,
-      error: 'Internal server error'
-    }, { status: 500 });
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { type, message, count = 1 } = body;
-
-    const result = await NotificationsService.createAlert({
-      type,
-      message,
-      count,
-      resolved: false
+      success: true,
+      data: [],
+      total: 0
     });
-
-    if (result.success) {
-      return NextResponse.json({
-        success: true,
-        data: result.data
-      });
-    } else {
-      return NextResponse.json({
-        success: false,
-        error: result.error
-      }, { status: 400 });
-    }
-
-  } catch (error) {
-    console.error('Create alert error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Internal server error'
-    }, { status: 500 });
   }
 }
+
+// POST désactivé - les alertes sont générées automatiquement

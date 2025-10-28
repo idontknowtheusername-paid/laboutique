@@ -70,34 +70,57 @@ export default function AdminDashboard() {
         const ordersRes = await OrdersService.getRecent(10);
         if (ordersRes.success && ordersRes.data) setRecentOrders(ordersRes.data);
 
-        // Récupérer les alertes réelles
-        const alertsRes = await fetch('/api/admin/alerts');
-        if (alertsRes.ok) {
-          const alertsData = await alertsRes.json();
-          if (alertsData.success) {
-            setAlerts(alertsData.data);
+        // Récupérer les alertes réelles (avec gestion d'erreur)
+        try {
+          const alertsRes = await fetch('/api/admin/alerts');
+          if (alertsRes.ok) {
+            const alertsData = await alertsRes.json();
+            if (alertsData.success) {
+              setAlerts(alertsData.data);
+            }
           }
+        } catch (err) {
+          console.warn('Alertes non disponibles:', err);
+          setAlerts([]);
         }
 
-        // Récupérer les tâches en attente réelles
-        const tasksRes = await fetch('/api/admin/tasks');
-        if (tasksRes.ok) {
-          const tasksData = await tasksRes.json();
-          if (tasksData.success) {
-            setPendingTasks(tasksData.data);
+        // Récupérer les tâches en attente réelles (avec gestion d'erreur)
+        try {
+          const tasksRes = await fetch('/api/admin/tasks');
+          if (tasksRes.ok) {
+            const tasksData = await tasksRes.json();
+            if (tasksData.success) {
+              setPendingTasks(tasksData.data);
+            }
           }
+        } catch (err) {
+          console.warn('Tâches non disponibles:', err);
+          setPendingTasks([]);
         }
 
-        // Récupérer les alertes de stock
-        const stockAlertsRes = await InventoryService.getStockAlerts();
-        if (stockAlertsRes.success && stockAlertsRes.data) {
-          setStockAlerts(stockAlertsRes.data);
+        // Services optionnels - ne pas bloquer si indisponibles
+        try {
+          if (typeof InventoryService !== 'undefined') {
+            const stockAlertsRes = await InventoryService.getStockAlerts();
+            if (stockAlertsRes.success && stockAlertsRes.data) {
+              setStockAlerts(stockAlertsRes.data);
+            }
+          }
+        } catch (err) {
+          console.warn('InventoryService non disponible:', err);
+          setStockAlerts([]);
         }
 
-        // Récupérer les alertes de paiement
-        const paymentAlertsRes = await PaymentsService.getPaymentAlerts();
-        if (paymentAlertsRes.success && paymentAlertsRes.data) {
-          setPaymentAlerts(paymentAlertsRes.data);
+        try {
+          if (typeof PaymentsService !== 'undefined') {
+            const paymentAlertsRes = await PaymentsService.getPaymentAlerts();
+            if (paymentAlertsRes.success && paymentAlertsRes.data) {
+              setPaymentAlerts(paymentAlertsRes.data);
+            }
+          }
+        } catch (err) {
+          console.warn('PaymentsService non disponible:', err);
+          setPaymentAlerts([]);
         }
 
       } catch (error) {
@@ -234,7 +257,12 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {alerts.map((alert) => (
+                {alerts.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <p className="text-sm">Aucune alerte pour le moment</p>
+                    <p className="text-xs mt-1">Tout fonctionne correctement ✅</p>
+                  </div>
+                ) : alerts.map((alert) => (
                   <div key={alert.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className={`w-3 h-3 rounded-full ${
@@ -259,7 +287,12 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {pendingTasks.map((task) => (
+                {pendingTasks.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <p className="text-sm">Aucune tâche en attente</p>
+                    <p className="text-xs mt-1">Vous êtes à jour ! 🎉</p>
+                  </div>
+                ) : pendingTasks.map((task) => (
                   <div key={task.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-3">
                       <CheckCircle className="w-4 h-4 text-gray-400" />
