@@ -1,19 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: false,
-  },
+  // Turbopack configuration (required for Next.js 16)
+  turbopack: {},
+
   typescript: {
     ignoreBuildErrors: false,
   },
-  // Ignorer les routes API problématiques pendant le build
-  async rewrites() {
-    return {
-      beforeFiles: [],
-      afterFiles: [],
-      fallback: []
-    };
-  },
+
   images: {
     unoptimized: false,
     formats: ["image/webp", "image/avif"],
@@ -30,6 +23,7 @@ const nextConfig = {
       { protocol: "http", hostname: "via.placeholder.com" },
     ],
   },
+
   experimental: {
     optimizePackageImports: [
       "@radix-ui/react-accordion",
@@ -62,51 +56,10 @@ const nextConfig = {
       "lucide-react",
       "date-fns",
     ],
-    // Enable modern bundling
-    esmExternals: true,
   },
-  webpack: (config, { isServer, dev }) => {
-    // Configuration pour les imports dynamiques
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-      };
-    }
 
-    // Bundle optimization - Simplified to avoid conflicts
-    if (!dev && !isServer) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          default: false,
-          vendors: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-            priority: 20,
-          },
-          common: {
-            name: 'common',
-            minChunks: 2,
-            chunks: 'all',
-            priority: 10,
-            reuseExistingChunk: true,
-          },
-        },
-      };
-    }
-
-    return config;
-  },
-  compiler: {
-    removeConsole: false, // Keep console logs for debugging
-  },
   poweredByHeader: false,
   compress: true,
-  swcMinify: true,
 };
 
 module.exports = nextConfig;
