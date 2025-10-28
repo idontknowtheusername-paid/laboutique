@@ -65,7 +65,7 @@ export class AliExpressOAuthService {
     console.log('[OAuth] Échange code contre access_token avec auth.token.security.create');
 
     const timestamp = Date.now().toString();
-    
+
     // Paramètres pour auth.token.security.create
     const params: Record<string, any> = {
       app_key: this.config.appKey,
@@ -136,7 +136,7 @@ export class AliExpressOAuthService {
   private generateSystemSign(apiPath: string, params: Record<string, any>): string {
     // Trier les paramètres par clé (ASCII order)
     const sortedKeys = Object.keys(params).filter(k => k !== 'sign').sort();
-    
+
     // Construire la chaîne : /api/pathkey1value1key2value2...
     let signString = apiPath;
     for (const key of sortedKeys) {
@@ -148,7 +148,7 @@ export class AliExpressOAuthService {
     // Utiliser SHA256 pour System Interface avec app_secret comme clé
     const signature = crypto.createHmac('sha256', this.config.appSecret).update(signString, 'utf8').digest('hex').toUpperCase();
     console.log('[OAuth] Signature générée (HMAC-SHA256):', signature);
-    
+
     return signature;
   }
 
@@ -159,7 +159,7 @@ export class AliExpressOAuthService {
   private generateOAuthSign(params: Record<string, any>): string {
     // Trier les paramètres par clé
     const sortedKeys = Object.keys(params).sort();
-    
+
     // Construire la chaîne à signer SANS app_secret
     let signString = '';
     for (const key of sortedKeys) {
@@ -167,13 +167,13 @@ export class AliExpressOAuthService {
         signString += key + params[key];
       }
     }
-    
+
     console.log('[OAuth] Chaîne à signer (OAuth):', signString);
-    
+
     // Utiliser MD5
     const signature = crypto.createHash('md5').update(signString, 'utf8').digest('hex').toUpperCase();
     console.log('[OAuth] Signature générée (MD5 OAuth):', signature);
-    
+
     return signature;
   }
 
@@ -193,7 +193,7 @@ export class AliExpressOAuthService {
   private buildSignString(params: Record<string, any>): string {
     // Trier les paramètres par clé
     const sortedKeys = Object.keys(params).sort();
-    
+
     // Construire la chaîne à signer avec app_secret au début et à la fin
     let signString = this.config.appSecret;
     for (const key of sortedKeys) {
@@ -202,7 +202,7 @@ export class AliExpressOAuthService {
       }
     }
     signString += this.config.appSecret;
-    
+
     return signString;
   }
 
@@ -215,7 +215,7 @@ export class AliExpressOAuthService {
 
     const timestamp = Date.now().toString();
     const apiPath = '/auth/token/refresh';
-    
+
     const params: Record<string, any> = {
       app_key: this.config.appKey,
       refresh_token: refreshToken,
@@ -229,7 +229,7 @@ export class AliExpressOAuthService {
     try {
       const queryString = new URLSearchParams(params).toString();
       const url = `${this.restBaseUrl}${apiPath}?${queryString}`;
-      
+
       const response = await fetch(url, {
         method: 'GET',
         headers: {

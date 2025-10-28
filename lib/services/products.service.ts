@@ -688,7 +688,6 @@ export class ProductsService extends BaseService {
           price,
           compare_price,
           cost_price,
-          original_price,
           track_quantity,
           quantity,
           weight,
