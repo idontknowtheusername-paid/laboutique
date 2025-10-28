@@ -51,6 +51,20 @@ interface AliExpressProduct {
   lastest_volume?: number;
 }
 
+// Interface pour les filtres de recherche
+export interface ProductSearchFilters {
+  keywords: string;
+  category_id?: string;
+  min_price?: number;
+  max_price?: number;
+  min_sale_price?: number;
+  max_sale_price?: number;
+  sort?: 'sales_desc' | 'price_asc' | 'price_desc' | 'rating_desc';
+  page_size?: number;
+  page_no?: number;
+  ship_to_country?: string;
+}
+
 export class AliExpressDropshipApiService {
   private config: AliExpressConfig;
   private baseUrl = 'https://api-sg.aliexpress.com/sync';
@@ -231,6 +245,73 @@ export class AliExpressDropshipApiService {
     }
 
     return this.getProductDetails(productId);
+  }
+
+  /**
+   * Rechercher des produits par mots-clés et filtres
+   * Méthode: aliexpress.ds.recommend.feed.get
+   */
+  async searchProducts(filters: ProductSearchFilters): Promise<AliExpressProduct[]> {
+    try {
+      const params: Record<string, any> = {
+        target_currency: 'USD',
+        target_language: 'FR',
+        ship_to_country: filters.ship_to_country || 'BJ',
+        page_no: filters.page_no || 1,
+        page_size: Math.min(filters.page_size || 50, 100), // Max 100 par page
+      };
+
+      // Ajouter les filtres optionnels
+      if (filters.keywords) params.keywords = filters.keywords;
+      if (filters.category_id) params.category_id = filters.category_id;
+      if (filters.min_price) params.min_price = filters.min_price;
+      if (filters.max_price) params.max_price = filters.max_price;
+      if (filters.min_sale_price) params.min_sale_price = filters.min_sale_price;
+      if (filters.max_sale_price) params.max_sale_price = filters.max_sale_price;
+      if (filters.sort) params.sort = filters.sort;
+
+      console.log('[AliExpress Dropship API] Searching products with filters:', filters);
+
+      const response = await this.callApi('aliexpress.ds.recommend.feed.get', params);
+
+      // Parser la réponse
+      if (response.aliexpress_ds_recommend_feed_get_response) {
+        const result = response.aliexpress_ds_recommend_feed_get_response.result;
+
+        if (result && result.products && result.products.product) {
+          const products = result.products.product;
+
+          console.log(`[AliExpress Dropship API] Found ${products.length} products`);
+
+          // Convertir chaque produit au format unifié
+          return products.map((item: any) => {
+            const product: AliExpressProduct = {
+              product_id: item.product_id || item.productId || '',
+              product_title: item.product_title || item.subject || 'Produit sans nom',
+              product_main_image_url: item.product_main_image_url || item.productMainImageUrl || '',
+              product_video_url: item.product_video_url || item.productVideoUrl,
+              product_small_image_urls: item.product_small_image_urls
+                ? (typeof item.product_small_image_urls === 'string'
+                  ? item.product_small_image_urls.split(';')
+                  : item.product_small_image_urls)
+                : [],
+              sale_price: item.sale_price || item.salePrice || item.target_sale_price || '0',
+              original_price: item.original_price || item.originalPrice || item.target_original_price,
+              product_detail_url: item.product_detail_url || item.productDetailUrl || `https://www.aliexpress.com/item/${item.product_id}.html`,
+              evaluate_rate: item.evaluate_rate || item.evaluateRate || '4.5',
+              lastest_volume: item.lastest_volume || item.volume || 0,
+            };
+            return product;
+          }).filter((p: AliExpressProduct) => p.product_id); // Filtrer les produits sans ID
+        }
+      }
+
+      console.log('[AliExpress Dropship API] No products found');
+      return [];
+    } catch (error) {
+      console.error('[AliExpress Dropship API] searchProducts failed:', error);
+      throw error;
+    }
   }
 
   /**

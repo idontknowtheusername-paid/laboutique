@@ -19,7 +19,7 @@ function validateUrl(url: string): { valid: boolean; error?: string } {
 
   try {
     const urlObj = new URL(url);
-    
+
     // Vérifier que c'est HTTPS
     if (urlObj.protocol !== 'https:') {
       return { valid: false, error: 'L\'URL doit utiliser HTTPS' };
@@ -40,14 +40,14 @@ export async function POST(request: NextRequest) {
   try {
     const { url, importDirectly = false, publishDirectly = false } = await request.json();
     console.log('[IMPORT] Params:', { url, importDirectly, publishDirectly });
-    
+
     if (!url) {
       return NextResponse.json(
         { error: 'URL requise' },
         { status: 400 }
       );
     }
-    
+
     // Valider l'URL
     const validation = validateUrl(url);
     if (!validation.valid) {
@@ -56,17 +56,17 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     // Récupérer les données du produit via l'API AliExpress Dropship (OAuth)
     console.log('[IMPORT] 🚀 Début de l\'import pour:', url);
     let scrapedData: ScrapedProductData | null = null;
-    
+
     try {
       console.log('[IMPORT] ✨ Utilisation de l\'API Dropship AliExpress (OAuth)');
-      
+
       const aliExpressService = getAliExpressDropshipApiService();
       const product = await aliExpressService.getProductByUrl(url);
-      
+
       if (!product) {
         console.error('[IMPORT] ❌ Produit non trouvé via l\'API AliExpress');
         return NextResponse.json(
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
           { status: 404 }
         );
       }
-      
+
       scrapedData = aliExpressService.convertToScrapedProductData(product, url);
       console.log('[IMPORT] ✅ Données récupérées via API Dropship:', {
         name: scrapedData.name,
@@ -85,13 +85,13 @@ export async function POST(request: NextRequest) {
       });
     } catch (err) {
       console.error('[IMPORT] ❌ Échec de la récupération des données:', err);
-      
+
       const errorMessage = (err as any)?.message || 'Impossible de récupérer les données du produit';
-      
+
       // Message spécifique si problème OAuth
       if (errorMessage.includes('token') || errorMessage.includes('autoriser')) {
         return NextResponse.json(
-          { 
+          {
             error: 'Application non autorisée',
             details: 'Vous devez autoriser l\'application AliExpress. Allez dans Admin > Produits et cliquez sur "Autoriser AliExpress".',
             action_required: 'oauth_authorization'
@@ -99,16 +99,16 @@ export async function POST(request: NextRequest) {
           { status: 401 }
         );
       }
-      
+
       return NextResponse.json(
-        { 
+        {
           error: errorMessage,
           details: 'Vérifiez que votre app AliExpress est correctement configurée et autorisée'
         },
         { status: 500 }
       );
     }
-    
+
     if (!scrapedData) {
       console.error('[IMPORT] ❌ Aucune donnée scrapée');
       return NextResponse.json(
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
       price: productData?.price,
       platform: productData?.source_platform
     });
-    
+
     if (!productData) {
       console.error('[IMPORT] ❌ Données de produit manquantes après validation');
       return NextResponse.json(
@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     // Si import direct, créer le produit
     if (importDirectly) {
       // Vérification préalable: clé admin Supabase requise pour créer des lignes côté serveur
@@ -182,45 +182,45 @@ export async function POST(request: NextRequest) {
         console.log('[IMPORT] Supabase admin configured:', isSupabaseAdminConfigured());
         console.log('[IMPORT] SUPABASE_URL:', process.env.SUPABASE_URL ? 'SET' : 'NOT SET');
         console.log('[IMPORT] SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'SET' : 'NOT SET');
-        
+
         // Force use of admin client for server-side operations
         const db = supabaseAdmin;
-        
+
         // Forcer l'utilisation de Supabase (pas de mock en production)
         if (!isSupabaseAdminConfigured()) {
           console.error('[IMPORT] ❌ Supabase non configuré - clés manquantes');
           return NextResponse.json(
-            { 
+            {
               error: 'Base de données non configurée',
               details: 'Les variables d\'environnement Supabase ne sont pas configurées correctement. Vérifiez SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY.'
             },
             { status: 500 }
           );
         }
-        
+
         // Récupérer toutes les catégories disponibles depuis Supabase
         console.log('[IMPORT] 🏷️ Récupération des catégories...');
         let availableCategories: any[] = [];
-        
+
         try {
           const { data: cats, error: categoriesError } = await db
             .from('categories')
             .select('id, name, slug')
             .eq('status', 'active');
-          
-          console.log('[IMPORT] 📊 Résultat récupération catégories:', { 
-            catsCount: cats?.length || 0, 
+
+          console.log('[IMPORT] 📊 Résultat récupération catégories:', {
+            catsCount: cats?.length || 0,
             categoriesError: categoriesError ? {
               code: categoriesError.code,
               message: categoriesError.message,
               details: categoriesError.details
             } : null
           });
-          
+
           if (categoriesError) {
             console.error('[IMPORT] ❌ Erreur récupération catégories:', categoriesError);
             return NextResponse.json(
-              { 
+              {
                 error: 'Erreur base de données',
                 details: `Impossible de récupérer les catégories: ${categoriesError.message}`,
                 errorCode: categoriesError.code
@@ -234,7 +234,7 @@ export async function POST(request: NextRequest) {
         } catch (e) {
           console.error('[IMPORT] 💥 Exception lors de la récupération des catégories:', e);
           return NextResponse.json(
-            { 
+            {
               error: 'Erreur base de données',
               details: e instanceof Error ? e.message : 'Erreur inconnue lors de la récupération des catégories'
             },
@@ -244,10 +244,9 @@ export async function POST(request: NextRequest) {
 
         // Trouver la meilleure catégorie basée sur le nom du produit
         console.log('[IMPORT] 🎯 Recherche de la meilleure catégorie pour:', productData.name);
-        let selectedCategoryId = findBestCategory(productData.name, availableCategories || [])
-          || findBestCategoryByKeywords(productData.name, availableCategories || []);
+        let selectedCategoryId = findBestCategory(productData.name, availableCategories || []);
         console.log('[IMPORT] 📊 Catégorie trouvée par matching:', selectedCategoryId);
-        
+
         // Si aucune catégorie n'est trouvée, créer ou utiliser une catégorie par défaut
         if (!selectedCategoryId) {
           try {
@@ -283,7 +282,7 @@ export async function POST(request: NextRequest) {
                   console.log('[IMPORT] 🔧 Fallback vers première catégorie disponible:', selectedCategoryId);
                 } else {
                   return NextResponse.json(
-                    { 
+                    {
                       error: 'Aucune catégorie disponible',
                       details: 'Aucune catégorie trouvée et impossible de créer une catégorie par défaut'
                     },
@@ -298,7 +297,7 @@ export async function POST(request: NextRequest) {
           } catch (categoryFallbackError) {
             console.error('[IMPORT] ❌ Erreur lors de la gestion de la catégorie par défaut:', categoryFallbackError);
             return NextResponse.json(
-              { 
+              {
                 error: 'Impossible de déterminer une catégorie pour le produit',
                 details: categoryFallbackError instanceof Error ? categoryFallbackError.message : 'Erreur inconnue'
               },
@@ -344,7 +343,7 @@ export async function POST(request: NextRequest) {
 
         try {
           console.log('[IMPORT] 🔍 Recherche d\'un vendeur existant...');
-          
+
           // Utiliser Supabase uniquement
           const { data: anyVendor, error: fetchAnyVendorError } = await db
             .from('vendors')
@@ -352,8 +351,8 @@ export async function POST(request: NextRequest) {
             .limit(1)
             .single();
 
-          console.log('[IMPORT] 📊 Résultat recherche vendeur:', { 
-            anyVendor, 
+          console.log('[IMPORT] 📊 Résultat recherche vendeur:', {
+            anyVendor,
             fetchAnyVendorError: fetchAnyVendorError ? {
               code: fetchAnyVendorError.code,
               message: fetchAnyVendorError.message,
@@ -372,7 +371,7 @@ export async function POST(request: NextRequest) {
               email: 'default@laboutique.bj',
               status: 'active'
             };
-            
+
             const { data: newVendor, error: createVendorError } = await db
               .from('vendors')
               .insert([vendorData] as any)
@@ -382,8 +381,8 @@ export async function POST(request: NextRequest) {
             if (createVendorError) {
               console.error('[IMPORT] ❌ Error creating default vendor:', createVendorError);
               return NextResponse.json(
-                { 
-                  error: 'Impossible de créer un vendeur par défaut', 
+                {
+                  error: 'Impossible de créer un vendeur par défaut',
                   details: createVendorError.message,
                   errorCode: createVendorError.code
                 },
@@ -397,8 +396,8 @@ export async function POST(request: NextRequest) {
         } catch (vendorError) {
           console.error('[IMPORT] 💥 Unexpected error in vendor handling:', vendorError);
           return NextResponse.json(
-            { 
-              error: 'Erreur inattendue lors de la gestion du vendeur', 
+            {
+              error: 'Erreur inattendue lors de la gestion du vendeur',
               details: vendorError instanceof Error ? vendorError.message : 'Erreur inconnue'
             },
             { status: 500 }
@@ -418,17 +417,17 @@ export async function POST(request: NextRequest) {
         // Corriger et valider les images pour Next.js
         const fixedImages = (productData.images || []).map((img: string) => {
           if (!img) return '/placeholder-product.jpg';
-          
+
           // Garder les URLs externes telles quelles
           if (img.startsWith('http://') || img.startsWith('https://')) {
             return img;
           }
-          
+
           // Préfixer par '/' si c'est un chemin relatif
           if (img.startsWith('/')) {
             return img;
           }
-          
+
           // Préfixer par '/' pour les fichiers locaux
           return '/' + img;
         }).filter(img => img && img !== '/placeholder-product.jpg'); // Filtrer les images vides
@@ -481,7 +480,7 @@ export async function POST(request: NextRequest) {
           source_url: productData.source_url,
           source_platform: productData.source_platform
         };
-        
+
         console.log('[IMPORT] 📦 Payload produit complet:', {
           name: productPayload.name,
           slug: productPayload.slug,
@@ -493,7 +492,7 @@ export async function POST(request: NextRequest) {
           source_platform: productPayload.source_platform,
           imagesCount: productPayload.images?.length || 0
         });
-        
+
         console.log('[IMPORT] 🚀 Création du produit...');
         // Utiliser Supabase uniquement
         const creationResponse = await ProductsService.createWithClient(db, productPayload);
@@ -510,7 +509,7 @@ export async function POST(request: NextRequest) {
           console.error('[IMPORT] ❌ Error creating product:', errMsg);
           console.error('[IMPORT] 📋 Creation response details:', creationResponse);
           return NextResponse.json(
-            { 
+            {
               error: errMsg,
               details: creationResponse.error,
               payload: productPayload
@@ -527,7 +526,7 @@ export async function POST(request: NextRequest) {
           vendor_id: creationResponse.data.vendor_id,
           status: creationResponse.data.status
         });
-        
+
         // Vérifier que les champs requis sont présents
         if (!creationResponse.data.category_id || !creationResponse.data.vendor_id) {
           console.error('[IMPORT] ❌ Produit créé mais catégorie ou vendeur manquant:', {
@@ -535,7 +534,7 @@ export async function POST(request: NextRequest) {
             vendor_id: creationResponse.data.vendor_id
           });
           return NextResponse.json(
-            { 
+            {
               error: 'Produit créé mais catégorie ou vendeur manquant',
               details: `category_id: ${creationResponse.data.category_id}, vendor_id: ${creationResponse.data.vendor_id}`,
               data: creationResponse.data
@@ -543,7 +542,7 @@ export async function POST(request: NextRequest) {
             { status: 500 }
           );
         }
-        
+
         return NextResponse.json({
           success: true,
           data: creationResponse.data,
@@ -557,7 +556,7 @@ export async function POST(request: NextRequest) {
           name: error instanceof Error ? error.name : undefined
         });
         return NextResponse.json(
-          { 
+          {
             error: 'Erreur lors de la création du produit',
             details: error instanceof Error ? error.message : 'Erreur inconnue'
           },
@@ -565,7 +564,7 @@ export async function POST(request: NextRequest) {
         );
       }
     }
-    
+
     // Retourner les données pour prévisualisation, avec suggestions de vendor/category
     console.log('[IMPORT] ✅ Préparation des suggestions (catégorie & vendeur) pour prévisualisation');
     let suggestedCategoryId: string | undefined = undefined;
@@ -581,7 +580,7 @@ export async function POST(request: NextRequest) {
           .eq('status', 'active');
         const available = cats || [];
         // Matcher selon le nom
-        suggestedCategoryId = findBestCategory(productData.name, available) || findBestCategoryByKeywords(productData.name, available) || undefined;
+        suggestedCategoryId = findBestCategory(productData.name, available) || undefined;
 
         // Trouver/Créer un vendeur par défaut
         const vendRes = await db
@@ -612,7 +611,7 @@ export async function POST(request: NextRequest) {
       data: { ...productData, category_id: suggestedCategoryId, vendor_id: suggestedVendorId },
       message: 'Données récupérées avec succès'
     });
-    
+
   } catch (error) {
     console.error('[IMPORT] 💥 Import error global:', error);
     console.error('[IMPORT] 📋 Global error details:', {
@@ -621,7 +620,7 @@ export async function POST(request: NextRequest) {
       name: error instanceof Error ? error.name : undefined
     });
     return NextResponse.json(
-      { 
+      {
         error: 'Erreur interne du serveur',
         details: error instanceof Error ? error.message : 'Erreur inconnue'
       },
