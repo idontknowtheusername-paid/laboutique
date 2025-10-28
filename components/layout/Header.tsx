@@ -237,18 +237,18 @@ const Header = () => {
       </div> */}
 
       {/* Main Header */}
-      <div className="container py-3 md:py-4">
+      <div className="container py-4">
         <div className="flex items-center justify-between gap-4">
           {/* Logo - image with dedicated container */}
           <Link href="/" className="flex items-center header-logo flex-shrink-0">
-            <div className="relative w-36 h-14 sm:w-44 sm:h-16 md:w-52 md:h-18 lg:w-60 lg:h-20 rounded-lg overflow-hidden">
+            <div className="relative w-32 h-12 sm:w-36 sm:h-12 md:w-40 md:h-12 lg:w-44 lg:h-12 rounded-lg overflow-hidden">
               <Image
                 src="/images/latestlogo.jpg"
                 alt="JomionStore"
                 fill
                 className="object-contain mix-blend-multiply"
                 priority
-                sizes="(max-width: 640px) 144px, (max-width: 768px) 176px, (max-width: 1024px) 208px, 240px"
+                sizes="(max-width: 640px) 128px, (max-width: 768px) 144px, (max-width: 1024px) 160px, 176px"
               />
             </div>
           </Link>
