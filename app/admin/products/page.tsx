@@ -172,7 +172,7 @@ export default function AdminProductsPage() {
       const filters = {
         status: status !== 'all' ? status as 'active' | 'draft' | 'inactive' : undefined,
         search: debouncedSearch || undefined,
-        category: category !== 'all' ? category : undefined,
+        category_id: category !== 'all' ? category : undefined,
         platform: platform !== 'all' ? platform as 'aliexpress' | 'alibaba' | 'manual' : undefined,
         price_min: debouncedPriceMin ? parseFloat(debouncedPriceMin) : undefined,
         price_max: debouncedPriceMax ? parseFloat(debouncedPriceMax) : undefined,
@@ -414,9 +414,16 @@ export default function AdminProductsPage() {
               >
                 Réinitialiser
               </Button>
-              <span className="text-sm text-gray-600 whitespace-nowrap">
-                Total: <span className="font-medium">{totalCount}</span>
-              </span>
+              <div className="flex flex-col items-end">
+                <span className="text-sm font-semibold text-gray-900">
+                  {totalCount} produits
+                </span>
+                <span className="text-xs text-gray-500">
+                  {search || category !== 'all' || platform !== 'all' || status !== 'all' || priceMin || priceMax
+                    ? 'Filtrés'
+                    : 'Total dans la base'}
+                </span>
+              </div>
             </div>
           </AdminToolbar>
         </CardContent>
@@ -556,12 +563,12 @@ export default function AdminProductsPage() {
               Précédent
             </Button>
             
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">
-                Page {page} sur {Math.ceil(totalCount / 20)}
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-sm font-medium text-gray-700">
+                Page {page} sur {Math.ceil(totalCount / 20) || 1}
               </span>
-              <span className="text-sm text-gray-500">
-                ({items.length} produits)
+              <span className="text-xs text-gray-500">
+                Affichage de {((page - 1) * 20) + 1}-{Math.min(page * 20, totalCount)} sur {totalCount} produits
               </span>
             </div>
             

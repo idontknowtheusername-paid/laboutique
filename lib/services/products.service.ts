@@ -156,11 +156,12 @@ export class ProductsService extends BaseService {
         `, { count: 'exact' });
 
       // Appliquer les filtres
+      // Note: Si status est undefined, on affiche TOUS les statuts (pour l'admin)
+      // Si status est défini, on filtre sur ce statut spécifique
       if (filters.status) {
         query = query.eq('status', filters.status);
-      } else {
-        query = query.eq('status', 'active'); // Par défaut, seulement les produits actifs
       }
+      // Pas de filtre par défaut - l'appelant doit spécifier explicitement
 
       if (filters.category_id) {
         query = query.eq('category_id', filters.category_id);
@@ -195,7 +196,7 @@ export class ProductsService extends BaseService {
       }
 
       if (filters.search) {
-        query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%,brand.ilike.%${filters.search}%`);
+        query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%,brand.ilike.%${filters.search}%,sku.ilike.%${filters.search}%,short_description.ilike.%${filters.search}%`);
       }
 
       // Nouveaux filtres
