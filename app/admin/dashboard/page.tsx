@@ -329,8 +329,10 @@ export default function AdminDashboard() {
                   </AreaChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex items-center justify-center h-[300px] text-gray-500">
-                  Aucune donnée de vente disponible
+                  <div className="flex flex-col items-center justify-center h-[300px] text-gray-500 gap-3">
+                    <div className="text-5xl">📈</div>
+                    <p className="font-medium">Aucune donnée de vente</p>
+                    <p className="text-sm">Les statistiques apparaîtront après les premières ventes</p>
                 </div>
               )}
             </CardContent>
@@ -353,8 +355,10 @@ export default function AdminDashboard() {
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex items-center justify-center h-[300px] text-gray-500">
-                  Aucune donnée de catégorie disponible
+                  <div className="flex flex-col items-center justify-center h-[300px] text-gray-500 gap-3">
+                    <div className="text-5xl">📊</div>
+                    <p className="font-medium">Aucune donnée de catégorie</p>
+                    <p className="text-sm">Ajoutez des produits pour voir la répartition</p>
                 </div>
               )}
             </CardContent>
@@ -370,7 +374,7 @@ export default function AdminDashboard() {
               {recentOrders.length > 0 ? (
                 <div className="space-y-4">
                   {recentOrders.map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => window.location.href = `/admin/orders/${order.id}`}>
                       <div className="space-y-1">
                         <p className="font-medium">{order.order_number}</p>
                         <p className="text-sm text-gray-600">{order.user?.first_name} {order.user?.last_name}</p>
@@ -384,8 +388,10 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-[200px] text-gray-500">
-                  Aucune commande récente
+                  <div className="flex flex-col items-center justify-center h-[200px] text-gray-500 gap-3">
+                    <div className="text-5xl">📦</div>
+                    <p className="font-medium">Aucune commande récente</p>
+                    <p className="text-sm">Les nouvelles commandes apparaîtront ici</p>
                 </div>
               )}
             </CardContent>
@@ -399,7 +405,7 @@ export default function AdminDashboard() {
               {topVendors.length > 0 ? (
                 <div className="space-y-4">
                   {topVendors.map((vendor, index) => (
-                    <div key={vendor.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={vendor.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                       <div className="flex items-center space-x-3">
                         <div className="w-8 h-8 bg-jomionstore-primary rounded-full flex items-center justify-center">
                           <span className="text-white font-bold text-sm">{index + 1}</span>
@@ -415,15 +421,16 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold">{formatPrice(0)}</p>
                         <p className="text-sm text-gray-600">{vendor.commission_rate}% commission</p>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-[200px] text-gray-500">
-                  Aucun vendeur disponible
+                  <div className="flex flex-col items-center justify-center h-[200px] text-gray-500 gap-3">
+                    <div className="text-5xl">🏪</div>
+                    <p className="font-medium">Aucun vendeur actif</p>
+                    <p className="text-sm">Les vendeurs apparaîtront ici</p>
                 </div>
               )}
             </CardContent>

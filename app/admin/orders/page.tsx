@@ -90,12 +90,12 @@ export default function AdminOrdersPage() {
       
       orders.forEach((order) => {
         csvRows.push([
-          order.order_number || order.id,
-          `${order.user?.first_name || ''} ${order.user?.last_name || ''}`.trim(),
-          order.user?.email || '',
-          order.status || '',
+          order.order_number || `#${order.id.slice(0, 8)}`,
+          `${order.user?.first_name || ''} ${order.user?.last_name || ''}`.trim() || 'N/A',
+          order.user?.email || 'N/A',
+          order.status || 'pending',
           order.total_amount || 0,
-          new Date(order.created_at).toLocaleDateString('fr-FR')
+          order.created_at ? new Date(order.created_at).toLocaleDateString('fr-FR') : 'N/A'
         ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(","));
       });
       

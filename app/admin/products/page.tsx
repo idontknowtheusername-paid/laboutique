@@ -23,6 +23,7 @@ interface AdminProduct {
   sku?: string;
   brand?: string;
   status?: string;
+  created_at?: string;
   category?: { name: string };
   vendor?: { name: string };
 }
@@ -137,16 +138,16 @@ export default function AdminProductsPage() {
       
       const csvRows = [headers.join(",")];
       
-      items.forEach((product) => {
+      items.forEach((product: any) => {
         csvRows.push([
           product.name || '',
           product.sku || '',
-          product.brand || '',
-          product.category?.name || '',
-          product.vendor?.name || '',
+          product.brand || 'N/A',
+          product.category?.name || 'Sans catégorie',
+          product.vendor?.name || 'Sans vendeur',
           product.price || 0,
-          product.status || '',
-          new Date().toLocaleDateString('fr-FR') // Date de création simulée
+          product.status || 'draft',
+          product.created_at ? new Date(product.created_at).toLocaleDateString('fr-FR') : 'N/A'
         ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(","));
       });
       

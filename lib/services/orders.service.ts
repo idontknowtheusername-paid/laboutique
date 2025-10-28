@@ -159,6 +159,9 @@ export class OrdersService extends BaseService {
         query = query.lte('total_amount', filters.max_amount);
       }
 
+      // Recherche dans order_number et notes
+      // Note: La recherche dans user.first_name/last_name nécessite une approche différente
+      // car c'est une relation. Pour l'instant, on cherche dans order_number et notes.
       if (filters.search) {
         query = query.or(`order_number.ilike.%${filters.search}%,notes.ilike.%${filters.search}%`);
       }
