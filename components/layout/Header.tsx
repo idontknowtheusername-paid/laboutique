@@ -246,7 +246,7 @@ const Header = () => {
               alt="JomionStore"
               width={200}
               height={70}
-              className="h-14 sm:h-16 md:h-20 w-auto object-contain"
+              className="h-12 w-32 sm:h-14 sm:w-40 md:h-16 md:w-48 lg:h-18 lg:w-52 object-contain"
               priority
             />
           </Link>
