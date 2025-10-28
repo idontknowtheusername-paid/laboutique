@@ -116,7 +116,7 @@ export default function AdminEditProductPage() {
                 <label className="block text-sm mb-2">Statut</label>
                 <Select
                   value={product.status}
-                  onValueChange={(value: 'active' | 'draft' | 'archived') => setProduct({ ...product, status: value })}
+                  onValueChange={(value: 'active' | 'inactive' | 'draft') => setProduct({ ...product, status: value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner un statut" />
@@ -134,10 +134,10 @@ export default function AdminEditProductPage() {
                         Brouillon
                       </span>
                     </SelectItem>
-                    <SelectItem value="archived">
+                    <SelectItem value="inactive">
                       <span className="flex items-center gap-2">
                         <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                        Archivé
+                        Inactif
                       </span>
                     </SelectItem>
                   </SelectContent>
