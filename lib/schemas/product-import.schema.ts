@@ -24,7 +24,8 @@ export const importedProductSchema = z.object({
   original_price: z.number()
     .positive('Le prix original doit être positif')
     .min(0.01, 'Le prix minimum est de 0.01')
-    .max(999999.99, 'Le prix maximum est de 999999.99'),
+    .max(999999.99, 'Le prix maximum est de 999999.99')
+    .optional(), // Optionnel car pas toujours fourni par AliExpress
   
   stock_quantity: z.number()
     .int('La quantité doit être un nombre entier')

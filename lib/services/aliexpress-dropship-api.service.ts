@@ -265,10 +265,21 @@ export class AliExpressDropshipApiService {
     const salePrice = parsePrice(product.sale_price);
     const originalPrice = parsePrice(product.original_price);
 
+    // Prix final avec fallback
+    const finalPrice = salePrice || 15000; // Prix par défaut: 15000 XOF
+
+    // Prix original : si existe et > prix vente, sinon +30% du prix vente, sinon undefined
+    let finalOriginalPrice: number | undefined;
+    if (originalPrice > 0 && originalPrice > finalPrice) {
+      finalOriginalPrice = originalPrice;
+    } else if (finalPrice > 0) {
+      finalOriginalPrice = Math.round(finalPrice * 1.3);
+    }
+
     return {
       name: product.product_title.slice(0, 200),
-      price: salePrice || 15000, // Prix par défaut: 15000 XOF
-      original_price: originalPrice > salePrice ? originalPrice : Math.round(salePrice * 1.3),
+      price: finalPrice,
+      original_price: finalOriginalPrice,
       images: images.filter(img => img && img.startsWith('http')),
       description: `${product.product_title}\n\nProduit importé depuis AliExpress via Dropship API.\n\nCaractéristiques:\n- Note: ${product.evaluate_rate || 'N/A'}\n- Ventes récentes: ${product.lastest_volume || 0}`,
       short_description: product.product_title.slice(0, 150),
