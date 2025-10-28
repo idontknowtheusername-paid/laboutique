@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
+import React from 'react';
+import { Textarea } from '@/components/ui/textarea';
 
 interface WysiwygEditorProps {
   value: string;
@@ -18,46 +18,20 @@ export default function WysiwygEditor({
   height = 400,
   disabled = false
 }: WysiwygEditorProps) {
-  const editorRef = useRef<any>(null);
-
-  const handleEditorChange = (content: string) => {
-    onChange(content);
-  };
 
   return (
     <div className="wysiwyg-editor">
-      <Editor
-        onInit={(evt: any, editor: any) => editorRef.current = editor}
+      <Textarea
         value={value}
-        onEditorChange={handleEditorChange}
-        init={{
-          height: height,
-          menubar: false,
-          plugins: [
-            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-            'insertdatetime', 'media', 'table', 'help', 'wordcount'
-          ],
-          toolbar: 'undo redo | blocks | ' +
-            'bold italic forecolor | alignleft aligncenter ' +
-            'alignright alignjustify | bullist numlist outdent indent | ' +
-            'removeformat | help',
-          content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }',
-          placeholder: placeholder,
-          branding: false,
-          statusbar: false,
-          resize: false,
-          setup: (editor: any) => {
-            if (disabled) {
-              editor.mode.set('readonly');
-            }
-            editor.on('change', () => {
-              const content = editor.getContent();
-              onChange(content);
-            });
-          }
-        }}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        disabled={disabled}
+        className="min-h-[300px] font-mono text-sm"
+        style={{ height: `${height}px` }}
       />
+      <p className="text-xs text-gray-500 mt-1">
+        Vous pouvez utiliser du HTML basique (p, strong, em, ul, li, etc.)
+      </p>
     </div>
   );
 }
