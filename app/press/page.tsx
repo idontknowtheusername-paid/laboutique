@@ -10,10 +10,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Newspaper, 
-  Calendar, 
-  ExternalLink, 
+import {
+  Newspaper,
+  Calendar,
+  ExternalLink,
   Search,
   Download,
   Mail,
@@ -219,7 +219,7 @@ export default function PressPage() {
             <span className="text-jomionstore-primary"> Presse</span>
           </h1>
           <p className="text-gray-600 max-w-3xl mx-auto text-xl">
-            Découvrez les dernières actualités de JomionStore, téléchargez nos ressources presse 
+            Découvrez les dernières actualités de JomionStore, téléchargez nos ressources presse
             et contactez notre équipe pour vos demandes médiatiques.
           </p>
         </div>
