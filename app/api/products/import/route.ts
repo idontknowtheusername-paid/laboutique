@@ -313,7 +313,11 @@ export async function POST(request: NextRequest) {
             console.log('[IMPORT] 🔁 Vérification d\'un produit existant par source_url:', productData.source_url);
             const { data: existingBySource, error: existingBySourceError } = await db
               .from('products')
-              .select('id, name, slug, status')
+              .select(`
+                id, name, slug, status, category_id, vendor_id,
+                category:categories(id, name, slug),
+                vendor:vendors(id, name, slug)
+              `)
               .eq('source_url', productData.source_url)
               .limit(1)
               .single();
