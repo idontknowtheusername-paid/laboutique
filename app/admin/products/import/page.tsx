@@ -145,72 +145,46 @@ export default function AdminImportProductPage() {
           Retour aux produits
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">Importer des produits</h1>
-          <p className="text-gray-600">Importez des produits depuis AliExpress ou AliBaba</p>
+          <h1 className="text-2xl font-bold">Import individuel</h1>
+          <p className="text-gray-600">Importez un produit spécifique depuis AliExpress ou AliBaba</p>
         </div>
       </div>
 
-      {/* Options d'import */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-2 border-blue-200 bg-blue-50">
-          <CardContent className="pt-6">
-            <div className="text-center space-y-3">
-              <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto">
-                <Download className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold">Import individuel</h3>
-              <p className="text-sm text-gray-600">
-                Importez un produit spécifique en collant son URL
-              </p>
-              <p className="text-xs text-blue-600 font-medium">
-                ✓ Contrôle total • ✓ Prévisualisation • ✓ Import immédiat
-              </p>
+      {/* Info sur l'import individuel */}
+      <Card className="border-2 border-blue-200 bg-blue-50">
+        <CardContent className="pt-6">
+          <div className="text-center space-y-3 mb-4">
+            <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto">
+              <Download className="w-6 h-6 text-white" />
             </div>
-          </CardContent>
-        </Card>
+            <h3 className="text-lg font-semibold">Import individuel</h3>
+            <p className="text-sm text-gray-600">
+              Importez un produit spécifique en collant son URL AliExpress ou AliBaba
+            </p>
+            <p className="text-xs text-blue-600 font-medium">
+              ✓ Contrôle total • ✓ Prévisualisation • ✓ Import immédiat
+            </p>
+          </div>
 
-        <Card className="border-2 border-purple-200 bg-purple-50 cursor-pointer hover:bg-purple-100 transition-colors"
-          onClick={() => router.push('/admin/products/bulk-urls')}>
-          <CardContent className="pt-6">
-            <div className="text-center space-y-3">
-              <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-white font-bold text-xl">📋</span>
-              </div>
-              <h3 className="text-lg font-semibold">Import en masse</h3>
-              <p className="text-sm text-gray-600">
-                Importez plusieurs produits en collant une liste d'URLs
-              </p>
-              <p className="text-xs text-purple-600 font-medium">
-                ✓ Liste d'URLs • ✓ Traitement parallèle • ✓ Suivi en temps réel
-              </p>
-              <Button size="sm" className="mt-2 bg-purple-600 hover:bg-purple-700">
-                Import par URLs →
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-2 border-green-200 bg-green-50 cursor-pointer hover:bg-green-100 transition-colors"
-          onClick={() => router.push('/admin/products/bulk-import')}>
-          <CardContent className="pt-6">
-            <div className="text-center space-y-3">
-              <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-white font-bold text-xl">⚡</span>
-              </div>
-              <h3 className="text-lg font-semibold">Import par catégorie</h3>
-              <p className="text-sm text-gray-600">
-                Recherchez et importez des produits par mots-clés et filtres
-              </p>
-              <p className="text-xs text-green-600 font-medium">
-                ✓ Recherche par mots-clés • ✓ Filtres avancés • ✓ Preview produits
-              </p>
-              <Button size="sm" className="mt-2 bg-green-600 hover:bg-green-700">
-                Import par catégorie →
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          {/* Liens vers les autres types d'import */}
+          <div className="flex justify-center gap-2 pt-4 border-t">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push('/admin/products/bulk-urls')}
+            >
+              📋 Import en masse (URLs)
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push('/admin/products/bulk-import')}
+            >
+              🔍 Import par catégorie
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Message */}
       {message && (

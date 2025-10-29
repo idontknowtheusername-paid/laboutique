@@ -50,55 +50,7 @@ export default function AdminProductsPage() {
   const debouncedPriceMin = useDebounce(priceMin, 500);
   const debouncedPriceMax = useDebounce(priceMax, 500);
 
-  // Test de connexion à la base de données
-  async function testDatabaseConnection() {
-    try {
-      const client = (ProductsService as any).getSupabaseClient();
-      
-      // Test 1: Vérifier la connexion de base
-      const { data: connectionTest, error: connectionError } = await client
-        .from('products')
-        .select('count')
-        .limit(1);
-      
-      if (connectionError) {
-        error('Erreur de connexion', `Impossible de se connecter à la base: ${connectionError.message}`);
-        return;
-      }
 
-      // Test 2: Vérifier les permissions de lecture
-      const { data: readTest, error: readError } = await client
-        .from('products')
-        .select('id, name, price, status')
-        .limit(5);
-      
-      if (readError) {
-        error('Erreur de lecture', `Impossible de lire les données: ${readError.message}`);
-        return;
-      }
-
-      // Test 3: Vérifier les permissions d'écriture (test en lecture seule)
-      const { data: writeTest, error: writeError } = await client
-        .from('products')
-        .select('id')
-        .limit(1);
-      
-      if (writeError) {
-        error('Erreur d\'écriture', `Problème de permissions: ${writeError.message}`);
-        return;
-      }
-
-      // Test 4: Vérifier la latence
-      const startTime = Date.now();
-      await client.from('products').select('count').limit(1);
-      const latency = Date.now() - startTime;
-
-      success('Connexion réussie', `Base de données accessible (latence: ${latency}ms, ${readTest?.length || 0} produits trouvés)`);
-      
-    } catch (err) {
-      error('Erreur de connexion', `Impossible de se connecter à la base de données: ${err instanceof Error ? err.message : 'Erreur inconnue'}`);
-    }
-  }
 
   const handleDeleteProduct = async (productId: string, productName: string) => {
     try {
@@ -243,25 +195,15 @@ export default function AdminProductsPage() {
         subtitle="Catalogue et statut de publication"
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            {/* Test de connexion */}
-            <Button variant="outline" onClick={testDatabaseConnection}>
-              🔍 Test DB
-            </Button>
-            
-            {/* Bouton principal - Créer manuellement */}
+            {/* Boutons d'action */}
             <Button
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold"
-              onClick={() => router.push("/admin/products/new")}
+              variant="outline"
+              size="sm"
+              onClick={load}
+              disabled={loading}
+              title="Rafraîchir la liste"
             >
-              <Plus className="w-4 h-4 mr-2" /> Créer manuellement
-            </Button>
-            
-            {/* Séparateur visuel */}
-            <div className="w-px h-6 bg-gray-300 mx-1"></div>
-            
-            {/* Boutons secondaires */}
-            <Button variant="outline" onClick={load} disabled={loading}>
-              <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
+              <RefreshCw className="w-4 h-4" />
             </Button>
             <Button
               variant="outline"
@@ -276,16 +218,16 @@ export default function AdminProductsPage() {
               <Download className="w-4 h-4 mr-2" /> Importer
             </Button>
             <Button
-              className="bg-jomionstore-primary hover:bg-orange-700"
-              onClick={() => router.push("/admin/products/bulk-import")}
+              variant="outline"
+              onClick={() => router.push("/admin/products/bulk-urls")}
             >
               <Download className="w-4 h-4 mr-2" /> Import masse
             </Button>
             <Button
-              variant="outline"
-              onClick={() => router.push("/admin/categories")}
+              className="bg-jomionstore-primary hover:bg-orange-700"
+              onClick={() => router.push("/admin/products/bulk-import")}
             >
-              📁 Catégories
+              <Download className="w-4 h-4 mr-2" /> Import catégorie
             </Button>
           </div>
         }
@@ -485,10 +427,7 @@ export default function AdminProductsPage() {
                         <div className="flex gap-2 mt-4">
                           <Button onClick={() => router.push('/admin/products/import')}>
                             Importer un produit
-                          </Button>
-                          <Button variant="outline" onClick={() => router.push('/admin/products/new')}>
-                            Créer manuellement
-                          </Button>
+                            </Button>
                         </div>
                       </div>
                     </td>
