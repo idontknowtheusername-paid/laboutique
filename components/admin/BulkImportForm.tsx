@@ -64,22 +64,17 @@ export default function BulkImportForm() {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const response = await fetch('/api/aliexpress/test-categories', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({})
-        });
-
+        console.log('Loading categories...');
+        const response = await fetch('/api/aliexpress/categories');
         const data = await response.json();
-        if (data.success && data.data?.aliexpress_ds_category_get_response?.resp_result) {
-          const cats = data.data.aliexpress_ds_category_get_response.resp_result;
-          // Filtrer les catégories principales (sans parent ou avec des parents spécifiques)
-          const mainCategories = cats.filter((cat: AliExpressCategory) =>
-            !cat.parent_category_id ||
-            ['200000343', '200000345', '509', '44'].includes(cat.category_id)
-          ).slice(0, 20); // Limiter à 20 catégories principales
 
-          setCategories(mainCategories);
+        console.log('Categories response:', data);
+
+        if (data.success && data.categories) {
+          setCategories(data.categories);
+          console.log('Categories loaded:', data.categories.length);
+        } else {
+          console.error('Failed to load categories:', data);
         }
       } catch (error) {
         console.error('Erreur chargement catégories:', error);
