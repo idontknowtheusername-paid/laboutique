@@ -364,9 +364,13 @@ export default function BulkImportForm() {
                   <Copy className="mr-2 h-4 w-4" />
                   Copier toutes
                 </Button>
-                <Button size="sm" onClick={importUrls} className="bg-green-600 hover:bg-green-700">
+                <Button
+                  size="sm"
+                  onClick={() => window.open('/admin/products/bulk-urls', '_blank')}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
                   <ExternalLink className="mr-2 h-4 w-4" />
-                  Import en masse
+                  Import URLs
                 </Button>
               </div>
             </CardTitle>
