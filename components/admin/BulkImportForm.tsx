@@ -133,12 +133,48 @@ export default function BulkImportForm() {
     }
   };
 
-  const importUrls = async () => {
-    if (generatedUrls.length === 0) return;
+  const importProducts = async () => {
+    if (!selectedCategory) {
+      alert('Veuillez sélectionner une catégorie');
+      return;
+    }
 
-    // Rediriger vers la page d'import en masse avec les URLs
-    const urlsParam = encodeURIComponent(generatedUrls.join('\n'));
-    window.location.href = `/admin/products/bulk-urls?urls=${urlsParam}`;
+    setIsLoading(true);
+    setResult(null);
+    setProgress(0);
+
+    try {
+      const progressInterval = setInterval(() => {
+        setProgress(prev => Math.min(prev + 10, 90));
+      }, 500);
+
+      const response = await fetch('/api/products/import/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category_id: selectedCategory,
+          min_price: priceRange.min ? parseFloat(priceRange.min) : undefined,
+          max_price: priceRange.max ? parseFloat(priceRange.max) : undefined,
+          sort: sortBy,
+          limit: parseInt(urlCount),
+        }),
+      });
+
+      clearInterval(progressInterval);
+      setProgress(100);
+
+      const data = await response.json();
+      setResult(data);
+
+    } catch (error) {
+      console.error('Erreur lors de l\'import:', error);
+      setResult({
+        success: false,
+        message: 'Erreur de connexion lors de l\'import',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
 
@@ -248,11 +284,30 @@ export default function BulkImportForm() {
 
             {/* Boutons */}
             <div className="flex gap-2 pt-4">
+              <Button
+                type="button"
+                onClick={importProducts}
+                disabled={isLoading || !selectedCategory}
+                className="flex-1 bg-green-600 hover:bg-green-700"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Import en cours...
+                  </>
+                ) : (
+                  <>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Importer produits
+                  </>
+                )}
+              </Button>
+
               <Button 
                 type="button"
                 onClick={generateUrls}
-                disabled={isGenerating || !selectedCategory}
-                className="flex-1"
+                disabled={isGenerating || !selectedCategory || isLoading}
+                variant="outline"
               >
                 {isGenerating ? (
                   <>
@@ -268,24 +323,15 @@ export default function BulkImportForm() {
               </Button>
 
               {generatedUrls.length > 0 && (
-                <>
-                  <Button 
-                    type="button"
-                    onClick={copyUrls}
-                    variant="outline"
-                  >
-                    <Copy className="mr-2 h-4 w-4" />
-                    Copier URLs
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={importUrls}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Import masse
-                  </Button>
-                </>
+                <Button
+                  type="button"
+                  onClick={copyUrls}
+                  variant="outline"
+                  disabled={isLoading}
+                >
+                  <Copy className="mr-2 h-4 w-4" />
+                  Copier URLs
+                </Button>
               )}
             </div>
           </div>
