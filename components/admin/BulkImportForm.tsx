@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle, XCircle, Loader2, Search } from 'lucide-react';
+import { CheckCircle, XCircle, Loader2, Search, Copy, ExternalLink } from 'lucide-react';
 
 interface ImportResult {
   success: boolean;
@@ -42,203 +42,115 @@ interface PreviewProduct {
   selected?: boolean;
 }
 
-export default function BulkImportForm() {
-  const [formData, setFormData] = useState({
-    keywords: '',
-    min_price: '',
-    max_price: '',
-    sort: 'sales_desc',
-    limit: '50',
-  });
+interface AliExpressCategory {
+  category_id: string;
+  category_name: string;
+  parent_category_id?: string;
+}
 
+export default function BulkImportForm() {
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [categories, setCategories] = useState<AliExpressCategory[]>([]);
+  const [generatedUrls, setGeneratedUrls] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
   const [progress, setProgress] = useState(0);
-  const [previewProducts, setPreviewProducts] = useState<PreviewProduct[]>([]);
-  const [showPreview, setShowPreview] = useState(false);
+  const [urlCount, setUrlCount] = useState('50');
+  const [priceRange, setPriceRange] = useState({ min: '5', max: '100' });
+  const [sortBy, setSortBy] = useState('sales_desc');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.keywords.trim()) {
-      alert('Veuillez saisir des mots-clés');
-      return;
-    }
-
-    setIsLoading(true);
-    setResult(null);
-    setProgress(0);
-
-    try {
-      // Simuler une progression pendant l'import
-      const progressInterval = setInterval(() => {
-        setProgress(prev => Math.min(prev + 10, 90));
-      }, 500);
-
-      const response = await fetch('/api/products/import/bulk', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          keywords: formData.keywords,
-          min_price: formData.min_price ? parseFloat(formData.min_price) : undefined,
-          max_price: formData.max_price ? parseFloat(formData.max_price) : undefined,
-          sort: formData.sort,
-          limit: parseInt(formData.limit),
-        }),
-      });
-
-      clearInterval(progressInterval);
-      setProgress(100);
-
-      const data = await response.json();
-      setResult(data);
-
-    } catch (error) {
-      console.error('Erreur lors de l\'import:', error);
-      setResult({
-        success: false,
-        message: 'Erreur de connexion lors de l\'import',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handlePreview = async () => {
-    if (!formData.keywords.trim()) {
-      alert('Veuillez saisir des mots-clés');
-      return;
-    }
-
-    setIsLoading(true);
-    setResult(null);
-    setProgress(0);
-
-    try {
-      const progressInterval = setInterval(() => {
-        setProgress(prev => Math.min(prev + 10, 90));
-      }, 300);
-
-      const response = await fetch('/api/products/search', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          keywords: formData.keywords,
-          min_price: formData.min_price ? parseFloat(formData.min_price) : undefined,
-          max_price: formData.max_price ? parseFloat(formData.max_price) : undefined,
-          sort: formData.sort,
-          limit: parseInt(formData.limit),
-        }),
-      });
-
-      clearInterval(progressInterval);
-      setProgress(100);
-
-      const data = await response.json();
-      
-      if (data.success && data.products) {
-        setPreviewProducts(data.products.map((p: any) => ({ ...p, selected: true })));
-        setShowPreview(true);
-      } else {
-        setResult({
-          success: false,
-          message: data.message || 'Aucun produit trouvé',
+  // Charger les catégories au montage
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await fetch('/api/aliexpress/test-categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
         });
+
+        const data = await response.json();
+        if (data.success && data.data?.aliexpress_ds_category_get_response?.resp_result) {
+          const cats = data.data.aliexpress_ds_category_get_response.resp_result;
+          // Filtrer les catégories principales (sans parent ou avec des parents spécifiques)
+          const mainCategories = cats.filter((cat: AliExpressCategory) =>
+            !cat.parent_category_id ||
+            ['200000343', '200000345', '509', '44'].includes(cat.category_id)
+          ).slice(0, 20); // Limiter à 20 catégories principales
+
+          setCategories(mainCategories);
+        }
+      } catch (error) {
+        console.error('Erreur chargement catégories:', error);
       }
+    };
 
-    } catch (error) {
-      console.error('Erreur lors de la recherche:', error);
-      setResult({
-        success: false,
-        message: 'Erreur de connexion lors de la recherche',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    loadCategories();
+  }, []);
 
-  const handleImportSelected = async () => {
-    const selectedProducts = previewProducts.filter(p => p.selected);
-    
-    if (selectedProducts.length === 0) {
-      alert('Veuillez sélectionner au moins un produit');
+  const generateUrls = async () => {
+    if (!selectedCategory) {
+      alert('Veuillez sélectionner une catégorie');
       return;
     }
 
-    setIsLoading(true);
-    setProgress(0);
+    setIsGenerating(true);
+    setGeneratedUrls([]);
 
     try {
-      const progressInterval = setInterval(() => {
-        setProgress(prev => Math.min(prev + 5, 90));
-      }, 200);
-
-      const response = await fetch('/api/products/import/bulk', {
+      const response = await fetch('/api/products/generate-urls', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          keywords: formData.keywords,
-          min_price: formData.min_price ? parseFloat(formData.min_price) : undefined,
-          max_price: formData.max_price ? parseFloat(formData.max_price) : undefined,
-          sort: formData.sort,
-          limit: selectedProducts.length,
-          selected_products: selectedProducts.map(p => p.id),
-        }),
+          category_id: selectedCategory,
+          count: parseInt(urlCount),
+          min_price: priceRange.min ? parseFloat(priceRange.min) : undefined,
+          max_price: priceRange.max ? parseFloat(priceRange.max) : undefined,
+          sort: sortBy
+        })
       });
-
-      clearInterval(progressInterval);
-      setProgress(100);
 
       const data = await response.json();
-      setResult(data);
-      setShowPreview(false);
 
+      if (data.success && data.urls) {
+        setGeneratedUrls(data.urls);
+      } else {
+        alert(data.error || 'Erreur lors de la génération des URLs');
+      }
     } catch (error) {
-      console.error('Erreur lors de l\'import:', error);
-      setResult({
-        success: false,
-        message: 'Erreur de connexion lors de l\'import',
-      });
+      console.error('Erreur génération URLs:', error);
+      alert('Erreur lors de la génération des URLs');
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
   };
 
-  const toggleProductSelection = (productId: string) => {
-    setPreviewProducts(prev => 
-      prev.map(p => 
-        p.id === productId ? { ...p, selected: !p.selected } : p
-      )
-    );
+  const copyUrls = async () => {
+    if (generatedUrls.length === 0) return;
+
+    try {
+      await navigator.clipboard.writeText(generatedUrls.join('\n'));
+      alert(`${generatedUrls.length} URLs copiées dans le presse-papiers !`);
+    } catch (error) {
+      console.error('Erreur copie:', error);
+      alert('Erreur lors de la copie');
+    }
   };
 
-  const selectAllProducts = () => {
-    setPreviewProducts(prev => prev.map(p => ({ ...p, selected: true })));
+  const importUrls = async () => {
+    if (generatedUrls.length === 0) return;
+
+    // Rediriger vers la page d'import en masse avec les URLs
+    const urlsParam = encodeURIComponent(generatedUrls.join('\n'));
+    window.location.href = `/admin/products/bulk-urls?urls=${urlsParam}`;
   };
 
-  const deselectAllProducts = () => {
-    setPreviewProducts(prev => prev.map(p => ({ ...p, selected: false })));
-  };
 
-  const resetForm = () => {
-    setResult(null);
-    setProgress(0);
-    setPreviewProducts([]);
-    setShowPreview(false);
-    setFormData({
-      keywords: '',
-      min_price: '',
-      max_price: '',
-      sort: 'sales_desc',
-      limit: '50',
-    });
-  };
+
+
+
+
 
   return (
     <div className="space-y-6">
@@ -253,127 +165,135 @@ export default function BulkImportForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Mots-clés */}
+          <div className="space-y-4">
+            {/* Sélection de catégorie */}
             <div className="space-y-2">
-              <Label htmlFor="keywords">Mots-clés de recherche *</Label>
-              <Input
-                id="keywords"
-                placeholder="ex: wireless earbuds, phone cases, electronics..."
-                value={formData.keywords}
-                onChange={(e) => setFormData(prev => ({ ...prev, keywords: e.target.value }))}
-                disabled={isLoading}
-                required
-              />
+              <Label htmlFor="category">Catégorie AliExpress *</Label>
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+                disabled={isGenerating || isLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choisir une catégorie..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.category_id} value={cat.category_id}>
+                      {cat.category_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Filtres de prix */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* Filtres */}
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="min_price">Prix minimum (USD)</Label>
+                <Label htmlFor="count">Nombre d'URLs</Label>
+                <Select
+                  value={urlCount}
+                  onValueChange={setUrlCount}
+                  disabled={isGenerating || isLoading}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10 URLs</SelectItem>
+                    <SelectItem value="25">25 URLs</SelectItem>
+                    <SelectItem value="50">50 URLs</SelectItem>
+                    <SelectItem value="100">100 URLs</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="min_price">Prix min (USD)</Label>
                 <Input
                   id="min_price"
                   type="number"
-                  step="0.01"
-                  placeholder="ex: 5"
-                  value={formData.min_price}
-                  onChange={(e) => setFormData(prev => ({ ...prev, min_price: e.target.value }))}
-                  disabled={isLoading}
+                  placeholder="5"
+                  value={priceRange.min}
+                  onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
+                  disabled={isGenerating || isLoading}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="max_price">Prix maximum (USD)</Label>
+                <Label htmlFor="max_price">Prix max (USD)</Label>
                 <Input
                   id="max_price"
                   type="number"
-                  step="0.01"
-                  placeholder="ex: 50"
-                  value={formData.max_price}
-                  onChange={(e) => setFormData(prev => ({ ...prev, max_price: e.target.value }))}
-                  disabled={isLoading}
+                  placeholder="100"
+                  value={priceRange.max}
+                  onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+                  disabled={isGenerating || isLoading}
                 />
               </div>
             </div>
 
-            {/* Tri et limite */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="sort">Trier par</Label>
-                <Select
-                  value={formData.sort}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, sort: value }))}
-                  disabled={isLoading}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="sales_desc">Meilleures ventes</SelectItem>
-                    <SelectItem value="price_asc">Prix croissant</SelectItem>
-                    <SelectItem value="price_desc">Prix décroissant</SelectItem>
-                    <SelectItem value="rating_desc">Meilleure note</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="limit">Nombre de produits</Label>
-                <Select
-                  value={formData.limit}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, limit: value }))}
-                  disabled={isLoading}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10 produits</SelectItem>
-                    <SelectItem value="25">25 produits</SelectItem>
-                    <SelectItem value="50">50 produits</SelectItem>
-                    <SelectItem value="100">100 produits</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            {/* Tri */}
+            <div className="space-y-2">
+              <Label htmlFor="sort">Trier par</Label>
+              <Select
+                value={sortBy}
+                onValueChange={setSortBy}
+                disabled={isGenerating || isLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sales_desc">Meilleures ventes</SelectItem>
+                  <SelectItem value="price_asc">Prix croissant</SelectItem>
+                  <SelectItem value="price_desc">Prix décroissant</SelectItem>
+                  <SelectItem value="rating_desc">Meilleure note</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Boutons */}
             <div className="flex gap-2 pt-4">
               <Button 
                 type="button"
-                onClick={handlePreview}
-                disabled={isLoading || !formData.keywords.trim()}
-                variant="outline"
+                onClick={generateUrls}
+                disabled={isGenerating || !selectedCategory}
                 className="flex-1"
               >
-                {isLoading ? (
+                {isGenerating ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Recherche...
+                    Génération...
                   </>
                 ) : (
-                  'Prévisualiser'
+                    <>
+                      <Search className="mr-2 h-4 w-4" />
+                      Générer URLs
+                    </>
                 )}
               </Button>
-              <Button 
-                type="submit" 
-                disabled={isLoading || !formData.keywords.trim()}
-                className="flex-1"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Import en cours...
-                  </>
-                ) : (
-                  'Import direct'
-                )}
-              </Button>
-              {(result || showPreview) && (
-                <Button type="button" variant="outline" onClick={resetForm}>
-                  Nouveau
-                </Button>
+
+              {generatedUrls.length > 0 && (
+                <>
+                  <Button 
+                    type="button"
+                    onClick={copyUrls}
+                    variant="outline"
+                  >
+                    <Copy className="mr-2 h-4 w-4" />
+                    Copier URLs
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={importUrls}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Import masse
+                  </Button>
+                </>
               )}
             </div>
-          </form>
+          </div>
         </CardContent>
       </Card>
 
@@ -392,75 +312,38 @@ export default function BulkImportForm() {
         </Card>
       )}
 
-      {/* Preview des produits */}
-      {showPreview && previewProducts.length > 0 && (
+      {/* URLs générées */}
+      {generatedUrls.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span>Produits trouvés ({previewProducts.length})</span>
+              <span>URLs générées ({generatedUrls.length})</span>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={selectAllProducts}>
-                  Tout sélectionner
+                <Button size="sm" variant="outline" onClick={copyUrls}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  Copier toutes
                 </Button>
-                <Button size="sm" variant="outline" onClick={deselectAllProducts}>
-                  Tout désélectionner
-                </Button>
-                <Button 
-                  size="sm" 
-                  onClick={handleImportSelected}
-                  disabled={isLoading || previewProducts.filter(p => p.selected).length === 0}
-                >
-                  Importer sélectionnés ({previewProducts.filter(p => p.selected).length})
+                <Button size="sm" onClick={importUrls} className="bg-green-600 hover:bg-green-700">
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Import en masse
                 </Button>
               </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
-              {previewProducts.map((product) => (
-                <div 
-                  key={product.id}
-                  className={`border rounded-lg p-3 cursor-pointer transition-all ${
-                    product.selected 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => toggleProductSelection(product.id)}
-                >
-                  <div className="flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      checked={product.selected}
-                      onChange={() => toggleProductSelection(product.id)}
-                      className="mt-1"
-                    />
-                    <div className="flex-1 min-w-0">
-                      {product.image && (
-                        <img 
-                          src={product.image} 
-                          alt={product.title}
-                          className="w-full h-32 object-cover rounded mb-2"
-                        />
-                      )}
-                      <h4 className="font-medium text-sm line-clamp-2 mb-1">
-                        {product.title}
-                      </h4>
-                      <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                        <span>⭐ {product.rating || 'N/A'}</span>
-                        <span>🛒 {product.sales || 0}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-green-600">
-                          {product.price.toLocaleString()} XOF
-                        </span>
-                        {product.original_price && product.original_price > product.price && (
-                          <span className="text-xs text-gray-500 line-through">
-                            {product.original_price.toLocaleString()} XOF
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {generatedUrls.map((url, index) => (
+                <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded text-sm">
+                  <span className="text-gray-500 min-w-[30px]">{index + 1}.</span>
+                  <span className="flex-1 truncate font-mono text-xs">{url}</span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => window.open(url, '_blank')}
+                    className="h-6 w-6 p-0"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                  </Button>
                 </div>
               ))}
             </div>

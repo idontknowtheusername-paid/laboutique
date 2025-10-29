@@ -254,7 +254,7 @@ export class AliExpressDropshipApiService {
   async searchProducts(filters: ProductSearchFilters): Promise<AliExpressProduct[]> {
     try {
       const params: Record<string, any> = {
-        feed_name: 'ds-bestselling', // Paramètre obligatoire pour l'API Dropship
+        feed_name: filters.keywords ? 'ds-new-arrival' : 'ds-bestselling', // Essayer différents feeds
         target_currency: 'USD',
         target_language: 'FR',
         ship_to_country: filters.ship_to_country || 'BJ',
