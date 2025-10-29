@@ -151,7 +151,7 @@ export default function AdminImportProductPage() {
       </div>
 
       {/* Options d'import */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="border-2 border-blue-200 bg-blue-50">
           <CardContent className="pt-6">
             <div className="text-center space-y-3">
@@ -169,6 +169,27 @@ export default function AdminImportProductPage() {
           </CardContent>
         </Card>
 
+        <Card className="border-2 border-purple-200 bg-purple-50 cursor-pointer hover:bg-purple-100 transition-colors"
+          onClick={() => router.push('/admin/products/bulk-urls')}>
+          <CardContent className="pt-6">
+            <div className="text-center space-y-3">
+              <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto">
+                <span className="text-white font-bold text-xl">📋</span>
+              </div>
+              <h3 className="text-lg font-semibold">Import en masse</h3>
+              <p className="text-sm text-gray-600">
+                Importez plusieurs produits en collant une liste d'URLs
+              </p>
+              <p className="text-xs text-purple-600 font-medium">
+                ✓ Liste d'URLs • ✓ Traitement parallèle • ✓ Suivi en temps réel
+              </p>
+              <Button size="sm" className="mt-2 bg-purple-600 hover:bg-purple-700">
+                Import par URLs →
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="border-2 border-green-200 bg-green-50 cursor-pointer hover:bg-green-100 transition-colors"
           onClick={() => router.push('/admin/products/bulk-import')}>
           <CardContent className="pt-6">
@@ -176,15 +197,15 @@ export default function AdminImportProductPage() {
               <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto">
                 <span className="text-white font-bold text-xl">⚡</span>
               </div>
-              <h3 className="text-lg font-semibold">Import en masse</h3>
+              <h3 className="text-lg font-semibold">Import par catégorie</h3>
               <p className="text-sm text-gray-600">
-                Importez jusqu'à 100 produits par catégorie automatiquement
+                Recherchez et importez des produits par mots-clés et filtres
               </p>
               <p className="text-xs text-green-600 font-medium">
-                ✓ Recherche par mots-clés • ✓ Filtres avancés • ✓ Import automatique
+                ✓ Recherche par mots-clés • ✓ Filtres avancés • ✓ Preview produits
               </p>
               <Button size="sm" className="mt-2 bg-green-600 hover:bg-green-700">
-                Essayer l'import en masse →
+                Import par catégorie →
               </Button>
             </div>
           </CardContent>

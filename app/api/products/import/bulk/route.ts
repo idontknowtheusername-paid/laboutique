@@ -10,7 +10,7 @@ import { findBestCategory, getDefaultCategory } from '@/lib/utils/category-match
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validation des paramètres requis
     if (!body.keywords && !body.category_id) {
       return NextResponse.json(
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     // Utiliser Supabase Admin pour les opérations serveur
     const supabase = supabaseAdmin as any;
-    
+
     // Statistiques d'import
     const results = {
       total_found: products.length,
@@ -85,9 +85,9 @@ export async function POST(request: NextRequest) {
             results.failed++;
             continue;
           }
-          
+
           // Vérification de similarité de nom (optionnel, peut créer des faux positifs)
-          const similarMatch = existingProducts.find((p: any) => 
+          const similarMatch = existingProducts.find((p: any) =>
             p.name && p.name.toLowerCase().includes(product.product_title.toLowerCase().slice(0, 30))
           );
           if (similarMatch && body.skip_similar) {
@@ -108,8 +108,8 @@ export async function POST(request: NextRequest) {
         const { data: categories } = await supabase
           .from('categories')
           .select('id, name, slug');
-        
-        const categoryId = categories && categories.length > 0 
+
+        const categoryId = categories && categories.length > 0
           ? findBestCategory(productData.name, categories) || getDefaultCategory()
           : getDefaultCategory();
 
@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[Bulk Import] Fatal error:', error);
     return NextResponse.json(
-      { 
+      {
         error: 'Erreur lors de l\'import en masse',
         details: error instanceof Error ? error.message : 'Erreur inconnue'
       },

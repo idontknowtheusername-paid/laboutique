@@ -4,8 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Package, Zap, Target, TrendingUp } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Import en masse - Admin',
-  description: 'Importer des produits AliExpress en masse par catégorie',
+  title: 'Import par catégorie - Admin',
+  description: 'Rechercher et importer des produits AliExpress par mots-clés et filtres',
 };
 
 export default function BulkImportPage() {
@@ -13,9 +13,9 @@ export default function BulkImportPage() {
     <div className="container mx-auto py-8 space-y-8">
       {/* En-tête */}
       <div>
-        <h1 className="text-3xl font-bold">Import en masse</h1>
+        <h1 className="text-3xl font-bold">Import par catégorie</h1>
         <p className="text-muted-foreground mt-2">
-          Importez automatiquement des produits AliExpress par catégorie ou mots-clés
+          Recherchez et importez automatiquement des produits AliExpress par mots-clés et filtres
         </p>
       </div>
 

@@ -246,7 +246,7 @@ export default function BulkImportForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Search className="h-5 w-5" />
-            Import en masse par catégorie
+            Import par catégorie
           </CardTitle>
           <CardDescription>
             Recherchez et importez automatiquement des produits AliExpress par mots-clés et filtres
