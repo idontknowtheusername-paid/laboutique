@@ -340,7 +340,13 @@ export class OrdersService extends BaseService {
       if (itemsError) throw itemsError;
 
       // Retourner la commande créée directement (sans jointure complexe)
-      return this.createResponse(order);
+      // Ajouter les champs manquants pour compatibilité
+      const orderWithDefaults = {
+        ...order,
+        order_items: [],
+        user: null
+      };
+      return this.createResponse(orderWithDefaults);
     } catch (error) {
       return this.createResponse(null, this.handleError(error));
     }
@@ -352,7 +358,7 @@ export class OrdersService extends BaseService {
   static async update(updateData: UpdateOrderData): Promise<ServiceResponse<Order | null>> {
     try {
       const { id, ...dataToUpdate } = updateData;
-      
+
       const { data, error } = await (this.getSupabaseClient() as any)
         .from('orders')
         .update({
