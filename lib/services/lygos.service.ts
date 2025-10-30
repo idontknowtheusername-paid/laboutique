@@ -138,9 +138,22 @@ export class LygosService extends BaseService {
 
       console.log('[Lygos] Passerelle créée avec succès:', data.gateway_id);
 
+      // Construire l'URL de paiement correcte selon la réponse Lygos
+      let paymentUrl = data.payment_url || data.url;
+
+      if (!paymentUrl && data.link) {
+        // Si Lygos retourne un 'link', construire l'URL complète
+        paymentUrl = data.link.startsWith('http') ? data.link : `https://${data.link}`;
+      }
+
+      if (!paymentUrl) {
+        // URL par défaut si aucune URL n'est fournie
+        paymentUrl = `https://pay.lygosapp.com/gateway/${data.id || data.gateway_id}`;
+      }
+
       return {
         gateway_id: data.gateway_id || data.id,
-        payment_url: data.payment_url || data.url || `${baseUrl}/gateway/${data.gateway_id || data.id}`,
+        payment_url: paymentUrl,
         status: data.status || 'created',
         expires_at: data.expires_at
       };
