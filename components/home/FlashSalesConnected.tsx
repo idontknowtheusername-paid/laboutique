@@ -55,12 +55,13 @@ export default function FlashSalesConnected() {
       try {
         setLoading(true);
         
-        // Récupérer les produits en vente flash directement depuis l'API products
-        const response = await ProductsService.getAll({}, { limit: 30 });
+        // Utiliser l'API REST directement pour éviter les problèmes de ProductsService
+        const response = await fetch('/api/products?limit=30');
+        const data = await response.json();
         
-        if (response.success && response.data) {
+        if (data.data && Array.isArray(data.data)) {
           // Filtrer les produits en vente flash (nouveau système + fallback)
-          const flashProducts = response.data.filter(product => {
+          const flashProducts = data.data.filter((product: any) => {
             // Nouveau système : is_flash_sale = true
             if (product.is_flash_sale) {
               const now = new Date();
@@ -74,32 +75,17 @@ export default function FlashSalesConnected() {
           setProducts(flashProducts.slice(0, 30));
 
           // Simuler les informations de stock pour la compatibilité
-          const mockStockInfo = flashProducts.map(product => ({
+          const mockStockInfo = flashProducts.map((product: any) => ({
             product_id: product.id,
             is_available: product.status === 'active' && (product.quantity || 0) > 0,
             flash_sale_product_id: product.id,
-            sold_quantity: product.flash_sold_quantity || 0,
+            sold_quantity: 0,
             available_stock: product.quantity || 0,
-            max_quantity: product.flash_max_quantity,
-            stock_percentage: product.flash_max_quantity
-              ? Math.round(((product.flash_sold_quantity || 0) / product.flash_max_quantity) * 100)
-              : 0
+            max_quantity: null,
+            stock_percentage: 0
           }));
 
           setStockInfo(mockStockInfo);
-
-          // Créer un objet flash sale fictif pour le timer
-          if (flashProducts.length > 0) {
-            const firstFlashProduct = flashProducts.find(p => p.flash_end_date);
-            if (firstFlashProduct) {
-              setFlashSale({
-                id: 'current-flash-sale',
-                name: 'Ventes Flash Actives',
-                end_date: firstFlashProduct.flash_end_date,
-                products: flashProducts
-              });
-            }
-          }
         }
       } catch (error) {
         console.error('Erreur lors du chargement des Flash Sales:', error);

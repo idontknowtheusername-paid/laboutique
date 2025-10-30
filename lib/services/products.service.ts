@@ -114,6 +114,74 @@ export interface UpdateProductData extends Partial<CreateProductData> {
 
 export class ProductsService extends BaseService {
   /**
+   * Vérifier si les colonnes flash sale existent
+   */
+  private static flashSaleColumnsExist: boolean | null = null;
+
+  private static async checkFlashSaleColumns(): Promise<boolean> {
+    if (this.flashSaleColumnsExist !== null) {
+      return this.flashSaleColumnsExist;
+    }
+
+    try {
+      // Test simple pour vérifier si les colonnes existent
+      await this.getSupabaseClient()
+        .from('products')
+        .select('is_flash_sale')
+        .limit(1);
+
+      this.flashSaleColumnsExist = true;
+      return true;
+    } catch (error) {
+      this.flashSaleColumnsExist = false;
+      return false;
+    }
+  }
+
+  private static getProductSelectFields(includeFlashSale: boolean = false): string {
+    const baseFields = `
+      id,
+      name,
+      slug,
+      description,
+      short_description,
+      sku,
+      price,
+      compare_price,
+      cost_price,
+      track_quantity,
+      quantity,
+      weight,
+      dimensions,
+      category_id,
+      vendor_id,
+      brand,
+      tags,
+      images,
+      status,
+      featured,
+      meta_title,
+      meta_description,
+      source_url,
+      source_platform,
+      created_at,
+      updated_at,
+      category:categories(id, name, slug),
+      vendor:vendors(id, name, slug, logo_url)
+    `;
+
+    const flashSaleFields = `
+      is_flash_sale,
+      flash_price,
+      flash_end_date,
+      flash_max_quantity,
+      flash_sold_quantity,
+    `;
+
+    return includeFlashSale ? flashSaleFields + baseFields : baseFields;
+  }
+
+  /**
    * Récupérer tous les produits avec pagination et filtres
    */
   static async getAll(
@@ -128,43 +196,12 @@ export class ProductsService extends BaseService {
       const { page = 1, limit = 20 } = pagination;
       const offset = (page - 1) * limit;
 
+      // Vérifier si les colonnes flash sale existent
+      const hasFlashSaleColumns = await this.checkFlashSaleColumns();
+
       let query = this.getSupabaseClient()
         .from('products')
-        .select(`
-          id,
-          name,
-          slug,
-          description,
-          short_description,
-          sku,
-          price,
-          compare_price,
-          cost_price,
-          track_quantity,
-          quantity,
-          weight,
-          dimensions,
-          category_id,
-          vendor_id,
-          brand,
-          tags,
-          images,
-          status,
-          featured,
-          meta_title,
-          meta_description,
-          is_flash_sale,
-          flash_price,
-          flash_end_date,
-          flash_max_quantity,
-          flash_sold_quantity,
-          source_url,
-          source_platform,
-          created_at,
-          updated_at,
-          category:categories(id, name, slug),
-          vendor:vendors(id, name, slug, logo_url)
-        `, { count: 'exact' });
+        .select(this.getProductSelectFields(hasFlashSaleColumns), { count: 'exact' });
 
       // Appliquer les filtres
       // Note: Si status est undefined, on affiche TOUS les statuts (pour l'admin)
@@ -255,43 +292,16 @@ export class ProductsService extends BaseService {
    */
   static async getBySlug(slug: string): Promise<ServiceResponse<Product | null>> {
     try {
+      // Vérifier si les colonnes flash sale existent
+      const hasFlashSaleColumns = await this.checkFlashSaleColumns();
+
+      const selectFields = hasFlashSaleColumns
+        ? this.getProductSelectFields(true).replace('vendor:vendors(id, name, slug, logo_url)', 'vendor:vendors(id, name, slug, logo_url, description)')
+        : this.getProductSelectFields(false).replace('vendor:vendors(id, name, slug, logo_url)', 'vendor:vendors(id, name, slug, logo_url, description)');
+
       const { data, error } = await this.getSupabaseClient()
         .from('products')
-        .select(`
-          id,
-          name,
-          slug,
-          description,
-          short_description,
-          sku,
-          price,
-          compare_price,
-          cost_price,
-          track_quantity,
-          quantity,
-          weight,
-          dimensions,
-          category_id,
-          vendor_id,
-          brand,
-          tags,
-          images,
-          status,
-          featured,
-          meta_title,
-          meta_description,
-          is_flash_sale,
-          flash_price,
-          flash_end_date,
-          flash_max_quantity,
-          flash_sold_quantity,
-          source_url,
-          source_platform,
-          created_at,
-          updated_at,
-          category:categories(id, name, slug),
-          vendor:vendors(id, name, slug, logo_url, description)
-        `)
+        .select(selectFields)
         .eq('slug', slug)
         .eq('status', 'active')
         .single();
