@@ -82,7 +82,7 @@ export class KYCService extends BaseService {
   static async createPersonalKYC(data: CreateKYCProfileData): Promise<ServiceResponse<KYCProfile | null>> {
     try {
       const riskLevel = this.calculateRiskLevel(data);
-      
+
       const supabaseClient = this.getSupabaseClient() as any;
       const { data: profile, error } = await supabaseClient
         .from('kyc_profiles')
@@ -175,7 +175,7 @@ export class KYCService extends BaseService {
   static async submitForReview(userId: string, type: 'personal' | 'business'): Promise<ServiceResponse<boolean>> {
     try {
       const table = type === 'personal' ? 'kyc_profiles' : 'business_kyc';
-      
+
       const supabaseClient = this.getSupabaseClient() as any;
       const { error } = await supabaseClient
         .from(table)
@@ -198,13 +198,13 @@ export class KYCService extends BaseService {
    * Approuver un KYC
    */
   static async approveKYC(
-    profileId: string, 
+    profileId: string,
     type: 'personal' | 'business',
     adminId: string
   ): Promise<ServiceResponse<boolean>> {
     try {
       const table = type === 'personal' ? 'kyc_profiles' : 'business_kyc';
-      
+
       const supabaseClient = this.getSupabaseClient() as any;
       const { error } = await supabaseClient
         .from(table)
@@ -237,7 +237,7 @@ export class KYCService extends BaseService {
   ): Promise<ServiceResponse<boolean>> {
     try {
       const table = type === 'personal' ? 'kyc_profiles' : 'business_kyc';
-      
+
       const supabaseClient = this.getSupabaseClient() as any;
       const { error } = await supabaseClient
         .from(table)

@@ -192,7 +192,7 @@ export default function PaymentInfoPage() {
                   <li>• <strong>3D Secure :</strong> Authentification par SMS ou application bancaire</li>
                   <li>• <strong>Chiffrement SSL/TLS :</strong> Données cryptées de bout en bout</li>
                   <li>• <strong>PCI-DSS :</strong> Conformité aux normes bancaires internationales</li>
-                  <li>• <strong>Partenaire :</strong> Qosic (certifié et agréé)</li>
+                  <li>• <strong>Partenaire :</strong> Lygos (certifié et agréé)</li>
                 </ul>
               </div>
             </CardContent>
@@ -250,7 +250,7 @@ export default function PaymentInfoPage() {
                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                   <h5 className="font-semibold text-blue-900 mb-2">Partenaires de confiance</h5>
                   <ul className="text-sm text-gray-700 space-y-1">
-                    <li>• <strong>Qosic</strong> : Paiements Mobile Money & Cartes</li>
+                    <li>• <strong>Lygos</strong> : Paiements Mobile Money & Cartes</li>
                     <li>• <strong>MTN</strong> : Mobile Money certifié</li>
                     <li>• <strong>Moov</strong> : Flooz sécurisé</li>
                     <li>• <strong>Banques partenaires</strong> : Agréées BCEAO</li>

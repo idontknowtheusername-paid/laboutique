@@ -146,7 +146,7 @@ COMMENT ON TABLE public.order_items IS 'Table des produits dans chaque commande'
 COMMENT ON COLUMN public.orders.order_number IS 'Numéro de commande unique (ex: ORD-123456)';
 COMMENT ON COLUMN public.orders.status IS 'Statut de la commande (pending, confirmed, processing, shipped, delivered, cancelled)';
 COMMENT ON COLUMN public.orders.payment_status IS 'Statut du paiement (pending, paid, failed, refunded)';
-COMMENT ON COLUMN public.orders.payment_method IS 'Méthode de paiement utilisée (qosic, mobile_money, etc.)';
+COMMENT ON COLUMN public.orders.payment_method IS 'Méthode de paiement utilisée (card, mobile_money, etc.)';
 COMMENT ON COLUMN public.orders.shipping_address IS 'Adresse de livraison au format JSON';
 COMMENT ON COLUMN public.orders.billing_address IS 'Adresse de facturation au format JSON';
 

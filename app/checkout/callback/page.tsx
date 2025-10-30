@@ -36,7 +36,7 @@ export default function CheckoutCallbackPage() {
         console.log('[Callback] Paramètres reçus:', { urlTransref, urlOrderId, urlStatus });
 
         // Vérifier le statut côté serveur (sécurisé)
-        const response = await fetch('/api/qosic/verify', {
+        const response = await fetch('/api/payment/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

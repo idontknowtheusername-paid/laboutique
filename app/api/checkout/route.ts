@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { QosicService } from '@/lib/services/qosic.service';
+import { LygosService } from '@/lib/services/lygos.service';
 import { OrdersService } from '@/lib/services/orders.service';
 import { validateCartItems, calculateOrderTotal } from '@/lib/helpers/validate-cart';
 import { checkRateLimit } from '@/lib/helpers/rate-limiter';
 
 export async function POST(request: NextRequest) {
   try {
-    // ✅ RATE LIMITING : Limiter à 5 tentatives par minute
+    // Rate limiting
     const { allowed, resetTime } = checkRateLimit(request);
     
     if (!allowed) {
@@ -29,13 +29,13 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Vérifier que Qosic est configuré
-    if (!process.env.QOSIC_QOSKEY) {
-      console.error('❌ QOSIC_QOSKEY non configuré');
+    // Vérifier que Lygos est configuré
+    if (!process.env.LYGOS_API_KEY) {
+      console.error('❌ LYGOS_API_KEY non configuré');
       return NextResponse.json({ error: 'Passerelle de paiement non configurée' }, { status: 500 });
     }
 
-    // ✅ VALIDATION CRITIQUE : Vérifier les prix depuis la DB
+    // Validation critique : Vérifier les prix depuis la DB
     const validation = await validateCartItems(items);
     
     if (!validation.success || !validation.items) {
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     // Calculer les montants avec les VRAIS prix
     const { subtotal, shipping, total } = calculateOrderTotal(validatedItems);
 
-    console.log('[Checkout] Montants validés:', { subtotal, shipping, total });
+    console.log('[Checkout Lygos] Montants validés:', { subtotal, shipping, total });
 
     // URLs de callback
     const origin = new URL(request.url).origin;
@@ -58,14 +58,14 @@ export async function POST(request: NextRequest) {
     const returnUrl = `${appUrl}/checkout/callback`;
 
     // Générer une référence unique pour la transaction
-    const transref = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
-    console.log('[Checkout] Création commande:', { user_id, total, transref });
+    console.log('[Checkout Lygos] Création commande:', { user_id, total, orderId });
 
-    // Créer la commande en attente AVANT le paiement (avec items validés)
+    // Créer la commande en attente AVANT le paiement
     const pendingOrder = await OrdersService.create({
       user_id,
-      items: validatedItems, // ✅ Items avec prix validés depuis la DB
+      items: validatedItems,
       shipping_address: customer?.shipping_address || {
         address: customer?.address,
         city: customer?.city,
@@ -73,24 +73,25 @@ export async function POST(request: NextRequest) {
         postalCode: customer?.postalCode || '229'
       },
       billing_address: customer?.billing_address || customer?.shipping_address || {},
-      payment_method: 'qosic',
-      notes: `En attente - Qosic ref: ${transref}`,
+      payment_method: 'lygos',
+      notes: `En attente - Lygos ref: ${orderId}`,
     } as any);
 
-    const orderId = (pendingOrder?.data as any)?.id;
+    const orderDbId = (pendingOrder?.data as any)?.id;
 
-    if (!orderId) {
+    if (!orderDbId) {
       console.error('❌ Échec création commande');
       return NextResponse.json({ error: 'Impossible de créer la commande' }, { status: 500 });
     }
 
-    console.log('[Checkout] Commande créée:', orderId);
+    console.log('[Checkout Lygos] Commande créée:', orderDbId);
 
-    // Initialiser la transaction Qosic
-    let checkout;
+    // Initialiser la transaction Lygos
+    let gateway;
     try {
-      checkout = await QosicService.initCheckout({
+      gateway = await LygosService.createGateway({
         amount: total,
+        currency: 'XOF',
         customer: {
           firstName: customer.firstName,
           lastName: customer.lastName,
@@ -98,21 +99,21 @@ export async function POST(request: NextRequest) {
           phone: customer.phone,
           address: customer.address || 'Cotonou',
           city: customer.city || 'Cotonou',
-          country: customer.country || 'Benin',
-          postalCode: customer.postalCode || '229'
+          country: customer.country || 'BJ'
         },
-        transref: transref,
-        returnUrl: `${returnUrl}?order_id=${orderId}`,
-        type: 'all' // Mobile Money + Carte bancaire
+        orderId: orderId,
+        returnUrl: `${returnUrl}?order_id=${orderDbId}`,
+        webhookUrl: `${appUrl}/api/webhooks/lygos`,
+        description: `Commande JomionStore ${orderId}`
       });
 
-      console.log('[Checkout] Qosic initialisé:', checkout.url);
+      console.log('[Checkout Lygos] Passerelle créée:', gateway.gateway_id);
     } catch (e: any) {
-      console.error('❌ Erreur Qosic:', e);
+      console.error('❌ Erreur Lygos:', e);
       
       // Annuler la commande si le paiement échoue
       await OrdersService.update({ 
-        id: orderId, 
+        id: orderDbId, 
         status: 'cancelled',
         notes: `Échec initialisation paiement: ${e.message}` 
       } as any);
@@ -122,24 +123,24 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
-    // Mettre à jour la commande avec la référence Qosic
+    // Mettre à jour la commande avec la référence Lygos
     await OrdersService.update({ 
-      id: orderId, 
-      notes: `Qosic ref: ${transref}` 
+      id: orderDbId,
+      notes: `Lygos gateway: ${gateway.gateway_id} - Order: ${orderId}` 
     } as any);
 
     return NextResponse.json({ 
       success: true, 
-      payment_url: checkout.url, 
-      reference: transref,
-      order_id: orderId
+      payment_url: gateway.payment_url,
+      gateway_id: gateway.gateway_id,
+      order_id: orderDbId,
+      reference: orderId
     });
 
   } catch (error: any) {
-    console.error('❌ Erreur checkout:', error);
+    console.error('❌ Erreur checkout Lygos:', error);
     return NextResponse.json({ 
       error: error?.message || 'Erreur interne du serveur' 
     }, { status: 500 });
   }
 }
-

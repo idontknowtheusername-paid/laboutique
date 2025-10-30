@@ -43,7 +43,7 @@ export default function MobileMoneyValidationPage() {
         console.log('[MM Validation] Vérification manuelle:', urlTransref);
       }
 
-      const response = await fetch('/api/qosic/verify-mobile-money', {
+      const response = await fetch('/api/payment/verify-mobile-money', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

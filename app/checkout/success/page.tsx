@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 /**
- * Page de redirection - Qosic redirige maintenant vers /checkout/callback
+ * Page de redirection - Le fournisseur redirige maintenant vers /checkout/callback
  * Cette page redirige automatiquement pour compatibilité
  */
 export default function CheckoutSuccessPage() {

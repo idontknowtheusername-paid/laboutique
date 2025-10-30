@@ -298,8 +298,9 @@ export class OrdersService extends BaseService {
       const discountAmount = 0; // À implémenter avec les coupons
       const totalAmount = subtotal + taxAmount + shippingAmount - discountAmount;
 
-      // Créer la commande
-      const { data: order, error: orderError } = await (this.getSupabaseClient() as any)
+      // Créer la commande avec le client admin pour bypasser RLS
+      const { supabaseAdmin } = await import('@/lib/supabase-server');
+      const { data: order, error: orderError } = await (supabaseAdmin as any)
         .from('orders')
         .insert([{
           order_number: orderNumber,
@@ -332,14 +333,14 @@ export class OrdersService extends BaseService {
         total: item.price * item.quantity
       }));
 
-      const { error: itemsError } = await (this.getSupabaseClient() as any)
+      const { error: itemsError } = await (supabaseAdmin as any)
         .from('order_items')
         .insert(orderItems);
 
       if (itemsError) throw itemsError;
 
-      // Récupérer la commande complète
-      return this.getById(order.id);
+      // Retourner la commande créée directement (sans jointure complexe)
+      return this.createResponse(order);
     } catch (error) {
       return this.createResponse(null, this.handleError(error));
     }

@@ -126,7 +126,7 @@ export default function PrivacyPage() {
             <CardContent className="prose max-w-none text-gray-700 space-y-4">
               <p>Nous partageons vos données uniquement dans les cas suivants :</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>Prestataires de services :</strong> Paiement (Qosic, MTN MoMo, Moov Money), livraison, hébergement (Vercel, Supabase), email (Resend)</li>
+                <li><strong>Prestataires de services :</strong> Paiement (MTN MoMo, Moov Money), livraison, hébergement (Vercel, Supabase), email (Resend)</li>
                 <li><strong>Vendeurs partenaires :</strong> Nom et adresse de livraison pour traiter vos commandes</li>
                 <li><strong>Autorités légales :</strong> En cas d'obligation légale, demande judiciaire ou enquête</li>
                 <li><strong>Analyse et publicité :</strong> Partenaires marketing (Google Analytics, Facebook Pixel) si consentement donné</li>

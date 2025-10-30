@@ -105,7 +105,7 @@ export default function CheckoutPage() {
       }
       
       if (json.payment_url) {
-        console.log('Redirection vers Qosic Checkout:', json.payment_url);
+        console.log('Redirection vers Lygos Checkout:', json.payment_url);
         window.location.href = json.payment_url;
         return;
       }
@@ -310,7 +310,7 @@ export default function CheckoutPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <RadioGroup value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}>
-                    {/* Option 1: Checkout (Qosic) */}
+                          {/* Option 1: Checkout */}
                     <div className={`relative flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${
                       paymentMethod === 'checkout' 
                         ? 'border-jomionstore-primary bg-orange-50' 
@@ -325,7 +325,7 @@ export default function CheckoutPage() {
                             <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Recommandé</span>
                           </div>
                           <p className="text-sm text-gray-600 mt-1">
-                            Redirection vers page sécurisée Qosic
+                                  Redirection vers page sécurisée Lygos
                           </p>
                           <div className="flex flex-wrap gap-2 mt-2">
                             <span className="text-xs bg-orange-50 text-orange-700 px-2 py-1 rounded border border-orange-200">📱 Mobile Money</span>
@@ -373,7 +373,7 @@ export default function CheckoutPage() {
                       <ShieldCheck className="w-4 h-4 text-jomionstore-secondary mt-0.5 flex-shrink-0" />
                       <div className="text-sm text-gray-700">
                         {paymentMethod === 'checkout' ? (
-                          <p>Vous serez redirigé vers la plateforme Qosic pour choisir votre mode de paiement (Mobile Money ou Carte bancaire) et finaliser la transaction en toute sécurité.</p>
+                                <p>Vous serez redirigé vers la plateforme Lygos pour choisir votre mode de paiement (Mobile Money ou Carte bancaire) et finaliser la transaction en toute sécurité.</p>
                         ) : (
                           <p>Vous recevrez une notification sur votre téléphone pour valider le paiement. Assurez-vous que le numéro de téléphone ci-dessus est correct.</p>
                         )}

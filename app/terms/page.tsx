@@ -169,7 +169,7 @@ export default function TermsPage() {
 
               <h4 className="font-semibold mt-4">5.2. Sécurité des paiements</h4>
               <p>
-                Tous les paiements sont sécurisés via nos prestataires certifiés PCI-DSS (Qosic). 
+                Tous les paiements sont sécurisés via nos prestataires certifiés PCI-DSS. 
                 JomionStore ne stocke jamais vos informations bancaires complètes.
               </p>
 
