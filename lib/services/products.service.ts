@@ -26,6 +26,12 @@ export interface Product {
   meta_title?: string;
   meta_description?: string;
   specifications?: Record<string, string>;
+  // Flash sale fields
+  is_flash_sale?: boolean;
+  flash_price?: number;
+  flash_end_date?: string;
+  flash_max_quantity?: number;
+  flash_sold_quantity?: number;
   // Optional runtime-only fields (not necessarily in DB)
   source_url?: string;
   source_platform?: 'aliexpress' | 'alibaba';
@@ -147,6 +153,11 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
+          is_flash_sale,
+          flash_price,
+          flash_end_date,
+          flash_max_quantity,
+          flash_sold_quantity,
           source_url,
           source_platform,
           created_at,
@@ -269,6 +280,11 @@ export class ProductsService extends BaseService {
           featured,
           meta_title,
           meta_description,
+          is_flash_sale,
+          flash_price,
+          flash_end_date,
+          flash_max_quantity,
+          flash_sold_quantity,
           source_url,
           source_platform,
           created_at,

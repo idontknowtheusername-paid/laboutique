@@ -72,25 +72,27 @@ export default function RootLayout({
         <SpeedInsights />
         
         {/* Désactiver la toolbar Vercel en production */}
-        <Script
-          id="disable-vercel-toolbar"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-                // Désactiver la toolbar Vercel
-                const vercelToolbar = document.querySelector('[data-vercel-toolbar]');
-                if (vercelToolbar) {
-                  vercelToolbar.style.display = 'none';
+        {process.env.NODE_ENV === 'production' && (
+          <Script
+            id="disable-vercel-toolbar"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                if (typeof window !== 'undefined') {
+                  // Désactiver la toolbar Vercel
+                  const vercelToolbar = document.querySelector('[data-vercel-toolbar]');
+                  if (vercelToolbar) {
+                    vercelToolbar.style.display = 'none';
+                  }
+
+                  // Supprimer les scripts Vercel toolbar
+                  const vercelScripts = document.querySelectorAll('script[src*="vercel"]');
+                  vercelScripts.forEach(script => script.remove());
                 }
-                
-                // Supprimer les scripts Vercel toolbar
-                const vercelScripts = document.querySelectorAll('script[src*="vercel"]');
-                vercelScripts.forEach(script => script.remove());
-              }
-            `,
-          }}
-        />
+              `,
+            }}
+          />
+        )}
         
         {/* Service Worker Registration */}
         <Script
@@ -122,48 +124,53 @@ export default function RootLayout({
               if (typeof window !== 'undefined') {
                 // Monitor Core Web Vitals
                 function sendToAnalytics(metric) {
-                  if (process.env.NODE_ENV === 'production') {
-                    // Send to your analytics service
-                    console.log(metric);
-                  }
+                  // Only log in development, send to analytics in production
+                  console.log(metric);
                 }
 
-                // Monitor LCP
-                new PerformanceObserver((entryList) => {
-                  for (const entry of entryList.getEntries()) {
-                    sendToAnalytics({
-                      name: 'LCP',
-                      value: entry.startTime,
-                      rating: entry.startTime > 4000 ? 'poor' : entry.startTime > 2500 ? 'needs-improvement' : 'good'
-                    });
-                  }
-                }).observe({entryTypes: ['largest-contentful-paint']});
+                // Check if PerformanceObserver is supported
+                if ('PerformanceObserver' in window) {
+                  try {
+                    // Monitor LCP
+                    new PerformanceObserver((entryList) => {
+                      for (const entry of entryList.getEntries()) {
+                        sendToAnalytics({
+                          name: 'LCP',
+                          value: entry.startTime,
+                          rating: entry.startTime > 4000 ? 'poor' : entry.startTime > 2500 ? 'needs-improvement' : 'good'
+                        });
+                      }
+                    }).observe({entryTypes: ['largest-contentful-paint']});
 
-                // Monitor FID
-                new PerformanceObserver((entryList) => {
-                  for (const entry of entryList.getEntries()) {
-                    sendToAnalytics({
-                      name: 'FID',
-                      value: entry.processingStart - entry.startTime,
-                      rating: entry.processingStart - entry.startTime > 300 ? 'poor' : entry.processingStart - entry.startTime > 100 ? 'needs-improvement' : 'good'
-                    });
-                  }
-                }).observe({entryTypes: ['first-input']});
+                    // Monitor FID
+                    new PerformanceObserver((entryList) => {
+                      for (const entry of entryList.getEntries()) {
+                        sendToAnalytics({
+                          name: 'FID',
+                          value: entry.processingStart - entry.startTime,
+                          rating: entry.processingStart - entry.startTime > 300 ? 'poor' : entry.processingStart - entry.startTime > 100 ? 'needs-improvement' : 'good'
+                        });
+                      }
+                    }).observe({entryTypes: ['first-input']});
 
-                // Monitor CLS
-                let cumulativeLayoutShift = 0;
-                new PerformanceObserver((entryList) => {
-                  for (const entry of entryList.getEntries()) {
-                    if (!entry.hadRecentInput) {
-                      cumulativeLayoutShift += entry.value;
-                    }
+                    // Monitor CLS
+                    let cumulativeLayoutShift = 0;
+                    new PerformanceObserver((entryList) => {
+                      for (const entry of entryList.getEntries()) {
+                        if (!entry.hadRecentInput) {
+                          cumulativeLayoutShift += entry.value;
+                        }
+                      }
+                      sendToAnalytics({
+                        name: 'CLS',
+                        value: cumulativeLayoutShift,
+                        rating: cumulativeLayoutShift > 0.25 ? 'poor' : cumulativeLayoutShift > 0.1 ? 'needs-improvement' : 'good'
+                      });
+                    }).observe({entryTypes: ['layout-shift']});
+                  } catch (error) {
+                    console.warn('Performance monitoring setup failed:', error);
                   }
-                  sendToAnalytics({
-                    name: 'CLS',
-                    value: cumulativeLayoutShift,
-                    rating: cumulativeLayoutShift > 0.25 ? 'poor' : cumulativeLayoutShift > 0.1 ? 'needs-improvement' : 'good'
-                  });
-                }).observe({entryTypes: ['layout-shift']});
+                }
               }
             `,
           }}

@@ -55,31 +55,50 @@ export default function FlashSalesConnected() {
       try {
         setLoading(true);
         
-        // Récupérer les flash sales actives
-        const response = await fetch('/api/flash-sales?status=active&limit=1');
-        const data = await response.json();
+        // Récupérer les produits en vente flash directement depuis l'API products
+        const response = await ProductsService.getAll({}, { limit: 30 });
         
-        if (data.success && data.data.length > 0) {
-          const activeFlashSale = data.data[0];
-          setFlashSale(activeFlashSale);
-          setProducts(activeFlashSale.products || []);
-          
-          // Charger les informations de stock
-          const stockResponse = await fetch(`/api/flash-sales/stock?flash_sale_id=${activeFlashSale.id}`);
-          const stockData = await stockResponse.json();
-          
-          if (stockData.success) {
-            setStockInfo(stockData.data);
-          }
-        } else {
-          // Fallback sur les produits avec compare_price
-          const response = await ProductsService.getAll({}, { limit: 10 });
-          
-          if (response.success && response.data) {
-            const saleProducts = response.data.filter(product => 
-              product.compare_price && product.compare_price > product.price
-            );
-            setProducts(saleProducts.slice(0, 30));
+        if (response.success && response.data) {
+          // Filtrer les produits en vente flash (nouveau système + fallback)
+          const flashProducts = response.data.filter(product => {
+            // Nouveau système : is_flash_sale = true
+            if (product.is_flash_sale) {
+              const now = new Date();
+              const endDate = product.flash_end_date ? new Date(product.flash_end_date) : null;
+              return !endDate || endDate > now; // Actif si pas de date de fin ou pas encore expiré
+            }
+            // Fallback : compare_price > price
+            return product.compare_price && product.compare_price > product.price;
+          });
+
+          setProducts(flashProducts.slice(0, 30));
+
+          // Simuler les informations de stock pour la compatibilité
+          const mockStockInfo = flashProducts.map(product => ({
+            product_id: product.id,
+            is_available: product.status === 'active' && (product.quantity || 0) > 0,
+            flash_sale_product_id: product.id,
+            sold_quantity: product.flash_sold_quantity || 0,
+            available_stock: product.quantity || 0,
+            max_quantity: product.flash_max_quantity,
+            stock_percentage: product.flash_max_quantity
+              ? Math.round(((product.flash_sold_quantity || 0) / product.flash_max_quantity) * 100)
+              : 0
+          }));
+
+          setStockInfo(mockStockInfo);
+
+          // Créer un objet flash sale fictif pour le timer
+          if (flashProducts.length > 0) {
+            const firstFlashProduct = flashProducts.find(p => p.flash_end_date);
+            if (firstFlashProduct) {
+              setFlashSale({
+                id: 'current-flash-sale',
+                name: 'Ventes Flash Actives',
+                end_date: firstFlashProduct.flash_end_date,
+                products: flashProducts
+              });
+            }
           }
         }
       } catch (error) {
@@ -160,28 +179,27 @@ export default function FlashSalesConnected() {
         return;
       }
 
-      // Utiliser le prix flash si disponible
-      const price = flashSaleProduct.flash_price || product.price;
+      // Utiliser le prix flash si disponible (nouveau système ou fallback)
+      const price = product.flash_price || product.price;
       
       await addToCart(product.id, product.name, price, 1, product.images?.[0]);
       trackAddToCart(product.id, product.name, (product.category as any)?.name || 'unknown', price);
 
-      // Mettre à jour le stock vendu
-      if (flashSale && stockData) {
-        await fetch('/api/flash-sales/stock', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            flash_sale_product_id: stockData.flash_sale_product_id,
-            quantity: 1
-          })
-        });
-
-        // Recharger les informations de stock
-        const stockResponse = await fetch(`/api/flash-sales/stock?flash_sale_id=${flashSale.id}`);
-        const stockDataResponse = await stockResponse.json();
-        if (stockDataResponse.success) {
-          setStockInfo(stockDataResponse.data);
+      // Mettre à jour le stock vendu pour le nouveau système
+      if (product.is_flash_sale && product.flash_sold_quantity !== undefined) {
+        try {
+          await fetch(`/api/admin/products/${product.id}/flash-sale`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              enabled: true,
+              flash_price: product.flash_price,
+              // Incrémenter la quantité vendue
+              sold_quantity: (product.flash_sold_quantity || 0) + 1
+            })
+          });
+        } catch (err) {
+          console.warn('Erreur mise à jour stock flash sale:', err);
         }
       }
 
@@ -278,8 +296,15 @@ export default function FlashSalesConnected() {
             >
               {products.map((flashSaleProduct) => {
                 const product = flashSaleProduct.product || flashSaleProduct;
-                const discount = flashSaleProduct.discount_percentage || 
-                  (product.compare_price ? calculateDiscount(product.price, product.compare_price) : 0);
+
+                // Calculer la réduction (nouveau système ou fallback)
+                let discount = 0;
+                if (product.is_flash_sale && product.flash_price && product.price) {
+                  discount = Math.round(((product.price - product.flash_price) / product.price) * 100);
+                } else if (product.compare_price && product.compare_price > product.price) {
+                  discount = calculateDiscount(product.price, product.compare_price);
+                }
+
                 const stockData = stockInfo.find(s => s.product_id === product.id);
                 
                 return (
@@ -339,11 +364,13 @@ export default function FlashSalesConnected() {
                           <div className="space-y-2">
                             <div className="flex items-center space-x-2 flex-wrap">
                               <span className="font-bold text-xl text-jomionstore-primary">
-                                {formatPrice(flashSaleProduct.flash_price || product.price)}
+                                {formatPrice(product.flash_price || product.price)}
                               </span>
-                              <span className="text-base text-gray-500 line-through">
-                                {formatPrice(flashSaleProduct.original_price || product.compare_price || product.price)}
-                              </span>
+                              {(product.flash_price || product.compare_price) && (
+                                <span className="text-base text-gray-500 line-through">
+                                  {formatPrice(product.compare_price || product.price)}
+                                </span>
+                              )}
                             </div>
                             
                             {/* Barre de progression du stock */}

@@ -11,6 +11,7 @@ import { ProductsService } from '@/lib/services/products.service';
 import { Download, Search, Eye, Edit, RefreshCw, Plus, Trash2 } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
+import FlashSaleToggle from '@/components/admin/FlashSaleToggle';
 // ImportedProductsPreview supprimé - tous les produits sont dans la liste principale
 import { useToast } from '@/components/admin/Toast';
 import { useDebounce } from '@/lib/hooks/useDebounce';
@@ -26,6 +27,13 @@ interface AdminProduct {
   created_at?: string;
   category?: { name: string };
   vendor?: { name: string };
+  // Champs vente flash
+  is_flash_sale?: boolean;
+  flash_price?: number;
+  flash_end_date?: string;
+  flash_max_quantity?: number;
+  flash_sold_quantity?: number;
+  compare_price?: number;
 }
 
 export default function AdminProductsPage() {
@@ -401,12 +409,15 @@ export default function AdminProductsPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Vente Flash
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center gap-3">
                         <RefreshCw className="w-8 h-8 animate-spin text-gray-400" />
                         <p className="text-gray-500">Chargement des produits...</p>
@@ -415,7 +426,7 @@ export default function AdminProductsPage() {
                   </tr>
                 ) : items.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <td colSpan={7} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center gap-3">
                         <div className="text-6xl">📦</div>
                         <p className="text-gray-500 font-medium">Aucun produit trouvé</p>
@@ -493,6 +504,24 @@ export default function AdminProductsPage() {
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <FlashSaleToggle
+                        productId={p.id}
+                        productName={p.name}
+                        currentPrice={p.price || 0}
+                        isFlashSale={p.is_flash_sale || (p.compare_price && p.compare_price > p.price)}
+                        flashPrice={p.flash_price || p.price}
+                        flashEndDate={p.flash_end_date}
+                        discountPercentage={
+                          p.is_flash_sale && p.flash_price && p.price
+                            ? Math.round(((p.price - p.flash_price) / p.price) * 100)
+                            : p.compare_price && p.compare_price > p.price
+                              ? Math.round(((p.compare_price - p.price) / p.compare_price) * 100)
+                              : 0
+                        }
+                        onUpdate={load}
+                      />
                     </td>
                   </tr>
                 ))}
