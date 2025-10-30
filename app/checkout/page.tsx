@@ -75,7 +75,7 @@ export default function CheckoutPage() {
           user_id: user?.id,
           items: cartItems.map(item => ({ 
             product_id: item.product_id, 
-            vendor_id: 'default', 
+            vendor_id: item.product?.vendor_id || item.product?.vendor?.id || 'default', 
             quantity: item.quantity, 
             price: item.product?.price || 0 
           })),

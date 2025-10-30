@@ -694,6 +694,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
             status: "active",
             quantity: 999,
             track_quantity: false,
+            vendor_id: "default",
           },
         };
         optimisticItems = [...cartState.items, newItem];
@@ -776,6 +777,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
             status: "active",
             quantity: 999,
             track_quantity: false,
+            vendor_id: "default",
           },
         };
         newItems = [...cartState.items, newItem];

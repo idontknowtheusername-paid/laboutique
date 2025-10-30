@@ -18,6 +18,7 @@ export interface CartItem {
     status: string;
     quantity: number;
     track_quantity: boolean;
+    vendor_id?: string;
     vendor?: {
       id: string;
       name: string;
@@ -67,6 +68,7 @@ export class CartService extends BaseService {
             status,
             quantity,
             track_quantity,
+            vendor_id,
             vendor:vendors (id, name, slug)
           )
         `)
@@ -146,6 +148,7 @@ export class CartService extends BaseService {
             status,
             quantity,
             track_quantity,
+            vendor_id,
             vendor:vendors (id, name, slug)
           )
         `)
@@ -216,6 +219,7 @@ export class CartService extends BaseService {
             status,
             quantity,
             track_quantity,
+            vendor_id,
             vendor:vendors (id, name, slug)
           )
         `)
