@@ -20,7 +20,7 @@ async function generateRealProductUrls(params: GenerateUrlsRequest): Promise<str
   const { count } = params;
   const apiService = getAliExpressDropshipApiService();
 
-  console.log('[Generate URLs] Fetching products from AliExpress feeds...');
+
 
   try {
     // Utiliser les feeds multiples pour récupérer des produits variés
@@ -35,7 +35,7 @@ async function generateRealProductUrls(params: GenerateUrlsRequest): Promise<str
       .map(product => product.product_detail_url)
       .filter(url => url && url.startsWith('http'));
 
-    console.log(`[Generate URLs] Generated ${urls.length} product URLs from feeds`);
+
 
     return urls;
 
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    console.log('[Generate URLs] Request:', { category_id, count, min_price, max_price, sort });
+
 
     // Générer les URLs de produits via l'API AliExpress
     const urls = await generateRealProductUrls({
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       sort
     });
 
-    console.log(`[Generate URLs] Generated ${urls.length} URLs for category ${category_id}`);
+
 
     return NextResponse.json({
       success: true,

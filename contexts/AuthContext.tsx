@@ -109,7 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Auto logout on auth errors
       if (authError.type === "auth") {
-        console.log('Auth error detected, clearing state:', authError.message);
+
         setUser(null);
         setSession(null);
         setProfile(null);
@@ -216,7 +216,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const { data: { session: localSession } } = await supabase.auth.getSession();
         
         if (localSession) {
-          console.log('Session found in localStorage:', localSession.user.email);
+
           setUser(localSession.user);
           setSession(localSession);
           try {
@@ -238,7 +238,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             console.warn('Error loading profile after session restore:', profileError);
           }
         } else {
-          console.log('No session found in localStorage');
+
           // Try the service method as fallback
           const result = await withRetry(() => AuthService.getCurrentUser(), {
             maxRetries: 3,
@@ -247,7 +247,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
           if (result.success && result.data?.success && result.data.data) {
             const { user, session, profile } = result.data.data;
-            console.log('Session restored via service:', user?.email);
+
             setUser(user);
             setSession(session);
             setProfile(profile ?? null);
@@ -275,7 +275,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email || 'no user');
+      // Auth state changed: ${event}
       setSession(session);
       setUser(session?.user ?? null);
       try {

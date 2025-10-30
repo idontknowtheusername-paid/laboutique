@@ -122,10 +122,7 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
   // Utiliser les bannières de fallback si on a moins de 2 bannières (pour avoir un carousel)
   const displayBanners = banners.length >= 2 ? banners : fallbackBanners;
   
-  // Debug temporaire
-  console.log('HeroCarouselImproved - banners.length:', banners.length);
-  console.log('HeroCarouselImproved - displayBanners.length:', displayBanners.length);
-  console.log('HeroCarouselImproved - currentSlide:', currentSlide);
+
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % displayBanners.length);

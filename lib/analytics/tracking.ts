@@ -167,7 +167,7 @@ class AnalyticsTracker {
   // Envoi des événements (simulation - à remplacer par votre service d'analytics)
   private sendEvent(event: TrackingEvent): void {
     // Simulation d'envoi vers un service d'analytics
-    console.log('📊 Analytics Event:', event);
+    // TODO: Envoyer vers Google Analytics, Mixpanel, etc.
     
     // Ici vous pourriez envoyer vers Google Analytics, Mixpanel, etc.
     // Exemple pour Google Analytics 4:

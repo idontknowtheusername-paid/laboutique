@@ -71,7 +71,7 @@ export default function LygosCheckoutPage() {
 
     const initializeLygosWidget = async () => {
         try {
-            console.log('[Lygos Widget] Redirection vers Lygos...');
+
 
             // Essayer de récupérer l'URL réelle depuis notre API
             try {
@@ -85,7 +85,7 @@ export default function LygosCheckoutPage() {
                 });
 
                 const result = await response.json();
-                console.log('[Lygos Widget] Résultat vérification:', result);
+
 
                 if (result.success && result.data?.link) {
                     // Utiliser l'URL fournie par Lygos
@@ -99,7 +99,7 @@ export default function LygosCheckoutPage() {
             // Fallback : construire l'URL manuellement
             // Selon la doc Lygos, l'URL devrait être dans le champ "link"
             const lygosPaymentUrl = `https://checkout.lygosapp.com/pay/${gatewayId}`;
-            console.log('[Lygos Widget] Redirection vers:', lygosPaymentUrl);
+
 
             window.location.href = lygosPaymentUrl;
 
