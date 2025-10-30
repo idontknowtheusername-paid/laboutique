@@ -510,7 +510,7 @@ export default function AdminProductsPage() {
                         productId={p.id}
                         productName={p.name}
                         currentPrice={p.price || 0}
-                        isFlashSale={p.is_flash_sale || (p.compare_price && p.compare_price > p.price)}
+                        isFlashSale={!!p.is_flash_sale || !!(p.compare_price && p.compare_price > p.price)}
                         flashPrice={p.flash_price || p.price}
                         flashEndDate={p.flash_end_date}
                         discountPercentage={
