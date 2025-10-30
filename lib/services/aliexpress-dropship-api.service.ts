@@ -87,7 +87,7 @@ export class AliExpressDropshipApiService {
   private generateSign(params: Record<string, any>): string {
     // Trier les paramètres par clé
     const sortedKeys = Object.keys(params).sort();
-    
+
     // Construire la chaîne à signer
     let signString = this.config.appSecret;
     for (const key of sortedKeys) {
@@ -106,10 +106,10 @@ export class AliExpressDropshipApiService {
    */
   private async callApi(method: string, params: Record<string, any> = {}): Promise<any> {
     const timestamp = Date.now().toString();
-    
+
     // Récupérer un access_token valide (refresh automatique si expiré)
     const accessToken = await this.oauthService.getValidToken();
-    
+
     const requestParams: Record<string, any> = {
       app_key: this.config.appKey,
       access_token: accessToken, // ← OAuth token
@@ -145,7 +145,7 @@ export class AliExpressDropshipApiService {
       }
 
       const data = await response.json();
-      
+
       console.log('[AliExpress Dropship API] Response received');
 
       // Vérifier les erreurs de l'API
@@ -204,11 +204,47 @@ export class AliExpressDropshipApiService {
       // Parser la réponse Dropship API
       if (response.aliexpress_ds_product_get_response) {
         const result = response.aliexpress_ds_product_get_response.result;
-        
+
+        console.log('[AliExpress API] Searching for prices in result...');
+
         if (result && result.ae_item_base_info_dto) {
           const baseInfo = result.ae_item_base_info_dto;
           const multimediaInfo = result.ae_multimedia_info_dto || {};
-          
+
+          // Chercher les prix dans plusieurs endroits possibles
+          let salePrice = baseInfo.product_min_price;
+          let originalPrice = baseInfo.product_max_price;
+
+          // Fallback 1: Chercher dans ae_item_sku_info_dtos (prix des variantes)
+          if (!salePrice && result.ae_item_sku_info_dtos?.ae_item_sku_info_d_t_o) {
+            const skus = result.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o;
+            const firstSku = Array.isArray(skus) ? skus[0] : skus;
+            if (firstSku) {
+              salePrice = firstSku.sku_price || firstSku.offer_sale_price || firstSku.s_k_u_price;
+              originalPrice = firstSku.offer_bulk_sale_price || firstSku.sku_bulk_order_price;
+              console.log('[AliExpress API] Prices from SKU:', { salePrice, originalPrice });
+            }
+          }
+
+          // Fallback 2: Chercher dans ae_item_properties (prix global)
+          if (!salePrice && result.ae_item_properties) {
+            salePrice = result.ae_item_properties.product_price;
+            console.log('[AliExpress API] Price from properties:', { salePrice });
+          }
+
+          // Fallback 3: Chercher directement dans result
+          if (!salePrice) {
+            salePrice = result.target_sale_price || result.target_app_sale_price || result.discount_price;
+            originalPrice = result.target_original_price || result.original_price;
+            console.log('[AliExpress API] Prices from root result:', { salePrice, originalPrice });
+          }
+
+          console.log('[AliExpress API] Final extracted prices:', {
+            sale_price: salePrice,
+            original_price: originalPrice,
+            currency: baseInfo.currency_code,
+          });
+
           // Convertir au format unifié
           const product: AliExpressProduct = {
             product_id: baseInfo.product_id || productId,
@@ -216,8 +252,8 @@ export class AliExpressDropshipApiService {
             product_main_image_url: multimediaInfo.image_urls?.split(';')[0] || '',
             product_video_url: multimediaInfo.video_url,
             product_small_image_urls: multimediaInfo.image_urls?.split(';').slice(1, 5) || [],
-            sale_price: baseInfo.product_min_price || '0',
-            original_price: baseInfo.product_max_price,
+            sale_price: salePrice || '0',
+            original_price: originalPrice,
             product_detail_url: `https://www.aliexpress.com/item/${productId}.html`,
             evaluate_rate: '4.5', // Default, API dropship ne retourne pas toujours ce champ
             lastest_volume: 0,
@@ -239,7 +275,7 @@ export class AliExpressDropshipApiService {
    */
   async getProductByUrl(url: string): Promise<AliExpressProduct | null> {
     const productId = this.extractProductId(url);
-    
+
     if (!productId) {
       throw new Error('Impossible d\'extraire l\'ID du produit depuis l\'URL');
     }
@@ -248,28 +284,38 @@ export class AliExpressDropshipApiService {
   }
 
   /**
-   * Rechercher des produits par mots-clés et filtres
+   * Rechercher des produits via les feeds recommandés
    * Méthode: aliexpress.ds.recommend.feed.get
+   * NOTE: Cette API ne supporte PAS la recherche par mots-clés, seulement les feeds prédéfinis
    */
   async searchProducts(filters: ProductSearchFilters): Promise<AliExpressProduct[]> {
     try {
+      // L'API ds.recommend.feed.get ne supporte que les feeds prédéfinis
+      const availableFeeds = ['ds-bestselling', 'ds-new-arrival', 'ds-promotion', 'ds-choice'];
+      const selectedFeed = availableFeeds[0]; // Utiliser bestselling par défaut
+
       const params: Record<string, any> = {
-        feed_name: filters.keywords ? 'ds-new-arrival' : 'ds-bestselling', // Essayer différents feeds
+        feed_name: selectedFeed,
         target_currency: 'USD',
         target_language: 'FR',
-        ship_to_country: filters.ship_to_country || 'BJ',
+        ship_to_country: filters.ship_to_country || 'CI',
         page_no: filters.page_no || 1,
         page_size: Math.min(filters.page_size || 50, 100), // Max 100 par page
       };
 
-      // Ajouter les filtres optionnels
-      if (filters.keywords) params.keywords = filters.keywords;
-      if (filters.category_id) params.category_id = filters.category_id;
-      if (filters.min_price) params.min_price = filters.min_price;
-      if (filters.max_price) params.max_price = filters.max_price;
-      if (filters.min_sale_price) params.min_sale_price = filters.min_sale_price;
-      if (filters.max_sale_price) params.max_sale_price = filters.max_sale_price;
-      if (filters.sort) params.sort = filters.sort;
+      // IMPORTANT: Cette API ne supporte PAS ces paramètres de recherche :
+      // - keywords (pas supporté)
+      // - category_id (pas supporté) 
+      // - min_price/max_price (pas supporté)
+      // - sort (pas supporté)
+
+      console.log(`[AliExpress Dropship API] Using feed: ${selectedFeed} (keywords/category filtering not supported by this API)`);
+      if (filters.keywords) {
+        console.warn(`[AliExpress Dropship API] Keywords "${filters.keywords}" ignored - not supported by ds.recommend.feed.get`);
+      }
+      if (filters.category_id) {
+        console.warn(`[AliExpress Dropship API] Category "${filters.category_id}" ignored - not supported by ds.recommend.feed.get`);
+      }
 
       console.log('[AliExpress Dropship API] Searching products with filters:', filters);
 
@@ -321,12 +367,12 @@ export class AliExpressDropshipApiService {
   convertToScrapedProductData(product: AliExpressProduct, sourceUrl: string) {
     // Extraire les images
     const images: string[] = [];
-    
+
     // Image principale
     if (product.product_main_image_url) {
       images.push(product.product_main_image_url);
     }
-    
+
     // Images supplémentaires
     if (product.product_small_image_urls) {
       const smallImagesRaw = product.product_small_image_urls as string | string[];
@@ -336,16 +382,32 @@ export class AliExpressDropshipApiService {
       images.push(...smallImages.slice(0, 4)); // Max 5 images au total
     }
 
-    // Parser les prix
-    const parsePrice = (priceStr: string | undefined): number => {
+    // Parser les prix - ROBUSTE pour string ET number
+    const parsePrice = (priceStr: string | number | undefined): number => {
       if (!priceStr) return 0;
-      const cleaned = priceStr.replace(/[^\d.]/g, '');
+
+      // Convertir en string si c'est un nombre
+      const priceAsString = typeof priceStr === 'number' ? priceStr.toString() : priceStr;
+
+      // Nettoyer et parser
+      const cleaned = priceAsString.replace(/[^\d.]/g, '');
       const price = parseFloat(cleaned);
-      return isNaN(price) ? 0 : Math.round(price * 655); // USD to XOF conversion (~655 XOF = 1 USD)
+
+      if (isNaN(price) || price <= 0) return 0;
+
+      // USD to XOF conversion (~655 XOF = 1 USD)
+      return Math.round(price * 655);
     };
+
+    console.log('[AliExpress] Parsing prices for product:', product.product_id);
+    console.log('[AliExpress] sale_price raw:', product.sale_price, typeof product.sale_price);
+    console.log('[AliExpress] original_price raw:', product.original_price, typeof product.original_price);
 
     const salePrice = parsePrice(product.sale_price);
     const originalPrice = parsePrice(product.original_price);
+
+    console.log('[AliExpress] sale_price parsed:', salePrice, 'XOF');
+    console.log('[AliExpress] original_price parsed:', originalPrice, 'XOF');
 
     // Prix final avec fallback
     const finalPrice = salePrice || 15000; // Prix par défaut: 15000 XOF
@@ -377,6 +439,92 @@ export class AliExpressDropshipApiService {
         'Importé le': new Date().toLocaleDateString('fr-FR'),
       },
     };
+  }
+
+  /**
+   * Récupérer des produits via plusieurs feeds pour diversifier
+   * Utilise les feeds disponibles : ds-bestselling, ds-new-arrival, ds-promotion, ds-choice
+   */
+  async getProductsFromMultipleFeeds(count: number, page: number = 1): Promise<AliExpressProduct[]> {
+    const feeds = ['ds-bestselling', 'ds-new-arrival', 'ds-promotion', 'ds-choice'];
+    const productsPerFeed = Math.ceil(count / feeds.length);
+
+    console.log(`[AliExpress Dropship API] Fetching ${productsPerFeed} products from ${feeds.length} feeds`);
+
+    const feedPromises = feeds.map(async (feedName) => {
+      try {
+        const params: Record<string, any> = {
+          feed_name: feedName,
+          target_currency: 'USD',
+          target_language: 'FR',
+          ship_to_country: 'CI',
+          page_no: page,
+          page_size: Math.min(productsPerFeed, 50),
+        };
+        console.log(`[AliExpress Dropship API] Fetching feed: ${feedName}`);
+        const response = await this.callApi('aliexpress.ds.recommend.feed.get', params);
+        if (response.aliexpress_ds_recommend_feed_get_response) {
+          const result = response.aliexpress_ds_recommend_feed_get_response.result;
+
+          if (result && result.products && result.products.product) {
+            const products = result.products.product;
+            console.log(`[AliExpress Dropship API] Feed ${feedName} returned ${products.length} products`);
+
+            return products.map((item: any) => {
+              const product: AliExpressProduct = {
+                product_id: item.product_id || item.productId || '',
+                product_title: item.product_title || item.subject || 'Produit sans nom',
+                product_main_image_url: item.product_main_image_url || item.productMainImageUrl || '',
+                product_video_url: item.product_video_url || item.productVideoUrl,
+                product_small_image_urls: item.product_small_image_urls
+                  ? (typeof item.product_small_image_urls === 'string'
+                    ? item.product_small_image_urls.split(';')
+                    : item.product_small_image_urls)
+                  : [],
+                sale_price: item.sale_price || item.salePrice || item.target_sale_price || '0',
+                original_price: item.original_price || item.originalPrice || item.target_original_price,
+                product_detail_url: item.product_detail_url || item.productDetailUrl || `https://www.aliexpress.com/item/${item.product_id}.html`,
+                evaluate_rate: item.evaluate_rate || item.evaluateRate || '4.5',
+                lastest_volume: item.lastest_volume || item.volume || 0,
+              };
+
+              console.log('[AliExpress API] Product price data:', {
+                product_id: product.product_id,
+                sale_price: product.sale_price,
+                sale_price_type: typeof product.sale_price,
+                original_price: product.original_price,
+                original_price_type: typeof product.original_price,
+                raw_item: {
+                  sale_price: item.sale_price,
+                  salePrice: item.salePrice,
+                  target_sale_price: item.target_sale_price,
+                  original_price: item.original_price,
+                  originalPrice: item.originalPrice,
+                  target_original_price: item.target_original_price,
+                }
+              });
+
+              return product;
+            }).filter((p: AliExpressProduct) => p.product_id);
+          }
+        }
+
+        return [];
+      } catch (error) {
+        console.error(`[AliExpress Dropship API] Feed ${feedName} failed:`, error);
+        return [];
+      }
+    });
+    const results = await Promise.all(feedPromises);
+    const allProducts = results.flat();
+
+    // Supprimer les doublons par product_id
+    const uniqueProducts = allProducts.filter((product, index, self) =>
+      index === self.findIndex(p => p.product_id === product.product_id)
+    );
+
+    console.log(`[AliExpress Dropship API] Total unique products: ${uniqueProducts.length}`);
+    return uniqueProducts.slice(0, count);
   }
 }
 
