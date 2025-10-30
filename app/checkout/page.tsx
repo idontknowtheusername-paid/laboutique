@@ -18,7 +18,7 @@ import Link from 'next/link';
 
 const formatPrice = (price: number) => new Intl.NumberFormat('fr-BJ', { style: 'currency', currency: 'XOF', minimumFractionDigits: 0 }).format(price);
 
-type PaymentMethod = 'checkout' | 'mobile-money';
+type PaymentMethod = 'checkout';
 
 export default function CheckoutPage() {
   const [placed, setPlaced] = useState(false);
@@ -116,60 +116,7 @@ export default function CheckoutPage() {
     }
   };
 
-  const placeOrderMobileMoney = async () => {
-    try {
-      // ✅ Utiliser les vrais items du panier
-      if (!cartItems || cartItems.length === 0) {
-        throw new Error('Votre panier est vide');
-      }
 
-      const res = await fetch('/api/checkout/mobile-money', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: user?.id,
-          items: cartItems.map(item => ({ 
-            product_id: item.product_id, 
-            vendor_id: 'default', 
-            quantity: item.quantity, 
-            price: item.product?.price || 0 
-          })),
-          customer: {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            address: formData.address,
-            city: formData.city,
-            country: 'Benin',
-            postalCode: formData.postalCode || '229',
-            shipping_address: {
-              address: formData.address,
-              city: formData.city,
-              country: 'Benin',
-              postalCode: formData.postalCode || '229'
-            }
-          },
-          phone: formData.phone
-        })
-      });
-      
-      const json = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(json.error || 'Échec de l\'initialisation du paiement Mobile Money');
-      }
-      
-      if (json.transref && json.order_id) {
-        console.log('Redirection vers validation Mobile Money');
-        router.push(`/checkout/mobile-money-validation?transref=${json.transref}&order_id=${json.order_id}`);
-        return;
-      }
-      
-      setPlaced(true);
-    } catch (error: any) {
-      throw error;
-    }
-  };
 
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,12 +130,8 @@ export default function CheckoutPage() {
     try {
       setLoading(true);
       setErrorMsg(null);
-      
-      if (paymentMethod === 'checkout') {
-        await placeOrderCheckout();
-      } else {
-        await placeOrderMobileMoney();
-      }
+
+      await placeOrderCheckout();
       
     } catch (err) {
       console.error('Erreur checkout:', err);
@@ -338,45 +281,15 @@ export default function CheckoutPage() {
                       )}
                     </div>
 
-                    {/* Option 2: Mobile Money Direct */}
-                    <div className={`relative flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                      paymentMethod === 'mobile-money' 
-                        ? 'border-jomionstore-primary bg-orange-50' 
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`} onClick={() => setPaymentMethod('mobile-money')}>
-                      <RadioGroupItem value="mobile-money" id="mobile-money" className="mt-1" />
-                      <div className="flex-1">
-                        <Label htmlFor="mobile-money" className="cursor-pointer">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Smartphone className="w-5 h-5 text-orange-600" />
-                            <span className="font-semibold text-gray-900">Mobile Money Direct</span>
-                            <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">Rapide</span>
-                          </div>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Paiement direct depuis votre téléphone
-                          </p>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            <span className="text-xs bg-orange-50 text-orange-700 px-2 py-1 rounded border border-orange-200">MTN MoMo</span>
-                            <span className="text-xs bg-yellow-50 text-yellow-700 px-2 py-1 rounded border border-yellow-200">Moov Money</span>
-                          </div>
-                        </Label>
-                      </div>
-                      {paymentMethod === 'mobile-money' && (
-                        <Zap className="w-5 h-5 text-jomionstore-primary absolute top-4 right-4" />
-                      )}
-                    </div>
+
                   </RadioGroup>
 
                   {/* Info message based on selection */}
                   <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-start gap-2">
                       <ShieldCheck className="w-4 h-4 text-jomionstore-secondary mt-0.5 flex-shrink-0" />
-                      <div className="text-sm text-gray-700">
-                        {paymentMethod === 'checkout' ? (
-                                <p>Vous serez redirigé vers la plateforme Lygos pour choisir votre mode de paiement (Mobile Money ou Carte bancaire) et finaliser la transaction en toute sécurité.</p>
-                        ) : (
-                          <p>Vous recevrez une notification sur votre téléphone pour valider le paiement. Assurez-vous que le numéro de téléphone ci-dessus est correct.</p>
-                        )}
+                            <div className="text-sm text-gray-700">
+                              <p>Vous serez redirigé vers la plateforme Lygos pour choisir votre mode de paiement (Mobile Money ou Carte bancaire) et finaliser la transaction en toute sécurité.</p>
                       </div>
                     </div>
                   </div>
@@ -397,11 +310,11 @@ export default function CheckoutPage() {
                 {loading ? (
                   <>
                     <span className="animate-spin mr-2">⏳</span>
-                    {paymentMethod === 'checkout' ? 'Redirection...' : 'Envoi de la demande...'}
+                          Redirection vers Lygos...
                   </>
                 ) : (
                   <>
-                    {paymentMethod === 'checkout' ? '🔒 Payer en toute sécurité' : '📱 Payer par Mobile Money'}
+                            🔒 Payer avec Lygos
                     <span className="ml-2">({formatPrice(total)})</span>
                   </>
                 )}
