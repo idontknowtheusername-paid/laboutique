@@ -19,9 +19,22 @@ export async function POST(request: NextRequest) {
     console.log('[Lygos Verify] Vérification transaction:', { order_id, gateway_id });
 
     // Vérifier le statut auprès de Lygos
-    const status = await LygosService.getPaymentStatus(order_id || gateway_id);
-
-    console.log('[Lygos Verify] Statut reçu:', status);
+      let status;
+      try {
+          status = await LygosService.getPaymentStatus(order_id || gateway_id);
+          console.log('[Lygos Verify] Statut reçu:', status);
+    } catch (statusError) {
+        console.error('[Lygos Verify] Erreur récupération statut:', statusError);
+        // Retourner un statut par défaut si Lygos ne répond pas
+        status = {
+            order_id: order_id || gateway_id,
+            status: 'pending',
+            amount: 0,
+            currency: 'XOF',
+            gateway_id: gateway_id,
+            message: 'Vérification en cours...'
+        };
+    }
 
     // Déterminer le statut de la commande et du paiement
     let orderStatus: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' = 'pending';

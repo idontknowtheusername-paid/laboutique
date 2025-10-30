@@ -68,39 +68,47 @@ export default function CheckoutPage() {
         throw new Error('Votre panier est vide');
       }
 
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: user?.id,
-          items: cartItems.map(item => ({ 
-            product_id: item.product_id, 
-            vendor_id: item.product?.vendor_id || item.product?.vendor?.id || 'default', 
-            quantity: item.quantity, 
-            price: item.product?.price || 0 
-          })),
-          customer: {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            phone: formData.phone,
+      const payload = {
+        user_id: user?.id,
+        items: cartItems.map(item => ({
+          product_id: item.product_id,
+          vendor_id: item.product?.vendor_id || item.product?.vendor?.id || 'default',
+          quantity: item.quantity,
+          price: item.product?.price || 0
+        })),
+        customer: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          country: 'Benin',
+          postalCode: formData.postalCode || '229',
+          shipping_address: {
             address: formData.address,
             city: formData.city,
             country: 'Benin',
-            postalCode: formData.postalCode || '229',
-            shipping_address: {
-              address: formData.address,
-              city: formData.city,
-              country: 'Benin',
-              postalCode: formData.postalCode || '229'
-            }
+            postalCode: formData.postalCode || '229'
           }
-        })
+        }
+      };
+
+      console.log('[Checkout Debug] Payload envoyé:', JSON.stringify(payload, null, 2));
+
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
       
       const json = await res.json();
       
+      console.log('[Checkout Debug] Réponse serveur:', json);
+      console.log('[Checkout Debug] Status HTTP:', res.status);
+
       if (!res.ok) {
+        console.error('[Checkout Debug] Erreur serveur:', json);
         throw new Error(json.error || 'Échec de l\'initialisation du paiement');
       }
       
@@ -130,6 +138,10 @@ export default function CheckoutPage() {
     try {
       setLoading(true);
       setErrorMsg(null);
+
+      console.log('[Checkout Debug] Début commande...');
+      console.log('[Checkout Debug] Items du panier:', cartItems);
+      console.log('[Checkout Debug] Données formulaire:', formData);
 
       await placeOrderCheckout();
       

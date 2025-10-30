@@ -25,8 +25,12 @@ export default function LygosCheckoutPage() {
             return;
         }
 
-        // Vérifier le statut du paiement auprès de Lygos
-        const checkPaymentStatus = async () => {
+        // Rediriger immédiatement vers Lygos
+        initializeLygosWidget();
+    }, [gatewayId, orderId]);
+
+    // Vérifier le statut du paiement auprès de Lygos
+    const checkPaymentStatus = async () => {
             try {
                 const response = await fetch('/api/payment/verify', {
                     method: 'POST',
@@ -63,16 +67,40 @@ export default function LygosCheckoutPage() {
             }
         };
 
-        checkPaymentStatus();
-    }, [gatewayId, orderId]);
+
 
     const initializeLygosWidget = async () => {
         try {
-            // Intégrer le widget Lygos ici
-            // Pour l'instant, rediriger vers l'URL de paiement Lygos réelle
-            const lygosPaymentUrl = `https://pay.lygosapp.com/gateway/${gatewayId}`;
+            console.log('[Lygos Widget] Redirection vers Lygos...');
 
-            // Créer un iframe ou rediriger directement
+            // Essayer de récupérer l'URL réelle depuis notre API
+            try {
+                const response = await fetch('/api/payment/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        gateway_id: gatewayId,
+                        order_id: orderId
+                    })
+                });
+
+                const result = await response.json();
+                console.log('[Lygos Widget] Résultat vérification:', result);
+
+                if (result.success && result.data?.link) {
+                    // Utiliser l'URL fournie par Lygos
+                    window.location.href = result.data.link;
+                    return;
+                }
+            } catch (apiError) {
+                console.warn('[Lygos Widget] API indisponible, redirection directe');
+            }
+
+            // Fallback : construire l'URL manuellement
+            // Selon la doc Lygos, l'URL devrait être dans le champ "link"
+            const lygosPaymentUrl = `https://checkout.lygosapp.com/pay/${gatewayId}`;
+            console.log('[Lygos Widget] Redirection vers:', lygosPaymentUrl);
+
             window.location.href = lygosPaymentUrl;
 
         } catch (err) {
