@@ -6,7 +6,7 @@ export interface Coupon {
   code: string;
   name?: string;
   description?: string;
-  type: 'percentage' | 'fixed';
+  type: 'percentage' | 'fixed' | 'free_shipping';
   value: number;
   minimum_amount?: number;
   maximum_amount?: number;
@@ -41,7 +41,7 @@ export interface CreateCouponData {
   code: string;
   name?: string;
   description?: string;
-  type: 'percentage' | 'fixed';
+  type: 'percentage' | 'fixed' | 'free_shipping';
   value: number;
   minimum_amount?: number;
   maximum_amount?: number;
