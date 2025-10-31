@@ -62,6 +62,7 @@ const PartnersSection = dynamic(() => import('@/components/home/PartnersSection'
 export default function HomePageContent() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [topSellers, setTopSellers] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { trackPageView, trackSearch } = useAnalytics();
@@ -83,10 +84,11 @@ export default function HomePageContent() {
         setLoading(true);
         setError(null);
 
-        // Load categories and products in parallel
-        const [categoriesRes, productsRes] = await Promise.all([
+        // Load categories, products and top sellers in parallel
+        const [categoriesRes, productsRes, topSellersRes] = await Promise.all([
           CategoriesService.getAll(),
-          ProductsService.getAll({}, { limit: 200 }) // Augmenter pour supporter 100 produits par section
+          ProductsService.getAll({}, { limit: 200 }), // Augmenter pour supporter 100 produits par section
+          ProductsService.getTopSellers(8) // Charger les top ventes séparément
         ]);
 
         if (categoriesRes.success && categoriesRes.data) {
@@ -95,6 +97,10 @@ export default function HomePageContent() {
 
         if (productsRes.success && productsRes.data) {
           setProducts(productsRes.data);
+        }
+
+        if (topSellersRes.success && topSellersRes.data) {
+          setTopSellers(topSellersRes.data);
         }
       } catch (err) {
         setError('Erreur de chargement des données');
@@ -127,17 +133,21 @@ export default function HomePageContent() {
   // Nouvelles sections avec logique de filtrage
   const dailyDealsProducts = products
     .filter(product => {
-      const discount = product.compare_price && product.compare_price > product.price
-        ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
-        : 0;
-      return discount >= 20; // Au moins 20% de réduction
+      // Produits plus vieux que 10 jours avec prix < 25,000 XOF
+      const createdDate = new Date(product.created_at);
+      const tenDaysAgo = new Date();
+      tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
+
+      const isOlderThan10Days = createdDate < tenDaysAgo;
+      const isPriceUnder25k = product.price < 25000;
+
+      return isOlderThan10Days && isPriceUnder25k;
     })
+    .sort((a, b) => a.price - b.price) // Trier par prix croissant (meilleures affaires d'abord)
     .slice(0, 8);
 
-  const bestSellersProducts = products
-    .filter(product => (product.reviews_count || 0) > 0)
-    .sort((a, b) => (b.reviews_count || 0) - (a.reviews_count || 0))
-    .slice(0, 8);
+  // Utiliser les top sellers chargés séparément
+  const bestSellersProducts = topSellers;
 
 
   return (

@@ -74,15 +74,44 @@ export default function FlashSalesConnected() {
 
           setProducts(flashProducts.slice(0, 30));
 
+          // Trouver la date de fin la plus tardive pour le timer global
+          let latestEndDate: Date | null = null;
+          flashProducts.forEach((product: any) => {
+            if (product.flash_end_date) {
+              const endDate = new Date(product.flash_end_date);
+              if (!latestEndDate || endDate > latestEndDate) {
+                latestEndDate = endDate;
+              }
+            }
+          });
+
+          // Définir le flashSale global pour le timer
+          if (latestEndDate) {
+            setFlashSale({
+              end_date: latestEndDate.toISOString(),
+              is_active: latestEndDate > new Date()
+            });
+          } else {
+            // Pas de date de fin définie, créer une date par défaut (24h)
+            const defaultEndDate = new Date();
+            defaultEndDate.setHours(defaultEndDate.getHours() + 24);
+            setFlashSale({
+              end_date: defaultEndDate.toISOString(),
+              is_active: true
+            });
+          }
+
           // Simuler les informations de stock pour la compatibilité
           const mockStockInfo = flashProducts.map((product: any) => ({
             product_id: product.id,
             is_available: product.status === 'active' && (product.quantity || 0) > 0,
             flash_sale_product_id: product.id,
-            sold_quantity: 0,
+            sold_quantity: product.flash_sold_quantity || 0,
             available_stock: product.quantity || 0,
-            max_quantity: null,
-            stock_percentage: 0
+            max_quantity: product.flash_max_quantity || null,
+            stock_percentage: product.flash_max_quantity
+              ? Math.round(((product.flash_sold_quantity || 0) / product.flash_max_quantity) * 100)
+              : 0
           }));
 
           setStockInfo(mockStockInfo);
@@ -99,7 +128,12 @@ export default function FlashSalesConnected() {
 
   // Timer countdown synchronisé avec la DB
   useEffect(() => {
-    if (!flashSale) return;
+    if (!flashSale || !flashSale.end_date) {
+      // Pas de vente flash active, afficher un timer par défaut
+      setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+      setUrgencyMessage('Offres limitées, ne les ratez pas !');
+      return;
+    }
 
     const updateTimer = () => {
       const now = new Date();
@@ -129,7 +163,7 @@ export default function FlashSalesConnected() {
       } else if (totalMinutes <= 120) {
         setUrgencyMessage('🚀 Offres bientôt terminées');
       } else {
-        setUrgencyMessage('');
+        setUrgencyMessage('Ventes flash en cours');
       }
     };
 
@@ -359,21 +393,7 @@ export default function FlashSalesConnected() {
                               )}
                             </div>
                             
-                            {/* Barre de progression du stock */}
-                            {stockData && stockData.max_quantity && (
-                              <div className="space-y-1">
-                                <div className="flex justify-between text-xs text-gray-600">
-                                  <span>Vendu: {stockData.sold_quantity}</span>
-                                  <span>Disponible: {stockData.available_stock}</span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                  <div 
-                                    className="bg-red-500 h-2 rounded-full transition-all duration-300"
-                                    style={{ width: `${Math.min(stockData.stock_percentage, 100)}%` }}
-                                  ></div>
-                                </div>
-                              </div>
-                            )}
+
                           </div>
 
                           <InteractiveFeedback

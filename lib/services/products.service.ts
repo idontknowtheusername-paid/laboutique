@@ -471,6 +471,131 @@ export class ProductsService extends BaseService {
   }
 
   /**
+   * Récupérer les top ventes (système simple basé sur les vraies ventes + fallback récents attractifs)
+   */
+  static async getTopSellers(limit: number = 8): Promise<ServiceResponse<Product[]>> {
+    try {
+      if (!isSupabaseConfigured()) {
+        return this.createResponse([], 'Supabase non configuré');
+      }
+
+      const allProducts: Product[] = [];
+      const existingIds = new Set<string>();
+
+      // 1. PRIORITÉ 1 : Produits avec vraies ventes
+      const productsWithSales = await this.getProductsWithRealSales(limit);
+      productsWithSales.forEach(product => {
+        if (allProducts.length < limit) {
+          allProducts.push(product);
+          existingIds.add(product.id);
+        }
+      });
+
+      // 2. PRIORITÉ 2 : Si pas assez, compléter avec produits récents attractifs
+      if (allProducts.length < limit) {
+        const needed = limit - allProducts.length;
+        const recentAttractive = await this.getRecentAttractiveProducts(needed * 2); // Plus large pour filtrer les doublons
+
+        recentAttractive.forEach(product => {
+          if (!existingIds.has(product.id) && allProducts.length < limit) {
+            allProducts.push(product);
+            existingIds.add(product.id);
+          }
+        });
+      }
+
+      return this.createResponse(allProducts);
+    } catch (error) {
+      console.warn('Erreur lors du calcul des top ventes:', error);
+      return this.createResponse([], this.handleError(error));
+    }
+  }
+
+  /**
+   * Récupérer les produits avec vraies ventes
+   */
+  private static async getProductsWithRealSales(limit: number): Promise<Product[]> {
+    try {
+      const hasFlashSaleColumns = await this.checkFlashSaleColumns();
+
+      // Récupérer les produits actifs
+      const { data: products, error } = await this.getSupabaseClient()
+        .from('products')
+        .select(this.getProductSelectFields(hasFlashSaleColumns))
+        .eq('status', 'active')
+        .limit(limit * 3); // Plus large pour avoir du choix
+
+      if (error || !products) return [];
+
+      // Calculer les ventes pour chaque produit
+      const productsWithSales = await Promise.all(
+        products.map(async (product: any) => {
+          try {
+            const { count } = await this.getSupabaseClient()
+              .from('order_items')
+              .select('*', { count: 'exact', head: true })
+              .eq('product_id', product.id);
+
+            return {
+              ...product,
+              sales_count: count || 0
+            };
+          } catch (err) {
+            return {
+              ...product,
+              sales_count: 0
+            };
+          }
+        })
+      );
+
+      // Filtrer seulement ceux avec des ventes réelles et trier
+      return productsWithSales
+        .filter(product => product.sales_count > 0)
+        .sort((a, b) => {
+          if (b.sales_count !== a.sales_count) {
+            return b.sales_count - a.sales_count;
+          }
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        })
+        .slice(0, limit);
+    } catch (error) {
+      console.warn('Erreur lors de la récupération des produits avec ventes:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Récupérer les produits récents attractifs (< 30 jours + prix < 40k XOF)
+   */
+  private static async getRecentAttractiveProducts(limit: number): Promise<Product[]> {
+    try {
+      const hasFlashSaleColumns = await this.checkFlashSaleColumns();
+
+      // Date limite : 30 jours
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const { data, error } = await this.getSupabaseClient()
+        .from('products')
+        .select(this.getProductSelectFields(hasFlashSaleColumns))
+        .eq('status', 'active')
+        .gte('created_at', thirtyDaysAgo.toISOString()) // Créé dans les 30 derniers jours
+        .lt('price', 40000) // Prix < 40k XOF
+        .order('created_at', { ascending: false }) // Plus récents d'abord
+        .order('price', { ascending: true }) // Puis par prix croissant (plus attractifs)
+        .limit(limit);
+
+      if (error) throw error;
+
+      return data || [];
+    } catch (error) {
+      console.warn('Erreur lors de la récupération des produits récents attractifs:', error);
+      return [];
+    }
+  }
+
+  /**
    * Récupérer les nouveaux produits
    */
   static async getNew(limit: number = 10): Promise<ServiceResponse<Product[]>> {
