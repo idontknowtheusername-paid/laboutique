@@ -438,7 +438,7 @@ export default function AdminCouponsPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
-                            {new Date(coupon.end_date).toLocaleDateString('fr-FR')}
+                            {coupon.end_date ? new Date(coupon.end_date).toLocaleDateString('fr-FR') : 'Non définie'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
