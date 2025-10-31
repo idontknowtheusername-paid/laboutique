@@ -161,7 +161,7 @@ export default function OrdersPage() {
               </Link>
               <Link
                 href="/account/orders"
-                className="flex items-center space-x-3 p-2 rounded-lg bg-primary/5 text-primary"
+                  className="flex items-center space-x-3 p-2 rounded-lg bg-jomionstore-primary/5 text-jomionstore-primary"
               >
                 <Package className="w-4 h-4" />
                 <span>Mes commandes</span>

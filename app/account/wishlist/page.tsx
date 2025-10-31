@@ -185,11 +185,11 @@ export default function WishlistPage() {
         <div className="container max-w-6xl mx-auto px-4">
           {/* Breadcrumb */}
           <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-            <Link href="/" className="hover:text-primary">
+            <Link href="/" className="hover:text-jomionstore-primary">
               Accueil
             </Link>
             <span>/</span>
-            <Link href="/account" className="hover:text-primary">
+            <Link href="/account" className="hover:text-jomionstore-primary">
               Mon compte
             </Link>
             <span>/</span>
@@ -439,14 +439,14 @@ export default function WishlistPage() {
                               product?.slug ? `/product/${product.slug}` : "/"
                             }
                           >
-                            <h3 className="font-medium text-sm line-clamp-2 hover:text-primary transition-colors min-h-[2.5rem]">
+                            <h3 className="font-medium text-sm line-clamp-2 hover:text-jomionstore-primary transition-colors min-h-[2.5rem]">
                               {product?.name}
                             </h3>
                           </Link>
 
                           {/* Price */}
                           <div className="flex items-center space-x-2">
-                            <span className="font-bold text-primary">
+                            <span className="font-bold text-jomionstore-primary">
                               {formatPrice(product?.price ?? 0)}
                             </span>
                             {product?.compare_price && (
@@ -461,7 +461,7 @@ export default function WishlistPage() {
                           {/* Add to Cart Button */}
                           <Button
                             onClick={() => handleAddToCart(product)}
-                            className="w-full"
+                            className="w-full bg-jomionstore-primary hover:bg-orange-700 text-white"
                             size="sm"
                             disabled={product?.status !== "active"}
                           >

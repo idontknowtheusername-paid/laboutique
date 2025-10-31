@@ -70,14 +70,12 @@ export default function CategoryProductsCarousel({
         console.log('🔍 CategoryProductsCarousel - Response.data.data:', (response.data as any).data);
 
         if (response.success && response.data) {
-          // CORRECTION : Utiliser response.data directement comme les anciennes sections
           const productsData = response.data || [];
           console.log('🔍 CategoryProductsCarousel - Products data:', productsData);
           console.log('🔍 CategoryProductsCarousel - Products count:', productsData.length);
           setProducts(productsData);
-          if (productsData.length === 0) {
-            setError('Aucun produit trouvé pour cette catégorie');
-          }
+
+
         } else {
           setError(response.error || 'Erreur lors du chargement des produits');
         }
@@ -161,25 +159,10 @@ export default function CategoryProductsCarousel({
     );
   }
 
-  // Empty state
+  // Masquer la section si pas de produits
   if (!loading && products.length === 0) {
-    console.log('🔍 CategoryProductsCarousel - Empty state triggered');
-    return (
-      <section className={`py-6 bg-white ${className}`}>
-        <div className="container">
-          <div className="text-center mb-12 p-3 rounded-lg" style={{ background: '#FF5722' }}>
-            <h2 className="text-xl md:text-2xl font-bold text-white">{title}</h2>
-            {subtitle && <p className="text-orange-200 mt-1 text-sm truncate">{subtitle}</p>}
-          </div>
-          <ErrorState
-            type="empty"
-            title="Aucun produit disponible"
-            message="Aucun produit n'est disponible dans cette catégorie pour le moment."
-            onRetry={() => window.location.reload()}
-          />
-        </div>
-      </section>
-    );
+    console.log('🔍 CategoryProductsCarousel - Section masquée (pas de produits):', categorySlug);
+    return null;
   }
 
   console.log('🔍 CategoryProductsCarousel - Rendering with products:', products.length);
@@ -187,9 +170,21 @@ export default function CategoryProductsCarousel({
   return (
     <section className={`py-6 bg-white ${className}`}>
       <div className="container">
-        <div className="text-center mb-12 p-3 rounded-lg" style={{ background: '#FF5722' }}>
-          <h2 className="text-xl md:text-2xl font-bold text-white">{title}</h2>
-          {subtitle && <p className="text-orange-200 mt-1 text-sm truncate">{subtitle}</p>}
+        <div className="flex items-center justify-between mb-4 p-3 rounded-lg" style={{ background: '#FF5722' }}>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-white">{title}</h2>
+            {subtitle && <p className="text-orange-200 mt-1 text-sm truncate">{subtitle}</p>}
+          </div>
+
+          <Link href={`/category/${categorySlug}`}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:text-orange-300 text-xs font-medium bg-white/20 hover:bg-white/30 px-2 py-1 rounded-full transition-all"
+            >
+              Voir tout
+            </Button>
+          </Link>
         </div>
 
         <div className="relative">
@@ -263,13 +258,13 @@ export default function CategoryProductsCarousel({
                     </div>
 
                     <Link href={`/product/${product.slug}`}>
-                      <h3 className="font-medium text-sm line-clamp-2 hover:text-primary">
+                      <h3 className="font-medium text-sm line-clamp-2 hover:text-jomionstore-primary">
                         {product.name}
                       </h3>
                     </Link>
 
                     <div className="flex items-center space-x-2">
-                      <span className="font-bold text-primary">
+                      <span className="font-bold text-jomionstore-primary">
                         {formatPrice(product.price)}
                       </span>
                       {product.compare_price && (
@@ -280,7 +275,7 @@ export default function CategoryProductsCarousel({
                     </div>
 
                     <Button
-                      className="w-full"
+                      className="w-full bg-jomionstore-primary hover:bg-orange-700 text-white"
                       size="sm"
                       onClick={() => handleAddToCart(product)}
                       disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
@@ -298,13 +293,7 @@ export default function CategoryProductsCarousel({
           </div>
         </div>
 
-        <div className="text-center mt-12">
-          <Link href={`/category/${categorySlug}`}>
-            <Button variant="outline" size="lg">
-              Voir tous les produits
-            </Button>
-          </Link>
-        </div>
+
       </div>
     </section>
   );

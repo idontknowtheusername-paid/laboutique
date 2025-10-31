@@ -14,7 +14,7 @@ interface ProductFiltersProps {
 }
 
 export default function ProductFilters({ onFiltersChange, activeFilters }: ProductFiltersProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // Plié par défaut
   const [priceRange, setPriceRange] = useState({
     min: activeFilters.priceMin || 0,
     max: activeFilters.priceMax || 500000
@@ -107,13 +107,21 @@ export default function ProductFilters({ onFiltersChange, activeFilters }: Produ
         <div className="flex items-center justify-between">
           <CollapsibleTrigger asChild>
             <Button 
-              variant="outline" 
-              className="flex items-center gap-2"
+              variant={hasActiveFilters ? "default" : "outline"}
+              className={`flex items-center gap-2 transition-all duration-200 ${hasActiveFilters
+                ? "bg-jomionstore-primary hover:bg-orange-700 text-white"
+                : "hover:bg-gray-50"
+                }`}
             >
               <Filter className="w-4 h-4" />
-              Filtres
+              <span className="font-medium">
+                {isOpen ? 'Masquer les filtres' : 'Afficher les filtres'}
+              </span>
               {hasActiveFilters && (
-                <Badge variant="destructive" className="ml-2">
+                <Badge
+                  variant="secondary"
+                  className={`ml-1 ${hasActiveFilters ? 'bg-white/20 text-white' : 'bg-red-100 text-red-700'}`}
+                >
                   {[
                     ...(activeFilters.categories || []),
                     ...(activeFilters.brands || []),
@@ -138,8 +146,61 @@ export default function ProductFilters({ onFiltersChange, activeFilters }: Produ
           )}
         </div>
 
-        <CollapsibleContent className="mt-4">
-          <Card>
+        {/* Résumé des filtres actifs quand fermé */}
+        {!isOpen && hasActiveFilters && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {activeFilters.categories?.map((category: string) => (
+              <Badge key={category} variant="secondary" className="text-xs">
+                {categories.find(c => c.slug === category)?.name || category}
+                <button
+                  onClick={() => handleCategoryToggle(category)}
+                  className="ml-1 hover:bg-red-100 rounded-full p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </Badge>
+            ))}
+            {activeFilters.brands?.map((brand: string) => (
+              <Badge key={brand} variant="secondary" className="text-xs">
+                {brand}
+                <button
+                  onClick={() => handleBrandToggle(brand)}
+                  className="ml-1 hover:bg-red-100 rounded-full p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </Badge>
+            ))}
+            {activeFilters.pieces?.map((piece: string) => (
+              <Badge key={piece} variant="secondary" className="text-xs">
+                {pieces.find(p => p.slug === piece)?.name || piece}
+                <button
+                  onClick={() => handlePieceToggle(piece)}
+                  className="ml-1 hover:bg-red-100 rounded-full p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </Badge>
+            ))}
+            {(activeFilters.priceMin > 0 || activeFilters.priceMax < 500000) && (
+              <Badge variant="secondary" className="text-xs">
+                Prix: {activeFilters.priceMin || 0} - {activeFilters.priceMax || 500000} F CFA
+                <button
+                  onClick={() => {
+                    setPriceRange({ min: 0, max: 500000 });
+                    onFiltersChange({ ...activeFilters, priceMin: 0, priceMax: 500000 });
+                  }}
+                  className="ml-1 hover:bg-red-100 rounded-full p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </Badge>
+            )}
+          </div>
+        )}
+
+        <CollapsibleContent className="mt-4 animate-in slide-in-from-top-2 duration-200">
+          <Card className="border-jomionstore-primary/20 shadow-sm">
             <CardContent className="p-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Catégories */}

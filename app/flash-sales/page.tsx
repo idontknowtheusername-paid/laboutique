@@ -631,7 +631,7 @@ export default function FlashSalesPage() {
                         {/* Bouton d'ajout */}
                         <Button
                           onClick={() => handleAddToCart(product)}
-                          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold"
+                          className="w-full bg-jomionstore-primary hover:bg-orange-700 text-white font-semibold"
                           disabled={product.stock_remaining === 0}
                         >
                           <ShoppingBag className="w-4 h-4 mr-2" />

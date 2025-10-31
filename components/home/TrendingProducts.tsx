@@ -268,9 +268,21 @@ function TrendingProductsContent() {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12 p-3 rounded-lg" style={{ background: '#FF5722' }}>
-          <div className="flex items-center justify-center gap-4 mb-4">
+        <div className="flex items-center justify-between mb-4 p-3 rounded-lg" style={{ background: '#FF5722' }}>
+          <div>
             <h2 className="text-xl md:text-2xl font-bold text-white">Produits Tendance</h2>
+            <p className="text-orange-200 mt-1 text-sm truncate">
+              Découvrez les produits les plus populaires du moment
+            </p>
+            {error && products.length > 0 && (
+              <div className="flex items-center gap-2 mt-1">
+                <AlertCircle className="w-3 h-3 text-amber-300" />
+                <span className="text-xs text-amber-300">{error}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
@@ -280,16 +292,16 @@ function TrendingProductsContent() {
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             </Button>
+            <Link href="/search">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:text-orange-300 text-xs font-medium bg-white/20 hover:bg-white/30 px-2 py-1 rounded-full transition-all"
+              >
+                Voir tout
+              </Button>
+            </Link>
           </div>
-          <p className="text-orange-200 max-w-2xl mx-auto text-sm truncate">
-            Découvrez les produits les plus populaires du moment
-          </p>
-          {error && products.length > 0 && (
-            <div className="flex items-center justify-center gap-2 mt-2 text-amber-600">
-              <AlertCircle className="w-4 h-4" />
-              <span className="text-sm">{error}</span>
-            </div>
-          )}
         </div>
 
         <div className="relative">
@@ -363,13 +375,13 @@ function TrendingProductsContent() {
                   </div>
 
                   <Link href={`/product/${product.slug}`}>
-                    <h3 className="font-medium text-sm line-clamp-2 hover:text-primary">
+                      <h3 className="font-medium text-sm line-clamp-2 hover:text-jomionstore-primary">
                       {product.name}
                     </h3>
                   </Link>
 
                   <div className="flex items-center space-x-2">
-                    <span className="font-bold text-primary">
+                      <span className="font-bold text-jomionstore-primary">
                       {formatPrice(product.price)}
                     </span>
                     {product.compare_price && (
@@ -380,7 +392,7 @@ function TrendingProductsContent() {
                   </div>
 
                   <Button
-                    className="w-full"
+                      className="w-full bg-jomionstore-primary hover:bg-orange-700 text-white"
                     size="sm"
                     onClick={() => handleAddToCart(product)}
                     disabled={product.status !== 'active' || (product.track_quantity && product.quantity <= 0)}
@@ -409,13 +421,7 @@ function TrendingProductsContent() {
           ))}
         </div>
 
-        <div className="text-center mt-12">
-          <Link href="/search">
-            <Button variant="outline" size="lg">
-              Voir tous les produits
-            </Button>
-          </Link>
-        </div>
+
       </div>
     </section>
   );

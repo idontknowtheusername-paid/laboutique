@@ -120,13 +120,13 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
                     </div>
 
                     <Link href={`/product/${product.slug}`}>
-                      <h3 className="font-medium text-sm line-clamp-2 hover:text-primary">
+                      <h3 className="font-medium text-sm line-clamp-2 hover:text-jomionstore-primary">
                         {product.name}
                       </h3>
                     </Link>
 
                     <div className="flex items-center space-x-2">
-                      <span className="font-bold text-primary">
+                      <span className="font-bold text-jomionstore-primary">
                         {formatPrice(product.price)}
                       </span>
                       {product.comparePrice && (
