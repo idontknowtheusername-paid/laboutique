@@ -10,11 +10,15 @@ export interface Coupon {
   value: number;
   minimum_amount?: number;
   maximum_amount?: number;
+  min_amount?: number;
+  max_discount?: number;
   usage_limit?: number;
   used_count: number;
   status: 'active' | 'inactive';
   starts_at?: string;
   expires_at?: string;
+  start_date?: string;
+  end_date?: string;
   created_at: string;
   updated_at: string;
   // Relations
@@ -112,11 +116,15 @@ export class CouponsService extends BaseService {
           value,
           minimum_amount,
           maximum_amount,
+          min_amount,
+          max_discount,
           usage_limit,
           used_count,
           status,
           starts_at,
           expires_at,
+          start_date,
+          end_date,
           created_at,
           updated_at
         `, { count: 'exact' });
@@ -177,11 +185,15 @@ export class CouponsService extends BaseService {
           value,
           minimum_amount,
           maximum_amount,
+          min_amount,
+          max_discount,
           usage_limit,
           used_count,
           status,
           starts_at,
           expires_at,
+          start_date,
+          end_date,
           created_at,
           updated_at
         `)
@@ -230,11 +242,15 @@ export class CouponsService extends BaseService {
           value,
           minimum_amount,
           maximum_amount,
+          min_amount,
+          max_discount,
           usage_limit,
           used_count,
           status,
           starts_at,
           expires_at,
+          start_date,
+          end_date,
           created_at,
           updated_at
         `)
@@ -276,11 +292,15 @@ export class CouponsService extends BaseService {
           value,
           minimum_amount,
           maximum_amount,
+          min_amount,
+          max_discount,
           usage_limit,
           used_count,
           status,
           starts_at,
           expires_at,
+          start_date,
+          end_date,
           created_at,
           updated_at
         `)
