@@ -174,6 +174,8 @@ export default function CheckoutPage() {
 
       console.log('[Checkout Debug] 📋 Items du panier:', cartItems);
       console.log('[Checkout Debug] 👤 Données formulaire:', formData);
+      console.log('[Checkout Debug] 🆔 User ID:', user?.id);
+      console.log('[Checkout Debug] 👤 User complet:', user);
 
       await placeOrderCheckout();
 

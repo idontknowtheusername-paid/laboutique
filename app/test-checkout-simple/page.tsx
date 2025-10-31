@@ -27,8 +27,12 @@ export default function TestCheckoutSimple() {
       const product = productsData.data[0];
       console.log('✅ Produit trouvé:', product.name, product.id);
 
+      // Générer un UUID valide pour le test
+      const testUserId = crypto.randomUUID();
+      console.log('🆔 UUID généré pour test:', testUserId);
+
       const payload = {
-        user_id: 'test-user-id',
+        user_id: testUserId,
         items: [
           {
             product_id: product.id,
