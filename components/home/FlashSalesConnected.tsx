@@ -86,7 +86,7 @@ export default function FlashSalesConnected() {
           });
 
           // Définir le flashSale global pour le timer
-          if (latestEndDate) {
+          if (latestEndDate && latestEndDate instanceof Date) {
             setFlashSale({
               end_date: latestEndDate.toISOString(),
               is_active: latestEndDate > new Date()
