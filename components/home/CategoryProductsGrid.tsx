@@ -61,10 +61,9 @@ export default function CategoryProductsGrid({
         if (response.success && response.data) {
           setProducts(response.data || []);
 
-          // Si aucun produit trouvé, essayer un fallback avec des mots-clés
+          // Si aucun produit trouvé, log pour debug
           if (response.data.length === 0) {
-            console.log('🔍 CategoryProductsGrid - Aucun produit trouvé, essai fallback pour:', categorySlug);
-            await tryFallbackProducts();
+            console.log('🔍 CategoryProductsGrid - Aucun produit trouvé pour:', categorySlug);
           }
         } else {
           setError(response.error || 'Erreur lors du chargement des produits');
