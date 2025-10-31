@@ -63,10 +63,15 @@ export default function CheckoutPage() {
 
   const placeOrderCheckout = async () => {
     try {
+      console.log('[Checkout Debug] 🔄 Début placeOrderCheckout...');
+
       // ✅ Utiliser les vrais items du panier
       if (!cartItems || cartItems.length === 0) {
+        console.error('[Checkout Debug] ❌ Panier vide !');
         throw new Error('Votre panier est vide');
       }
+
+      console.log('[Checkout Debug] 📦 Panier validé:', cartItems.length, 'items');
 
       const payload = {
         user_id: user?.id,
@@ -94,7 +99,9 @@ export default function CheckoutPage() {
         }
       };
 
-      console.log('[Checkout Debug] Payload envoyé:', JSON.stringify(payload, null, 2));
+      console.log('[Checkout Debug] 📤 Payload envoyé:', JSON.stringify(payload, null, 2));
+
+      console.log('[Checkout Debug] 🌐 Envoi requête vers /api/checkout...');
 
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -102,10 +109,11 @@ export default function CheckoutPage() {
         body: JSON.stringify(payload)
       });
       
+      console.log('[Checkout Debug] 📥 Réponse reçue, status:', res.status);
+
       const json = await res.json();
       
-      console.log('[Checkout Debug] Réponse serveur:', json);
-      console.log('[Checkout Debug] Status HTTP:', res.status);
+      console.log('[Checkout Debug] 📋 Réponse serveur complète:', json);
 
       if (!res.ok) {
         console.error('[Checkout Debug] Erreur serveur:', json);
@@ -113,11 +121,23 @@ export default function CheckoutPage() {
       }
       
       if (json.payment_url) {
-        console.log('Redirection vers Lygos Checkout:', json.payment_url);
+        console.log('[Checkout Debug] 🔗 URL de paiement reçue:', json.payment_url);
+        console.log('[Checkout Debug] 🚀 Redirection vers Lygos...');
+
+        // Forcer la redirection
         window.location.href = json.payment_url;
         return;
       }
       
+      if (json.gateway_id) {
+        console.log('[Checkout Debug] 🆔 Gateway ID reçu:', json.gateway_id);
+        console.log('[Checkout Debug] 🚀 Redirection vers page de checkout...');
+
+        // Redirection vers notre page de checkout
+        window.location.href = `/checkout/${json.gateway_id}${json.order_id ? `?order_id=${json.order_id}` : ''}`;
+        return;
+      }
+
       setPlaced(true);
     } catch (error: any) {
       throw error;
@@ -126,12 +146,25 @@ export default function CheckoutPage() {
 
 
 
-  const placeOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const placeOrder = async (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    console.log('[Checkout Debug] 🚀 Début du processus de commande...');
     
     // Validation du formulaire
     if (!formData.firstName || !formData.lastName || !formData.address || !formData.city || !formData.phone || !formData.email) {
+      console.error('[Checkout Debug] ❌ Validation formulaire échouée');
       setErrorMsg('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+
+    // Validation du panier
+    if (!cartItems || cartItems.length === 0) {
+      console.error('[Checkout Debug] ❌ Panier vide');
+      setErrorMsg('Votre panier est vide');
       return;
     }
 
@@ -139,14 +172,15 @@ export default function CheckoutPage() {
       setLoading(true);
       setErrorMsg(null);
 
-      console.log('[Checkout Debug] Début commande...');
-      console.log('[Checkout Debug] Items du panier:', cartItems);
-      console.log('[Checkout Debug] Données formulaire:', formData);
+      console.log('[Checkout Debug] 📋 Items du panier:', cartItems);
+      console.log('[Checkout Debug] 👤 Données formulaire:', formData);
 
       await placeOrderCheckout();
       
+      console.log('[Checkout Debug] ✅ Commande réussie !');
+
     } catch (err) {
-      console.error('Erreur checkout:', err);
+      console.error('[Checkout Debug] ❌ Erreur checkout:', err);
       setErrorMsg((err as Error)?.message || 'Le paiement a échoué. Réessayez.');
     } finally {
       setLoading(false);
@@ -315,8 +349,13 @@ export default function CheckoutPage() {
               </Card>
 
               <Button 
+                      type="button"
                 disabled={loading} 
-                onClick={placeOrder} 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        placeOrder(e);
+                      }} 
                 className="w-full bg-jomionstore-primary hover:bg-orange-700 h-12 text-base font-semibold"
               >
                 {loading ? (
