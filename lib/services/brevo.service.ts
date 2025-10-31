@@ -100,8 +100,20 @@ export const BrevoService = {
         }),
         estimatedDelivery: orderData.estimatedDelivery,
         orderLink: `https://jomionstore.com/account/orders/${orderData.orderNumber}`
-    };
+      };
 
-    return apiInstance.sendTransacEmail(sendSmtpEmail);
+      return apiInstance.sendTransacEmail(sendSmtpEmail);
+    } else {
+      // For cancelled orders or other statuses without templates, send a simple email
+      sendSmtpEmail.subject = `Mise à jour de votre commande ${orderData.orderNumber}`;
+      sendSmtpEmail.htmlContent = `
+        <p>Bonjour ${orderData.name},</p>
+        <p>${statusMessages[orderData.status]}</p>
+        <p>Numéro de commande: ${orderData.orderNumber}</p>
+        <p>Cordialement,<br>L'équipe JomionStore</p>
+      `;
+
+      return apiInstance.sendTransacEmail(sendSmtpEmail);
+    }
   }
-}
+};

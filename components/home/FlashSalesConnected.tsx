@@ -74,28 +74,53 @@ export default function FlashSalesConnected() {
 
           setProducts(flashProducts.slice(0, 30));
 
-          // Trouver la date de fin la plus tardive pour le timer global
-          let latestEndDate: Date | null = null;
+          // Logique intelligente : trouver la date de fin la plus proche pour créer l'urgence
+          let smartEndDate: Date | null = null;
+          const now = new Date();
+          const validEndDates: Date[] = [];
+
+          // Collecter toutes les dates de fin valides
           flashProducts.forEach((product: any) => {
             if (product.flash_end_date) {
               const endDate = new Date(product.flash_end_date);
-              if (!latestEndDate || endDate > latestEndDate) {
-                latestEndDate = endDate;
+              if (endDate > now) { // Seulement les dates futures
+                validEndDates.push(endDate);
               }
             }
           });
 
+          if (validEndDates.length > 0) {
+            // Trier par date croissante (plus proche en premier)
+            validEndDates.sort((a, b) => a.getTime() - b.getTime());
+
+            const closestDate = validEndDates[0];
+            const hoursUntilClosest = (closestDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+            // Logique intelligente de sélection
+            if (hoursUntilClosest <= 72) {
+              // Si la plus proche est dans les 3 jours, l'utiliser (urgence réelle)
+              smartEndDate = closestDate;
+            } else {
+              // Sinon, chercher une date dans une fourchette raisonnable (1-7 jours)
+              const reasonableDate = validEndDates.find(date => {
+                const hours = (date.getTime() - now.getTime()) / (1000 * 60 * 60);
+                return hours >= 24 && hours <= 168; // Entre 1 jour et 7 jours
+              });
+
+              smartEndDate = reasonableDate || closestDate; // Fallback sur la plus proche
+            }
+          }
+
           // Définir le flashSale global pour le timer
-          if (latestEndDate !== null) {
-            const endDate = latestEndDate as Date;
+          if (smartEndDate !== null) {
             setFlashSale({
-              end_date: endDate.toISOString(),
-              is_active: endDate > new Date()
+              end_date: smartEndDate.toISOString(),
+              is_active: smartEndDate > new Date()
             });
           } else {
-            // Pas de date de fin définie, créer une date par défaut (24h)
+            // Pas de date de fin définie, créer une date par défaut (6h pour plus d'urgence)
             const defaultEndDate = new Date();
-            defaultEndDate.setHours(defaultEndDate.getHours() + 24);
+            defaultEndDate.setHours(defaultEndDate.getHours() + 6);
             setFlashSale({
               end_date: defaultEndDate.toISOString(),
               is_active: true
@@ -290,20 +315,39 @@ export default function FlashSalesConnected() {
               <Clock className="w-3 h-3 md:w-4 md:h-4 text-white/80" />
             </div>
             <div className="flex space-x-0.5 md:space-x-1 text-white font-mono">
-              <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
-                <div className="text-sm md:text-lg font-bold text-white">{String(timeLeft.hours).padStart(2, '0')}</div>
-                <div className="text-[10px] md:text-xs text-white/80">H</div>
-              </div>
-              <div className="text-white/60 text-sm md:text-lg animate-pulse">:</div>
-              <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
-                <div className="text-sm md:text-lg font-bold text-white">{String(timeLeft.minutes).padStart(2, '0')}</div>
-                <div className="text-[10px] md:text-xs text-white/80">M</div>
-              </div>
-              <div className="text-white/60 text-sm md:text-lg animate-pulse">:</div>
-              <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
-                <div className="text-sm md:text-lg font-bold text-white">{String(timeLeft.seconds).padStart(2, '0')}</div>
-                <div className="text-[10px] md:text-xs text-white/80">S</div>
-              </div>
+              {(() => {
+                const totalHours = timeLeft.hours;
+                const days = Math.floor(totalHours / 24);
+                const remainingHours = totalHours % 24;
+
+                return (
+                  <>
+                    {days > 0 && (
+                      <>
+                        <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
+                          <div className="text-sm md:text-lg font-bold text-white">{days}</div>
+                          <div className="text-[10px] md:text-xs text-white/80">J</div>
+                        </div>
+                        <div className="text-white/60 text-sm md:text-lg animate-pulse">:</div>
+                      </>
+                    )}
+                    <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
+                      <div className="text-sm md:text-lg font-bold text-white">{String(remainingHours).padStart(2, '0')}</div>
+                      <div className="text-[10px] md:text-xs text-white/80">H</div>
+                    </div>
+                    <div className="text-white/60 text-sm md:text-lg animate-pulse">:</div>
+                    <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
+                      <div className="text-sm md:text-lg font-bold text-white">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                      <div className="text-[10px] md:text-xs text-white/80">M</div>
+                    </div>
+                    <div className="text-white/60 text-sm md:text-lg animate-pulse">:</div>
+                    <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
+                      <div className="text-sm md:text-lg font-bold text-white">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                      <div className="text-[10px] md:text-xs text-white/80">S</div>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </div>
         </div>
