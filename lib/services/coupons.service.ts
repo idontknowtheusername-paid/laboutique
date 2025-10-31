@@ -4,6 +4,7 @@ import { isSupabaseConfigured } from '@/lib/supabase';
 export interface Coupon {
   id: string;
   code: string;
+  name?: string;
   description?: string;
   type: 'percentage' | 'fixed';
   value: number;
@@ -34,6 +35,7 @@ export interface CouponFilters {
 
 export interface CreateCouponData {
   code: string;
+  name?: string;
   description?: string;
   type: 'percentage' | 'fixed';
   value: number;
@@ -104,6 +106,7 @@ export class CouponsService extends BaseService {
         .select(`
           id,
           code,
+          name,
           description,
           type,
           value,
@@ -168,6 +171,7 @@ export class CouponsService extends BaseService {
         .select(`
           id,
           code,
+          name,
           description,
           type,
           value,
@@ -220,6 +224,7 @@ export class CouponsService extends BaseService {
         .select(`
           id,
           code,
+          name,
           description,
           type,
           value,
@@ -265,6 +270,7 @@ export class CouponsService extends BaseService {
         .select(`
           id,
           code,
+          name,
           description,
           type,
           value,
