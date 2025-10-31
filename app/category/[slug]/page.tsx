@@ -79,6 +79,59 @@ export default function DynamicCategoryPage() {
 
   const ITEMS_PER_PAGE = 20;
 
+  // Calculate active filters for display
+  const activeFilters = React.useMemo(() => {
+    const active: string[] = [];
+
+    // Price range filter
+    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000) {
+      active.push(`Prix: ${filters.priceRange[0]}€ - ${filters.priceRange[1]}€`);
+    }
+
+    // Brand filters
+    filters.brands.forEach(brand => {
+      active.push(`Marque: ${brand}`);
+    });
+
+    // Tag filters
+    filters.tags.forEach(tag => {
+      active.push(`Tag: ${tag}`);
+    });
+
+    // Stock filter
+    if (filters.inStock) {
+      active.push('En stock uniquement');
+    }
+
+    // Rating filter
+    if (filters.minRating > 0) {
+      active.push(`Note min: ${filters.minRating}★`);
+    }
+
+    return active;
+  }, [filters]);
+
+  // Remove a specific filter
+  const removeFilter = useCallback((filterToRemove: string) => {
+    const newFilters = { ...filters };
+
+    if (filterToRemove.startsWith('Prix:')) {
+      newFilters.priceRange = [0, 1000000];
+    } else if (filterToRemove.startsWith('Marque:')) {
+      const brand = filterToRemove.replace('Marque: ', '');
+      newFilters.brands = newFilters.brands.filter(b => b !== brand);
+    } else if (filterToRemove.startsWith('Tag:')) {
+      const tag = filterToRemove.replace('Tag: ', '');
+      newFilters.tags = newFilters.tags.filter(t => t !== tag);
+    } else if (filterToRemove === 'En stock uniquement') {
+      newFilters.inStock = false;
+    } else if (filterToRemove.startsWith('Note min:')) {
+      newFilters.minRating = 0;
+    }
+
+    handleFilterChange(newFilters);
+  }, [filters]);
+
   // Load category data
   const loadCategory = useCallback(async () => {
     try {
