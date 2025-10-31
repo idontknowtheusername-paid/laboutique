@@ -6,7 +6,7 @@ import Header from "@/components/layout/Header";
 import CategoryMenu from "@/components/layout/CategoryMenu";
 import Footer from "@/components/layout/Footer";
 import ProductGrid from "@/components/home/ProductGrid";
-import ProductFilters from "@/components/products/ProductFilters";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
