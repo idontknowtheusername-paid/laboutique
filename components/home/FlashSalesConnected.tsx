@@ -87,9 +87,10 @@ export default function FlashSalesConnected() {
 
           // Définir le flashSale global pour le timer
           if (latestEndDate !== null) {
+            const endDate = latestEndDate as Date;
             setFlashSale({
-              end_date: latestEndDate.toISOString(),
-              is_active: latestEndDate > new Date()
+              end_date: endDate.toISOString(),
+              is_active: endDate > new Date()
             });
           } else {
             // Pas de date de fin définie, créer une date par défaut (24h)
