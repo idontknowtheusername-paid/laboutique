@@ -4,20 +4,18 @@ import { isSupabaseConfigured } from '@/lib/supabase';
 export interface Coupon {
   id: string;
   code: string;
-  name: string;
   description?: string;
-  type: 'percentage' | 'fixed' | 'free_shipping';
+  type: 'percentage' | 'fixed';
   value: number;
-  min_amount?: number;
-  max_discount?: number;
+  minimum_amount?: number;
+  maximum_amount?: number;
   usage_limit?: number;
   used_count: number;
-  status: 'active' | 'inactive' | 'expired';
-  start_date: string;
-  end_date: string;
+  status: 'active' | 'inactive';
+  starts_at?: string;
+  expires_at?: string;
   created_at: string;
   updated_at: string;
-  created_by?: string;
   // Relations
   created_by_user?: {
     id: string;
@@ -36,16 +34,20 @@ export interface CouponFilters {
 
 export interface CreateCouponData {
   code: string;
-  name: string;
   description?: string;
-  type: 'percentage' | 'fixed' | 'free_shipping';
+  type: 'percentage' | 'fixed';
   value: number;
-  min_amount?: number;
-  max_discount?: number;
+  minimum_amount?: number;
+  maximum_amount?: number;
   usage_limit?: number;
   status?: 'active' | 'inactive';
-  start_date: string;
-  end_date: string;
+  starts_at?: string;
+  expires_at?: string;
+  // Alias pour compatibilité avec les formulaires
+  start_date?: string;
+  end_date?: string;
+  min_amount?: number;
+  max_discount?: number;
 }
 
 export interface UpdateCouponData extends Partial<CreateCouponData> {
@@ -102,20 +104,18 @@ export class CouponsService extends BaseService {
         .select(`
           id,
           code,
-          name,
           description,
           type,
           value,
-          min_amount,
-          max_discount,
+          minimum_amount,
+          maximum_amount,
           usage_limit,
           used_count,
           status,
-          start_date,
-          end_date,
+          starts_at,
+          expires_at,
           created_at,
-          updated_at,
-          created_by
+          updated_at
         `, { count: 'exact' });
 
       // Appliquer les filtres
@@ -132,7 +132,7 @@ export class CouponsService extends BaseService {
       }
 
       if (filters.search) {
-        query = query.or(`code.ilike.%${filters.search}%,name.ilike.%${filters.search}%`);
+        query = query.ilike('code', `%${filters.search}%`);
       }
 
       // Trier par date de création
@@ -168,17 +168,16 @@ export class CouponsService extends BaseService {
         .select(`
           id,
           code,
-          name,
           description,
           type,
           value,
-          min_amount,
-          max_discount,
+          minimum_amount,
+          maximum_amount,
           usage_limit,
           used_count,
           status,
-          start_date,
-          end_date,
+          starts_at,
+          expires_at,
           created_at,
           updated_at
         `)
@@ -221,20 +220,18 @@ export class CouponsService extends BaseService {
         .select(`
           id,
           code,
-          name,
           description,
           type,
           value,
-          min_amount,
-          max_discount,
+          minimum_amount,
+          maximum_amount,
           usage_limit,
           used_count,
           status,
-          start_date,
-          end_date,
+          starts_at,
+          expires_at,
           created_at,
-          updated_at,
-          created_by
+          updated_at
         `)
         .single();
 
@@ -268,20 +265,18 @@ export class CouponsService extends BaseService {
         .select(`
           id,
           code,
-          name,
           description,
           type,
           value,
-          min_amount,
-          max_discount,
+          minimum_amount,
+          maximum_amount,
           usage_limit,
           used_count,
           status,
-          start_date,
-          end_date,
+          starts_at,
+          expires_at,
           created_at,
-          updated_at,
-          created_by
+          updated_at
         `)
         .single();
 
@@ -339,15 +334,23 @@ export class CouponsService extends BaseService {
 
       // Vérifier les conditions
       const now = new Date();
-      const startDate = new Date(coupon.start_date);
-      const endDate = new Date(coupon.end_date);
 
-      if (now < startDate || now > endDate) {
-        return this.createResponse({ discount: 0, finalAmount: orderAmount }, 'Coupon expiré ou pas encore valide');
+      if (coupon.starts_at) {
+        const startDate = new Date(coupon.starts_at);
+        if (now < startDate) {
+          return this.createResponse({ discount: 0, finalAmount: orderAmount }, 'Coupon pas encore valide');
+        }
       }
 
-      if (coupon.min_amount && orderAmount < coupon.min_amount) {
-        return this.createResponse({ discount: 0, finalAmount: orderAmount }, `Montant minimum requis: ${coupon.min_amount} FCFA`);
+      if (coupon.expires_at) {
+        const endDate = new Date(coupon.expires_at);
+        if (now > endDate) {
+          return this.createResponse({ discount: 0, finalAmount: orderAmount }, 'Coupon expiré');
+        }
+      }
+
+      if (coupon.minimum_amount && orderAmount < coupon.minimum_amount) {
+        return this.createResponse({ discount: 0, finalAmount: orderAmount }, `Montant minimum requis: ${coupon.minimum_amount} FCFA`);
       }
 
       if (coupon.usage_limit && coupon.used_count >= coupon.usage_limit) {
@@ -359,16 +362,12 @@ export class CouponsService extends BaseService {
       switch (coupon.type) {
         case 'percentage':
           discount = (orderAmount * coupon.value) / 100;
-          if (coupon.max_discount) {
-            discount = Math.min(discount, coupon.max_discount);
+          if (coupon.maximum_amount) {
+            discount = Math.min(discount, coupon.maximum_amount);
           }
           break;
         case 'fixed':
           discount = coupon.value;
-          break;
-        case 'free_shipping':
-          // Pour la livraison gratuite, on retourne 0 car c'est géré côté commande
-          discount = 0;
           break;
       }
 
@@ -534,30 +533,34 @@ export class CouponsService extends BaseService {
 
       // Vérifier les conditions
       const now = new Date();
-      const startDate = new Date(coupon.start_date);
-      const endDate = new Date(coupon.end_date);
 
-      if (now < startDate) {
-        return this.createResponse({
-          valid: false,
-          discount: 0,
-          message: 'Coupon pas encore valide'
-        });
+      if (coupon.starts_at) {
+        const startDate = new Date(coupon.starts_at);
+        if (now < startDate) {
+          return this.createResponse({
+            valid: false,
+            discount: 0,
+            message: 'Coupon pas encore valide'
+          });
+        }
       }
 
-      if (now > endDate) {
-        return this.createResponse({
-          valid: false,
-          discount: 0,
-          message: 'Coupon expiré'
-        });
+      if (coupon.expires_at) {
+        const endDate = new Date(coupon.expires_at);
+        if (now > endDate) {
+          return this.createResponse({
+            valid: false,
+            discount: 0,
+            message: 'Coupon expiré'
+          });
+        }
       }
 
-      if (coupon.min_amount && orderAmount < coupon.min_amount) {
+      if (coupon.minimum_amount && orderAmount < coupon.minimum_amount) {
         return this.createResponse({
           valid: false,
           discount: 0,
-          message: `Montant minimum requis: ${coupon.min_amount} FCFA`
+          message: `Montant minimum requis: ${coupon.minimum_amount} FCFA`
         });
       }
 
@@ -574,15 +577,12 @@ export class CouponsService extends BaseService {
       switch (coupon.type) {
         case 'percentage':
           discount = (orderAmount * coupon.value) / 100;
-          if (coupon.max_discount) {
-            discount = Math.min(discount, coupon.max_discount);
+          if (coupon.maximum_amount) {
+            discount = Math.min(discount, coupon.maximum_amount);
           }
           break;
         case 'fixed':
           discount = coupon.value;
-          break;
-        case 'free_shipping':
-          discount = 0; // Géré côté commande
           break;
       }
 

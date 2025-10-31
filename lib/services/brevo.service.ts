@@ -52,7 +52,7 @@ export const BrevoService = {
     name: string;
     orderNumber: string;
     trackingNumber?: string;
-    status: 'confirmed' | 'preparing' | 'shipped' | 'delivered';
+    status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'confirmed' | 'preparing';
     items?: Array<{ name: string; quantity: number }>;
     totalAmount?: number;
     estimatedDelivery?: string;
@@ -60,24 +60,46 @@ export const BrevoService = {
     const templateMapping = {
       'confirmed': TEMPLATES.ORDER_CONFIRMATION,
       'preparing': TEMPLATES.ORDER_PREPARING,
+      'processing': TEMPLATES.ORDER_PREPARING, // Alias pour processing
       'shipped': TEMPLATES.ORDER_SHIPPED,
-      'delivered': TEMPLATES.ORDER_DELIVERED
+      'delivered': TEMPLATES.ORDER_DELIVERED,
+      'pending': TEMPLATES.ORDER_CONFIRMATION, // Utiliser confirmation pour pending
+      'cancelled': null // Pas de template pour annulation, utiliser email simple
+    };
+
+    const statusMessages = {
+      'pending': 'Votre commande est en attente de confirmation',
+      'processing': 'Votre commande est en cours de préparation',
+      'shipped': 'Votre commande a été expédiée',
+      'delivered': 'Votre commande a été livrée',
+      'cancelled': 'Votre commande a été annulée',
+      'confirmed': 'Votre commande a été confirmée',
+      'preparing': 'Votre commande est en cours de préparation'
     };
 
     const sendSmtpEmail = new brevo.SendSmtpEmail();
     sendSmtpEmail.to = [{ email: orderData.email }];
-    sendSmtpEmail.templateId = templateMapping[orderData.status];
-    sendSmtpEmail.params = {
-      name: orderData.name,
-      orderNumber: orderData.orderNumber,
-      trackingNumber: orderData.trackingNumber,
-      trackingLink: orderData.trackingNumber ? 
-        `https://jomionstore.com/order-tracking?tracking=${orderData.trackingNumber}` : 
-        null,
-      items: orderData.items,
-      totalAmount: orderData.totalAmount,
-      estimatedDelivery: orderData.estimatedDelivery,
-      orderLink: `https://jomionstore.com/account/orders/${orderData.orderNumber}`
+
+    const templateId = templateMapping[orderData.status];
+
+    if (templateId) {
+      // Utiliser le template existant
+      sendSmtpEmail.templateId = templateId;
+      sendSmtpEmail.params = {
+        name: orderData.name,
+        orderNumber: orderData.orderNumber,
+        trackingNumber: orderData.trackingNumber,
+        trackingLink: orderData.trackingNumber ?
+          `https://jomionstore.com/order-tracking?tracking=${orderData.trackingNumber}` :
+          null,
+        items: orderData.items,
+        totalAmount: orderData.totalAmount?.toLocaleString('fr-BJ', {
+          style: 'currency',
+          currency: 'XOF',
+          minimumFractionDigits: 0
+        }),
+        estimatedDelivery: orderData.estimatedDelivery,
+        orderLink: `https://jomionstore.com/account/orders/${orderData.orderNumber}`
     };
 
     return apiInstance.sendTransacEmail(sendSmtpEmail);

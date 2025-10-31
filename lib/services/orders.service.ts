@@ -123,8 +123,7 @@ export class OrdersService extends BaseService {
             *,
             product:products (id, name, slug, images),
             vendor:vendors (id, name, slug)
-          ),
-          user:profiles (id, email, first_name, last_name)
+          )
         `, { count: 'exact' });
 
       // Appliquer les filtres
@@ -196,8 +195,7 @@ export class OrdersService extends BaseService {
             *,
             product:products (id, name, slug, images, price),
             vendor:vendors (id, name, slug, logo_url)
-          ),
-          user:profiles (id, email, first_name, last_name, phone)
+          )
         `)
         .eq('id', id)
         .single();
@@ -223,8 +221,7 @@ export class OrdersService extends BaseService {
             *,
             product:products (id, name, slug, images, price),
             vendor:vendors (id, name, slug, logo_url)
-          ),
-          user:profiles (id, email, first_name, last_name, phone)
+          )
         `)
         .eq('order_number', orderNumber)
         .single();
@@ -398,6 +395,36 @@ export class OrdersService extends BaseService {
   }
 
   /**
+   * Logger un changement de statut
+   */
+  static async logStatusChange(
+    orderId: string,
+    oldStatus: string,
+    newStatus: string,
+    changedBy: string,
+    reason?: string
+  ): Promise<ServiceResponse<boolean>> {
+    try {
+      const { error } = await this.getSupabaseClient()
+        .from('order_status_history')
+        .insert([{
+          order_id: orderId,
+          old_status: oldStatus,
+          new_status: newStatus,
+          changed_by: changedBy,
+          reason: reason,
+          changed_at: new Date().toISOString()
+        }]);
+
+      if (error) throw error;
+
+      return this.createResponse(true);
+    } catch (error) {
+      return this.createResponse(false, this.handleError(error));
+    }
+  }
+
+  /**
    * Annuler une commande
    */
   static async cancel(id: string, reason?: string): Promise<ServiceResponse<Order | null>> {
@@ -512,8 +539,7 @@ export class OrdersService extends BaseService {
             *,
             product:products (id, name, slug, images),
             vendor:vendors (id, name, slug)
-          ),
-          user:profiles (id, email, first_name, last_name)
+          )
         `)
         .order('created_at', { ascending: false })
         .limit(limit);

@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { OrdersService, Order } from '@/lib/services/orders.service';
-import { Download, Search, Eye, Edit, RefreshCw } from 'lucide-react';
+import { Download, Search, Eye, Edit, RefreshCw, Package, Truck, CheckCircle, XCircle, Clock, MoreHorizontal } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
 import ResponsiveTable from '@/components/admin/ResponsiveTable';
@@ -16,11 +16,12 @@ import AccessibleButton from '@/components/admin/AccessibleButton';
 import { useToast } from '@/components/admin/Toast';
 import { useConfirmation } from '@/components/admin/ConfirmationDialog';
 import { useDebounce } from '@/lib/hooks/useDebounce';
+import { useOrdersRealtime } from '@/hooks/useOrdersRealtime';
 
 export default function AdminOrdersPage() {
   const router = useRouter();
   const [loading, setLoading] = React.useState(true);
-  const [orders, setOrders] = React.useState<Order[]>([]);
+  const [initialOrders, setInitialOrders] = React.useState<Order[]>([]);
   const [search, setSearch] = React.useState('');
   const [status, setStatus] = React.useState<string>('all');
   const { success, error } = useToast();
@@ -30,6 +31,9 @@ export default function AdminOrdersPage() {
   
   // Debounced search pour optimiser les performances
   const debouncedSearch = useDebounce(search, 300);
+
+  // Utiliser le hook temps réel
+  const orders = useOrdersRealtime(initialOrders);
 
   // Actions pour les commandes
   const handleViewOrder = (orderId: string) => {
@@ -126,16 +130,16 @@ export default function AdminOrdersPage() {
       const res = await OrdersService.getAll(filters, { page, limit: 20 });
 
       if (res.success && res.data) {
-        setOrders(res.data);
+        setInitialOrders(res.data);
         setTotalPages(res.pagination?.totalPages || 1);
       } else {
         error('Erreur de chargement', res.error || 'Impossible de charger les commandes');
-        setOrders([]);
+        setInitialOrders([]);
         setTotalPages(1);
       }
     } catch (err) {
       error('Erreur inattendue', 'Une erreur est survenue lors du chargement des commandes');
-      setOrders([]);
+      setInitialOrders([]);
       setTotalPages(1);
     } finally {
       setLoading(false);

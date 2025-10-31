@@ -95,7 +95,6 @@ export default function AdminCouponsPage() {
       const timestamp = Date.now().toString().slice(-4);
       const duplicateData = {
         code: `${coupon.code}_COPY_${timestamp}`,
-        name: `${coupon.name} (Copie ${timestamp})`,
         description: coupon.description,
         type: coupon.type,
         value: coupon.value,
@@ -272,8 +271,7 @@ export default function AdminCouponsPage() {
   };
 
   const filteredCoupons = coupons.filter(coupon => {
-    const matchesSearch = coupon.code.toLowerCase().includes(search.toLowerCase()) ||
-                         coupon.name.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = coupon.code.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === 'all' || coupon.status === statusFilter;
     const matchesType = typeFilter === 'all' || coupon.type === typeFilter;
     return matchesSearch && matchesStatus && matchesType;
@@ -400,7 +398,7 @@ export default function AdminCouponsPage() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
                             <div className="font-medium text-lg text-gray-900 dark:text-white">{coupon.code}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">{coupon.name}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">Code: {coupon.code}</div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">

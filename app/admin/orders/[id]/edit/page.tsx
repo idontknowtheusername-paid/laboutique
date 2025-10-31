@@ -59,24 +59,30 @@ export default function AdminEditOrderPage() {
     setMessage('');
     
     try {
-      const { error } = await (OrdersService as any).getSupabaseClient()
-        .from('orders')
-        .update({
+      const response = await fetch(`/api/admin/orders/${order.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           status: order.status,
           notes: order.notes,
-          updated_at: new Date().toISOString()
+          notify_customer: true // Notifier le client par email
         })
-        .eq('id', order.id);
+      });
 
-      if (!error) {
-        setMessage('Commande mise à jour avec succès !');
+      const result = await response.json();
+
+      if (result.success) {
+        setMessage(result.message || 'Commande mise à jour avec succès !');
         setTimeout(() => {
           router.push(`/admin/orders/${order.id}`);
         }, 2000);
       } else {
-        setMessage('Erreur lors de la mise à jour');
+        setMessage(result.error || 'Erreur lors de la mise à jour');
       }
     } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
       setMessage('Erreur lors de la mise à jour');
     } finally {
       setSaving(false);

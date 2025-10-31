@@ -23,7 +23,6 @@ export default function AdminEditCouponPage() {
   const [formData, setFormData] = React.useState<UpdateCouponData>({
     id: couponId,
     code: '',
-    name: '',
     description: '',
     type: 'percentage',
     value: 0,
@@ -45,16 +44,15 @@ export default function AdminEditCouponPage() {
           setFormData({
             id: coupon.id,
             code: coupon.code,
-            name: coupon.name,
             description: coupon.description || '',
             type: coupon.type,
             value: coupon.value,
-            min_amount: coupon.min_amount,
-            max_discount: coupon.max_discount,
+            min_amount: coupon.minimum_amount,
+            max_discount: coupon.maximum_amount,
             usage_limit: coupon.usage_limit,
-            status: coupon.status === 'expired' ? 'inactive' : coupon.status,
-            start_date: coupon.start_date.split('T')[0],
-            end_date: coupon.end_date.split('T')[0]
+            status: coupon.status,
+            start_date: coupon.starts_at ? coupon.starts_at.split('T')[0] : '',
+            end_date: coupon.expires_at ? coupon.expires_at.split('T')[0] : ''
           });
         } else {
           error('Coupon non trouvé', 'Le coupon demandé n\'existe pas');

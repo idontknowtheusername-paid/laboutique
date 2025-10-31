@@ -19,7 +19,6 @@ export default function AdminNewCouponPage() {
   const [loading, setLoading] = React.useState(false);
   const [formData, setFormData] = React.useState<CreateCouponData>({
     code: '',
-    name: '',
     description: '',
     type: 'percentage',
     value: 0,
@@ -105,16 +104,7 @@ export default function AdminNewCouponPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="name">Nom du coupon *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="Bienvenue - 10%"
-                  required
-                />
-              </div>
+
             </div>
 
             <div className="space-y-2">
