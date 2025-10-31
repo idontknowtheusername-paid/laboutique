@@ -23,6 +23,7 @@ const nextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "via.placeholder.com" },
       { protocol: "http", hostname: "via.placeholder.com" },
+      { protocol: "https", hostname: "picsum.photos" },
       // AliExpress image domains
       { protocol: "https", hostname: "ae01.alicdn.com" },
       { protocol: "https", hostname: "ae04.alicdn.com" },

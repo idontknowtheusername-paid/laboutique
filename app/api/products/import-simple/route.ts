@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       price: 29.99,
       original_price: 39.99,
       stock_quantity: 10,
-      images: ['https://via.placeholder.com/400x400?text=Product+Image'],
+      images: ['https://picsum.photos/400/400'],
       sku: `IMPORT-${Date.now()}`,
       source_platform: 'alibaba' as const,
       source_url: url
