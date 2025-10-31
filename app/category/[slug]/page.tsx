@@ -69,10 +69,13 @@ export default function DynamicCategoryPage() {
     tags: [],
     inStock: false,
     minRating: 0,
+    categories: [],
+    pieces: [],
+    priceMin: 0,
+    priceMax: 1000000,
   }));
   const [availableBrands, setAvailableBrands] = useState<string[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   const ITEMS_PER_PAGE = 20;
 
@@ -222,6 +225,10 @@ export default function DynamicCategoryPage() {
         tags: searchParams.get("tags")?.split(",").filter(Boolean) || [],
         inStock: searchParams.get("in_stock") === "1",
         minRating: Number(searchParams.get("min_rating")) || 0,
+        categories: [],
+        pieces: [],
+        priceMin: 0,
+        priceMax: 1000000,
       };
     }
     
@@ -251,6 +258,10 @@ export default function DynamicCategoryPage() {
       tags,
       inStock,
       minRating,
+      categories: [],
+      pieces: [],
+      priceMin,
+      priceMax,
     };
   };
 
@@ -292,26 +303,7 @@ export default function DynamicCategoryPage() {
     setCurrentPage(1);
   }, [updateUrlWithFilters]);
 
-  // Update active filters display
-  useEffect(() => {
-    const active: string[] = [];
-    // Seulement afficher le filtre prix si ce n'est pas la plage par défaut
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000) {
-      active.push(
-        `Prix: ${filters.priceRange[0]} - ${filters.priceRange[1]} XOF`
-      );
-    }
-    if (filters.brands.length > 0) {
-      active.push(`Marques: ${filters.brands.join(", ")}`);
-    }
-    if (filters.inStock) {
-      active.push("En stock uniquement");
-    }
-    if (filters.minRating > 0) {
-      active.push(`Note min: ${filters.minRating}★`);
-    }
-    setActiveFilters(active);
-  }, [filters]);
+
 
   // Sync filters state with URL on mount
   useEffect(() => {
