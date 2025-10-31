@@ -39,7 +39,7 @@ export default function FlashSaleToggle({
 }: FlashSaleToggleProps) {
   const [enabled, setEnabled] = useState(isFlashSale);
   const [price, setPrice] = useState(flashPrice || currentPrice * 0.8);
-  const [duration, setDuration] = useState('24');
+  const [duration, setDuration] = useState('720'); // 1 mois par défaut
   const [maxQuantity, setMaxQuantity] = useState('');
   const [loading, setLoading] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
@@ -189,12 +189,11 @@ export default function FlashSaleToggle({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="6">6 heures</SelectItem>
-                        <SelectItem value="12">12 heures</SelectItem>
-                        <SelectItem value="24">24 heures</SelectItem>
                         <SelectItem value="48">48 heures</SelectItem>
-                        <SelectItem value="72">3 jours</SelectItem>
                         <SelectItem value="168">1 semaine</SelectItem>
+                        <SelectItem value="336">2 semaines</SelectItem>
+                        <SelectItem value="720">1 mois</SelectItem>
+                        <SelectItem value="2160">3 mois</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
