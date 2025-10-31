@@ -61,7 +61,9 @@ export default function FlashSaleToggle({
       return;
     }
 
-    // Activer - ouvrir la config
+    // Activer - mettre à jour l'état local immédiatement pour le feedback visuel
+    setEnabled(true);
+    // Puis ouvrir la config
     setShowConfig(true);
   };
 
@@ -114,11 +116,16 @@ export default function FlashSaleToggle({
 
   return (
     <div className="flex items-center gap-2">
-      <Switch
-        checked={enabled}
-        onCheckedChange={handleToggle}
-        disabled={loading}
-      />
+      <div className="flex items-center gap-2">
+        <Switch
+          checked={enabled}
+          onCheckedChange={handleToggle}
+          disabled={loading}
+        />
+        {loading && (
+          <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+        )}
+      </div>
 
       {enabled && (
         <div className="flex items-center gap-2">
@@ -147,7 +154,13 @@ export default function FlashSaleToggle({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setShowConfig(false)}
+                    onClick={() => {
+                      setShowConfig(false);
+                      // Si on ferme sans sauvegarder et que c'était une nouvelle activation, revenir à l'état précédent
+                      if (!isFlashSale) {
+                        setEnabled(false);
+                      }
+                    }}
                     className="h-6 w-6 p-0"
                   >
                     <X className="w-4 h-4" />
@@ -208,7 +221,13 @@ export default function FlashSaleToggle({
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => setShowConfig(false)}
+                      onClick={() => {
+                        setShowConfig(false);
+                        // Si on annule et que c'était une nouvelle activation, revenir à l'état précédent
+                        if (!isFlashSale) {
+                          setEnabled(false);
+                        }
+                      }}
                       size="sm"
                     >
                       Annuler
