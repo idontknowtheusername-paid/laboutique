@@ -63,25 +63,61 @@ export async function POST(request: NextRequest) {
     console.log('[Checkout Lygos] Création commande:', { user_id, total, orderId });
 
     // Créer la commande en attente AVANT le paiement
-    const pendingOrder = await OrdersService.create({
+    console.log('[Checkout] 📝 Création commande avec données:', {
       user_id,
-      items: validatedItems,
-      shipping_address: customer?.shipping_address || {
-        address: customer?.address,
-        city: customer?.city,
-        country: customer?.country || 'Benin',
-        postalCode: customer?.postalCode || '229'
-      },
-      billing_address: customer?.billing_address || customer?.shipping_address || {},
-      payment_method: 'lygos',
-      notes: `En attente - Lygos ref: ${orderId}`,
-    } as any);
+      items_count: validatedItems.length,
+      customer_email: customer?.email
+    });
+
+    let pendingOrder;
+    try {
+      pendingOrder = await OrdersService.create({
+        user_id,
+        items: validatedItems,
+        shipping_address: customer?.shipping_address || {
+          address: customer?.address,
+          city: customer?.city,
+          country: customer?.country || 'Benin',
+          postalCode: customer?.postalCode || '229'
+        },
+        billing_address: customer?.billing_address || customer?.shipping_address || {},
+        payment_method: 'lygos',
+        notes: `En attente - Lygos ref: ${orderId}`,
+      } as any);
+
+      console.log('[Checkout] 📋 Résultat création commande:', {
+        success: pendingOrder?.success,
+        error: pendingOrder?.error,
+        data_id: (pendingOrder?.data as any)?.id
+      });
+    } catch (createError: any) {
+      console.error('[Checkout] 💥 Erreur création commande:', createError);
+      return NextResponse.json({
+        error: `Erreur création commande: ${createError.message}`,
+        debug: {
+          error_message: createError.message,
+          error_code: createError.code,
+          error_details: createError.details,
+          error_hint: createError.hint,
+          stack: createError.stack?.split('\n').slice(0, 5) // Limiter la stack trace
+        }
+      }, { status: 500 });
+    }
 
     const orderDbId = (pendingOrder?.data as any)?.id;
 
     if (!orderDbId) {
-      console.error('❌ Échec création commande');
-      return NextResponse.json({ error: 'Impossible de créer la commande' }, { status: 500 });
+      console.error('[Checkout] ❌ Échec création commande - Pas d\'ID retourné');
+      console.error('[Checkout] 📋 Réponse complète:', pendingOrder);
+      return NextResponse.json({
+        error: `Impossible de créer la commande: ${pendingOrder?.error || 'Raison inconnue'}`,
+        debug: {
+          pending_order_response: pendingOrder,
+          order_db_id: orderDbId,
+          validation_success: !!validatedItems,
+          items_count: validatedItems?.length
+        }
+      }, { status: 500 });
     }
 
     console.log('[Checkout Lygos] Commande créée:', orderDbId);

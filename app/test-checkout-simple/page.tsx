@@ -65,7 +65,8 @@ export default function TestCheckoutSimple() {
       setResult({
         status: res.status,
         ok: res.ok,
-        data: json
+        data: json,
+        debug_info: json.debug || null
       });
 
     } catch (error) {

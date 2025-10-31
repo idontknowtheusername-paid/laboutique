@@ -285,8 +285,11 @@ export class OrdersService extends BaseService {
    */
   static async create(orderData: CreateOrderData): Promise<ServiceResponse<Order | null>> {
     try {
+      console.log('[OrdersService] 🚀 Début création commande...');
+
       // Générer un numéro de commande unique
       const orderNumber = await this.generateOrderNumber();
+      console.log('[OrdersService] 📋 Numéro généré:', orderNumber);
 
       // Calculer les totaux
       const subtotal = orderData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -295,30 +298,49 @@ export class OrdersService extends BaseService {
       const discountAmount = 0; // À implémenter avec les coupons
       const totalAmount = subtotal + taxAmount + shippingAmount - discountAmount;
 
+      console.log('[OrdersService] 💰 Totaux calculés:', { subtotal, taxAmount, shippingAmount, totalAmount });
+
       // Créer la commande avec le client admin pour bypasser RLS
+      console.log('[OrdersService] 🔑 Import supabaseAdmin...');
       const { supabaseAdmin } = await import('@/lib/supabase-server');
+
+      if (!supabaseAdmin) {
+        throw new Error('supabaseAdmin non disponible');
+      }
+
+      console.log('[OrdersService] ✅ supabaseAdmin importé');
+
+      const orderPayload = {
+        order_number: orderNumber,
+        user_id: orderData.user_id,
+        status: 'pending',
+        payment_status: 'pending',
+        payment_method: orderData.payment_method,
+        subtotal,
+        tax_amount: taxAmount,
+        shipping_amount: shippingAmount,
+        discount_amount: discountAmount,
+        total_amount: totalAmount,
+        currency: 'XOF',
+        shipping_address: orderData.shipping_address,
+        billing_address: orderData.billing_address || orderData.shipping_address,
+        notes: orderData.notes
+      };
+
+      console.log('[OrdersService] 📤 Insertion commande:', orderPayload);
+
       const { data: order, error: orderError } = await (supabaseAdmin as any)
         .from('orders')
-        .insert([{
-          order_number: orderNumber,
-          user_id: orderData.user_id,
-          status: 'pending',
-          payment_status: 'pending',
-          payment_method: orderData.payment_method,
-          subtotal,
-          tax_amount: taxAmount,
-          shipping_amount: shippingAmount,
-          discount_amount: discountAmount,
-          total_amount: totalAmount,
-          currency: 'XOF',
-          shipping_address: orderData.shipping_address,
-          billing_address: orderData.billing_address || orderData.shipping_address,
-          notes: orderData.notes
-        }])
+        .insert([orderPayload])
         .select()
         .single();
 
-      if (orderError) throw orderError;
+      console.log('[OrdersService] 📥 Résultat insertion:', { order: !!order, error: orderError });
+
+      if (orderError) {
+        console.error('[OrdersService] ❌ Erreur insertion commande:', orderError);
+        throw orderError;
+      }
 
       // Créer les items de commande
       const orderItems = orderData.items.map(item => ({
@@ -330,11 +352,18 @@ export class OrdersService extends BaseService {
         total: item.price * item.quantity
       }));
 
+      console.log('[OrdersService] 📦 Insertion order_items:', orderItems.length, 'items');
+
       const { error: itemsError } = await (supabaseAdmin as any)
         .from('order_items')
         .insert(orderItems);
 
-      if (itemsError) throw itemsError;
+      console.log('[OrdersService] 📥 Résultat insertion items:', { error: itemsError });
+
+      if (itemsError) {
+        console.error('[OrdersService] ❌ Erreur insertion items:', itemsError);
+        throw itemsError;
+      }
 
       // Retourner la commande créée directement (sans jointure complexe)
       // Ajouter les champs manquants pour compatibilité
@@ -343,9 +372,12 @@ export class OrdersService extends BaseService {
         order_items: [],
         user: null
       };
+
+      console.log('[OrdersService] ✅ Commande créée avec succès:', orderWithDefaults.id);
       return this.createResponse(orderWithDefaults);
-    } catch (error) {
-      return this.createResponse(null, this.handleError(error));
+    } catch (error: any) {
+      console.error('[OrdersService] 💥 Erreur finale dans create:', error);
+      return this.createResponse(null, `Erreur OrdersService: ${error.message} | Code: ${error.code} | Details: ${JSON.stringify(error.details)} | Hint: ${error.hint}`);
     }
   }
 

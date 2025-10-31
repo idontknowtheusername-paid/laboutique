@@ -27,7 +27,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('checkout');
   const router = useRouter();
   const { user } = useAuth();
-  
+
   // ✅ UTILISER LE VRAI PANIER
   const { cartItems, cartSummary, loading: cartLoading } = useCart();
 
@@ -108,18 +108,18 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      
+
       console.log('[Checkout Debug] 📥 Réponse reçue, status:', res.status);
 
       const json = await res.json();
-      
+
       console.log('[Checkout Debug] 📋 Réponse serveur complète:', json);
 
       if (!res.ok) {
         console.error('[Checkout Debug] Erreur serveur:', json);
         throw new Error(json.error || 'Échec de l\'initialisation du paiement');
       }
-      
+
       if (json.payment_url) {
         console.log('[Checkout Debug] 🔗 URL de paiement reçue:', json.payment_url);
         console.log('[Checkout Debug] 🚀 Redirection vers Lygos...');
@@ -128,7 +128,7 @@ export default function CheckoutPage() {
         window.location.href = json.payment_url;
         return;
       }
-      
+
       if (json.gateway_id) {
         console.log('[Checkout Debug] 🆔 Gateway ID reçu:', json.gateway_id);
         console.log('[Checkout Debug] 🚀 Redirection vers page de checkout...');
@@ -153,7 +153,7 @@ export default function CheckoutPage() {
     }
 
     console.log('[Checkout Debug] 🚀 Début du processus de commande...');
-    
+
     // Validation du formulaire
     if (!formData.firstName || !formData.lastName || !formData.address || !formData.city || !formData.phone || !formData.email) {
       console.error('[Checkout Debug] ❌ Validation formulaire échouée');
@@ -176,11 +176,16 @@ export default function CheckoutPage() {
       console.log('[Checkout Debug] 👤 Données formulaire:', formData);
 
       await placeOrderCheckout();
-      
+
       console.log('[Checkout Debug] ✅ Commande réussie !');
 
     } catch (err) {
       console.error('[Checkout Debug] ❌ Erreur checkout:', err);
+      console.error('[Checkout Debug] 💥 Stack trace:', (err as Error)?.stack);
+
+      // Afficher l'erreur à l'utilisateur aussi
+      alert(`ERREUR DEBUG: ${(err as Error)?.message}`);
+
       setErrorMsg((err as Error)?.message || 'Le paiement a échoué. Réessayez.');
     } finally {
       setLoading(false);
@@ -241,50 +246,50 @@ export default function CheckoutPage() {
                 </CardHeader>
                 <CardContent>
                   <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input 
-                      placeholder="Prénom *" 
+                    <Input
+                      placeholder="Prénom *"
                       value={formData.firstName}
-                      onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                      required 
+                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                      required
                     />
-                    <Input 
-                      placeholder="Nom *" 
+                    <Input
+                      placeholder="Nom *"
                       value={formData.lastName}
-                      onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                      required 
+                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                      required
                     />
-                    <Input 
-                      className="md:col-span-2" 
-                      placeholder="Adresse *" 
+                    <Input
+                      className="md:col-span-2"
+                      placeholder="Adresse *"
                       value={formData.address}
-                      onChange={(e) => setFormData({...formData, address: e.target.value})}
-                      required 
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      required
                     />
-                    <Input 
-                      placeholder="Ville *" 
+                    <Input
+                      placeholder="Ville *"
                       value={formData.city}
-                      onChange={(e) => setFormData({...formData, city: e.target.value})}
-                      required 
+                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                      required
                     />
-                    <Input 
-                      placeholder="Code postal" 
+                    <Input
+                      placeholder="Code postal"
                       value={formData.postalCode}
-                      onChange={(e) => setFormData({...formData, postalCode: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
                     />
-                    <Input 
-                      className="md:col-span-2" 
-                      placeholder="Téléphone * (ex: 22967307747)" 
+                    <Input
+                      className="md:col-span-2"
+                      placeholder="Téléphone * (ex: 22967307747)"
                       value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      required 
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      required
                     />
-                    <Input 
-                      className="md:col-span-2" 
-                      type="email" 
-                      placeholder="Email *" 
+                    <Input
+                      className="md:col-span-2"
+                      type="email"
+                      placeholder="Email *"
                       value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      required 
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      required
                     />
                   </form>
                 </CardContent>
@@ -299,12 +304,11 @@ export default function CheckoutPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <RadioGroup value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}>
-                          {/* Option 1: Checkout */}
-                    <div className={`relative flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                      paymentMethod === 'checkout' 
-                        ? 'border-jomionstore-primary bg-orange-50' 
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`} onClick={() => setPaymentMethod('checkout')}>
+                    {/* Option 1: Checkout */}
+                    <div className={`relative flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${paymentMethod === 'checkout'
+                      ? 'border-jomionstore-primary bg-orange-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                      }`} onClick={() => setPaymentMethod('checkout')}>
                       <RadioGroupItem value="checkout" id="checkout" className="mt-1" />
                       <div className="flex-1">
                         <Label htmlFor="checkout" className="cursor-pointer">
@@ -314,7 +318,7 @@ export default function CheckoutPage() {
                             <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Recommandé</span>
                           </div>
                           <p className="text-sm text-gray-600 mt-1">
-                                  Redirection vers page sécurisée Lygos
+                            Redirection vers page sécurisée Lygos
                           </p>
                           <div className="flex flex-wrap gap-2 mt-2">
                             <span className="text-xs bg-orange-50 text-orange-700 px-2 py-1 rounded border border-orange-200">📱 Mobile Money</span>
@@ -334,8 +338,8 @@ export default function CheckoutPage() {
                   <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-start gap-2">
                       <ShieldCheck className="w-4 h-4 text-jomionstore-secondary mt-0.5 flex-shrink-0" />
-                            <div className="text-sm text-gray-700">
-                              <p>Vous serez redirigé vers la plateforme Lygos pour choisir votre mode de paiement (Mobile Money ou Carte bancaire) et finaliser la transaction en toute sécurité.</p>
+                      <div className="text-sm text-gray-700">
+                        <p>Vous serez redirigé vers la plateforme Lygos pour choisir votre mode de paiement (Mobile Money ou Carte bancaire) et finaliser la transaction en toute sécurité.</p>
                       </div>
                     </div>
                   </div>
@@ -348,24 +352,24 @@ export default function CheckoutPage() {
                 </CardContent>
               </Card>
 
-              <Button 
-                      type="button"
-                disabled={loading} 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        placeOrder(e);
-                      }} 
+              <Button
+                type="button"
+                disabled={loading}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  placeOrder(e);
+                }}
                 className="w-full bg-jomionstore-primary hover:bg-orange-700 h-12 text-base font-semibold"
               >
                 {loading ? (
                   <>
                     <span className="animate-spin mr-2">⏳</span>
-                          Redirection vers Lygos...
+                    Redirection vers Lygos...
                   </>
                 ) : (
                   <>
-                            🔒 Payer avec Lygos
+                    🔒 Payer avec Lygos
                     <span className="ml-2">({formatPrice(total)})</span>
                   </>
                 )}
