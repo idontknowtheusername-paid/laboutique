@@ -373,18 +373,7 @@ export default function DynamicCategoryPage() {
     }).format(price);
   };
 
-  // Remove filter
-  const removeFilter = (filterToRemove: string) => {
-    if (filterToRemove.startsWith("Prix:")) {
-      handleFilterChange({ priceRange: [0, 1000000] });
-    } else if (filterToRemove.startsWith("Marques:")) {
-      handleFilterChange({ brands: [] });
-    } else if (filterToRemove === "En stock uniquement") {
-      handleFilterChange({ inStock: false });
-    } else if (filterToRemove.startsWith("Note min:")) {
-      handleFilterChange({ minRating: 0 });
-    }
-  };
+
 
   // Loading state
   if (loading && !category) {
