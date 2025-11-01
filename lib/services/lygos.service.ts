@@ -145,14 +145,22 @@ export class LygosService extends BaseService {
       let finalPaymentUrl = data.link;
 
       if (!finalPaymentUrl) {
-        console.error('[Lygos] ❌ Pas de link dans la réponse:', data);
-        throw new Error('Lygos n\'a pas retourné de lien de paiement');
+        // Si pas de link, essayer d'autres champs possibles
+        finalPaymentUrl = data.payment_url || data.checkout_url || data.url;
+
+        if (!finalPaymentUrl) {
+          // En dernier recours, utiliser l'URL standard Lygos
+          finalPaymentUrl = `https://pay.lygosapp.com/gateway/${data.id}`;
+          console.log('[Lygos] ⚠️ Pas de link, utilisation URL standard:', finalPaymentUrl);
+        }
       }
 
       // Vérifier que l'URL est complète
       if (!finalPaymentUrl.startsWith('http')) {
         finalPaymentUrl = `https://${finalPaymentUrl}`;
       }
+
+      console.log('[Lygos] 🔗 URL finale de paiement:', finalPaymentUrl);
 
       const result = {
         gateway_id: data.id,
