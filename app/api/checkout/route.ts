@@ -23,6 +23,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'user_id et items sont requis' }, { status: 400 });
     }
 
+    // Vérifier que l'user_id est un UUID valide
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(user_id)) {
+      return NextResponse.json({ error: 'user_id invalide (doit être un UUID)' }, { status: 400 });
+    }
+
     if (!customer?.firstName || !customer?.lastName || !customer?.email || !customer?.phone) {
       return NextResponse.json({ 
         error: 'Informations client incomplètes (prénom, nom, email, téléphone requis)' 
