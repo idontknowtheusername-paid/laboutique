@@ -8,9 +8,12 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ gateway_id: string }> }
 ) {
+  // ✅ Déclarer gatewayId avant le try pour qu'il soit accessible dans le catch
+  let gatewayId: string;
+
   try {
     const resolvedParams = await params;
-    const gatewayId = resolvedParams.gateway_id;
+    gatewayId = resolvedParams.gateway_id;
 
     if (!gatewayId) {
       return NextResponse.json({ 
@@ -37,7 +40,7 @@ export async function GET(
     return NextResponse.json({
       success: false,
       error: error.message || 'Erreur lors de la récupération des détails',
-      gateway_id: gatewayId
+      gateway_id: gatewayId || 'unknown'
     }, { status: 500 });
   }
 }
