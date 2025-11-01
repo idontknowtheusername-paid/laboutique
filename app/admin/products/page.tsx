@@ -52,7 +52,7 @@ export default function AdminProductsPage() {
   const [totalCount, setTotalCount] = React.useState<number>(0);
   const [page, setPage] = React.useState(1);
   const { success, error, info } = useToast();
-  
+
   // Debounced search pour optimiser les performances
   const debouncedSearch = useDebounce(search, 300);
   const debouncedPriceMin = useDebounce(priceMin, 500);
@@ -95,9 +95,9 @@ export default function AdminProductsPage() {
         "Statut",
         "Date de création"
       ];
-      
+
       const csvRows = [headers.join(",")];
-      
+
       items.forEach((product: any) => {
         csvRows.push([
           product.name || '',
@@ -110,7 +110,7 @@ export default function AdminProductsPage() {
           product.created_at ? new Date(product.created_at).toLocaleDateString('fr-FR') : 'N/A'
         ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(","));
       });
-      
+
       const csvContent = csvRows.join("\n");
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
@@ -119,7 +119,7 @@ export default function AdminProductsPage() {
       a.download = `produits_${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
       URL.revokeObjectURL(url);
-      
+
       success('Export réussi', 'Le fichier CSV a été téléchargé avec succès');
     } catch (err) {
       error('Erreur d\'export', 'Impossible d\'exporter les produits');
@@ -140,12 +140,12 @@ export default function AdminProductsPage() {
         sort_by: sortBy,
         sort_order: sortOrder as 'asc' | 'desc'
       };
-      
+
       const res = await ProductsService.getAll(
         filters,
         { page, limit: 20 }
       );
-      
+
       if (res.success && res.data) {
         setItems(res.data as any as AdminProduct[]);
         setTotalCount(res.pagination?.total || 0);
@@ -273,7 +273,7 @@ export default function AdminProductsPage() {
                 ))}
               </SelectContent>
             </Select>
-            
+
             <Select
               value={platform}
               onValueChange={(v: string) => setPlatform(v)}
@@ -288,7 +288,7 @@ export default function AdminProductsPage() {
                 <SelectItem value="manual">Manuel</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Select
               value={status}
               onValueChange={(v: string) => setStatus(v)}
@@ -304,7 +304,7 @@ export default function AdminProductsPage() {
                 <SelectItem value="disabled">Désactivé</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <div className="flex items-center gap-2">
               <Input
                 type="number"
@@ -322,7 +322,7 @@ export default function AdminProductsPage() {
                 className="w-24"
               />
             </div>
-            
+
             <Select
               value={sortBy}
               onValueChange={(v: string) => setSortBy(v)}
@@ -337,7 +337,7 @@ export default function AdminProductsPage() {
                 <SelectItem value="updated_at">Dernière modification</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Select
               value={sortOrder}
               onValueChange={(v: string) => setSortOrder(v)}
@@ -426,7 +426,7 @@ export default function AdminProductsPage() {
                   </tr>
                 ) : items.length === 0 ? (
                   <tr>
-                      <td colSpan={7} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center gap-3">
                         <div className="text-6xl">📦</div>
                         <p className="text-gray-500 font-medium">Aucun produit trouvé</p>
@@ -438,7 +438,7 @@ export default function AdminProductsPage() {
                         <div className="flex gap-2 mt-4">
                           <Button onClick={() => router.push('/admin/products/import')}>
                             Importer un produit
-                            </Button>
+                          </Button>
                         </div>
                       </div>
                     </td>
@@ -581,7 +581,7 @@ export default function AdminProductsPage() {
               </Card>
             ))}
           </div>
-          
+
           {/* Pagination */}
           <div className="flex justify-center items-center gap-4 py-4 border-t">
             <Button
@@ -592,7 +592,7 @@ export default function AdminProductsPage() {
             >
               Précédent
             </Button>
-            
+
             <div className="flex flex-col items-center gap-1">
               <span className="text-sm font-medium text-gray-700">
                 Page {page} sur {Math.ceil(totalCount / 20) || 1}
@@ -601,7 +601,7 @@ export default function AdminProductsPage() {
                 Affichage de {((page - 1) * 20) + 1}-{Math.min(page * 20, totalCount)} sur {totalCount} produits
               </span>
             </div>
-            
+
             <Button
               variant="outline"
               size="sm"
