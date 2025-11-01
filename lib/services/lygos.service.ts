@@ -224,11 +224,11 @@ export class LygosService extends BaseService {
         throw new Error('Lygos n\'a pas retourné de lien de paiement');
       }
 
-      // Construire l'URL de paiement complète
-      let finalPaymentUrl = data.link;
-      if (!finalPaymentUrl.startsWith('http')) {
-        finalPaymentUrl = `https://${finalPaymentUrl}`;
-      }
+      // ✅ CORRECTION : Utiliser l'URL telle que fournie par Lygos
+      // Lygos retourne des URLs vers NOTRE site, pas vers checkout.lygosapp.com
+      const finalPaymentUrl = data.link.startsWith('http')
+        ? data.link
+        : `https://${data.link}`;
 
       console.log('[Lygos] 🔗 URL de paiement générée:', finalPaymentUrl);
 

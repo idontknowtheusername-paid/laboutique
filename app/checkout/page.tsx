@@ -114,23 +114,22 @@ export default function CheckoutPage() {
         throw new Error(json.error || 'Échec de l\'initialisation du paiement');
       }
 
-      if (json.payment_url) {
-        console.log('[Checkout Debug] 🔗 URL de paiement reçue:', json.payment_url);
-        console.log('[Checkout Debug] 🚀 Redirection vers Lygos...');
-
-        // Forcer la redirection
-        window.location.href = json.payment_url;
-        return;
-      }
-
+      // ✅ CORRECTION : Logique simplifiée - toujours rediriger vers notre page de checkout
       if (json.gateway_id) {
         console.log('[Checkout Debug] 🆔 Gateway ID reçu:', json.gateway_id);
-        console.log('[Checkout Debug] 🚀 Redirection vers page de checkout...');
+        console.log('[Checkout Debug] 🚀 Redirection vers page de paiement...');
 
-        // Redirection vers notre page de checkout
-        window.location.href = `/checkout/${json.gateway_id}${json.order_id ? `?order_id=${json.order_id}` : ''}`;
+        // Redirection vers notre page de checkout qui intègre le widget Lygos
+        const checkoutUrl = `/checkout/${json.gateway_id}${json.order_id ? `?order_id=${json.order_id}` : ''}`;
+        console.log('[Checkout Debug] 🔗 URL de redirection:', checkoutUrl);
+
+        window.location.href = checkoutUrl;
         return;
       }
+
+      // Si pas de gateway_id, c'est une erreur
+      console.error('[Checkout Debug] ❌ Pas de gateway_id dans la réponse:', json);
+      throw new Error('Réponse serveur invalide - gateway_id manquant');
 
       setPlaced(true);
     } catch (error: any) {

@@ -171,12 +171,18 @@ export async function POST(request: NextRequest) {
       notes: `Lygos gateway: ${gateway.gateway_id} - Order: ${orderId}` 
     } as any);
 
+    // ✅ CORRECTION : Retourner seulement les données nécessaires
     return NextResponse.json({ 
       success: true, 
-      payment_url: gateway.payment_url,
       gateway_id: gateway.gateway_id,
       order_id: orderDbId,
-      reference: orderId
+      reference: orderId,
+      // Informations additionnelles pour debug
+      debug: {
+        lygos_payment_url: gateway.payment_url,
+        total_amount: total,
+        currency: 'XOF'
+      }
     });
 
   } catch (error: any) {

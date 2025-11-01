@@ -71,37 +71,52 @@ export default function LygosCheckoutPage() {
 
     const initializeLygosWidget = async () => {
         try {
+            console.log('[Lygos Widget] 🚀 Initialisation du widget pour gateway:', gatewayId);
 
+            // ✅ CORRECTION : Intégrer le widget Lygos au lieu de rediriger
+            // Lygos fournit un widget JavaScript à intégrer dans notre page
 
-            // Essayer de récupérer l'URL réelle depuis notre API
-            try {
-                const response = await fetch('/api/payment/verify', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
+            // Charger le script Lygos dynamiquement
+            const script = document.createElement('script');
+            script.src = 'https://api.lygosapp.com/widget/lygos-widget.js';
+            script.async = true;
+
+            script.onload = () => {
+                console.log('[Lygos Widget] ✅ Script chargé, initialisation du widget...');
+
+                // Initialiser le widget Lygos
+                if ((window as any).LygosWidget) {
+                    (window as any).LygosWidget.init({
                         gateway_id: gatewayId,
-                        order_id: orderId
-                    })
-                });
-
-                const result = await response.json();
-
-
-                if (result.success && result.data?.link) {
-                    // Utiliser l'URL fournie par Lygos
-                    window.location.href = result.data.link;
-                    return;
+                        container: 'lygos-payment-container',
+                        onSuccess: (data: any) => {
+                            console.log('[Lygos Widget] ✅ Paiement réussi:', data);
+                            setPaymentStatus('success');
+                            setPaymentData(data);
+                        },
+                        onError: (error: any) => {
+                            console.error('[Lygos Widget] ❌ Erreur paiement:', error);
+                            setPaymentStatus('failed');
+                            setError(error.message || 'Erreur lors du paiement');
+                        },
+                        onCancel: () => {
+                            console.log('[Lygos Widget] ⚠️ Paiement annulé');
+                            setError('Paiement annulé par l\'utilisateur');
+                        }
+                    });
+                    setLoading(false);
+                } else {
+                    throw new Error('Widget Lygos non disponible');
                 }
-            } catch (apiError) {
-                console.warn('[Lygos Widget] API indisponible, redirection directe');
-            }
+            };
 
-            // Fallback : construire l'URL manuellement
-            // Selon la doc Lygos, l'URL devrait être dans le champ "link"
-            const lygosPaymentUrl = `https://checkout.lygosapp.com/pay/${gatewayId}`;
+            script.onerror = () => {
+                console.warn('[Lygos Widget] ⚠️ Script non disponible, fallback vers URL directe');
+                // Fallback : rediriger vers l'URL Lygos si le widget ne charge pas
+                window.location.href = `https://api.lygosapp.com/checkout/${gatewayId}`;
+            };
 
-
-            window.location.href = lygosPaymentUrl;
+            document.head.appendChild(script);
 
         } catch (err) {
             console.error('Erreur initialisation widget Lygos:', err);
@@ -129,7 +144,7 @@ export default function LygosCheckoutPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <Card className="w-full max-w-md">
+                <Card className="w-full max-w-lg">
                     <CardHeader className="text-center">
                         <CardTitle className="flex items-center justify-center gap-2">
                             <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
@@ -138,7 +153,7 @@ export default function LygosCheckoutPage() {
                     </CardHeader>
                     <CardContent className="text-center space-y-4">
                         <p className="text-gray-600">
-                            Redirection vers la plateforme de paiement Lygos...
+                            Chargement du système de paiement Lygos...
                         </p>
                         <div className="flex justify-center gap-4">
                             <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -150,6 +165,14 @@ export default function LygosCheckoutPage() {
                                 Mobile Money
                             </div>
                         </div>
+
+                        {/* ✅ CONTENEUR POUR LE WIDGET LYGOS */}
+                        <div id="lygos-payment-container" className="mt-6 min-h-[300px] border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center">
+                            <div className="text-gray-400 text-sm">
+                                Chargement du widget de paiement...
+                            </div>
+                        </div>
+
                         <p className="text-xs text-gray-400">
                             Passerelle: {gatewayId}
                         </p>
