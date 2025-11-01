@@ -240,6 +240,9 @@ export class LygosService extends BaseService {
         link: data.link
       });
 
+      // 🔍 LOG CRITIQUE pour diagnostiquer le problème
+      console.log('[Lygos] 🔍 VALEUR EXACTE de data.link:', data.link);
+
       // Valider la présence des champs essentiels
       if (!data.id) {
         console.error('[Lygos] ❌ ID manquant dans la réponse:', data);

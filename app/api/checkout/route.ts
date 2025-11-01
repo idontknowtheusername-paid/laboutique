@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
           error_code: createError.code,
           error_details: createError.details,
           error_hint: createError.hint,
-          stack: createError.stack?.split('\n').slice(0, 5) // Limiter la stack trace
+          stack: createError.stack?.split('\n').slice(0, 5)
         }
       }, { status: 500 });
     }
@@ -149,7 +149,19 @@ export async function POST(request: NextRequest) {
         description: `Commande JomionStore ${orderId}`
       });
 
-      console.log('[Checkout Lygos] Passerelle créée:', gateway.gateway_id);
+      console.log('[Checkout Lygos] ✅ Passerelle créée:', {
+        gateway_id: gateway.gateway_id,
+        payment_url: gateway.payment_url
+      });
+
+      // 🔍 LOG CRITIQUE : Vérifier l'URL retournée
+      console.log('[Checkout Lygos] 🔗 URL DE PAIEMENT:', gateway.payment_url);
+      
+      if (!gateway.payment_url) {
+        console.error('[Checkout Lygos] ❌ ALERTE: payment_url est undefined/null');
+        throw new Error('Lygos n\'a pas retourné d\'URL de paiement valide');
+      }
+
     } catch (e: any) {
       console.error('❌ Erreur Lygos:', e);
       
@@ -171,17 +183,28 @@ export async function POST(request: NextRequest) {
       notes: `Lygos gateway: ${gateway.gateway_id} - Order: ${orderId}` 
     } as any);
 
-    // ✅ CORRECTION : Retourner seulement les données nécessaires
+    // ✅ CORRECTION CRITIQUE : Retourner payment_url au niveau principal
     return NextResponse.json({ 
-      success: true, 
+      success: true,
+      
+      // ✅ DONNÉES PRINCIPALES (pour le frontend)
+      payment_url: gateway.payment_url,  // ← AJOUTÉ ICI (niveau principal)
       gateway_id: gateway.gateway_id,
       order_id: orderDbId,
       reference: orderId,
-      // Informations additionnelles pour debug
+      
+      // ✅ Métadonnées additionnelles
+      amount: total,
+      currency: 'XOF',
+      
+      // 📊 Debug info (optionnel, pour les logs)
       debug: {
+        lygos_gateway_id: gateway.gateway_id,
         lygos_payment_url: gateway.payment_url,
+        order_reference: orderId,
         total_amount: total,
-        currency: 'XOF'
+        items_count: validatedItems.length,
+        customer_email: customer.email
       }
     });
 

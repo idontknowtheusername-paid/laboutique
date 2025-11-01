@@ -111,28 +111,41 @@ export default function CheckoutPage() {
       const json = await res.json();
 
       console.log('[Checkout Debug] 📋 Réponse serveur complète:', json);
+      console.log('[Checkout Debug] 🔍 Analyse de la réponse:', {
+        success: json.success,
+        has_payment_url: !!json.payment_url,
+        payment_url_value: json.payment_url,
+        has_gateway_id: !!json.gateway_id,
+        gateway_id_value: json.gateway_id
+      });
 
       if (!res.ok) {
         console.error('[Checkout Debug] Erreur serveur:', json);
         throw new Error(json.error || 'Échec de l\'initialisation du paiement');
       }
 
-      // ✅ CORRECTION : Logique simplifiée - toujours rediriger vers notre page de checkout
-      if (json.gateway_id) {
-        console.log('[Checkout Debug] 🆔 Gateway ID reçu:', json.gateway_id);
-        console.log('[Checkout Debug] 🚀 Redirection vers page de paiement...');
+      // ✅ REDIRECTION IMMÉDIATE vers Lygos - Pas de page intermédiaire
+      if (json.success && json.payment_url) {
+        console.log('[Checkout Debug] 🔗 URL Lygos reçue:', json.payment_url);
+        console.log('[Checkout Debug] 🚀 Redirection IMMÉDIATE vers Lygos...');
 
-        // Redirection vers notre page de checkout qui intègre le widget Lygos
-        const checkoutUrl = `/checkout/${json.gateway_id}${json.order_id ? `?order_id=${json.order_id}` : ''}`;
-        console.log('[Checkout Debug] 🔗 URL de redirection:', checkoutUrl);
-
-        window.location.href = checkoutUrl;
+        // Redirection directe vers Lygos
+        window.location.href = json.payment_url;
         return;
       }
 
-      // Si pas de gateway_id, c'est une erreur
-      console.error('[Checkout Debug] ❌ Pas de gateway_id dans la réponse:', json);
-      throw new Error('Réponse serveur invalide - gateway_id manquant');
+      // Fallback si pas d'URL dans debug
+      if (json.gateway_id) {
+        console.warn('[Checkout Debug] ⚠️ Pas d\'URL Lygos, construction manuelle...');
+        const fallbackUrl = `https://pay.lygosapp.com/${json.gateway_id}`;
+        console.log('[Checkout Debug] 🔗 URL fallback:', fallbackUrl);
+        window.location.href = fallbackUrl;
+        return;
+      }
+
+      // Si rien ne fonctionne
+      console.error('[Checkout Debug] ❌ Aucune URL de paiement disponible:', json);
+      throw new Error('Impossible de récupérer l\'URL de paiement Lygos');
 
       setPlaced(true);
     } catch (error: any) {
