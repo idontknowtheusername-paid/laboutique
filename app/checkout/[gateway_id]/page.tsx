@@ -14,6 +14,7 @@ export default function LygosCheckoutPage() {
     const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success' | 'failed'>('pending');
     const [error, setError] = useState<string | null>(null);
     const [paymentData, setPaymentData] = useState<any>(null);
+    const [hasRedirected, setHasRedirected] = useState(false); // ✅ Protection contre redirections multiples
 
     const gatewayId = params.gateway_id as string;
     const orderId = searchParams.get('order_id');
@@ -25,9 +26,45 @@ export default function LygosCheckoutPage() {
             return;
         }
 
-        // ✅ SOLUTION FINALE : Afficher notre propre interface de paiement
-        loadPaymentInterface();
-    }, [gatewayId, orderId]);
+        // ✅ CORRECTION : Fonction inline pour éviter les dépendances
+        const initializePayment = async () => {
+            try {
+                console.log('[Lygos Payment] 🚀 Chargement interface pour gateway:', gatewayId);
+
+                // Récupérer les détails de la gateway
+                const response = await fetch('/api/lygos/gateway-details', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ gateway_id: gatewayId })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    setPaymentData(result);
+                    console.log('[Lygos Payment] 📋 Données chargées:', result);
+
+                    // Si on a une URL de paiement, rediriger UNE SEULE FOIS
+                    if (result.payment_url && !result.payment_url.includes('api.lygosapp.com/checkout') && !hasRedirected) {
+                        console.log('[Lygos Payment] 🔗 Redirection vers:', result.payment_url);
+                        setHasRedirected(true); // ✅ Marquer comme redirigé
+                        window.location.href = result.payment_url;
+                        return;
+                    }
+                }
+
+                // Afficher l'interface de paiement (pas de redirection)
+                setLoading(false);
+
+            } catch (error) {
+                console.error('[Lygos Payment] ❌ Erreur chargement:', error);
+                setError('Impossible de charger les informations de paiement');
+                setLoading(false);
+            }
+        };
+
+        initializePayment();
+    }, [gatewayId]); // ✅ Supprimer orderId des dépendances pour éviter les re-renders
 
     // ✅ SOLUTION FINALE : Charger notre interface de paiement
     const loadPaymentInterface = async () => {
