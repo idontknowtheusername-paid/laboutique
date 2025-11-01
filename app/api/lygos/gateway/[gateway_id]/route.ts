@@ -6,10 +6,11 @@ import { LygosService } from '@/lib/services/lygos.service';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { gateway_id: string } }
+  { params }: { params: Promise<{ gateway_id: string }> }
 ) {
   try {
-    const gatewayId = params.gateway_id;
+    const resolvedParams = await params;
+    const gatewayId = resolvedParams.gateway_id;
 
     if (!gatewayId) {
       return NextResponse.json({ 
@@ -36,7 +37,7 @@ export async function GET(
     return NextResponse.json({
       success: false,
       error: error.message || 'Erreur lors de la récupération des détails',
-      gateway_id: params.gateway_id
+      gateway_id: gatewayId
     }, { status: 500 });
   }
 }
