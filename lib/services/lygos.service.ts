@@ -96,10 +96,9 @@ export class LygosService extends BaseService {
       // Payload selon la VRAIE documentation Lygos
       const payload = {
         amount: Math.round(input.amount), // Montant en FCFA
-        currency: input.currency || 'XOF',
         shop_name: 'JomionStore',
-        message: input.description || `Commande JomionStore ${input.orderId}`,
         order_id: input.orderId,
+        message: input.description || `Commande JomionStore ${input.orderId}`,
         success_url: input.returnUrl,
         failure_url: input.returnUrl
       };
@@ -141,24 +140,20 @@ export class LygosService extends BaseService {
         throw new Error('Lygos n\'a pas retourné d\'ID de passerelle valide');
       }
 
-      // Construire l'URL de paiement depuis le champ "link"
+      // Utiliser directement le champ "link" de Lygos (selon la doc officielle)
       let finalPaymentUrl = data.link;
 
       if (!finalPaymentUrl) {
-        // Si pas de link, essayer d'autres champs possibles
-        finalPaymentUrl = data.payment_url || data.checkout_url || data.url;
-
-        if (!finalPaymentUrl) {
-          // En dernier recours, utiliser l'URL standard Lygos
-          finalPaymentUrl = `https://pay.lygosapp.com/gateway/${data.id}`;
-          console.log('[Lygos] ⚠️ Pas de link, utilisation URL standard:', finalPaymentUrl);
-        }
+        console.error('[Lygos] ❌ Pas de link dans la réponse:', data);
+        throw new Error('Lygos n\'a pas retourné de lien de paiement');
       }
 
       // Vérifier que l'URL est complète
       if (!finalPaymentUrl.startsWith('http')) {
         finalPaymentUrl = `https://${finalPaymentUrl}`;
       }
+
+      console.log('[Lygos] 🔗 URL de paiement Lygos:', finalPaymentUrl);
 
       console.log('[Lygos] 🔗 URL finale de paiement:', finalPaymentUrl);
 
