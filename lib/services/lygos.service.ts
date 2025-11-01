@@ -22,17 +22,29 @@ export interface CreateLygosGatewayInput {
 }
 
 /**
- * Réponse de Lygos après création de la passerelle
+ * Réponse complète de Lygos après création de la passerelle
+ * Selon la documentation officielle
  */
 export interface LygosGatewayResponse {
-  gateway_id: string; // ID de la passerelle créée
-  payment_url: string; // URL de redirection pour le paiement
+  gateway_id: string; // ID de la passerelle créée (mapping de 'id')
+  payment_url: string; // URL de redirection pour le paiement (mapping de 'link')
   status: string; // Statut de la passerelle
-  expires_at?: string; // Date d'expiration
+  expires_at?: string; // Date d'expiration (mapping de 'creation_date')
+  
+  // Champs additionnels de la vraie réponse API
+  amount?: number;
+  currency?: string;
+  shop_name?: string;
+  user_id?: string;
+  message?: string;
+  order_id?: string;
+  success_url?: string;
+  failure_url?: string;
 }
 
 /**
  * Statut d'un paiement Lygos
+ * Selon GET /v1/gateway/payin/{order_id}
  */
 export interface LygosPaymentStatus {
   order_id: string;
@@ -47,22 +59,47 @@ export interface LygosPaymentStatus {
 }
 
 /**
+ * Réponse brute de l'API Lygos pour la création de gateway
+ */
+interface LygosApiGatewayResponse {
+  id: string;
+  amount: number;
+  currency: string;
+  shop_name: string;
+  user_id: string;
+  creation_date: string;
+  link: string;
+  message: string | null;
+  order_id: string | null;
+  success_url: string | null;
+  failure_url: string | null;
+}
+
+/**
+ * Réponse brute de l'API Lygos pour le statut payin
+ */
+interface LygosApiPayinResponse {
+  order_id: string;
+  status: string;
+}
+
+/**
  * Service pour gérer les paiements avec Lygos
+ * Conforme à la documentation officielle Lygos API v1
  */
 export class LygosService extends BaseService {
   /**
    * Récupérer l'URL de base de l'API
    */
   private static getBaseUrl(): string {
-    const mode = process.env.LYGOS_MODE || 'sandbox';
+    const mode = process.env.LYGOS_MODE || 'production';
     
     if (process.env.LYGOS_API_URL) {
       return process.env.LYGOS_API_URL;
     }
     
-    return mode === 'production'
-      ? 'https://api.lygosapp.com'
-      : 'https://api.lygosapp.com'; // Même URL pour sandbox et prod
+    // Selon la doc: seul l'environnement de production existe
+    return 'https://api.lygosapp.com';
   }
 
   /**
@@ -78,6 +115,7 @@ export class LygosService extends BaseService {
 
   /**
    * Headers par défaut pour les requêtes API
+   * Selon la doc: api-key et Content-Type requis
    */
   private static getHeaders(): Record<string, string> {
     return {
@@ -87,29 +125,64 @@ export class LygosService extends BaseService {
   }
 
   /**
+   * Gérer les erreurs HTTP selon la documentation Lygos
+   */
+  private static handleHttpError(status: number, responseText: string): never {
+    const errorMessages: Record<number, string> = {
+      400: 'Requête incorrecte - Vérifier les champs obligatoires',
+      401: 'Non autorisé - API Key manquante ou invalide',
+      403: 'Interdit - Permissions insuffisantes',
+      404: 'Ressource non trouvée',
+      409: 'Conflit - Ressource en double',
+      422: 'Données invalides',
+      500: 'Erreur serveur interne',
+      502: 'Mauvaise passerelle - Service temporairement indisponible',
+      503: 'Service indisponible - Maintenance ou surcharge',
+      504: 'Délai d\'attente dépassé',
+    };
+
+    const errorMessage = errorMessages[status] || `Erreur HTTP ${status}`;
+    
+    console.error(`[Lygos] ❌ ${errorMessage}:`, responseText);
+    
+    // Essayer de parser l'erreur structurée de Lygos
+    try {
+      const errorData = JSON.parse(responseText);
+      if (errorData.detail?.message) {
+        throw new Error(`Lygos API: ${errorData.detail.message} (${errorData.detail.type || status})`);
+      }
+    } catch {
+      // Si pas de structure d'erreur, utiliser le message générique
+    }
+    
+    throw new Error(`${errorMessage}: ${responseText}`);
+  }
+
+  /**
    * Créer une passerelle de paiement Lygos
+   * Endpoint: POST /v1/gateway
    */
   static async createGateway(input: CreateLygosGatewayInput): Promise<LygosGatewayResponse> {
     try {
       const baseUrl = this.getBaseUrl();
       
-      // Payload selon la VRAIE documentation Lygos
+      // Payload selon la documentation officielle Lygos
       const payload = {
-        amount: Math.round(input.amount), // Montant en FCFA
-        shop_name: 'JomionStore',
-        order_id: input.orderId,
-        message: input.description || `Commande JomionStore ${input.orderId}`,
-        success_url: input.returnUrl,
-        failure_url: input.returnUrl
+        amount: Math.round(input.amount), // Montant en FCFA (integer requis)
+        shop_name: 'JomionStore', // string requis
+        order_id: input.orderId, // string requis
+        message: input.description || `Commande JomionStore ${input.orderId}`, // string optionnel
+        success_url: input.returnUrl, // string optionnel
+        failure_url: input.returnUrl // string optionnel
       };
 
-      console.log('[Lygos] 🚀 Création passerelle (API officielle):', {
+      console.log('[Lygos] 🚀 Création passerelle de paiement:', {
         order_id: input.orderId,
         amount: input.amount,
         shop_name: payload.shop_name
       });
 
-      // Utiliser le bon endpoint selon la doc : POST /v1/gateway
+      // POST /v1/gateway selon la documentation
       const response = await fetch(`${baseUrl}/v1/gateway`, {
         method: 'POST',
         headers: this.getHeaders(),
@@ -117,14 +190,15 @@ export class LygosService extends BaseService {
       });
 
       const responseText = await response.text();
-      console.log('[Lygos] 📥 Réponse brute:', responseText);
+      console.log('[Lygos] 📥 Réponse brute:', responseText.substring(0, 200));
 
+      // Gérer les erreurs HTTP
       if (!response.ok) {
-        console.error('[Lygos] ❌ Erreur HTTP:', response.status, responseText);
-        throw new Error(`Lygos API error: ${response.status} - ${responseText}`);
+        this.handleHttpError(response.status, responseText);
       }
 
-      let data;
+      // Parser la réponse JSON
+      let data: LygosApiGatewayResponse;
       try {
         data = JSON.parse(responseText);
       } catch (parseError) {
@@ -132,125 +206,265 @@ export class LygosService extends BaseService {
         throw new Error('Réponse Lygos invalide (pas du JSON)');
       }
       
-      console.log('[Lygos] 📋 Réponse parsée:', JSON.stringify(data, null, 2));
+      console.log('[Lygos] 📋 Réponse parsée:', {
+        id: data.id,
+        order_id: data.order_id,
+        amount: data.amount,
+        link: data.link
+      });
 
-      // Selon la doc Lygos, la réponse contient : id, amount, currency, shop_name, link, etc.
+      // Valider la présence des champs essentiels
       if (!data.id) {
-        console.error('[Lygos] ❌ Pas d\'ID dans la réponse:', data);
+        console.error('[Lygos] ❌ ID manquant dans la réponse:', data);
         throw new Error('Lygos n\'a pas retourné d\'ID de passerelle valide');
       }
 
-      // Utiliser directement le champ "link" de Lygos (selon la doc officielle)
-      let finalPaymentUrl = data.link;
-
-      if (!finalPaymentUrl) {
-        console.error('[Lygos] ❌ Pas de link dans la réponse:', data);
+      if (!data.link) {
+        console.error('[Lygos] ❌ Link manquant dans la réponse:', data);
         throw new Error('Lygos n\'a pas retourné de lien de paiement');
       }
 
-      // Vérifier que l'URL est complète
+      // Construire l'URL de paiement complète
+      let finalPaymentUrl = data.link;
       if (!finalPaymentUrl.startsWith('http')) {
         finalPaymentUrl = `https://${finalPaymentUrl}`;
       }
 
-      console.log('[Lygos] 🔗 URL de paiement Lygos:', finalPaymentUrl);
+      console.log('[Lygos] 🔗 URL de paiement générée:', finalPaymentUrl);
 
-      console.log('[Lygos] 🔗 URL finale de paiement:', finalPaymentUrl);
-
-      const result = {
+      // Mapper la réponse API vers notre interface
+      const result: LygosGatewayResponse = {
         gateway_id: data.id,
         payment_url: finalPaymentUrl,
         status: 'created',
-        expires_at: data.creation_date
+        expires_at: data.creation_date,
+        amount: data.amount,
+        currency: data.currency,
+        shop_name: data.shop_name,
+        user_id: data.user_id,
+        message: data.message || undefined,
+        order_id: data.order_id || undefined,
+        success_url: data.success_url || undefined,
+        failure_url: data.failure_url || undefined
       };
 
-      console.log('[Lygos] ✅ Passerelle créée avec succès:', result);
+      console.log('[Lygos] ✅ Passerelle créée avec succès');
 
       return result;
     } catch (error: any) {
-      console.error('[Lygos] 💥 Erreur lors de la création de la passerelle:', error);
+      console.error('[Lygos] 💥 Erreur création passerelle:', error.message);
       throw new Error(error.message || 'Échec de la création de la passerelle Lygos');
     }
   }
 
   /**
    * Vérifier le statut d'un paiement Lygos
+   * Endpoint: GET /v1/gateway/payin/{order_id}
+   * 
+   * CORRECTION: Utilisation du bon endpoint selon la documentation
    */
-  static async getPaymentStatus(gatewayIdOrOrderId: string): Promise<LygosPaymentStatus> {
+  static async getPaymentStatus(orderId: string): Promise<LygosPaymentStatus> {
     try {
       const baseUrl = this.getBaseUrl();
 
-      console.log('[Lygos] 🔍 Vérification statut paiement:', gatewayIdOrOrderId);
+      console.log('[Lygos] 🔍 Vérification statut paiement:', orderId);
 
-      // Selon la doc Lygos, utiliser GET /v1/gateway pour lister et trouver notre gateway
+      // ✅ CORRECTION: Utiliser le BON endpoint selon la doc
+      // GET /v1/gateway/payin/{order_id}
+      const response = await fetch(`${baseUrl}/v1/gateway/payin/${orderId}`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+      });
+
+      const responseText = await response.text();
+      console.log('[Lygos] 📥 Réponse statut brute:', responseText);
+
+      // Gérer les erreurs HTTP
+      if (!response.ok) {
+        console.error('[Lygos] ❌ Erreur HTTP statut:', response.status, responseText);
+        
+        // Si 404, le paiement n'existe pas ou n'est pas encore traité
+        if (response.status === 404) {
+          return {
+            order_id: orderId,
+            status: 'not_found',
+            message: 'Paiement non trouvé ou pas encore traité',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          };
+        }
+        
+        this.handleHttpError(response.status, responseText);
+      }
+
+      // Parser la réponse selon la doc: { "order_id": "<string>", "status": "<string>" }
+      let data: LygosApiPayinResponse;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('[Lygos] ❌ Erreur parsing statut:', parseError);
+        throw new Error('Réponse Lygos invalide');
+      }
+
+      console.log('[Lygos] 📊 Statut reçu:', data.status, 'pour order_id:', data.order_id);
+
+      // Mapper la réponse vers notre interface
+      const result: LygosPaymentStatus = {
+        order_id: data.order_id || orderId,
+        status: data.status || 'unknown',
+        currency: 'XOF',
+        message: `Statut: ${data.status}`,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      console.log('[Lygos] ✅ Statut vérifié avec succès');
+
+      return result;
+    } catch (error: any) {
+      console.error('[Lygos] 💥 Erreur vérification statut:', error.message);
+
+      // Retourner un statut d'erreur plutôt que de lever une exception
+      return {
+        order_id: orderId,
+        status: 'error',
+        currency: 'XOF',
+        message: error.message || 'Erreur de vérification du statut',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+    }
+  }
+
+  /**
+   * Récupérer les détails d'une passerelle spécifique
+   * Endpoint: GET /v1/gateway/{gateway_id}
+   */
+  static async getGatewayDetails(gatewayId: string): Promise<any> {
+    try {
+      const baseUrl = this.getBaseUrl();
+
+      console.log('[Lygos] 🔍 Récupération détails gateway:', gatewayId);
+
+      const response = await fetch(`${baseUrl}/v1/gateway/${gatewayId}`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+      });
+
+      const responseText = await response.text();
+
+      if (!response.ok) {
+        this.handleHttpError(response.status, responseText);
+      }
+
+      const data = JSON.parse(responseText);
+      console.log('[Lygos] 📋 Détails gateway récupérés');
+
+      return data;
+    } catch (error: any) {
+      console.error('[Lygos] 💥 Erreur récupération détails:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Lister toutes les passerelles de paiement
+   * Endpoint: GET /v1/gateway
+   */
+  static async listGateways(): Promise<LygosApiGatewayResponse[]> {
+    try {
+      const baseUrl = this.getBaseUrl();
+
+      console.log('[Lygos] 📋 Liste des gateways...');
+
       const response = await fetch(`${baseUrl}/v1/gateway`, {
         method: 'GET',
         headers: this.getHeaders(),
       });
 
       const responseText = await response.text();
-      console.log('[Lygos] 📥 Réponse brute:', responseText);
 
-      if (response.ok) {
-        let data;
-        try {
-          data = JSON.parse(responseText);
-        } catch (parseError) {
-          console.warn('[Lygos] ⚠️ Réponse non-JSON:', responseText);
-          throw new Error('Réponse Lygos invalide');
-        }
-
-        console.log('[Lygos] 📋 Liste des gateways:', data);
-
-        // Chercher notre gateway dans la liste
-        const gateway = Array.isArray(data)
-          ? data.find(g => g.id === gatewayIdOrOrderId || g.order_id === gatewayIdOrOrderId)
-          : null;
-
-        if (gateway) {
-          return {
-            order_id: gateway.order_id || gatewayIdOrOrderId,
-            status: 'pending', // Lygos ne semble pas avoir de statut de paiement dans la liste
-            amount: gateway.amount,
-            currency: gateway.currency || 'XOF',
-            transaction_id: undefined,
-            gateway_id: gateway.id,
-            message: gateway.message || 'Gateway trouvé',
-            created_at: gateway.creation_date,
-            updated_at: gateway.creation_date
-          };
-        }
+      if (!response.ok) {
+        this.handleHttpError(response.status, responseText);
       }
 
-      // Si pas trouvé, retourner un statut par défaut
-      console.warn('[Lygos] ⚠️ Gateway non trouvé dans la liste');
+      const data = JSON.parse(responseText);
+      console.log('[Lygos] 📊 Nombre de gateways:', Array.isArray(data) ? data.length : 'N/A');
 
-      return {
-        order_id: gatewayIdOrOrderId,
-        status: 'pending', // Statut par défaut
-        amount: 0,
-        currency: 'XOF',
-        transaction_id: undefined,
-        gateway_id: gatewayIdOrOrderId,
-        message: `Impossible de vérifier le statut: Gateway non trouvé`,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
+      return Array.isArray(data) ? data : [];
     } catch (error: any) {
-      console.error('[Lygos] 💥 Erreur lors de la vérification du statut:', error);
+      console.error('[Lygos] 💥 Erreur liste gateways:', error.message);
+      throw error;
+    }
+  }
 
-      // Retourner un statut d'erreur plutôt que de lever une exception
-      return {
-        order_id: gatewayIdOrOrderId,
-        status: 'error',
-        amount: 0,
-        currency: 'XOF',
-        transaction_id: undefined,
-        gateway_id: gatewayIdOrOrderId,
-        message: error.message || 'Erreur de vérification du statut',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
+  /**
+   * Mettre à jour une passerelle de paiement
+   * Endpoint: PUT /v1/gateway/{gateway_id}
+   */
+  static async updateGateway(
+    gatewayId: string,
+    updates: {
+      amount?: number;
+      shop_name?: string;
+      message?: string;
+      success_url?: string;
+      failure_url?: string;
+    }
+  ): Promise<any> {
+    try {
+      const baseUrl = this.getBaseUrl();
+
+      console.log('[Lygos] 🔄 Mise à jour gateway:', gatewayId);
+
+      const response = await fetch(`${baseUrl}/v1/gateway/${gatewayId}`, {
+        method: 'PUT',
+        headers: this.getHeaders(),
+        body: JSON.stringify(updates),
+      });
+
+      const responseText = await response.text();
+
+      if (!response.ok) {
+        this.handleHttpError(response.status, responseText);
+      }
+
+      const data = JSON.parse(responseText);
+      console.log('[Lygos] ✅ Gateway mis à jour');
+
+      return data;
+    } catch (error: any) {
+      console.error('[Lygos] 💥 Erreur mise à jour:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Supprimer une passerelle de paiement
+   * Endpoint: DELETE /v1/gateway/{gateway_id}
+   */
+  static async deleteGateway(gatewayId: string): Promise<boolean> {
+    try {
+      const baseUrl = this.getBaseUrl();
+
+      console.log('[Lygos] 🗑️ Suppression gateway:', gatewayId);
+
+      const response = await fetch(`${baseUrl}/v1/gateway/${gatewayId}`, {
+        method: 'DELETE',
+        headers: this.getHeaders(),
+      });
+
+      if (!response.ok) {
+        const responseText = await response.text();
+        this.handleHttpError(response.status, responseText);
+      }
+
+      console.log('[Lygos] ✅ Gateway supprimé');
+
+      return true;
+    } catch (error: any) {
+      console.error('[Lygos] 💥 Erreur suppression:', error.message);
+      throw error;
     }
   }
 
@@ -280,6 +494,7 @@ export class LygosService extends BaseService {
 
   /**
    * Tester la configuration Lygos
+   * CORRECTION: Utiliser un endpoint qui existe réellement
    */
   static async testConfiguration(): Promise<{ success: boolean; message: string; details?: any }> {
     try {
@@ -290,8 +505,9 @@ export class LygosService extends BaseService {
       console.log('[Lygos] 🔗 Base URL:', baseUrl);
       console.log('[Lygos] 🔑 API Key présente:', !!apiKey);
 
-      // Test simple de l'API
-      const response = await fetch(`${baseUrl}/v1/ping`, {
+      // ✅ CORRECTION: Utiliser GET /v1/gateway qui existe dans la doc
+      // (au lieu de /v1/ping qui n'existe pas)
+      const response = await fetch(`${baseUrl}/v1/gateway`, {
         method: 'GET',
         headers: this.getHeaders(),
       });
@@ -299,22 +515,39 @@ export class LygosService extends BaseService {
       const responseText = await response.text();
 
       if (response.ok) {
+        const gateways = JSON.parse(responseText);
         return {
           success: true,
-          message: 'Configuration Lygos valide',
-          details: { status: response.status, response: responseText }
+          message: '✅ Configuration Lygos valide - API Key fonctionnelle',
+          details: {
+            status: response.status,
+            message: 'Connexion API réussie',
+            gateways_count: Array.isArray(gateways) ? gateways.length : 'N/A'
+          }
+        };
+      } else if (response.status === 401) {
+        return {
+          success: false,
+          message: '❌ API Key invalide ou manquante',
+          details: { status: 401, error: 'Unauthorized', response: responseText }
+        };
+      } else if (response.status === 403) {
+        return {
+          success: false,
+          message: '❌ Permissions insuffisantes',
+          details: { status: 403, error: 'Forbidden', response: responseText }
         };
       } else {
         return {
           success: false,
-          message: `Erreur de configuration Lygos: ${response.status}`,
+          message: `❌ Erreur API Lygos: ${response.status}`,
           details: { status: response.status, response: responseText }
         };
       }
     } catch (error: any) {
       return {
         success: false,
-        message: `Erreur de test Lygos: ${error.message}`,
+        message: `❌ Erreur de connexion Lygos: ${error.message}`,
         details: { error: error.message }
       };
     }
