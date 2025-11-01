@@ -5,11 +5,13 @@
 ALTER TABLE cart_items DISABLE ROW LEVEL SECURITY;
 ALTER TABLE profiles DISABLE ROW LEVEL SECURITY;
 ALTER TABLE wishlist DISABLE ROW LEVEL SECURITY;
+ALTER TABLE orders DISABLE ROW LEVEL SECURITY;
+ALTER TABLE order_items DISABLE ROW LEVEL SECURITY;
 
 -- Vérifier que RLS est désactivé
 SELECT schemaname, tablename, rowsecurity 
 FROM pg_tables 
-WHERE tablename IN ('cart_items', 'profiles', 'wishlist');
+WHERE tablename IN ('cart_items', 'profiles', 'wishlist', 'orders', 'order_items');
 
 -- ========================================
 -- SCRIPT POUR RÉACTIVER RLS APRÈS TEST
