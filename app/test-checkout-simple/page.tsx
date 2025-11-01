@@ -30,6 +30,7 @@ export default function TestCheckoutSimple() {
       // Générer un UUID valide pour le test
       const testUserId = crypto.randomUUID();
       console.log('🆔 UUID généré pour test:', testUserId);
+      console.log('🔄 Version mise à jour avec UUID valide');
 
       const payload = {
         user_id: testUserId,
