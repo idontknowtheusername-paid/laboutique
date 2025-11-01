@@ -25,9 +25,108 @@ export default function LygosCheckoutPage() {
             return;
         }
 
-        // Rediriger immédiatement vers Lygos
-        initializeLygosWidget();
+        // ✅ SOLUTION FINALE : Afficher notre propre interface de paiement
+        loadPaymentInterface();
     }, [gatewayId, orderId]);
+
+    // ✅ SOLUTION FINALE : Charger notre interface de paiement
+    const loadPaymentInterface = async () => {
+        try {
+            console.log('[Lygos Payment] 🚀 Chargement interface pour gateway:', gatewayId);
+
+            // Récupérer les détails de la gateway
+            const response = await fetch('/api/lygos/gateway-details', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gateway_id: gatewayId })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setPaymentData(result);
+                console.log('[Lygos Payment] 📋 Données chargées:', result);
+
+                // Si on a une URL de paiement, rediriger
+                if (result.payment_url && !result.payment_url.includes('api.lygosapp.com/checkout')) {
+                    console.log('[Lygos Payment] 🔗 Redirection vers:', result.payment_url);
+                    window.location.href = result.payment_url;
+                    return;
+                }
+            }
+
+            // Afficher l'interface de paiement (pas de redirection)
+            setLoading(false);
+
+        } catch (error) {
+            console.error('[Lygos Payment] ❌ Erreur chargement:', error);
+            setError('Impossible de charger les informations de paiement');
+            setLoading(false);
+        }
+    };
+
+    // Nouvelle fonction pour récupérer l'URL réelle
+    const getRealPaymentUrl = async () => {
+        try {
+            console.log('[Lygos] 🔍 Récupération URL réelle pour gateway:', gatewayId);
+
+            // Utiliser l'API Lygos directement pour récupérer les détails
+            const response = await fetch('/api/lygos/gateway-details', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gateway_id: gatewayId })
+            });
+
+            const result = await response.json();
+
+            if (result.success && result.payment_url) {
+                console.log('[Lygos] 🔗 URL réelle trouvée:', result.payment_url);
+                // Rediriger immédiatement vers l'URL réelle
+                window.location.href = result.payment_url;
+                return;
+            }
+
+            // Si pas d'URL, essayer les patterns connus
+            await tryKnownPatterns();
+
+        } catch (error) {
+            console.error('[Lygos] ❌ Erreur récupération URL:', error);
+            await tryKnownPatterns();
+        }
+    };
+
+    // Essayer différents patterns d'URL Lygos
+    const tryKnownPatterns = async () => {
+        const patterns = [
+            `https://checkout.lygosapp.com/${gatewayId}`,
+            `https://pay.lygosapp.com/${gatewayId}`,
+            `https://lygosapp.com/pay/${gatewayId}`,
+            `https://lygosapp.com/checkout/${gatewayId}`,
+            `https://widget.lygosapp.com/${gatewayId}`
+        ];
+
+        console.log('[Lygos] 🔄 Test des patterns d\'URL...');
+
+        for (const url of patterns) {
+            try {
+                // Test simple avec fetch HEAD
+                const testResponse = await fetch(url, {
+                    method: 'HEAD',
+                    mode: 'no-cors' // Éviter les erreurs CORS
+                });
+
+                console.log('[Lygos] ✅ Pattern trouvé:', url);
+                window.location.href = url;
+                return;
+            } catch (e) {
+                console.log('[Lygos] ❌ Pattern échoué:', url);
+            }
+        }
+
+        // Aucun pattern ne fonctionne
+        setError('Impossible de localiser la page de paiement Lygos. Veuillez contacter le support.');
+        setLoading(false);
+    };
 
     // Vérifier le statut du paiement auprès de Lygos
     const checkPaymentStatus = async () => {
@@ -110,10 +209,29 @@ export default function LygosCheckoutPage() {
                 }
             };
 
-            script.onerror = () => {
-                console.warn('[Lygos Widget] ⚠️ Script non disponible, fallback vers URL directe');
-                // Fallback : rediriger vers l'URL Lygos si le widget ne charge pas
-                window.location.href = `https://api.lygosapp.com/checkout/${gatewayId}`;
+            script.onerror = async () => {
+                console.warn('[Lygos Widget] ⚠️ Script non disponible, essai de récupération URL réelle...');
+
+                // Essayer de récupérer l'URL réelle depuis notre API
+                try {
+                    const response = await fetch(`/api/lygos/gateway/${gatewayId}`);
+                    const result = await response.json();
+
+                    if (result.success && result.data?.link) {
+                        const realUrl = result.data.link.startsWith('http')
+                            ? result.data.link
+                            : `https://${result.data.link}`;
+                        console.log('[Lygos Widget] 🔗 Redirection vers URL réelle:', realUrl);
+                        window.location.href = realUrl;
+                        return;
+                    }
+                } catch (e) {
+                    console.error('[Lygos Widget] ❌ Impossible de récupérer URL réelle:', e);
+                }
+
+                // Dernier fallback : afficher erreur
+                setError('Le système de paiement Lygos n\'est pas disponible. Veuillez réessayer plus tard.');
+                setLoading(false);
             };
 
             document.head.appendChild(script);

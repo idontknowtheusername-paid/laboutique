@@ -26,17 +26,20 @@ export default function CheckoutPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('checkout');
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   // ✅ UTILISER LE VRAI PANIER
   const { cartItems, cartSummary, loading: cartLoading } = useCart();
 
   useEffect(() => {
-    // Protéger la page checkout si non connecté
-    if (typeof window !== 'undefined' && !user) {
+    // ✅ CORRECTION : Éviter la boucle infinie d'authentification
+    if (typeof window !== 'undefined' && user === null && !authLoading) {
+      // Seulement rediriger si on est sûr que l'utilisateur n'est pas connecté
+      // et que le chargement d'authentification est terminé
+      console.log('[Checkout] 🔒 Utilisateur non connecté, redirection...');
       router.replace('/auth/login?redirect=/checkout');
     }
-  }, [user, router]);
+  }, [user, authLoading, router]); // Utiliser authLoading
 
   // Rediriger si le panier est vide - TEMPORAIREMENT DÉSACTIVÉ
   // useEffect(() => {
@@ -205,6 +208,29 @@ export default function CheckoutPage() {
       setLoading(false);
     }
   };
+
+  // ✅ PROTECTION : Afficher un loader pendant l'authentification
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-jomionstore-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-jomionstore-primary" />
+          <p className="text-gray-600">Vérification de l'authentification...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ PROTECTION : Ne pas afficher la page si pas d'utilisateur
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-jomionstore-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Redirection vers la connexion...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-jomionstore-background">

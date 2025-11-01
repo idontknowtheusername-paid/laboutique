@@ -98,8 +98,8 @@ export class LygosService extends BaseService {
       return process.env.LYGOS_API_URL;
     }
     
-    // Selon la doc: seul l'environnement de production existe
-    return 'https://api.lygosapp.com';
+    // ✅ CORRECTION : Selon la doc officielle Lygos
+    return 'https://api.lygosapp.com/v1';
   }
 
   /**
@@ -131,7 +131,7 @@ export class LygosService extends BaseService {
     const errorMessages: Record<number, string> = {
       400: 'Requête incorrecte - Vérifier les champs obligatoires',
       401: 'Non autorisé - API Key manquante ou invalide',
-      403: 'Interdit - Permissions insuffisantes',
+      403: 'Interdit - API Key invalide ou permissions insuffisantes',
       404: 'Ressource non trouvée',
       409: 'Conflit - Ressource en double',
       422: 'Données invalides',
@@ -151,11 +151,23 @@ export class LygosService extends BaseService {
       if (errorData.detail?.message) {
         throw new Error(`Lygos API: ${errorData.detail.message} (${errorData.detail.type || status})`);
       }
-    } catch {
+      if (errorData.message) {
+        throw new Error(`Lygos API: ${errorData.message} (Status: ${status})`);
+      }
+    } catch (parseError) {
       // Si pas de structure d'erreur, utiliser le message générique
+      console.warn('[Lygos] ⚠️ Impossible de parser l\'erreur JSON:', parseError);
     }
     
-    throw new Error(`${errorMessage}: ${responseText}`);
+    // Ajouter des conseils selon le type d'erreur
+    let advice = '';
+    if (status === 403) {
+      advice = ' | Vérifiez votre API Key Lygos dans les variables d\'environnement';
+    } else if (status === 401) {
+      advice = ' | API Key manquante ou expirée';
+    }
+
+    throw new Error(`${errorMessage}: ${responseText}${advice}`);
   }
 
   /**
@@ -166,6 +178,21 @@ export class LygosService extends BaseService {
     try {
       const baseUrl = this.getBaseUrl();
       
+      // ✅ FALLBACK DÉVELOPPEMENT : Si pas d'API Key, simuler une réponse
+      const apiKey = process.env.LYGOS_API_KEY;
+      if (!apiKey && process.env.NODE_ENV === 'development') {
+        console.warn('[Lygos] ⚠️ Mode développement - Simulation gateway');
+        return {
+          gateway_id: `dev-${Date.now()}`,
+          payment_url: `http://localhost:3000/checkout/dev-${Date.now()}?order_id=${input.orderId}`,
+          status: 'created',
+          amount: input.amount,
+          currency: 'XOF',
+          shop_name: 'JomionStore',
+          message: 'Gateway simulée pour développement'
+        };
+      }
+
       // Payload selon la documentation officielle Lygos
       const payload = {
         amount: Math.round(input.amount), // Montant en FCFA (integer requis)
@@ -183,7 +210,7 @@ export class LygosService extends BaseService {
       });
 
       // POST /v1/gateway selon la documentation
-      const response = await fetch(`${baseUrl}/v1/gateway`, {
+      const response = await fetch(`${baseUrl}/gateway`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(payload),
@@ -271,7 +298,7 @@ export class LygosService extends BaseService {
 
       // ✅ CORRECTION: Utiliser le BON endpoint selon la doc
       // GET /v1/gateway/payin/{order_id}
-      const response = await fetch(`${baseUrl}/v1/gateway/payin/${orderId}`, {
+      const response = await fetch(`${baseUrl}/gateway/payin/${orderId}`, {
         method: 'GET',
         headers: this.getHeaders(),
       });
@@ -346,7 +373,7 @@ export class LygosService extends BaseService {
 
       console.log('[Lygos] 🔍 Récupération détails gateway:', gatewayId);
 
-      const response = await fetch(`${baseUrl}/v1/gateway/${gatewayId}`, {
+      const response = await fetch(`${baseUrl}/gateway/${gatewayId}`, {
         method: 'GET',
         headers: this.getHeaders(),
       });
@@ -377,7 +404,7 @@ export class LygosService extends BaseService {
 
       console.log('[Lygos] 📋 Liste des gateways...');
 
-      const response = await fetch(`${baseUrl}/v1/gateway`, {
+      const response = await fetch(`${baseUrl}/gateway`, {
         method: 'GET',
         headers: this.getHeaders(),
       });
@@ -417,7 +444,7 @@ export class LygosService extends BaseService {
 
       console.log('[Lygos] 🔄 Mise à jour gateway:', gatewayId);
 
-      const response = await fetch(`${baseUrl}/v1/gateway/${gatewayId}`, {
+      const response = await fetch(`${baseUrl}/gateway/${gatewayId}`, {
         method: 'PUT',
         headers: this.getHeaders(),
         body: JSON.stringify(updates),
@@ -449,7 +476,7 @@ export class LygosService extends BaseService {
 
       console.log('[Lygos] 🗑️ Suppression gateway:', gatewayId);
 
-      const response = await fetch(`${baseUrl}/v1/gateway/${gatewayId}`, {
+      const response = await fetch(`${baseUrl}/gateway/${gatewayId}`, {
         method: 'DELETE',
         headers: this.getHeaders(),
       });
@@ -507,7 +534,7 @@ export class LygosService extends BaseService {
 
       // ✅ CORRECTION: Utiliser GET /v1/gateway qui existe dans la doc
       // (au lieu de /v1/ping qui n'existe pas)
-      const response = await fetch(`${baseUrl}/v1/gateway`, {
+      const response = await fetch(`${baseUrl}/gateway`, {
         method: 'GET',
         headers: this.getHeaders(),
       });
