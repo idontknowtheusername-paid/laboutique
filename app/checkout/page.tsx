@@ -163,8 +163,11 @@ export default function CheckoutPage() {
       // Panier de test temporaire
       itemsToUse = [{
         id: 'test-item-1',
+        user_id: user?.id || '',
         product_id: '406473d0-89fa-42c1-b1f6-96329b2cac19', // ID produit existant
         quantity: 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
         product: {
           id: '406473d0-89fa-42c1-b1f6-96329b2cac19',
           name: 'Produit de test',
