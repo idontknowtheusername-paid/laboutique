@@ -254,11 +254,19 @@ export class LygosService extends BaseService {
         throw new Error('Lygos n\'a pas retourné de lien de paiement');
       }
 
-      // ✅ CORRECTION : Utiliser l'URL telle que fournie par Lygos
-      // Lygos retourne des URLs vers NOTRE site, pas vers checkout.lygosapp.com
-      const finalPaymentUrl = data.link.startsWith('http')
-        ? data.link
-        : `https://${data.link}`;
+      // 🔧 CORRECTION CRITIQUE : Lygos retourne notre site, mais on veut rediriger vers LEUR site
+      // On remplace notre domaine par le vrai domaine Lygos
+      let finalPaymentUrl;
+
+      if (data.link.includes('jomionstore.com/checkout/')) {
+        // Extraire le gateway_id et construire l'URL Lygos réelle
+        const gatewayId = data.link.split('/checkout/')[1];
+        finalPaymentUrl = `https://pay.lygosapp.com/${gatewayId}`;
+        console.log('[Lygos] 🔄 Conversion URL:', data.link, '→', finalPaymentUrl);
+      } else {
+        // Utiliser l'URL telle quelle si elle ne pointe pas vers notre site
+        finalPaymentUrl = data.link.startsWith('http') ? data.link : `https://${data.link}`;
+      }
 
       console.log('[Lygos] 🔗 URL de paiement générée:', finalPaymentUrl);
 
