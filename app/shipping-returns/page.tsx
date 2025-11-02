@@ -94,7 +94,7 @@ export default function ShippingReturnsPage() {
                 <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg border-2 border-green-300">
                   <div className="flex items-center justify-between flex-wrap gap-4">
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Commande de 50 000 XOF et plus</p>
+                      <p className="text-sm text-gray-600 mb-1">Commande de 200 000 XOF et plus</p>
                       <p className="text-3xl font-bold text-green-700">LIVRAISON GRATUITE 🎉</p>
                     </div>
                     <CheckCircle className="w-12 h-12 text-green-600" />

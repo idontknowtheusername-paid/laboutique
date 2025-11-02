@@ -10,10 +10,11 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { CreditCard, Truck, ShieldCheck, CheckCircle, Smartphone, Globe, Zap, ShoppingCart, Loader2, AlertCircle } from 'lucide-react';
+import { CreditCard, Truck, ShieldCheck, CheckCircle, Smartphone, Globe, Zap, ShoppingCart, Loader2, AlertCircle, Tag, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
+import { CartService } from '@/lib/services/cart.service';
 import Link from 'next/link';
 
 const formatPrice = (price: number) => new Intl.NumberFormat('fr-BJ', { style: 'currency', currency: 'XOF', minimumFractionDigits: 0 }).format(price);
@@ -25,6 +26,18 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('checkout');
+
+  // États pour les codes promo
+  const [promoCode, setPromoCode] = useState('');
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [promoMsg, setPromoMsg] = useState<string | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    type: 'percentage' | 'fixed' | 'free_shipping';
+    discount: number;
+    couponId: string;
+  } | null>(null);
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
@@ -40,13 +53,6 @@ export default function CheckoutPage() {
       router.replace('/auth/login?redirect=/checkout');
     }
   }, [user, authLoading, router]); // Utiliser authLoading
-
-  // Rediriger si le panier est vide - TEMPORAIREMENT DÉSACTIVÉ
-  // useEffect(() => {
-  //   if (!cartLoading && cartItems && cartItems.length === 0) {
-  //     router.replace('/cart');
-  //   }
-  // }, [cartItems, cartLoading, router]);
 
   // ✅ CALCULER LES TOTAUX DEPUIS LE VRAI PANIER
   const subtotal = cartSummary?.subtotal || 0;
@@ -67,43 +73,89 @@ export default function CheckoutPage() {
   // États pour les erreurs de validation
   const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
 
-  // Fonctions de validation
+  // Fonctions de validation renforcées
   const validateField = (name: string, value: string): string => {
     switch (name) {
       case 'firstName':
         if (!value.trim()) return 'Le prénom est obligatoire';
-        if (value.trim().length < 2) return 'Le prénom doit contenir au moins 2 caractères';
-        if (!/^[a-zA-ZÀ-ÿ\s-']+$/.test(value.trim())) return 'Le prénom ne doit contenir que des lettres';
+        if (value.trim().length < 3) return 'Le prénom doit contenir au moins 3 lettres';
+        if (!/^[a-zA-ZÀ-ÿàâäæçéèêëïîôùûüÿœ\s-']+$/.test(value.trim())) {
+          return 'Le prénom ne doit contenir que des lettres (accents acceptés)';
+        }
         return '';
 
       case 'lastName':
         if (!value.trim()) return 'Le nom est obligatoire';
-        if (value.trim().length < 2) return 'Le nom doit contenir au moins 2 caractères';
-        if (!/^[a-zA-ZÀ-ÿ\s-']+$/.test(value.trim())) return 'Le nom ne doit contenir que des lettres';
+        if (value.trim().length < 3) return 'Le nom doit contenir au moins 3 lettres';
+        if (!/^[a-zA-ZÀ-ÿàâäæçéèêëïîôùûüÿœ\s-']+$/.test(value.trim())) {
+          return 'Le nom ne doit contenir que des lettres (accents acceptés)';
+        }
         return '';
 
       case 'address':
-        if (!value.trim()) return 'L\'adresse est obligatoire';
-        if (value.trim().length < 5) return 'L\'adresse doit contenir au moins 5 caractères';
+        if (!value.trim()) return 'L\'adresse ou la zone est obligatoire';
+        if (value.trim().length < 5) {
+          return 'L\'adresse doit contenir au moins 5 caractères (rue, quartier, zone...)';
+        }
+        // Accepter lettres, chiffres et caractères spéciaux courants dans les adresses
+        if (!/^[a-zA-Z0-9À-ÿàâäæçéèêëïîôùûüÿœ\s,.''\-°/#]+$/.test(value.trim())) {
+          return 'L\'adresse contient des caractères non valides';
+        }
         return '';
 
       case 'city':
         if (!value.trim()) return 'La ville est obligatoire';
-        if (value.trim().length < 2) return 'La ville doit contenir au moins 2 caractères';
-        if (!/^[a-zA-ZÀ-ÿ\s-']+$/.test(value.trim())) return 'La ville ne doit contenir que des lettres';
+        if (value.trim().length < 2) return 'Le nom de la ville doit contenir au moins 2 caractères';
+        // Accepter les noms de villes avec accents et tirets
+        if (!/^[a-zA-ZÀ-ÿàâäæçéèêëïîôùûüÿœ\s-']+$/.test(value.trim())) {
+          return 'La ville ne doit contenir que des lettres (accents et tirets acceptés)';
+        }
         return '';
 
       case 'phone':
-        if (!value.trim()) return 'Le téléphone est obligatoire';
-        // Accepter différents formats internationaux
-        const phoneRegex = /^[\+]?[0-9\s\-\(\)]{8,15}$/;
-        if (!phoneRegex.test(value.replace(/\s/g, ''))) return 'Format de téléphone invalide (8-15 chiffres)';
+        if (!value.trim()) return 'Le numéro de téléphone est obligatoire';
+
+        // Nettoyer le numéro (enlever espaces, tirets, parenthèses)
+        const cleanPhone = value.replace(/[\s\-\(\)]/g, '');
+
+        // Vérifier le format international avec ou sans +
+        // Accepter 8 à 15 chiffres (standards internationaux)
+        const phoneRegex = /^[\+]?[0-9]{8,15}$/;
+
+        if (!phoneRegex.test(cleanPhone)) {
+          return 'Numéro invalide. Format attendu : +22967307747 ou 67307747 (8-15 chiffres)';
+        }
+
+        // Vérifier que le numéro contient assez de chiffres
+        const digitCount = cleanPhone.replace(/\+/g, '').length;
+        if (digitCount < 8) {
+          return 'Le numéro doit contenir au moins 8 chiffres';
+        }
+        if (digitCount > 15) {
+          return 'Le numéro ne peut pas dépasser 15 chiffres';
+        }
+
         return '';
 
       case 'email':
-        if (!value.trim()) return 'L\'email est obligatoire';
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value.trim())) return 'Format d\'email invalide';
+        if (!value.trim()) return 'L\'adresse email est obligatoire';
+
+        // Validation email renforcée
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (!emailRegex.test(value.trim().toLowerCase())) {
+          return 'Format email invalide. Exemple : utilisateur@domaine.com';
+        }
+
+        // Vérifications supplémentaires
+        if (value.trim().length < 5) {
+          return 'L\'email semble trop court';
+        }
+
+        if (value.includes('..') || value.startsWith('.') || value.endsWith('.')) {
+          return 'L\'email ne peut pas contenir deux points consécutifs';
+        }
+
         return '';
 
       default:
@@ -134,6 +186,76 @@ export default function CheckoutPage() {
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
+
+  // Fonction pour appliquer un code promo
+  const applyPromoCode = async () => {
+    if (!promoCode.trim() || !user?.id) return;
+
+    setPromoLoading(true);
+    setPromoMsg(null);
+
+    try {
+      const response = await CartService.applyCoupon(user.id, promoCode.trim());
+
+      if (response.success && response.data) {
+        setPromoApplied(true);
+        setAppliedCoupon({
+          code: promoCode.trim().toUpperCase(),
+          type: 'fixed',
+          discount: response.data.discountAmount,
+          couponId: response.data.couponId
+        });
+        setPromoMsg('✅ Code promo appliqué avec succès !');
+      } else {
+        setPromoMsg(`❌ ${response.error || 'Code promo invalide'}`);
+      }
+    } catch (error) {
+      console.error('Erreur application code promo:', error);
+      setPromoMsg('❌ Erreur lors de l\'application du code promo');
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  // Fonction pour supprimer un code promo
+  const removePromoCode = async () => {
+    setPromoApplied(false);
+    setAppliedCoupon(null);
+    setPromoCode('');
+    setPromoMsg(null);
+  };
+
+  // Calculer les totaux avec le code promo appliqué
+  const calculateTotalsWithPromo = () => {
+    let finalSubtotal = subtotal;
+    let finalShipping = shipping;
+    let discountAmount = 0;
+
+    if (appliedCoupon) {
+      switch (appliedCoupon.type) {
+        case 'percentage':
+          discountAmount = (subtotal * appliedCoupon.discount) / 100;
+          break;
+        case 'fixed':
+          discountAmount = appliedCoupon.discount;
+          break;
+        case 'free_shipping':
+          finalShipping = 0;
+          break;
+      }
+    }
+
+    const finalTotal = finalSubtotal + finalShipping - discountAmount;
+
+    return {
+      subtotal: finalSubtotal,
+      shipping: finalShipping,
+      discount: discountAmount,
+      total: Math.max(0, finalTotal)
+    };
+  };
+
+  const totalsWithPromo = calculateTotalsWithPromo();
 
   const placeOrderCheckout = async (itemsToUse: any[]) => {
     try {
@@ -215,8 +337,6 @@ export default function CheckoutPage() {
     }
   };
 
-
-
   const placeOrder = async (e?: React.FormEvent | React.MouseEvent) => {
     if (e) {
       e.preventDefault();
@@ -228,7 +348,15 @@ export default function CheckoutPage() {
     // Validation complète du formulaire
     if (!validateForm()) {
       console.error('[Checkout Debug] ❌ Validation formulaire échouée');
-      setErrorMsg('Veuillez corriger les erreurs dans le formulaire');
+      setErrorMsg('Veuillez corriger les erreurs dans le formulaire ci-dessus avant de continuer');
+
+      // Scroll vers le premier champ en erreur
+      const firstErrorField = Object.keys(fieldErrors)[0];
+      if (firstErrorField) {
+        const element = document.querySelector(`input[placeholder*="${firstErrorField}"]`);
+        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
       return;
     }
 
@@ -361,54 +489,184 @@ export default function CheckoutPage() {
                 </CardHeader>
                 <CardContent>
                   <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input
-                      placeholder="Prénom *"
-                      value={formData.firstName}
-                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                      required
-                    />
-                    <Input
-                      placeholder="Nom *"
-                      value={formData.lastName}
-                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                      required
-                    />
-                    <Input
-                      className="md:col-span-2"
-                      placeholder="Adresse *"
-                      value={formData.address}
-                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                      required
-                    />
-                    <Input
-                      placeholder="Ville *"
-                      value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      required
-                    />
-                    <Input
-                      placeholder="Code postal"
-                      value={formData.postalCode}
-                      onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
-                    />
-                    <Input
-                      className="md:col-span-2"
-                      placeholder="Téléphone * (ex: 22967307747)"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      required
-                    />
-                    <Input
-                      className="md:col-span-2"
-                      type="email"
-                      placeholder="Email *"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      required
-                    />
+                          <div>
+                            <Input
+                              placeholder="Prénom * (minimum 3 lettres)"
+                              value={formData.firstName}
+                              onChange={(e) => updateField('firstName', e.target.value)}
+                              className={fieldErrors.firstName ? 'border-red-500 focus:ring-red-500' : ''}
+                              required
+                            />
+                            {fieldErrors.firstName && (
+                              <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" />
+                                {fieldErrors.firstName}
+                              </p>
+                            )}
+                          </div>
+
+                          <div>
+                            <Input
+                              placeholder="Nom * (minimum 3 lettres)"
+                              value={formData.lastName}
+                              onChange={(e) => updateField('lastName', e.target.value)}
+                              className={fieldErrors.lastName ? 'border-red-500 focus:ring-red-500' : ''}
+                              required
+                            />
+                            {fieldErrors.lastName && (
+                              <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" />
+                                {fieldErrors.lastName}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="md:col-span-2">
+                            <Input
+                              placeholder="Adresse complète * (rue, quartier, zone...)"
+                              value={formData.address}
+                              onChange={(e) => updateField('address', e.target.value)}
+                              className={fieldErrors.address ? 'border-red-500 focus:ring-red-500' : ''}
+                              required
+                            />
+                            {fieldErrors.address && (
+                              <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" />
+                                {fieldErrors.address}
+                              </p>
+                            )}
+                          </div>
+
+                          <div>
+                            <Input
+                              placeholder="Ville *"
+                              value={formData.city}
+                              onChange={(e) => updateField('city', e.target.value)}
+                              className={fieldErrors.city ? 'border-red-500 focus:ring-red-500' : ''}
+                              required
+                            />
+                            {fieldErrors.city && (
+                              <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" />
+                                {fieldErrors.city}
+                              </p>
+                            )}
+                          </div>
+
+                          <div>
+                            <Input
+                              placeholder="Code postal (optionnel)"
+                              value={formData.postalCode}
+                              onChange={(e) => updateField('postalCode', e.target.value)}
+                            />
+                          </div>
+
+                          <div className="md:col-span-2">
+                            <Input
+                              placeholder="Téléphone * (ex: +22967307747 ou 67307747)"
+                              value={formData.phone}
+                              onChange={(e) => updateField('phone', e.target.value)}
+                              className={fieldErrors.phone ? 'border-red-500 focus:ring-red-500' : ''}
+                              required
+                            />
+                            {fieldErrors.phone && (
+                              <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" />
+                                {fieldErrors.phone}
+                              </p>
+                            )}
+                            <p className="text-xs text-gray-500 mt-1">
+                            </p>
+                          </div>
+
+                          <div className="md:col-span-2">
+                            <Input
+                              type="email"
+                              placeholder="Email * (ex: utilisateur@exemple.com)"
+                              value={formData.email}
+                              onChange={(e) => updateField('email', e.target.value)}
+                              className={fieldErrors.email ? 'border-red-500 focus:ring-red-500' : ''}
+                              required
+                            />
+                            {fieldErrors.email && (
+                              <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" />
+                                {fieldErrors.email}
+                              </p>
+                            )}
+                          </div>
                   </form>
                 </CardContent>
               </Card>
+
+                    {/* Code Promo Section */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center">
+                          <Tag className="w-5 h-5 mr-2" /> Code promo
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {!promoApplied ? (
+                          <div className="flex gap-2">
+                            <Input
+                              placeholder="Entrez votre code promo"
+                              value={promoCode}
+                              onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                              onKeyPress={(e) => e.key === 'Enter' && applyPromoCode()}
+                              disabled={promoLoading}
+                              className="flex-1"
+                            />
+                            <Button
+                              type="button"
+                              onClick={applyPromoCode}
+                              disabled={!promoCode.trim() || promoLoading}
+                              variant="outline"
+                              className="whitespace-nowrap"
+                            >
+                              {promoLoading ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                'Appliquer'
+                              )}
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="w-5 h-5 text-green-600" />
+                              <div>
+                                <p className="font-medium text-green-900">Code appliqué : {appliedCoupon?.code}</p>
+                                <p className="text-sm text-green-700">
+                                  {appliedCoupon?.type === 'free_shipping'
+                                    ? 'Livraison gratuite'
+                                    : `Réduction de ${formatPrice(appliedCoupon?.discount || 0)}`
+                                  }
+                                </p>
+                              </div>
+                            </div>
+                            <Button
+                              type="button"
+                              onClick={removePromoCode}
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
+
+                        {promoMsg && (
+                          <div className={`p-3 rounded-lg text-sm ${promoMsg.includes('✅')
+                            ? 'bg-green-50 border border-green-200 text-green-700'
+                            : 'bg-red-50 border border-red-200 text-red-700'
+                            }`}>
+                            {promoMsg}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
 
               {/* Payment Method Selection */}
               <Card>
@@ -443,9 +701,7 @@ export default function CheckoutPage() {
                       {paymentMethod === 'checkout' && (
                         <Zap className="w-5 h-5 text-jomionstore-primary absolute top-4 right-4" />
                       )}
-                    </div>
-
-
+                          </div>
                   </RadioGroup>
 
                   {/* Info message based on selection */}
@@ -459,8 +715,14 @@ export default function CheckoutPage() {
                   </div>
 
                   {errorMsg && (
-                    <div className="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-600">
-                      {errorMsg}
+                          <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded">
+                            <div className="flex items-start gap-2">
+                              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                              <div>
+                                <h4 className="text-sm font-semibold text-red-800 mb-1">Erreur de validation</h4>
+                                <p className="text-sm text-red-700">{errorMsg}</p>
+                              </div>
+                            </div>
                     </div>
                   )}
                 </CardContent>
@@ -484,7 +746,7 @@ export default function CheckoutPage() {
                 ) : (
                   <>
                             Payer maintenant
-                    <span className="ml-2">({formatPrice(total)})</span>
+                            <span className="ml-2">({formatPrice(totalsWithPromo.total)})</span>
                   </>
                 )}
               </Button>
@@ -522,19 +784,31 @@ export default function CheckoutPage() {
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span>Sous-total</span>
-                          <span>{formatPrice(subtotal)}</span>
+                                  <span>{formatPrice(totalsWithPromo.subtotal)}</span>
                         </div>
+
+                                {appliedCoupon && appliedCoupon.type !== 'free_shipping' && (
+                                  <div className="flex justify-between text-green-600">
+                                    <span>Code promo ({appliedCoupon.code})</span>
+                                    <span>-{formatPrice(totalsWithPromo.discount)}</span>
+                                  </div>
+                                )}
+
                         <div className="flex justify-between">
                           <span>Livraison</span>
-                          <span className={shipping === 0 ? 'text-green-600 font-medium' : ''}>
-                            {shipping === 0 ? 'Gratuite ✨' : formatPrice(shipping)}
+                                  <span className={totalsWithPromo.shipping === 0 ? 'text-green-600 font-medium' : ''}>
+                                    {totalsWithPromo.shipping === 0 ? (
+                                      appliedCoupon?.type === 'free_shipping' ?
+                                        `Gratuite (${appliedCoupon.code}) ✨` :
+                                        'Gratuite ✨'
+                                    ) : formatPrice(totalsWithPromo.shipping)}
                           </span>
                         </div>
                       </div>
                       <Separator />
                       <div className="flex justify-between text-lg font-bold">
                         <span>Total</span>
-                        <span className="text-jomionstore-primary">{formatPrice(total)}</span>
+                                <span className="text-jomionstore-primary">{formatPrice(totalsWithPromo.total)}</span>
                       </div>
                     </>
                   )}

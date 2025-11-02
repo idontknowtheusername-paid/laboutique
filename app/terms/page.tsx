@@ -205,7 +205,7 @@ export default function TermsPage() {
 
               <h4 className="font-semibold mt-4">6.2. Frais de livraison</h4>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>Livraison gratuite</strong> dès 50 000 XOF d'achat</li>
+                <li><strong>Livraison gratuite</strong> dès 200 000 XOF d'achat</li>
                 <li>Sinon : à partir de 2 000 XOF (selon poids et destination)</li>
               </ul>
 

@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
         name: 'Livraison Gratuite',
         price: 0,
         duration: '3-5 jours ouvrés',
-        description: 'Livraison gratuite pour commandes de plus de 50 000 FCFA'
+        description: 'Livraison gratuite pour commandes de plus de 200 000 FCFA'
       }
     };
 

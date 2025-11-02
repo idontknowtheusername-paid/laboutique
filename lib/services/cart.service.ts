@@ -290,7 +290,7 @@ export class CartService extends BaseService {
       const taxAmount = subtotal * taxRate;
       
       // Frais de livraison (logique à personnaliser)
-      const shippingAmount = subtotal > 50000 ? 0 : 2000; // Livraison gratuite au-dessus de 50 000 FCFA
+      const shippingAmount = subtotal > 200000 ? 0 : 2000; // Livraison gratuite au-dessus de 200 000 FCFA
       
       const discountAmount = 0; // À implémenter avec les coupons
       const totalAmount = subtotal + taxAmount + shippingAmount - discountAmount;

@@ -56,7 +56,7 @@ export default function DeliveryInfoPage() {
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-green-900">Livraison GRATUITE</h3>
-                    <p className="text-green-700 font-semibold">Dès 50 000 XOF d'achat</p>
+                    <p className="text-green-700 font-semibold">Dès 200 000 XOF d'achat</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -245,7 +245,7 @@ export default function DeliveryInfoPage() {
                 <Info className="w-4 h-4 text-blue-600" />
                 <AlertDescription>
                   <strong>💡 Astuce :</strong> Les délais indiqués sont hors week-ends et jours fériés. 
-                  La livraison gratuite (≥50 000 XOF) s'applique à toutes les zones.
+                  La livraison gratuite (≥200 000 XOF) s'applique à toutes les zones.
                 </AlertDescription>
               </Alert>
             </CardContent>
