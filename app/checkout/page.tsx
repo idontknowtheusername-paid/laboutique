@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { CreditCard, Truck, ShieldCheck, CheckCircle, Smartphone, Globe, Zap, ShoppingCart, Loader2 } from 'lucide-react';
+import { CreditCard, Truck, ShieldCheck, CheckCircle, Smartphone, Globe, Zap, ShoppingCart, Loader2, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
@@ -53,7 +53,7 @@ export default function CheckoutPage() {
   const shipping = cartSummary?.shipping_amount || 0;
   const total = cartSummary?.total_amount || 0;
 
-  // États pour le formulaire
+  // États pour le formulaire avec validation
   const [formData, setFormData] = React.useState({
     firstName: '',
     lastName: '',
@@ -63,6 +63,77 @@ export default function CheckoutPage() {
     phone: '',
     email: user?.email || '',
   });
+
+  // États pour les erreurs de validation
+  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
+
+  // Fonctions de validation
+  const validateField = (name: string, value: string): string => {
+    switch (name) {
+      case 'firstName':
+        if (!value.trim()) return 'Le prénom est obligatoire';
+        if (value.trim().length < 2) return 'Le prénom doit contenir au moins 2 caractères';
+        if (!/^[a-zA-ZÀ-ÿ\s-']+$/.test(value.trim())) return 'Le prénom ne doit contenir que des lettres';
+        return '';
+
+      case 'lastName':
+        if (!value.trim()) return 'Le nom est obligatoire';
+        if (value.trim().length < 2) return 'Le nom doit contenir au moins 2 caractères';
+        if (!/^[a-zA-ZÀ-ÿ\s-']+$/.test(value.trim())) return 'Le nom ne doit contenir que des lettres';
+        return '';
+
+      case 'address':
+        if (!value.trim()) return 'L\'adresse est obligatoire';
+        if (value.trim().length < 5) return 'L\'adresse doit contenir au moins 5 caractères';
+        return '';
+
+      case 'city':
+        if (!value.trim()) return 'La ville est obligatoire';
+        if (value.trim().length < 2) return 'La ville doit contenir au moins 2 caractères';
+        if (!/^[a-zA-ZÀ-ÿ\s-']+$/.test(value.trim())) return 'La ville ne doit contenir que des lettres';
+        return '';
+
+      case 'phone':
+        if (!value.trim()) return 'Le téléphone est obligatoire';
+        // Accepter différents formats internationaux
+        const phoneRegex = /^[\+]?[0-9\s\-\(\)]{8,15}$/;
+        if (!phoneRegex.test(value.replace(/\s/g, ''))) return 'Format de téléphone invalide (8-15 chiffres)';
+        return '';
+
+      case 'email':
+        if (!value.trim()) return 'L\'email est obligatoire';
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value.trim())) return 'Format d\'email invalide';
+        return '';
+
+      default:
+        return '';
+    }
+  };
+
+  // Fonction pour mettre à jour un champ avec validation
+  const updateField = (name: string, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+
+    // Valider le champ en temps réel
+    const error = validateField(name, value);
+    setFieldErrors(prev => ({ ...prev, [name]: error }));
+  };
+
+  // Validation complète du formulaire
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    Object.keys(formData).forEach(key => {
+      if (key !== 'postalCode') { // Code postal optionnel
+        const error = validateField(key, formData[key as keyof typeof formData]);
+        if (error) errors[key] = error;
+      }
+    });
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const placeOrderCheckout = async (itemsToUse: any[]) => {
     try {
@@ -154,10 +225,10 @@ export default function CheckoutPage() {
 
     console.log('[Checkout Debug] 🚀 Début du processus de commande...');
 
-    // Validation du formulaire
-    if (!formData.firstName || !formData.lastName || !formData.address || !formData.city || !formData.phone || !formData.email) {
+    // Validation complète du formulaire
+    if (!validateForm()) {
       console.error('[Checkout Debug] ❌ Validation formulaire échouée');
-      setErrorMsg('Veuillez remplir tous les champs obligatoires');
+      setErrorMsg('Veuillez corriger les erreurs dans le formulaire');
       return;
     }
 
@@ -365,8 +436,7 @@ export default function CheckoutPage() {
                             Redirection vers page sécurisée Lygos
                           </p>
                           <div className="flex flex-wrap gap-2 mt-2">
-                            <span className="text-xs bg-orange-50 text-orange-700 px-2 py-1 rounded border border-orange-200">📱 Mobile Money</span>
-                            <span className="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded border border-purple-200">💳 Carte bancaire</span>
+                                  <span className="text-xs bg-orange-50 text-orange-700 px-2 py-1 rounded border border-orange-200">📱 Mobile Money</span>
                           </div>
                         </Label>
                       </div>
@@ -383,7 +453,7 @@ export default function CheckoutPage() {
                     <div className="flex items-start gap-2">
                       <ShieldCheck className="w-4 h-4 text-jomionstore-secondary mt-0.5 flex-shrink-0" />
                       <div className="text-sm text-gray-700">
-                        <p>Vous serez redirigé vers la plateforme Lygos pour choisir votre mode de paiement (Mobile Money ou Carte bancaire) et finaliser la transaction en toute sécurité.</p>
+                              <p>Vous serez redirigé vers la plateforme Lygos pour effectuer votre paiement Mobile Money en toute sécurité.</p>
                       </div>
                     </div>
                   </div>
@@ -413,7 +483,7 @@ export default function CheckoutPage() {
                   </>
                 ) : (
                   <>
-                    🔒 Payer avec Lygos
+                            Payer maintenant
                     <span className="ml-2">({formatPrice(total)})</span>
                   </>
                 )}
