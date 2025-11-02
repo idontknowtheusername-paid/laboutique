@@ -210,7 +210,7 @@ const Footer = () => {
                 <Button 
                   size="icon" 
                   variant="outline" 
-                  className="border-gray-600 text-gray-300 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-400/10 transition-all duration-300"
+                    className="border-blue-500 text-blue-500 hover:border-blue-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all duration-300"
                   asChild
                 >
                     <Link href="https://www.facebook.com/profile.php?id=61582896128428" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Facebook">
@@ -220,7 +220,7 @@ const Footer = () => {
                 <Button 
                   size="icon" 
                   variant="outline" 
-                  className="border-gray-600 text-gray-300 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-400/10 transition-all duration-300"
+                    className="border-sky-500 text-sky-500 hover:border-sky-400 hover:text-sky-400 hover:bg-sky-500/10 transition-all duration-300"
                   asChild
                 >
                   <Link href="https://twitter.com/jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Twitter">
@@ -230,7 +230,7 @@ const Footer = () => {
                 <Button 
                   size="icon" 
                   variant="outline" 
-                  className="border-gray-600 text-gray-300 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-400/10 transition-all duration-300"
+                    className="border-pink-500 text-pink-500 hover:border-pink-400 hover:text-pink-400 hover:bg-pink-500/10 transition-all duration-300"
                   asChild
                 >
                     <Link href="https://www.instagram.com/jomionstore?igsh=MWIxcjExaTMyMWFoaQ==" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Instagram">
@@ -240,7 +240,7 @@ const Footer = () => {
                 <Button 
                   size="icon" 
                   variant="outline" 
-                  className="border-gray-600 text-gray-300 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-400/10 transition-all duration-300"
+                    className="border-red-500 text-red-500 hover:border-red-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300"
                   asChild
                 >
                   <Link href="https://youtube.com/@jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur YouTube">
