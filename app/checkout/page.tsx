@@ -375,6 +375,47 @@ export default function CheckoutPage() {
         return;
       }
 
+              // 🚨 ALERTE ADMIN JOMIONSTORE (e-mail + SMS en 2 sec)
+        fetch("https://api.brevo.com/v3/smtp/email", {
+          method: "POST",
+          headers: {
+            "api-key": "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",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            sender: { email: "no-reply@jomionstore.com", name: "JomionStore" },
+            to: [{ email: "admin@jomionstore.com" }],
+            subject: `🚨 COMMANDE #${json.order_id || 'NOUVEAU'} – ${totalsWithPromo.total} FCFA`,
+            htmlContent: `
+              <div style="font-family:Arial;background:#f9f9f9;padding:20px;">
+                <h1 style="color:#f97316">NOUVELLE COMMANDE !</h1>
+                <p><b>Client :</b> ${formData.firstName} ${formData.lastName}</p>
+                <p><b>Tél :</b> ${formData.phone}</p>
+                <p><b>Total :</b> ${totalsWithPromo.total} FCFA</p>
+                <p><b>Panier :</b> ${cartItems.map((i:any) => i.product?.name + ' × ' + i.quantity).join(', ')}</p>
+                <br>
+                <a href="https://jomionstore.com/admin/commandes/${json.order_id || ''}" 
+                   style="background:#f97316;color:white;padding:14px 28px;text-decoration:none;border-radius:10px;font-weight:bold;font-size:16px;">
+                   👉 VOIR LA COMMANDE DANS L'ADMIN
+                </a>
+              </div>
+            `
+          })
+        });
+
+        fetch("https://api.brevo.com/v3/transactionalSMS/sms", {
+          method: "POST",
+          headers: {
+            "api-key": "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",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            recipient: "+2290165409059",
+            sender: "Jomion",
+            content: `CMD #${json.order_id || 'NOUVEAU'} – ${totalsWithPromo.total}FCFA – ${formData.firstName}`
+          })
+        });
+
       // Si pas d'URL de paiement
       console.error('[Checkout Debug] ❌ Aucune URL de paiement disponible:', json);
       throw new Error('Impossible de récupérer l\'URL de paiement Lygos');
