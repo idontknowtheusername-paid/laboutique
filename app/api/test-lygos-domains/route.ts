@@ -30,10 +30,15 @@ export async function GET(request: NextRequest) {
         console.log(`[Test Domains] 🧪 Test: ${testUrl}`);
         
         // Test avec HEAD request pour éviter de charger tout le contenu
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
         const response = await fetch(testUrl, {
           method: 'HEAD',
-          timeout: 5000 // 5 secondes max
+          signal: controller.signal
         });
+
+        clearTimeout(timeoutId);
 
         results.push({
           domain: domain,
