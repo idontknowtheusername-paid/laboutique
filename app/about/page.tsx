@@ -53,16 +53,16 @@ const values = [
 
 const team = [
   {
-    name: 'Joel CHAYE',
+    name: 'Joel TCHAYE',
     role: 'CEO & Fondateur',
-    image: 'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=300',
+    image: '/images/notrequipe/joeltchaye.png',
     description: 'Entrepreneur passionné avec plus de 15 ans d\'expérience dans le e-commerce africain.'
   },
   {
     name: 'Beyond System',
     role: 'Developpeur',
-    image: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=300',
-    description: 'Experte en technologies web et intelligence artificielle, diplômée MIT.'
+    image: 'https://images.pexels.com/photos/996329/pexels-photo-99329.jpeg?auto=compress&cs=tinysrgb&w=300',
+    description: 'Expert en technologies web et intelligence artificielle, diplômée MIT.'
   },
   {
     name: 'Monsieur P',
