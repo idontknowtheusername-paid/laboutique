@@ -124,19 +124,19 @@ export default function CheckoutPage() {
         throw new Error(json.error || 'Échec de l\'initialisation du paiement');
       }
 
-      // ✅ REDIRECTION vers la page de paiement
+      // ✅ REDIRECTION DIRECTE vers la plateforme Lygos
       if (json.success && json.payment_url) {
-        console.log('[Checkout Debug] 🔗 URL de paiement reçue:', json.payment_url);
-        console.log('[Checkout Debug] 🚀 Redirection vers la page de paiement...');
+        console.log('[Checkout Debug] 🔗 URL Lygos reçue:', json.payment_url);
+        console.log('[Checkout Debug] 🚀 Redirection DIRECTE vers Lygos...');
 
-        // Redirection vers l'URL fournie par Lygos (notre site avec widget intégré)
+        // Redirection directe vers la plateforme de paiement Lygos
         window.location.href = json.payment_url;
         return;
       }
 
       // Si pas d'URL de paiement
       console.error('[Checkout Debug] ❌ Aucune URL de paiement disponible:', json);
-      throw new Error('Impossible de récupérer l\'URL de paiement');
+      throw new Error('Impossible de récupérer l\'URL de paiement Lygos');
 
       setPlaced(true);
     } catch (error: any) {

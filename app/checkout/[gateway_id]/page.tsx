@@ -22,43 +22,57 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Intégrer le widget Lygos
-    const initializeLygosWidget = () => {
+    // Cette page ne devrait plus être utilisée avec la nouvelle config Lygos
+    // Rediriger vers la vraie URL Lygos
+    const redirectToLygos = () => {
       try {
-        console.log('[Lygos Widget] Initialisation pour gateway:', gateway_id);
+        // Construire l'URL Lygos directement
+        const lygosUrl = `https://pay.lygosapp.com/checkout/${gateway_id}`;
+        console.log('[Redirect] Redirection vers Lygos:', lygosUrl);
 
-        // Créer l'URL du widget Lygos
-        const lygosWidgetUrl = `https://widget.lygosapp.com/pay/${gateway_id}`;
-
-        // Créer l'iframe pour le widget Lygos
-        const iframe = document.createElement('iframe');
-        iframe.src = lygosWidgetUrl;
-        iframe.style.width = '100%';
-        iframe.style.height = '600px';
-        iframe.style.border = 'none';
-        iframe.style.borderRadius = '8px';
-
-        // Insérer l'iframe dans le conteneur
-        const container = document.getElementById('lygos-payment-container');
-        if (container) {
-          container.innerHTML = '';
-          container.appendChild(iframe);
-        }
-
-        setLoading(false);
-        console.log('[Lygos Widget] Widget chargé avec succès');
-
+        // Redirection immédiate
+        window.location.href = lygosUrl;
       } catch (err) {
-        console.error('[Lygos Widget] Erreur:', err);
-        setError('Erreur lors du chargement du widget de paiement');
+        console.error('[Redirect] Erreur:', err);
+        setError('Cette page n\'est plus utilisée. Retournez au checkout.');
         setLoading(false);
       }
     };
 
-    // Délai pour laisser le DOM se charger
-    const timer = setTimeout(initializeLygosWidget, 1000);
+    // Délai court pour afficher le message puis rediriger
+    const timer = setTimeout(redirectToLygos, 2000);
     return () => clearTimeout(timer);
   }, [gateway_id]);
+
+  const handlePaymentMethod = async (method: 'mobile_money' | 'card') => {
+    try {
+      setLoading(true);
+
+      // Appeler notre API pour initier le paiement avec la méthode choisie
+      const response = await fetch('/api/payment/initiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gateway_id,
+          payment_method: method
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success && result.payment_url) {
+        // Rediriger vers l'URL de paiement fournie par Lygos
+        window.location.href = result.payment_url;
+      } else {
+        setError(result.error || 'Erreur lors de l\'initialisation du paiement');
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error('Erreur paiement:', err);
+      setError('Erreur de connexion. Veuillez réessayer.');
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -71,7 +85,7 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-center space-y-4">
-            <p className="text-gray-600">Chargement du système de paiement Lygos...</p>
+            <p className="text-gray-600">Redirection vers la plateforme sécurisée Lygos...</p>
             
             <div className="flex justify-center gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -155,9 +169,20 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
             </CardHeader>
             <CardContent>
               <div id="lygos-payment-container" className="min-h-[600px] border border-gray-200 rounded-lg overflow-hidden bg-white">
-                <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-                  <Loader2 className="w-6 h-6 animate-spin mr-2" />
-                  Chargement du widget de paiement Lygos...
+                <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                  <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Redirection en cours...</h3>
+                  <p className="text-gray-600 mb-4">Vous allez être redirigé vers la plateforme sécurisée Lygos</p>
+                  <div className="flex gap-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="w-4 h-4" />
+                      Carte bancaire
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Smartphone className="w-4 h-4" />
+                      Mobile Money
+                    </div>
+                  </div>
                 </div>
               </div>
 
