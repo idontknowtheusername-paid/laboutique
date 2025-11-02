@@ -5,8 +5,8 @@ export interface Order {
   id: string;
   order_number: string;
   user_id: string;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
+  status: 'pending' | 'confirmed' | 'preparing' | 'processing' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled' | 'returned';
+  payment_status: 'pending' | 'paid' | 'failed' | 'refunded' | 'partially_refunded';
   payment_method?: string;
   subtotal: number;
   tax_amount: number;
@@ -17,6 +17,9 @@ export interface Order {
   shipping_address?: any;
   billing_address?: any;
   notes?: string;
+  tracking_number?: string;
+  estimated_delivery?: string;
+  priority: 'low' | 'normal' | 'high' | 'urgent';
   created_at: string;
   updated_at: string;
   // Relations
@@ -26,6 +29,7 @@ export interface Order {
     email: string;
     first_name?: string;
     last_name?: string;
+    phone?: string;
   };
 }
 

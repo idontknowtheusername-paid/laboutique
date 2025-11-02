@@ -32,38 +32,75 @@ export default function AdminOrderDetailPage() {
     (async () => {
       setLoading(true);
       try {
-        // Récupérer les détails de la commande
+        console.log('🔍 [DEBUG] Chargement commande ID:', orderId);
+
+        // Essayer d'abord une requête simple sans relations
+        const { data: simpleData, error: simpleError } = await (OrdersService as any).getSupabaseClient()
+          .from('orders')
+          .select('*')
+          .eq('id', orderId)
+          .single();
+
+        console.log('🔍 [DEBUG] Requête simple:', { data: simpleData, error: simpleError });
+
+        if (simpleError) {
+          console.error('❌ [DEBUG] Erreur requête simple:', simpleError);
+          return;
+        }
+
+        if (!simpleData) {
+          console.error('❌ [DEBUG] Aucune commande trouvée avec ID:', orderId);
+          return;
+        }
+
+        // Si la requête simple fonctionne, essayer avec les relations
         const { data, error } = await (OrdersService as any).getSupabaseClient()
           .from('orders')
           .select(`
             *,
-            user:profiles!orders_user_id_fkey(*),
             order_items(
               *,
-              product:products(*),
-              vendor:profiles!order_items_vendor_id_fkey(*)
+              product:products(id, name, slug, images, price)
             )
           `)
           .eq('id', orderId)
           .single();
 
+        // Récupérer les infos utilisateur séparément depuis la table profiles
+        let userData = null;
+        if (simpleData?.user_id) {
+          const { data: userProfile } = await (OrdersService as any).getSupabaseClient()
+            .from('profiles')
+            .select('id, email, first_name, last_name, phone')
+            .eq('id', simpleData.user_id)
+            .single();
+          userData = userProfile;
+        }
+
+        console.log('🔍 [DEBUG] Requête avec relations:', { data, error });
+
         if (!error && data) {
-          setOrder(data as Order);
-          
-          // Charger l'historique de la commande
-          const { data: historyData, error: historyError } = await (OrdersService as any).getSupabaseClient()
-            .from('order_history')
-            .select('*')
-            .eq('order_id', orderId)
-            .order('created_at', { ascending: false });
-            
-          if (!historyError && historyData) {
-            setOrderHistory(historyData);
-          }
+          // Ajouter les infos utilisateur aux données de la commande
+          const orderWithUser = {
+            ...data,
+            user: userData
+          };
+          setOrder(orderWithUser as Order);
+          console.log('✅ [DEBUG] Commande chargée avec succès');
+          console.log('🏠 [DEBUG] Adresse de livraison:', orderWithUser.shipping_address);
+          console.log('👤 [DEBUG] Données utilisateur:', userData);
+        } else {
+          console.error('❌ [DEBUG] Erreur avec relations:', error);
+          // Utiliser les données simples en fallback avec les infos utilisateur
+          const orderWithUser = {
+            ...simpleData,
+            user: userData,
+            order_items: []
+          };
+          setOrder(orderWithUser as Order);
         }
       } catch (error) {
-        // L'erreur sera gérée par l'état loading et l'affichage conditionnel
-        console.error('Erreur lors du chargement de la commande:', error);
+        console.error('💥 [DEBUG] Erreur catch:', error);
       } finally {
         setLoading(false);
       }
@@ -142,10 +179,7 @@ export default function AdminOrderDetailPage() {
     }
   };
 
-  const openStatusModal = (status: string) => {
-    setNewStatus(status);
-    setShowStatusModal(true);
-  };
+  // Fonction supprimée - logique intégrée dans les boutons
 
   const handleExportPDF = () => {
     if (!order) return;
@@ -252,14 +286,36 @@ export default function AdminOrderDetailPage() {
     }
   };
 
-  const handleSendEmail = () => {
+  const handleSendEmail = async () => {
     if (!order || !order.user?.email) {
       alert('Email du client non disponible');
       return;
     }
-    
-    const subject = `Commande ${order.order_number || order.id} - JomionStore`;
-    const body = `Bonjour ${order.user.first_name || ''} ${order.user.last_name || ''},
+
+    try {
+      // Utiliser le service Brevo pour envoyer l'email
+      const response = await fetch('/api/admin/orders/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId: order.id,
+          orderNumber: order.order_number || order.id,
+          customerEmail: order.user.email,
+          customerName: `${order.user.first_name || ''} ${order.user.last_name || ''}`.trim(),
+          status: order.status,
+          totalAmount: order.total_amount,
+          orderDate: order.created_at
+        })
+      });
+
+      if (response.ok) {
+        alert('Email envoyé avec succès !');
+      } else {
+    // Fallback vers mailto si l'API échoue
+        const subject = `Commande ${order.order_number || order.id} - JomionStore`;
+        const body = `Bonjour ${order.user.first_name || ''} ${order.user.last_name || ''},
 
 Votre commande ${order.order_number || order.id} a été traitée.
 
@@ -273,18 +329,16 @@ Merci pour votre confiance.
 
 L'équipe JomionStore`;
 
-    const mailtoLink = `mailto:${order.user.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(mailtoLink);
+        const mailtoLink = `mailto:${order.user.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.open(mailtoLink);
+      }
+    } catch (error) {
+      console.error('Erreur envoi email:', error);
+      alert('Erreur lors de l\'envoi de l\'email');
+    }
   };
 
-  const handleCallCustomer = () => {
-    if (!order || !(order.user as any)?.phone) {
-      alert('Numéro de téléphone du client non disponible');
-      return;
-    }
-    
-    window.open(`tel:${(order.user as any).phone}`);
-  };
+  // Fonction supprimée - pas besoin du bouton d'appel
 
   const getStatusColor = (status?: string) => {
     switch (status) {
@@ -393,7 +447,10 @@ L'équipe JomionStore`;
                         <Button 
                           size="sm" 
                           variant="outline"
-                          onClick={() => openStatusModal(order.status)}
+                          onClick={() => {
+                            setNewStatus(order.status);
+                            setShowStatusModal(true);
+                          }}
                         >
                           <Edit className="w-3 h-3 mr-1" />
                           Modifier
@@ -404,6 +461,59 @@ L'équipe JomionStore`;
                       <label className="text-sm font-medium text-gray-500">Montant total</label>
                       <p className="text-xl font-bold text-green-600">{formatPrice(order.total_amount)}</p>
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Adresses de livraison */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5" />
+                    Adresses de livraison
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Adresse de livraison uniquement */}
+                  <div>
+                    {order.shipping_address ? (
+                      <div className="p-4 bg-gray-50 rounded-lg">
+                        <div className="space-y-2">
+                          <div>
+                            <span className="font-medium text-gray-700">Client: </span>
+                            <span>{order.user?.first_name && order.user?.last_name
+                              ? `${order.user.first_name} ${order.user.last_name}`
+                              : order.user?.email || 'Client inconnu'
+                            }</span>
+                          </div>
+
+                          <div>
+                            <span className="font-medium text-gray-700">Adresse: </span>
+                            <span>{order.shipping_address.address || 'Non spécifiée'}</span>
+                          </div>
+
+                          <div>
+                            <span className="font-medium text-gray-700">Ville: </span>
+                            <span>{order.shipping_address.city || 'Non spécifiée'}</span>
+                          </div>
+
+                          <div>
+                            <span className="font-medium text-gray-700">Pays: </span>
+                            <span>{order.shipping_address.country || 'Bénin'}</span>
+                          </div>
+
+                          <div>
+                            <span className="font-medium text-gray-700">Téléphone: </span>
+                            <span>{order.shipping_address.phone || order.user?.phone || 'Non spécifié'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-red-600 font-medium">⚠️ Adresse de livraison manquante</p>
+                        <p className="text-red-500 text-sm">Cette commande ne peut pas être traitée sans adresse de livraison.</p>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -420,24 +530,31 @@ L'équipe JomionStore`;
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 bg-jomionstore-primary rounded-full flex items-center justify-center">
                       <span className="text-white font-medium text-lg">
-                        {(order.user?.first_name || order.user?.email || '?')[0]}
+                        {(order.user?.first_name || order.user?.email || '?')[0].toUpperCase()}
                       </span>
                     </div>
                     <div>
                       <p className="font-medium text-lg">
-                        {order.user?.first_name} {order.user?.last_name}
+                        {order.user?.first_name && order.user?.last_name
+                          ? `${order.user.first_name} ${order.user.last_name}`
+                          : order.user?.email || 'Client inconnu'
+                        }
                       </p>
-                      <p className="text-sm text-gray-500">{order.user?.email}</p>
+                      <p className="text-sm text-gray-500">{order.user?.email || 'Email non disponible'}</p>
+                      {order.user?.phone && (
+                        <p className="text-sm text-gray-500">{order.user.phone}</p>
+                      )}
                     </div>
                   </div>
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="sm" onClick={handleSendEmail}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleSendEmail}
+                      disabled={!order.user?.email}
+                    >
                       <Mail className="w-4 h-4 mr-1" />
                       Envoyer un email
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={handleCallCustomer}>
-                      <Phone className="w-4 h-4 mr-1" />
-                      Appeler
                     </Button>
                   </div>
                 </CardContent>
@@ -458,8 +575,11 @@ L'équipe JomionStore`;
                   <Button 
                     className="w-full justify-start" 
                     variant="outline"
-                    onClick={() => openStatusModal('processing')}
-                    disabled={updating || order.status === 'processing'}
+                    onClick={() => {
+                      setNewStatus('processing');
+                      setShowStatusModal(true);
+                    }}
+                    disabled={updating || order.status === 'processing' || order.status === 'delivered' || order.status === 'cancelled'}
                   >
                     <Clock className="w-4 h-4 mr-2" />
                     Marquer en cours
@@ -467,8 +587,11 @@ L'équipe JomionStore`;
                   <Button 
                     className="w-full justify-start" 
                     variant="outline"
-                    onClick={() => openStatusModal('shipped')}
-                    disabled={updating || order.status === 'shipped'}
+                    onClick={() => {
+                      setNewStatus('shipped');
+                      setShowStatusModal(true);
+                    }}
+                    disabled={updating || order.status === 'shipped' || order.status === 'delivered' || order.status === 'cancelled' || order.status === 'pending'}
                   >
                     <Truck className="w-4 h-4 mr-2" />
                     Marquer expédiée
@@ -476,8 +599,11 @@ L'équipe JomionStore`;
                   <Button 
                     className="w-full justify-start" 
                     variant="outline"
-                    onClick={() => openStatusModal('delivered')}
-                    disabled={updating || order.status === 'delivered'}
+                    onClick={() => {
+                      setNewStatus('delivered');
+                      setShowStatusModal(true);
+                    }}
+                    disabled={updating || order.status === 'delivered' || order.status === 'cancelled' || order.status === 'pending'}
                   >
                     <Package className="w-4 h-4 mr-2" />
                     Marquer livrée
@@ -485,8 +611,11 @@ L'équipe JomionStore`;
                   <Button 
                     className="w-full justify-start text-red-600 border-red-200 hover:bg-red-50" 
                     variant="outline"
-                    onClick={() => openStatusModal('cancelled')}
-                    disabled={updating || order.status === 'cancelled'}
+                    onClick={() => {
+                      setNewStatus('cancelled');
+                      setShowStatusModal(true);
+                    }}
+                    disabled={updating || order.status === 'cancelled' || order.status === 'delivered'}
                   >
                     Annuler la commande
                   </Button>

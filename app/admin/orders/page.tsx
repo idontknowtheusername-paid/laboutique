@@ -312,14 +312,6 @@ export default function AdminOrdersPage() {
                         >
                           <Eye className="w-4 h-4" />
                         </AccessibleButton>
-                        <AccessibleButton 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleEditOrder(o.id)}
-                          description="Modifier la commande"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </AccessibleButton>
                       </div>
                     </td>
                   </tr>
