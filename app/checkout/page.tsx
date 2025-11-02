@@ -232,7 +232,7 @@ export default function CheckoutPage() {
         setPromoApplied(true);
         setAppliedCoupon({
           code: promoCode.trim().toUpperCase(),
-          type: 'fixed',
+          type: response.data.type as 'percentage' | 'fixed' | 'free_shipping',
           discount: response.data.discountAmount,
           couponId: response.data.couponId
         });
@@ -267,20 +267,33 @@ export default function CheckoutPage() {
     let discountAmount = 0;
 
     if (appliedCoupon) {
+      console.log('[Checkout] 🧮 Calcul avec coupon:', appliedCoupon);
+
       switch (appliedCoupon.type) {
         case 'percentage':
           discountAmount = (subtotal * appliedCoupon.discount) / 100;
+          console.log('[Checkout] 📊 Réduction pourcentage:', discountAmount);
           break;
         case 'fixed':
           discountAmount = appliedCoupon.discount;
+          console.log('[Checkout] 💰 Réduction fixe:', discountAmount);
           break;
         case 'free_shipping':
           finalShipping = 0;
+          discountAmount = 0; // Pas de réduction monétaire, juste livraison gratuite
+          console.log('[Checkout] 🚚 Livraison gratuite appliquée');
           break;
       }
     }
 
     const finalTotal = finalSubtotal + finalShipping - discountAmount;
+
+    console.log('[Checkout] 📋 Totaux calculés:', {
+      subtotal: finalSubtotal,
+      shipping: finalShipping,
+      discount: discountAmount,
+      total: finalTotal
+    });
 
     return {
       subtotal: finalSubtotal,

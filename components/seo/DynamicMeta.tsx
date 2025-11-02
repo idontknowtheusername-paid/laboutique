@@ -32,7 +32,7 @@ const DynamicMeta: React.FC<DynamicMetaProps> = ({
     sameAs: [
       "https://www.facebook.com/profile.php?id=61582896128428",
       "https://www.instagram.com/jomionstore?igsh=MWIxcjExaTMyMWFoaQ==",
-      "https://twitter.com/jomionstore",
+      "https://tiktok.com/@jomionstore",
     ],
     contactPoint: {
       "@type": "ContactPoint",

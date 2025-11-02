@@ -4,12 +4,24 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, CheckCircle, AlertCircle, Gift, Star, Shield, Truck, ArrowRight } from 'lucide-react';
+import { Mail, Phone, MapPin, Facebook, Instagram, Youtube, CheckCircle, AlertCircle, Gift, Star, Shield, Truck, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import SupportWidget from '@/components/support/SupportWidget';
+
+// Icône TikTok personnalisée
+const TikTokIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M19.321 5.562a5.124 5.124 0 0 1-.443-.258 6.228 6.228 0 0 1-1.137-.966c-.849-.849-1.294-1.98-1.294-3.338h-3.239v14.19c0 1.411-1.147 2.558-2.558 2.558s-2.558-1.147-2.558-2.558 1.147-2.558 2.558-2.558c.284 0 .556.047.812.133V9.526a5.95 5.95 0 0 0-.812-.056c-3.284 0-5.95 2.666-5.95 5.95s2.666 5.95 5.95 5.95 5.95-2.666 5.95-5.95V8.828a9.537 9.537 0 0 0 5.721 1.903V7.492a6.228 6.228 0 0 1-3.0-1.93z" />
+  </svg>
+);
 
 const Footer = () => {
   const [email, setEmail] = useState('');
@@ -220,11 +232,11 @@ const Footer = () => {
                 <Button 
                   size="icon" 
                   variant="outline" 
-                    className="border-sky-500 text-sky-500 hover:border-sky-400 hover:text-sky-400 hover:bg-sky-500/10 transition-all duration-300"
+                    className="border-black text-black hover:border-gray-800 hover:text-gray-800 hover:bg-black/10 transition-all duration-300"
                   asChild
                 >
-                  <Link href="https://twitter.com/jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Twitter">
-                    <Twitter className="w-5 h-5" />
+                    <Link href="https://tiktok.com/@jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur TikTok">
+                      <TikTokIcon className="w-5 h-5" />
                   </Link>
                 </Button>
                 <Button 

@@ -464,7 +464,7 @@ export class CartService extends BaseService {
   static async applyCoupon(
     userId: string,
     couponCode: string
-  ): Promise<ServiceResponse<{ discountAmount: number; couponId: string }>> {
+  ): Promise<ServiceResponse<{ discountAmount: number; couponId: string; type: string }>> {
     try {
       console.log('[CartService] 🔍 Recherche coupon:', couponCode.toUpperCase());
 
@@ -480,12 +480,12 @@ export class CartService extends BaseService {
 
       if (couponError) {
         console.log('[CartService] ❌ Erreur Supabase:', couponError);
-        return this.createResponse<{ discountAmount: number; couponId: string }>(null, `Erreur DB: ${couponError.message}`);
+        return this.createResponse<{ discountAmount: number; couponId: string; type: string }>(null, `Erreur DB: ${couponError.message}`);
       }
 
       if (!coupon) {
         console.log('[CartService] ❌ Aucun coupon trouvé');
-        return this.createResponse<{ discountAmount: number; couponId: string }>(null, 'Coupon invalide ou expiré');
+        return this.createResponse<{ discountAmount: number; couponId: string; type: string }>(null, 'Coupon invalide ou expiré');
       }
 
       console.log('[CartService] ✅ Coupon trouvé:', coupon);
@@ -494,54 +494,61 @@ export class CartService extends BaseService {
       const c = coupon as any;
       const now = new Date();
       if (c.starts_at && new Date(c.starts_at) > now) {
-        return this.createResponse<{ discountAmount: number; couponId: string }>(null, 'Ce coupon n\'est pas encore valide');
+        return this.createResponse<{ discountAmount: number; couponId: string; type: string }>(null, 'Ce coupon n\'est pas encore valide');
       }
 
       if (c.expires_at && new Date(c.expires_at) < now) {
-        return this.createResponse<{ discountAmount: number; couponId: string }>(null, 'Ce coupon a expiré');
+        return this.createResponse<{ discountAmount: number; couponId: string; type: string }>(null, 'Ce coupon a expiré');
       }
 
       if (c.usage_limit && c.used_count >= c.usage_limit) {
-        return this.createResponse<{ discountAmount: number; couponId: string }>(null, 'Ce coupon a atteint sa limite d\'utilisation');
+        return this.createResponse<{ discountAmount: number; couponId: string; type: string }>(null, 'Ce coupon a atteint sa limite d\'utilisation');
       }
 
       // Récupérer le résumé du panier
       const summaryResponse = await this.getCartSummary(userId);
       if (!summaryResponse.success || !summaryResponse.data) {
-        return this.createResponse<{ discountAmount: number; couponId: string }>(null, 'Erreur lors du calcul du panier');
+        return this.createResponse<{ discountAmount: number; couponId: string; type: string }>(null, 'Erreur lors du calcul du panier');
       }
 
       const { subtotal } = summaryResponse.data;
 
       // Vérifier le montant minimum
       if (c.minimum_amount && subtotal < c.minimum_amount) {
-        return this.createResponse<{ discountAmount: number; couponId: string }>(null, `Montant minimum requis: ${c.minimum_amount} FCFA`);
+        return this.createResponse<{ discountAmount: number; couponId: string; type: string }>(null, `Montant minimum requis: ${c.minimum_amount} FCFA`);
       }
 
       // Calculer la réduction
       let discountAmount = 0;
+
       if (c.type === 'percentage') {
         discountAmount = (subtotal * c.value) / 100;
+        // Appliquer le montant maximum si défini
+        if (c.maximum_amount && discountAmount > c.maximum_amount) {
+          discountAmount = c.maximum_amount;
+        }
       } else if (c.type === 'fixed') {
         discountAmount = c.value;
+      } else if (c.type === 'free_shipping') {
+        // Pour la livraison gratuite, on retourne 0 comme réduction
+        // Le traitement se fera côté frontend
+        discountAmount = 0;
       }
 
-      // Appliquer le montant maximum si défini
-      if (c.maximum_amount && discountAmount > c.maximum_amount) {
-        discountAmount = c.maximum_amount;
-      }
-
-      // S'assurer que la réduction ne dépasse pas le sous-total
-      if (discountAmount > subtotal) {
+      // S'assurer que la réduction ne dépasse pas le sous-total (sauf free_shipping)
+      if (c.type !== 'free_shipping' && discountAmount > subtotal) {
         discountAmount = subtotal;
       }
 
+      console.log('[CartService] 💰 Réduction calculée:', { type: c.type, discountAmount });
+
       return this.createResponse({
         discountAmount,
-        couponId: c.id
+        couponId: c.id,
+        type: c.type
       });
     } catch (error) {
-      return this.createResponse<{ discountAmount: number; couponId: string }>(null, this.handleError(error));
+      return this.createResponse<{ discountAmount: number; couponId: string; type: string }>(null, this.handleError(error));
     }
   }
 }
