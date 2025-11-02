@@ -375,42 +375,42 @@ export default function CheckoutPage() {
         return;
       }
 
-              // 🚨 ALERTE ADMIN JOMIONSTORE (e-mail + SMS en 2 sec)
-        fetch("https://api.brevo.com/v3/smtp/email", {
+              // 🚨 ALERTE ADMIN (clé cachée !)
+        await fetch("https://api.brevo.com/v3/smtp/email", {
           method: "POST",
           headers: {
-            "api-key": "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",
+            "api-key": process.env.BREVO_API_KEY!,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
             sender: { email: "no-reply@jomionstore.com", name: "JomionStore" },
-            to: [{ email: "admin@jomionstore.com" }],
+            to: [{ email: process.env.BREVO_ADMIN_EMAIL! }],
             subject: `🚨 COMMANDE #${json.order_id || 'NOUVEAU'} – ${totalsWithPromo.total} FCFA`,
             htmlContent: `
-              <div style="font-family:Arial;background:#f9f9f9;padding:20px;">
-                <h1 style="color:#f97316">NOUVELLE COMMANDE !</h1>
+              <div style="font-family:Arial;background:#f9f9f9;padding:20px;border-radius:12px;">
+                <h1 style="color:#f97316">🎉 NOUVELLE COMMANDE !</h1>
                 <p><b>Client :</b> ${formData.firstName} ${formData.lastName}</p>
                 <p><b>Tél :</b> ${formData.phone}</p>
                 <p><b>Total :</b> ${totalsWithPromo.total} FCFA</p>
                 <p><b>Panier :</b> ${cartItems.map((i:any) => i.product?.name + ' × ' + i.quantity).join(', ')}</p>
                 <br>
                 <a href="https://jomionstore.com/admin/commandes/${json.order_id || ''}" 
-                   style="background:#f97316;color:white;padding:14px 28px;text-decoration:none;border-radius:10px;font-weight:bold;font-size:16px;">
-                   👉 VOIR LA COMMANDE DANS L'ADMIN
+                   style="background:#f97316;color:white;padding:14px 32px;text-decoration:none;border-radius:12px;font-weight:bold;font-size:16px;">
+                   👉 VOIR LA COMMANDE
                 </a>
               </div>
             `
           })
         });
 
-        fetch("https://api.brevo.com/v3/transactionalSMS/sms", {
+        await fetch("https://api.brevo.com/v3/transactionalSMS/sms", {
           method: "POST",
           headers: {
-            "api-key": "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",
+            "api-key": process.env.BREVO_API_KEY!,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            recipient: "+2290165409059",
+            recipient: process.env.BREVO_ADMIN_PHONE!,
             sender: "Jomion",
             content: `CMD #${json.order_id || 'NOUVEAU'} – ${totalsWithPromo.total}FCFA – ${formData.firstName}`
           })
