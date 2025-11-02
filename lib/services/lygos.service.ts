@@ -178,13 +178,14 @@ export class LygosService extends BaseService {
     try {
       const baseUrl = this.getBaseUrl();
       
-      // ✅ FALLBACK DÉVELOPPEMENT : Si pas d'API Key, simuler une réponse
+      // ✅ FALLBACK DÉVELOPPEMENT : Si pas d'API Key ou API Key invalide, simuler une réponse
       const apiKey = process.env.LYGOS_API_KEY;
-      if (!apiKey && process.env.NODE_ENV === 'development') {
+      if ((!apiKey || apiKey === 'your-lygos-api-key-here') && process.env.NODE_ENV === 'development') {
         console.warn('[Lygos] ⚠️ Mode développement - Simulation gateway');
+        const devGatewayId = `dev-${Date.now()}`;
         return {
-          gateway_id: `dev-${Date.now()}`,
-          payment_url: `http://localhost:3000/checkout/dev-${Date.now()}?order_id=${input.orderId}`,
+          gateway_id: devGatewayId,
+          payment_url: `https://pay.lygosapp.com/${devGatewayId}`,
           status: 'created',
           amount: input.amount,
           currency: 'XOF',

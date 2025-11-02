@@ -3,62 +3,64 @@ import { LygosService } from '@/lib/services/lygos.service';
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('[Test Lygos] 🧪 Début du test de configuration...');
+    console.log('🧪 [TEST LYGOS] Début des tests...');
 
-    // Test de la configuration
-    const configTest = await LygosService.testConfiguration();
-    
-    console.log('[Test Lygos] 📋 Résultat test config:', configTest);
-
-    // Test de création d'une passerelle factice
-    let gatewayTest = null;
+    // Test 1: Configuration (skip si pas d'API Key)
+    console.log('📋 Test 1: Configuration Lygos');
+    let configTest;
     try {
-      gatewayTest = await LygosService.createGateway({
-        amount: 1000, // 1000 FCFA
-        currency: 'XOF',
-        customer: {
-          firstName: 'Test',
-          lastName: 'User',
-          email: 'test@example.com',
-          phone: '+22967000000',
-          address: 'Test Address',
-          city: 'Cotonou',
-          country: 'BJ'
-        },
-        orderId: `TEST-${Date.now()}`,
-        returnUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/test-return`,
-        webhookUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/webhooks/lygos`,
-        description: 'Test de configuration Lygos'
-      });
-      
-      console.log('[Test Lygos] ✅ Passerelle test créée:', gatewayTest);
-    } catch (gatewayError: any) {
-      console.error('[Test Lygos] ❌ Erreur création passerelle test:', gatewayError);
-      gatewayTest = { error: gatewayError.message };
+      configTest = await LygosService.testConfiguration();
+    } catch (error: any) {
+      configTest = { success: false, message: 'API Key manquante (mode dev)' };
     }
+    console.log('✅ Résultat config:', configTest);
+
+    // Test 2: Création d'un gateway de test (mode dev si pas d'API Key)
+    console.log('📋 Test 2: Création gateway');
+    const testGateway = await LygosService.createGateway({
+      amount: 1000,
+      currency: 'XOF',
+      customer: {
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test@jomionstore.com',
+        phone: '+22912345678'
+      },
+      orderId: `test-${Date.now()}`,
+      returnUrl: 'https://jomionstore.com/success',
+      description: 'Test de paiement JomionStore'
+    });
+    console.log('✅ Gateway créé:', testGateway);
+
+    // Test 3: Liste des gateways
+    console.log('📋 Test 3: Liste gateways');
+    const gateways = await LygosService.listGateways();
+    console.log('✅ Gateways trouvés:', gateways.length);
+
+    // Test 4: Vérification statut
+    console.log('📋 Test 4: Statut paiement');
+    const status = await LygosService.getPaymentStatus(testGateway.order_id || 'test-order');
+    console.log('✅ Statut:', status);
 
     return NextResponse.json({
       success: true,
-      timestamp: new Date().toISOString(),
-      environment: {
-        LYGOS_API_KEY: !!process.env.LYGOS_API_KEY,
-        LYGOS_MODE: process.env.LYGOS_MODE || 'sandbox',
-        LYGOS_API_URL: process.env.LYGOS_API_URL || 'default',
-        APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'not set'
-      },
-      tests: {
+      message: 'Tests Lygos terminés avec succès',
+      results: {
         configuration: configTest,
-        gateway_creation: gatewayTest
+        gateway: testGateway,
+        gateways_count: gateways.length,
+        payment_status: status
       }
     });
 
   } catch (error: any) {
-    console.error('[Test Lygos] 💥 Erreur générale:', error);
+    console.error('❌ [TEST LYGOS] Erreur:', error);
     
     return NextResponse.json({
       success: false,
+      message: 'Erreur lors des tests Lygos',
       error: error.message,
-      timestamp: new Date().toISOString()
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     }, { status: 500 });
   }
 }
