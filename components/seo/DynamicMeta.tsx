@@ -30,8 +30,8 @@ const DynamicMeta: React.FC<DynamicMetaProps> = ({
     url: url,
       logo: `${url}/logo-jomion.svg`,
     sameAs: [
-      "https://apple.com",
-      "https://instagram.com/jomionstore",
+      "https://www.facebook.com/profile.php?id=61582896128428",
+      "https://www.instagram.com/jomionstore?igsh=MWIxcjExaTMyMWFoaQ==",
       "https://twitter.com/jomionstore",
     ],
     contactPoint: {

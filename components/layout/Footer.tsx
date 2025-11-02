@@ -213,7 +213,7 @@ const Footer = () => {
                   className="border-gray-600 text-gray-300 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-400/10 transition-all duration-300"
                   asChild
                 >
-                  <Link href="https://facebook.com/jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Facebook">
+                    <Link href="https://www.facebook.com/profile.php?id=61582896128428" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Facebook">
                     <Facebook className="w-5 h-5" />
                   </Link>
                 </Button>
@@ -233,7 +233,7 @@ const Footer = () => {
                   className="border-gray-600 text-gray-300 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-400/10 transition-all duration-300"
                   asChild
                 >
-                  <Link href="https://instagram.com/jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Instagram">
+                    <Link href="https://www.instagram.com/jomionstore?igsh=MWIxcjExaTMyMWFoaQ==" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Instagram">
                     <Instagram className="w-5 h-5" />
                   </Link>
                 </Button>

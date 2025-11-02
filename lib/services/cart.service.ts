@@ -466,6 +466,8 @@ export class CartService extends BaseService {
     couponCode: string
   ): Promise<ServiceResponse<{ discountAmount: number; couponId: string }>> {
     try {
+      console.log('[CartService] 🔍 Recherche coupon:', couponCode.toUpperCase());
+
       // Récupérer le coupon
       const { data: coupon, error: couponError } = await this.getSupabaseClient()
         .from('coupons')
@@ -474,9 +476,19 @@ export class CartService extends BaseService {
         .eq('status', 'active')
         .single();
 
-      if (couponError || !coupon) {
+      console.log('[CartService] 📥 Résultat requête coupon:', { coupon, couponError });
+
+      if (couponError) {
+        console.log('[CartService] ❌ Erreur Supabase:', couponError);
+        return this.createResponse<{ discountAmount: number; couponId: string }>(null, `Erreur DB: ${couponError.message}`);
+      }
+
+      if (!coupon) {
+        console.log('[CartService] ❌ Aucun coupon trouvé');
         return this.createResponse<{ discountAmount: number; couponId: string }>(null, 'Coupon invalide ou expiré');
       }
+
+      console.log('[CartService] ✅ Coupon trouvé:', coupon);
 
       // Vérifier la validité du coupon
       const c = coupon as any;

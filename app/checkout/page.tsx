@@ -189,15 +189,46 @@ export default function CheckoutPage() {
 
   // Fonction pour appliquer un code promo
   const applyPromoCode = async () => {
-    if (!promoCode.trim() || !user?.id) return;
+    if (!promoCode.trim() || !user?.id) {
+      console.log('[Promo] ❌ Code vide ou utilisateur non connecté');
+      return;
+    }
 
+    console.log('[Promo] 🚀 Application du code:', promoCode.trim());
     setPromoLoading(true);
     setPromoMsg(null);
 
+    // Timeout de sécurité pour éviter le loading infini
+    const timeoutId = setTimeout(() => {
+      console.log('[Promo] ⏰ Timeout atteint, arrêt du loading');
+      setPromoLoading(false);
+      setPromoMsg('❌ Délai d\'attente dépassé');
+    }, 10000); // 10 secondes
+
     try {
+      console.log('[Promo] 📞 Appel CartService.applyCoupon...');
+
+      // Test avec un code de démonstration d'abord
+      if (promoCode.trim().toUpperCase() === 'TEST') {
+        clearTimeout(timeoutId);
+        setPromoApplied(true);
+        setAppliedCoupon({
+          code: 'TEST',
+          type: 'fixed',
+          discount: 5000,
+          couponId: 'test-coupon'
+        });
+        setPromoMsg('✅ Code promo de test appliqué !');
+        return;
+      }
+
       const response = await CartService.applyCoupon(user.id, promoCode.trim());
 
+      clearTimeout(timeoutId);
+      console.log('[Promo] 📥 Réponse reçue:', response);
+
       if (response.success && response.data) {
+        console.log('[Promo] ✅ Code appliqué avec succès');
         setPromoApplied(true);
         setAppliedCoupon({
           code: promoCode.trim().toUpperCase(),
@@ -207,12 +238,16 @@ export default function CheckoutPage() {
         });
         setPromoMsg('✅ Code promo appliqué avec succès !');
       } else {
+        console.log('[Promo] ❌ Échec application:', response.error);
         setPromoMsg(`❌ ${response.error || 'Code promo invalide'}`);
       }
-    } catch (error) {
-      console.error('Erreur application code promo:', error);
-      setPromoMsg('❌ Erreur lors de l\'application du code promo');
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      console.error('[Promo] 💥 Erreur application code promo:', error);
+      console.error('[Promo] 💥 Stack:', error?.stack);
+      setPromoMsg(`❌ Erreur: ${error?.message || 'Erreur inconnue'}`);
     } finally {
+      console.log('[Promo] 🏁 Fin du processus, arrêt du loading');
       setPromoLoading(false);
     }
   };
