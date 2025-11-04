@@ -10,6 +10,7 @@ import QuickAddToCart from './QuickAddToCart';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
 import { ProductsService, Product } from '@/lib/services/products.service';
+import { generateConsistentRating, generateConsistentReviews } from '@/lib/utils/rating';
 
 interface PersonalizedProduct {
   id: string;
@@ -37,8 +38,8 @@ const mapToPersonalized = (p: Product, reason: string): PersonalizedProduct => (
   image: p.images?.[0] || '/placeholder-product.jpg',
   price: p.price,
   comparePrice: p.compare_price,
-  rating: p.average_rating || 0,
-  reviews: p.reviews_count || 0,
+  rating: generateConsistentRating(p.id, p.average_rating),
+  reviews: generateConsistentReviews(p.id, p.reviews_count),
   discount: p.compare_price && p.compare_price > p.price ? Math.round(((p.compare_price - p.price) / p.compare_price) * 100) : undefined,
   vendor: p.vendor?.name || '',
   category: p.category?.name || '',
@@ -313,14 +314,14 @@ const PersonalizedOffers = () => {
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-2 h-2 sm:w-2.5 sm:h-2.5 ${i < Math.floor(product.rating)
+                          className={`w-2 h-2 sm:w-2.5 sm:h-2.5 ${i < Math.floor(generateConsistentRating(product.id, product.rating))
                             ? 'fill-yellow-400 text-yellow-400'
                             : 'fill-gray-200 text-gray-200'
                             }`}
                         />
                       ))}
                     </div>
-                    <span className="text-gray-500 truncate text-[9px] sm:text-[10px]">({product.reviews})</span>
+                    <span className="text-gray-500 truncate text-[9px] sm:text-[10px]">({generateConsistentReviews(product.id, product.reviews)})</span>
                   </div>
 
                   {/* Price - harmonisé */}

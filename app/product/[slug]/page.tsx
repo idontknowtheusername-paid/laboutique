@@ -34,6 +34,7 @@ import { useCart } from '@/contexts/CartContext';
 import { WishlistButton } from '@/components/ui/wishlist-button';
 import { ProductsService, Product as ProductType } from '@/lib/services/products.service';
 import { ErrorState } from '@/components/ui/error-state';
+import { generateConsistentRating, generateConsistentReviews } from '@/lib/utils/rating';
 
 // Slider product type for mapping
 type SliderProduct = {
@@ -115,8 +116,8 @@ export default function ProductDetailPage() {
                 image: p.images?.[0] || '/placeholder-product.jpg',
                 price: p.price,
                 comparePrice: p.compare_price,
-                rating: p.average_rating || 0,
-                reviews: p.reviews_count || 0,
+                rating: generateConsistentRating(p.id, p.average_rating),
+                reviews: generateConsistentReviews(p.id, p.reviews_count),
                 vendor: p.vendor?.name || '',
                 category: p.category?.name || '',
               }))
@@ -131,8 +132,8 @@ export default function ProductDetailPage() {
                 image: p.images?.[0] || '/placeholder-product.jpg',
                 price: p.price,
                 comparePrice: p.compare_price,
-                rating: p.average_rating || 0,
-                reviews: p.reviews_count || 0,
+                rating: generateConsistentRating(p.id, p.average_rating),
+                reviews: generateConsistentReviews(p.id, p.reviews_count),
                 vendor: p.vendor?.name || '',
                 category: p.category?.name || '',
               }))
@@ -328,15 +329,15 @@ export default function ProductDetailPage() {
                     <Star
                       key={i}
                       className={`w-5 h-5 ${
-                        i < Math.floor(product?.average_rating || 0)
+                        i < Math.floor(generateConsistentRating(product?.id || '', product?.average_rating))
                           ? 'fill-yellow-400 text-yellow-400'
                           : 'fill-gray-200 text-gray-200'
                       }`}
                     />
                   ))}
-                  <span className="text-lg font-medium ml-2">{(product?.average_rating || 0).toFixed(1)}</span>
+                  <span className="text-lg font-medium ml-2">{generateConsistentRating(product?.id || '', product?.average_rating).toFixed(1)}</span>
                 </div>
-                <span className="text-gray-500">({product?.reviews_count || 0} avis)</span>
+                <span className="text-gray-500">({generateConsistentReviews(product?.id || '', product?.reviews_count)} avis)</span>
                 <Badge variant="outline" className="text-green-600 border-green-600">
                   {product && (!product.track_quantity || product.quantity > 0) ? 'En stock' : 'Rupture de stock'}
                 </Badge>
@@ -380,8 +381,8 @@ export default function ProductDetailPage() {
                     </div>
                     <div className="flex items-center space-x-1 text-sm text-gray-600">
                       <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                      <span>{(product?.average_rating || 0).toFixed(1)}</span>
-                      <span>({product?.reviews_count || 0} avis)</span>
+                      <span>{generateConsistentRating(product?.id || '', product?.average_rating).toFixed(1)}</span>
+                      <span>({generateConsistentReviews(product?.id || '', product?.reviews_count)} avis)</span>
                     </div>
                   </div>
                 </div>
@@ -475,7 +476,7 @@ export default function ProductDetailPage() {
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="description">Description</TabsTrigger>
               <TabsTrigger value="specifications">Caractéristiques</TabsTrigger>
-              <TabsTrigger value="reviews">Avis ({product?.reviews_count || 0})</TabsTrigger>
+              <TabsTrigger value="reviews">Avis ({generateConsistentReviews(product?.id || '', product?.reviews_count)})</TabsTrigger>
               <TabsTrigger value="qa">Questions & Réponses</TabsTrigger>
             </TabsList>
             
@@ -520,20 +521,20 @@ export default function ProductDetailPage() {
                 {/* Reviews Summary */}
                 <div className="flex items-center space-x-8 p-6 bg-gray-50 rounded-lg">
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-jomionstore-primary">{(product?.average_rating || 0).toFixed(1)}</div>
+                    <div className="text-4xl font-bold text-jomionstore-primary">{generateConsistentRating(product?.id || '', product?.average_rating).toFixed(1)}</div>
                     <div className="flex items-center justify-center mt-1">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
                           className={`w-4 h-4 ${
-                            i < Math.floor(product?.average_rating || 0)
+                            i < Math.floor(generateConsistentRating(product?.id || '', product?.average_rating))
                               ? 'fill-yellow-400 text-yellow-400'
                               : 'fill-gray-200 text-gray-200'
                           }`}
                         />
                       ))}
                     </div>
-                    <div className="text-sm text-gray-600 mt-1">{product?.reviews_count || 0} avis</div>
+                    <div className="text-sm text-gray-600 mt-1">{generateConsistentReviews(product?.id || '', product?.reviews_count)} avis</div>
                   </div>
                   <div className="flex-1">
                     {[5, 4, 3, 2, 1].map((rating) => (

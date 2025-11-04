@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import QuickAddToCart from '@/components/home/QuickAddToCart';
 import { WishlistButton } from '@/components/ui/wishlist-button';
+import { generateConsistentRating, generateConsistentReviews } from '@/lib/utils/rating';
 
 interface Product {
   id: string;
@@ -260,7 +261,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
                         <Star
                           key={i}
                           className={`w-2.5 h-2.5 md:w-3 md:h-3 ${
-                            i < Math.floor(product.rating)
+                            i < Math.floor(generateConsistentRating(product.id, product.rating))
                               ? 'fill-yellow-400 text-yellow-400'
                               : 'fill-gray-200 text-gray-200'
                           }`}

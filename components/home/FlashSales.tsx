@@ -10,6 +10,7 @@ import QuickAddToCart from './QuickAddToCart';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
 import { ProductsService, Product } from '@/lib/services';
+import { generateConsistentRating, generateConsistentReviews } from '@/lib/utils/rating';
 
 interface FlashProduct {
   id: string;
@@ -346,7 +347,7 @@ const FlashSales = () => {
                             <Star
                               key={i}
                               className={`w-2.5 h-2.5 md:w-3 md:h-3 ${
-                                i < Math.floor(product.rating)
+                                i < Math.floor(generateConsistentRating(product.id, product.rating))
                                   ? "fill-yellow-400 text-yellow-400"
                                   : "fill-gray-200 text-gray-200"
                               }`}

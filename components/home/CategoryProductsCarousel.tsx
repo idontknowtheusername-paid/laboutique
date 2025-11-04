@@ -11,6 +11,7 @@ import Image from 'next/image';
 import { useCart } from '@/contexts/CartContext';
 import { WishlistButton } from '@/components/ui/wishlist-button';
 import { ErrorState } from '@/components/ui/error-state';
+import { generateConsistentRating, generateConsistentReviews } from '@/lib/utils/rating';
 
 interface CategoryProductsCarouselProps {
   categorySlug: string;
@@ -248,13 +249,13 @@ export default function CategoryProductsCarousel({
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-3 h-3 ${i < Math.floor(product.average_rating || 0)
+                          className={`w-3 h-3 ${i < Math.floor(generateConsistentRating(product.id, product.average_rating))
                               ? 'fill-yellow-400 text-yellow-400'
                               : 'fill-gray-200 text-gray-200'
                             }`}
                         />
                       ))}
-                      <span className="text-sm text-gray-600">({product.reviews_count || 0})</span>
+                      <span className="text-sm text-gray-600">({generateConsistentReviews(product.id, product.reviews_count)})</span>
                     </div>
 
                     <Link href={`/product/${product.slug}`}>

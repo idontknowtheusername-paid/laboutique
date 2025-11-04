@@ -17,6 +17,7 @@ import Image from 'next/image';
 import InteractiveFeedback from '@/components/ui/InteractiveFeedback';
 import { useFeedback } from '@/components/ui/FeedbackProvider';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { generateConsistentRating, generateConsistentReviews } from '@/lib/utils/rating';
 
 interface ProductGridProps {
   title: string;
@@ -57,8 +58,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
   // Responsive grid columns - optimisé pour mobile
   const getGridCols = () => {
-    // Grille adaptative : 2 colonnes sur mobile, 3 sur tablette, 4 sur desktop, 5 sur grand écran
-    return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6';
+    // Grille adaptative : 2 colonnes sur mobile, 4 sur desktop (cartes plus larges et présentables)
+    return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4';
   };
 
   // Memoize expensive calculations
@@ -93,8 +94,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         ...product,
         image: product.images?.[0] || '/images/placeholder-product.jpg',
         comparePrice: product.compare_price,
-        rating: product.average_rating || 0,
-        reviews: product.reviews_count || 0,
+        rating: generateConsistentRating(product.id, product.average_rating),
+        reviews: generateConsistentReviews(product.id, product.reviews_count),
         discount: discountPercentage,
         category: product.category?.name || 'Catégorie inconnue',
         badge: product.featured ? 'Vedette' : undefined,

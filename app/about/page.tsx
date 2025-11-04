@@ -61,23 +61,23 @@ const team = [
   {
     name: 'Beyond System',
     role: 'Developpeur',
-    image: 'https://images.pexels.com/photos/996329/pexels-photo-99329.jpeg?auto=compress&cs=tinysrgb&w=300',
+    image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=monsieurp&backgroundColor=c0aede&clothesColor=3c4043',
     description: 'Expert en technologies web et intelligence artificielle, diplômée MIT.'
   },
   {
-    name: 'Monsieur P',
+    name: 'Miss Peace',
     role: 'Directeur Commercial',
-    image: 'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=300',
+    image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=beyond&backgroundColor=b6e3f4&clothesColor=262e33',
     description: 'Spécialiste du développement commercial en Afrique de l\'Ouest depuis 12 ans.'
   }
 ];
 
 const milestones = [
-  { year: '2020', title: 'Création de JomionStore', description: 'Lancement de la plateforme avec 50 vendeurs partenaires' },
-  { year: '2021', title: 'Expansion régionale', description: 'Extension à 5 villes du Bénin et 10,000 produits' },
-  { year: '2022', title: 'Innovation technologique', description: 'Lancement de l\'app mobile et IA de recommandation' },
-  { year: '2023', title: 'Leadership marché', description: 'N°1 du e-commerce au Bénin avec 500K clients' },
-  { year: '2024', title: 'Vision internationale', description: 'Expansion prévue en Afrique de l\'Ouest' }
+  { year: 'Janvier 2025', title: 'Création et test de JomionStore', description: 'Test de la plateforme' },
+  { year: 'Fevrier 2025', title: 'lancement ', description: 'Lancement de la plateforme sur le territoire nationnal' },
+  { year: 'Octobre 2026', title: 'Innovation technologique', description: 'Lancement de l\'app mobile et IA de recommandation' },
+  { year: 'Novembre 2026', title: 'Leadership marché', description: 'N°1 du e-commerce au Bénin avec 500K clients' },
+  { year: 'Janiver 2026', title: 'Vision internationale', description: 'Expansion prévue en Afrique de l\'Ouest' }
 ];
 
 export default function AboutPage() {

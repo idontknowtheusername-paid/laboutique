@@ -36,6 +36,12 @@ const nextConfig = {
       { protocol: "https", hostname: "sc02.alicdn.com" },
       { protocol: "https", hostname: "sc04.alicdn.com" },
       { protocol: "https", hostname: "s.alicdn.com" },
+      // Flaticon
+      { protocol: "https", hostname: "www.flaticon.com" },
+      // Avatar services
+      { protocol: "https", hostname: "api.dicebear.com" },
+      { protocol: "https", hostname: "source.boringavatars.com" },
+      { protocol: "https", hostname: "ui-avatars.com" },
     ],
   },
 
