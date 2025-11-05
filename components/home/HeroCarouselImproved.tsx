@@ -189,7 +189,7 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
       <div className="grid grid-cols-12 grid-rows-2 gap-4 h-full">
 
         {/* SECTION GAUCHE - Menu Catégories */}
-        <div className="col-span-12 md:col-span-2 row-span-1 md:row-span-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl overflow-visible relative">
+        <div className="col-span-12 md:col-span-2 row-span-1 md:row-span-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl overflow-visible relative group/menu">
           <CategoriesMenu onCategoryHover={setHoveredCategory} />
         </div>
 
@@ -245,10 +245,17 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
 
       {/* MEGA MENU OVERLAY - S'affiche par-dessus toute la section */}
       {hoveredCategory && (
-        <div className="absolute top-0 left-0 w-full h-full z-[70] pointer-events-none">
+        <div
+          className="absolute top-0 left-0 w-full h-full z-[70] pointer-events-none group/overlay"
+          onMouseEnter={() => console.log('🎯 Entered overlay')}
+          onMouseLeave={() => {
+            console.log('🎯 Left overlay - closing');
+            setTimeout(() => setHoveredCategory(null), 100);
+          }}
+        >
           <div className="grid grid-cols-12 grid-rows-2 gap-4 h-full">
-            {/* Espace pour le menu des catégories */}
-            <div className="col-span-12 md:col-span-2 row-span-1 md:row-span-2"></div>
+            {/* Espace pour le menu des catégories - ZONE DE TOLÉRANCE */}
+            <div className="col-span-12 md:col-span-2 row-span-1 md:row-span-2 pointer-events-auto bg-transparent"></div>
 
             {/* MEGA MENU - Par-dessus la section principale */}
             <div className="col-span-12 md:col-span-10 row-span-1 md:row-span-2 pointer-events-auto">
