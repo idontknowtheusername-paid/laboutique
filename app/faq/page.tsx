@@ -16,7 +16,7 @@ const faqs = [
   { q: 'Quels sont les délais de livraison ?', a: "Cotonou: 24-48h. Villes principales: 2-4 jours. Autres zones: 3-7 jours." },
   { q: 'Quels moyens de paiement acceptez-vous ?', a: 'Cartes bancaires, Mobile Money et virement bancaire.' },
   { q: 'Comment suivre ma commande ?', a: 'Rendez-vous dans Mon compte > Mes commandes pour voir le statut et le suivi.' },
-  { q: 'Comment retourner un produit ?', a: "Vous disposez de 30 jours pour retourner un produit non utilisé dans son emballage d'origine." },
+  { q: 'Comment retourner un produit ?', a: "Les colis livré ne peuvent pas etre retourner, par contre vous pouvez annuler jusqu'a 24h apres la commande." },
   { q: 'Mes données sont-elles sécurisées ?', a: 'Nous utilisons le chiffrement TLS et respectons les meilleures pratiques de sécurité.' },
 ];
 

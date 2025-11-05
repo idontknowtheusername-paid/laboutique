@@ -22,10 +22,10 @@ import {
 import Link from 'next/link';
 
 const stats = [
-  { label: 'Clients satisfaits', value: '500K+', icon: Users },
-  { label: 'Produits disponibles', value: '50K+', icon: Target },
-  { label: 'Vendeurs partenaires', value: '1,200+', icon: Award },
-  { label: 'Villes desservies', value: '15+', icon: Globe }
+  { label: 'Clients satisfaits', value: '500+', icon: Users },
+  { label: 'Produits disponibles', value: '10K+', icon: Target },
+  { label: 'Vendeurs partenaires', value: '200+', icon: Award },
+  { label: 'Villes desservies', value: '03', icon: Globe }
 ];
 
 const values = [
@@ -62,7 +62,7 @@ const team = [
     name: 'Beyond System',
     role: 'Developpeur',
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=monsieurp&backgroundColor=c0aede&clothesColor=3c4043',
-    description: 'Expert en technologies web et intelligence artificielle, diplômée MIT.'
+    description: 'Expert en technologies web et intelligence artificielle.'
   },
   {
     name: 'Miss Peace',
@@ -97,7 +97,7 @@ export default function AboutPage() {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <Badge className="bg-jomionstore-primary/10 text-jomionstore-primary mb-4">
-            À propos de JomionStore
+            À propos de Nous
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
             L'avenir du shopping
@@ -269,7 +269,7 @@ export default function AboutPage() {
         {/* CTA Section */}
         <div className="bg-gradient-to-r from-jomionstore-primary to-orange-600 rounded-xl p-8 md:p-12 text-white text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Rejoignez l'aventure JomionStore
+            Rejoignez nous dans l'aventure JomionStore
           </h2>
           <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
             Que vous soyez client ou vendeur, découvrez une nouvelle façon de faire du commerce en ligne

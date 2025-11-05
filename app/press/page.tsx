@@ -30,8 +30,8 @@ import Link from 'next/link';
 const pressReleases = [
   {
     id: 1,
-    title: 'JomionStore lève 5M€ en Série A pour accélérer son expansion en Afrique de l\'Ouest',
-    date: '2024-01-15',
+    title: 'JomionStore lève 5MCFA en Série A pour accélérer son expansion en Afrique de l\'Ouest',
+    date: '2025-01-05',
     category: 'Financement',
     summary: 'La plateforme e-commerce béninoise annonce une levée de fonds majeure pour conquérir de nouveaux marchés.',
     content: 'Contenu complet du communiqué...',
@@ -39,10 +39,10 @@ const pressReleases = [
   },
   {
     id: 2,
-    title: 'JomionStore dépasse 500 000 utilisateurs actifs au Bénin',
-    date: '2024-01-10',
+    title: 'JomionStore dépasse 1000 utilisateurs actifs au Bénin',
+    date: '2025-01-10',
     category: 'Croissance',
-    summary: 'La plateforme enregistre une croissance exceptionnelle avec plus de 500K utilisateurs actifs mensuels.',
+    summary: 'La plateforme enregistre une croissance exceptionnelle avec plus de 1000 utilisateurs actifs mensuels.',
     content: 'Contenu complet du communiqué...',
     featured: false
   },
@@ -71,7 +71,7 @@ const mediaCoverage = [
     id: 1,
     title: 'JomionStore : La success story du e-commerce au Bénin',
     outlet: 'Jeune Afrique',
-    date: '2024-01-12',
+    date: '2025-01-12',
     type: 'Article',
     url: '#',
     summary: 'Portrait de la startup qui révolutionne le commerce en ligne en Afrique de l\'Ouest.'
@@ -80,7 +80,7 @@ const mediaCoverage = [
     id: 2,
     title: 'Interview CEO : L\'avenir du e-commerce africain',
     outlet: 'RFI Afrique',
-    date: '2024-01-08',
+    date: '2025-01-08',
     type: 'Interview',
     url: '#',
     summary: 'Entretien exclusif avec le fondateur de JomionStore sur les défis du e-commerce en Afrique.'
@@ -89,7 +89,7 @@ const mediaCoverage = [
     id: 3,
     title: 'JomionStore dans le top 10 des startups africaines à suivre',
     outlet: 'TechCrunch',
-    date: '2024-01-03',
+    date: '2025-01-03',
     type: 'Article',
     url: '#',
     summary: 'La plateforme béninoise figure parmi les startups les plus prometteuses du continent.'
@@ -98,7 +98,7 @@ const mediaCoverage = [
     id: 4,
     title: 'Reportage : Comment JomionStore transforme le commerce au Bénin',
     outlet: 'France 24',
-    date: '2023-12-15',
+    date: '2025-12-15',
     type: 'Reportage',
     url: '#',
     summary: 'Reportage vidéo sur l\'impact de JomionStore sur l\'économie locale.'
@@ -107,7 +107,7 @@ const mediaCoverage = [
 
 const teamMembers = [
   {
-    name: 'Jean-Baptiste K.',
+    name: 'MP',
     role: 'CEO & Co-fondateur',
     bio: 'Ancien consultant McKinsey, expert en stratégie digitale et e-commerce.',
     email: 'jean-baptiste@jomionstore.com',
@@ -115,7 +115,7 @@ const teamMembers = [
     photo: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=200'
   },
   {
-    name: 'Marie S.',
+    name: 'MS.',
     role: 'CTO & Co-fondatrice',
     bio: 'Ingénieure logiciel avec 10 ans d\'expérience dans les fintechs africaines.',
     email: 'marie@jomionstore.com',

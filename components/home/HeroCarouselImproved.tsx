@@ -1,255 +1,300 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Play, Pause, Star, Clock, Tag } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import Image from 'next/image';
+import CategoriesMenu from './CategoriesMenu';
+import { Category } from '@/lib/services';
 
-interface HeroBanner {
-  id: string;
-  title: string;
-  subtitle?: string;
-  description?: string;
-  cta_text: string;
-  cta_link: string;
-  image_url: string;
-  gradient: string;
-  type: 'promotional' | 'category' | 'service' | 'offer' | 'new';
-  priority: number;
-  is_active: boolean;
-  created_at: string;
-}
+// Bannières statiques intégrées dans le code
+const STATIC_BANNERS = [
+  {
+    id: 'banner-1',
+    title: 'MÉGA SOLDES D\'HIVER',
+    subtitle: 'Jusqu\'à -70% sur l\'électronique',
+    description: 'iPhone, Samsung, laptops et plus encore avec livraison gratuite',
+    cta_text: 'DÉCOUVRIR LES OFFRES',
+    cta_link: '/flash-sales',
+    image_url: 'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    gradient: 'from-red-600 via-orange-600 to-yellow-500',
+    badge: '🔥 FLASH SALE'
+  },
+  {
+    id: 'banner-2',
+    title: 'NOUVELLE COLLECTION MODE',
+    subtitle: 'Tendances Printemps 2024',
+    description: 'Découvrez les dernières créations des designers locaux et internationaux',
+    cta_text: 'EXPLORER LA MODE',
+    cta_link: '/category/mode-beaute',
+    image_url: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    gradient: 'from-purple-600 via-pink-600 to-rose-500',
+    badge: '✨ NOUVEAU'
+  },
+  {
+    id: 'banner-3',
+    title: 'GAMING ZONE',
+    subtitle: 'Setup de rêve pour gamers',
+    description: 'PS5, Xbox, PC Gaming, casques et accessoires pro',
+    cta_text: 'CONFIGURER SETUP',
+    cta_link: '/category/gaming-vr',
+    image_url: 'https://images.pexels.com/photos/1267350/pexels-photo-1267350.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    gradient: 'from-blue-600 via-purple-600 to-indigo-700',
+    badge: '🎮 GAMING'
+  },
+  {
+    id: 'banner-4',
+    title: 'LIVRAISON GRATUITE',
+    subtitle: 'Partout au Bénin',
+    description: 'Commandez maintenant et recevez vos produits sous 24h',
+    cta_text: 'COMMANDER MAINTENANT',
+    cta_link: '/products',
+    image_url: 'https://images.pexels.com/photos/4393021/pexels-photo-4393021.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    gradient: 'from-green-600 via-teal-600 to-cyan-500',
+    badge: '🚚 GRATUIT'
+  }
+];
+
+// Publicités avec animations dynamiques et messages engageants
+const DYNAMIC_ADVERTISEMENTS = [
+  {
+    id: 'ad-1',
+    icon: '🎫',
+    iconColor: 'text-yellow-400',
+    title: 'Profitez de nos codes promo',
+    subtitle: 'WELCOME15 pour 15% de réduction !',
+    animation: 'slideFromTop',
+    link: '/coupons'
+  },
+  {
+    id: 'ad-2',
+    icon: '🔥',
+    iconColor: 'text-red-500',
+    title: 'Black Friday toute l\'année',
+    subtitle: 'Des prix cassés tous les jours !',
+    animation: 'slideFromBottom',
+    link: '/flash-sales'
+  },
+  {
+    id: 'ad-3',
+    icon: '⚡',
+    iconColor: 'text-yellow-500',
+    title: 'Flash Deals en continu',
+    subtitle: 'Nouvelles offres toutes les 2h',
+    animation: 'slideFromLeft',
+    link: '/flash-sales'
+  },
+  {
+    id: 'ad-4',
+    icon: '💰',
+    iconColor: 'text-green-400',
+    title: 'Économisez jusqu\'à 70%',
+    subtitle: 'Code MEGA70 disponible maintenant',
+    animation: 'slideFromRight',
+    link: '/coupons'
+  },
+  {
+    id: 'ad-5',
+    icon: '🚚',
+    iconColor: 'text-blue-400',
+    title: 'Livraison express 24h',
+    subtitle: 'Partout au Bénin, c\'est gratuit !',
+    animation: 'fadeIn',
+    link: '/delivery-info'
+  },
+  {
+    id: 'ad-6',
+    icon: '👑',
+    iconColor: 'text-purple-400',
+    title: 'Devenez membre VIP',
+    subtitle: 'Accès aux ventes privées exclusives',
+    animation: 'zoomIn',
+    link: '/vip'
+  },
+  {
+    id: 'ad-7',
+    icon: '🎁',
+    iconColor: 'text-pink-400',
+    title: 'Offre spéciale mode',
+    subtitle: 'Achetez 2 articles, payez-en 1 seul',
+    animation: 'slideFromTop',
+    link: '/category/mode-beaute'
+  },
+  {
+    id: 'ad-8',
+    icon: '💎',
+    iconColor: 'text-cyan-400',
+    title: 'Frais de port offerts',
+    subtitle: 'Code FREESHIP sur toute commande',
+    animation: 'slideFromBottom',
+    link: '/coupons'
+  },
+  {
+    id: 'ad-9',
+    icon: '🎯',
+    iconColor: 'text-orange-400',
+    title: 'Deal mystère du jour',
+    subtitle: 'Jusqu\'à 80% sur un produit surprise',
+    animation: 'slideFromLeft',
+    link: '/daily-deals'
+  },
+  {
+    id: 'ad-10',
+    icon: '🎮',
+    iconColor: 'text-indigo-400',
+    title: 'Gaming Week en cours',
+    subtitle: 'Setup complet à -45%, c\'est le moment !',
+    animation: 'slideFromRight',
+    link: '/category/gaming-vr'
+  },
+  {
+    id: 'ad-11',
+    icon: '💳',
+    iconColor: 'text-emerald-400',
+    title: 'Payez en 3 fois sans frais',
+    subtitle: 'Facilité de paiement pour tous',
+    animation: 'fadeIn',
+    link: '/payment-info'
+  },
+  {
+    id: 'ad-12',
+    icon: '🔄',
+    iconColor: 'text-teal-400',
+    title: 'Satisfait ou remboursé',
+    subtitle: '30 jours pour changer d\'avis',
+    animation: 'zoomIn',
+    link: '/returns'
+  }
+];
 
 interface HeroCarouselImprovedProps {
-  banners?: HeroBanner[];
-  autoRotate?: boolean;
-  showControls?: boolean;
-  showIndicators?: boolean;
-  showProgress?: boolean;
   className?: string;
 }
 
 const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
-  banners = [],
-  autoRotate = true,
-  showControls = true,
-  showIndicators = true,
-  showProgress = true,
   className = ''
 }) => {
+  const [hoveredCategory, setHoveredCategory] = useState<Category | null>(null);
+
+  // Debug pour voir si l'état change
+  useEffect(() => {
+    console.log('🎯 Hovered category changed:', hoveredCategory?.name, 'Has children:', hoveredCategory?.children?.length || 0);
+  }, [hoveredCategory]);
+
+  return (
+    <div className={`w-full h-[425px] lg:h-[510px] ${className} relative`}>
+      {/* Layout Grid - 4 Sections */}
+      <div className="grid grid-cols-12 grid-rows-2 gap-4 h-full">
+
+        {/* SECTION GAUCHE - Menu Catégories */}
+        <div className="col-span-12 md:col-span-2 row-span-1 md:row-span-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl overflow-visible relative">
+          <CategoriesMenu onCategoryHover={setHoveredCategory} />
+        </div>
+
+        {/* SECTION PRINCIPALE - Hero Carousel */}
+        <div className="col-span-12 md:col-span-8 row-span-1 md:row-span-2 bg-gray-100 rounded-xl overflow-hidden">
+          <MainHeroCarousel />
+        </div>
+
+        {/* SECTION DROITE-1 - Contact & Partenariat */}
+        <div className="col-span-12 md:col-span-2 row-span-1 bg-black rounded-xl p-3 text-white">
+          <div className="h-full flex flex-col justify-start space-y-3">
+            {/* Appelez pour commander */}
+            <div className="mb-2">
+              <div className="flex items-center mb-1">
+                <span className="text-lg mr-2">📞</span>
+                <h3 className="text-sm font-bold">Appelez pour commander</h3>
+              </div>
+              <a href="tel:+22997123456" className="text-xs font-semibold hover:underline ml-6">
+                +229 97 12 34 56
+              </a>
+            </div>
+
+            {/* Vendez sur JomionStore */}
+            <div className="mb-2">
+              <div className="flex items-center mb-1">
+                <span className="text-lg mr-2">🏪</span>
+                <Link href="/become-seller" className="block">
+                  <h3 className="text-xs font-bold hover:underline">Vendez sur JomionStore</h3>
+                </Link>
+              </div>
+              <p className="text-xs opacity-90 ml-6">Devenez partenaire aujourd'hui</p>
+            </div>
+
+            {/* Promotion */}
+            <div>
+              <div className="flex items-center mb-1">
+                <span className="text-lg mr-2">📧</span>
+                <Link href="/contact" className="block">
+                  <h3 className="text-xs font-bold hover:underline">Envoyez-nous vos produits</h3>
+                </Link>
+              </div>
+              <p className="text-xs opacity-90 ml-6">On gère la promotion</p>
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION DROITE-2 - Zone Publicitaire */}
+        <div className="col-span-12 md:col-span-2 row-span-1 rounded-xl overflow-hidden">
+          <AdvertisingZone />
+        </div>
+
+      </div>
+
+      {/* MEGA MENU OVERLAY - S'affiche par-dessus toute la section */}
+      {hoveredCategory && (
+        <div className="absolute top-0 left-0 w-full h-full z-[70] pointer-events-none">
+          <div className="grid grid-cols-12 grid-rows-2 gap-4 h-full">
+            {/* Espace pour le menu des catégories */}
+            <div className="col-span-12 md:col-span-2 row-span-1 md:row-span-2"></div>
+
+            {/* MEGA MENU - Par-dessus la section principale */}
+            <div className="col-span-12 md:col-span-10 row-span-1 md:row-span-2 pointer-events-auto">
+              <MegaMenuOverlay category={hoveredCategory} />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Composant pour le carousel principal (section centrale)
+const MainHeroCarousel: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(autoRotate);
-  const [isVisible, setIsVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const carouselRef = useRef<HTMLDivElement>(null);
-
-  // Fallback banners if none provided
-  const fallbackBanners: HeroBanner[] = [
-    {
-      id: 'fallback-1',
-      title: 'Découvrez JomionStore',
-      subtitle: 'Le centre commercial digital du Bénin',
-      description: 'Des milliers de produits authentiques, une livraison rapide et un service client exceptionnel.',
-      cta_text: 'Découvrir maintenant',
-      cta_link: '/products',
-      image_url: 'https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      gradient: 'from-jomionstore-primary to-orange-600',
-      type: 'promotional',
-      priority: 1,
-      is_active: true,
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'fallback-2',
-      title: 'Électronique Premium',
-      subtitle: 'Les dernières technologies à votre portée',
-      description: 'Smartphones, laptops, TV intelligentes et bien plus encore avec garantie officielle.',
-      cta_text: 'Voir la collection',
-      cta_link: '/category/electronique',
-      image_url: 'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      gradient: 'from-jomionstore-secondary to-orange-600',
-      type: 'category',
-      priority: 2,
-      is_active: true,
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'fallback-3',
-      title: 'Mode & Style',
-      subtitle: 'Express your unique style',
-      description: 'Découvrez les dernières tendances mode pour homme, femme et enfant.',
-      cta_text: 'Shopping mode',
-      cta_link: '/category/mode-beaute',
-      image_url: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      gradient: 'from-purple-600 to-pink-600',
-      type: 'category',
-      priority: 3,
-      is_active: true,
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'fallback-4',
-      title: 'Livraison Gratuite',
-      subtitle: 'À Cotonou et environs',
-      description: 'Commandez maintenant et recevez gratuitement vos produits sous 24h.',
-      cta_text: 'En savoir plus',
-      cta_link: '/delivery-info',
-      image_url: 'https://images.pexels.com/photos/4393021/pexels-photo-4393021.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      gradient: 'from-green-600 to-teal-600',
-      type: 'service',
-      priority: 4,
-      is_active: true,
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'fallback-5',
-      title: 'Paiement Sécurisé',
-      subtitle: 'Vos transactions sont protégées',
-      description: 'Cartes bancaires, Mobile Money, virement. Toutes vos données sont chiffrées et sécurisées.',
-      cta_text: 'Découvrir',
-      cta_link: '/payment-info',
-      image_url: 'https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      gradient: 'from-orange-600 to-red-600',
-      type: 'service',
-      priority: 5,
-      is_active: true,
-      created_at: new Date().toISOString()
-    }
-  ];
-
-  // Utiliser les bannières de fallback si on a moins de 2 bannières (pour avoir un carousel)
-  const displayBanners = banners.length >= 2 ? banners : fallbackBanners;
-  
-
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % displayBanners.length);
-  }, [displayBanners.length]);
+    setCurrentSlide((prev) => (prev + 1) % STATIC_BANNERS.length);
+  }, []);
+
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev - 1 + STATIC_BANNERS.length) % STATIC_BANNERS.length);
+  }, []);
 
   const goToSlide = useCallback((index: number) => {
     setCurrentSlide(index);
   }, []);
 
-  const toggleAutoPlay = useCallback(() => {
-    setIsAutoPlaying(prev => !prev);
-  }, []);
-
-  // Intersection Observer for performance
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsVisible(entry.isIntersecting);
-      },
-      { threshold: 0.1 }
-    );
-
-    if (carouselRef.current) {
-      observer.observe(carouselRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
   // Auto-play effect
   useEffect(() => {
-    if (!isAutoPlaying || !isVisible || displayBanners.length <= 1) return;
+    if (!isAutoPlaying) return;
 
     const interval = setInterval(nextSlide, 5000);
     return () => clearInterval(interval);
-  }, [isAutoPlaying, isVisible, nextSlide, displayBanners.length]);
-
-  // Set loading to false immediately if banners are provided
-  useEffect(() => {
-    if (banners.length > 0) {
-      setIsLoading(false);
-    } else {
-      // Only try to load from API if no banners provided
-      const fetchBanners = async () => {
-        try {
-          setIsLoading(true);
-          const response = await fetch('/api/hero-banners?limit=5');
-          const data = await response.json();
-          
-          if (data.success && data.data) {
-            // Banners are passed as props, so we don't need to set them here
-            // This is just for loading state management
-          }
-        } catch (error) {
-          console.error('Error fetching hero banners:', error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchBanners();
-    }
-  }, [banners.length]);
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'offer':
-        return <Tag className="w-4 h-4" />;
-      case 'new':
-        return <Star className="w-4 h-4" />;
-      case 'service':
-        return <Clock className="w-4 h-4" />;
-      default:
-        return null;
-    }
-  };
-
-  const getTypeBadge = (type: string) => {
-    switch (type) {
-      case 'offer':
-        return <Badge variant="destructive" className="bg-red-500">Offre Spéciale</Badge>;
-      case 'new':
-        return <Badge variant="default" className="bg-green-500">Nouveau</Badge>;
-      case 'service':
-        return <Badge variant="secondary" className="bg-orange-500">Service</Badge>;
-      case 'category':
-        return <Badge variant="outline" className="border-white text-white">Catégorie</Badge>;
-      default:
-        return <Badge variant="outline" className="border-white text-white">Promotion</Badge>;
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className={`relative h-[400px] lg:h-[500px] overflow-hidden rounded-xl shadow-2xl bg-gray-200 animate-pulse ${className}`}>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-16 h-16 border-4 border-jomionstore-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement des bannières...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (displayBanners.length === 0) {
-    return (
-      <div className={`relative h-[400px] lg:h-[500px] overflow-hidden rounded-xl shadow-2xl bg-gray-100 ${className}`}>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-gray-600">Aucune bannière disponible</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  }, [isAutoPlaying, nextSlide]);
 
   return (
     <div 
-      ref={carouselRef} 
-      className={`relative h-[400px] lg:h-[500px] overflow-hidden rounded-xl shadow-2xl group ${className}`}
+      className="relative h-full w-full"
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
     >
       {/* Slides */}
       <div className="relative h-full">
-        {displayBanners.map((banner, index) => (
+        {STATIC_BANNERS.map((banner, index) => (
           <div
             key={banner.id}
             className={`absolute inset-0 transition-transform duration-500 ease-in-out ${
@@ -265,10 +310,8 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
                 fill
                 className="object-cover"
                 priority={index === 0}
-                sizes="100vw"
+                sizes="(max-width: 768px) 100vw, 50vw"
                 quality={90}
-                placeholder="blur"
-                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
               />
             </div>
             
@@ -276,93 +319,276 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
             <div className={`absolute inset-0 bg-gradient-to-r ${banner.gradient} opacity-90`} />
             
             {/* Content */}
-            <div className="relative h-full flex items-center">
-              <div className="container">
-                <div className="max-w-2xl text-white">
-                  {/* Type Badge */}
-                  <div className="mb-3 animate-fade-in">
-                    {getTypeBadge(banner.type)}
-                  </div>
-                  
-                  {/* Title */}
-                  <h2 className="text-4xl lg:text-5xl font-bold mb-3 animate-fade-in">
-                    {banner.title}
-                  </h2>
-                  
-                  {/* Subtitle */}
-                  {banner.subtitle && (
-                    <h3 className="text-lg lg:text-xl font-light mb-3 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                      {banner.subtitle}
-                    </h3>
-                  )}
-                  
-                  {/* Description */}
-                  {banner.description && (
-                    <p className="text-base lg:text-lg mb-4 opacity-90 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                      {banner.description}
-                    </p>
-                  )}
-                  
-                  {/* CTA Button */}
-                  <Link href={banner.cta_link}>
-                    <Button 
-                      size="lg" 
-                      className="bg-white text-gray-900 hover:bg-gray-100 font-semibold px-6 py-3 text-base animate-fade-in hover-lift"
-                      style={{ animationDelay: '0.6s' }}
-                    >
-                      {banner.cta_text}
-                    </Button>
-                  </Link>
-                </div>
+            <div className="relative h-full flex items-center p-8">
+              <div className="max-w-md text-white">
+                {/* Badge */}
+                <Badge className="mb-4 bg-white/20 text-white border-white/30">
+                  {banner.badge}
+                </Badge>
+
+                {/* Title */}
+                <h2 className="text-3xl lg:text-4xl font-bold mb-3">
+                  {banner.title}
+                </h2>
+
+                {/* Subtitle */}
+                <h3 className="text-lg lg:text-xl font-light mb-3 opacity-90">
+                  {banner.subtitle}
+                </h3>
+
+                {/* Description */}
+                <p className="text-base mb-6 opacity-80">
+                  {banner.description}
+                </p>
+
+                {/* CTA Button */}
+                <Link href={banner.cta_link}>
+                  <Button
+                    size="lg" 
+                    className="bg-white text-gray-900 hover:bg-gray-100 font-semibold px-6 py-3"
+                  >
+                    {banner.cta_text}
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Navigation Controls - DISABLED */}
-      {/* Flèches de défilement supprimées - Auto-défilement uniquement */}
+      {/* Navigation Arrows */}
+      <button
+        onClick={prevSlide}
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-300 z-10"
+        aria-label="Slide précédent"
+      >
+        <ChevronLeft className="w-5 h-5" />
+      </button>
+
+      <button
+        onClick={nextSlide}
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-300 z-10"
+        aria-label="Slide suivant"
+      >
+        <ChevronRight className="w-5 h-5" />
+      </button>
 
       {/* Play/Pause Button */}
-      {displayBanners.length > 1 && (
-        <button
-          onClick={toggleAutoPlay}
-          className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-300"
-          aria-label={isAutoPlaying ? 'Pause' : 'Play'}
-        >
-          {isAutoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-        </button>
-      )}
+      <button
+        onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+        className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-300"
+        aria-label={isAutoPlaying ? 'Pause' : 'Play'}
+      >
+        {isAutoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+      </button>
 
       {/* Slide Indicators */}
-      {showIndicators && displayBanners.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">
-          {displayBanners.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentSlide 
-                  ? 'bg-white scale-125' 
-                  : 'bg-white/50 hover:bg-white/75'
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">
+        {STATIC_BANNERS.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide
+              ? 'bg-white scale-125'
+              : 'bg-white/50 hover:bg-white/75'
               }`}
-              aria-label={`Aller au slide ${index + 1}`}
-            />
-          ))}
-        </div>
-      )}
+            aria-label={`Aller au slide ${index + 1}`}
+          />
+        ))}
+      </div>
 
       {/* Progress Bar */}
-      {showProgress && displayBanners.length > 1 && (
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
-          <div
-            className="h-full bg-white transition-all duration-100"
-            style={{
-              width: `${((currentSlide + 1) / displayBanners.length) * 100}%`,
-            }}
-          />
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+        <div
+          className="h-full bg-white transition-all duration-100"
+          style={{
+            width: `${((currentSlide + 1) / STATIC_BANNERS.length) * 100}%`,
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
+// Composant Zone Publicitaire avec animations dynamiques
+const AdvertisingZone: React.FC = () => {
+  const [currentAd, setCurrentAd] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [animationKey, setAnimationKey] = useState(0);
+
+  // Auto-défilement des publicités
+  useEffect(() => {
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setAnimationKey(prev => prev + 1); // Force re-render pour animation
+      setCurrentAd((prev) => (prev + 1) % DYNAMIC_ADVERTISEMENTS.length);
+    }, 4000); // Change toutes les 4 secondes
+
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  const currentAdvertisement = DYNAMIC_ADVERTISEMENTS[currentAd];
+
+  // Classes d'animation selon le type
+  const getAnimationClass = (animation: string) => {
+    const baseClasses = "transition-all duration-600 ease-out";
+    const animations = {
+      slideFromTop: `${baseClasses} animate-[slideFromTop_0.6s_ease-out]`,
+      slideFromBottom: `${baseClasses} animate-[slideFromBottom_0.6s_ease-out]`,
+      slideFromLeft: `${baseClasses} animate-[slideFromLeft_0.6s_ease-out]`,
+      slideFromRight: `${baseClasses} animate-[slideFromRight_0.6s_ease-out]`,
+      fadeIn: `${baseClasses} animate-[fadeIn_0.6s_ease-out]`,
+      zoomIn: `${baseClasses} animate-[zoomIn_0.6s_ease-out]`
+    };
+    return animations[animation as keyof typeof animations] || `${baseClasses} animate-[fadeIn_0.6s_ease-out]`;
+  };
+
+  return (
+    <Link href={currentAdvertisement.link}>
+      <div
+        className="h-full bg-black relative overflow-hidden cursor-pointer group"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        {/* Effet de particules en arrière-plan */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-ping"></div>
+          <div className="absolute top-8 right-4 w-1 h-1 bg-white rounded-full animate-ping" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-6 left-6 w-1 h-1 bg-white rounded-full animate-ping" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute bottom-2 right-2 w-1 h-1 bg-white rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
         </div>
-      )}
+
+        {/* Contenu principal avec animation */}
+        <div
+          key={animationKey}
+          className={`h-full flex flex-col justify-center items-center text-center p-4 ${getAnimationClass(currentAdvertisement.animation)}`}
+        >
+          {/* Icon avec couleur */}
+          <div className={`text-4xl mb-3 ${currentAdvertisement.iconColor} transform group-hover:scale-110 transition-transform duration-300`}>
+            {currentAdvertisement.icon}
+          </div>
+
+          {/* Titre principal */}
+          <h3 className="text-white text-sm font-bold mb-2 leading-tight">
+            {currentAdvertisement.title}
+          </h3>
+
+          {/* Sous-titre */}
+          <p className="text-gray-300 text-xs leading-tight">
+            {currentAdvertisement.subtitle}
+          </p>
+
+          {/* Effet hover */}
+          <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-5 transition-opacity duration-300"></div>
+        </div>
+
+        {/* Indicateur discret en bas */}
+        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2">
+          <div className="flex space-x-1">
+            {DYNAMIC_ADVERTISEMENTS.map((_, index) => (
+              <div
+                key={index}
+                className={`w-1 h-1 rounded-full transition-all duration-300 ${index === currentAd ? 'bg-white' : 'bg-gray-600'
+                  }`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+};
+
+// Composant MegaMenuOverlay - Affiche les sous-catégories
+interface MegaMenuOverlayProps {
+  category: Category;
+}
+
+const MegaMenuOverlay: React.FC<MegaMenuOverlayProps> = ({ category }) => {
+  // Configuration des groupes (même que dans CategoriesMenu)
+  const CATEGORY_GROUPS = {
+    'tech': { icon: '💻', color: 'text-blue-400' },
+    'mode': { icon: '👗', color: 'text-pink-400' },
+    'maison': { icon: '🏠', color: 'text-green-400' },
+    'sport': { icon: '⚽', color: 'text-orange-400' },
+    'lifestyle': { icon: '🌟', color: 'text-purple-400' },
+    'automotive': { icon: '🚗', color: 'text-gray-400' }
+  };
+
+  const CATEGORY_TO_GROUP: Record<string, keyof typeof CATEGORY_GROUPS> = {
+    'electronique': 'tech', 'telephones-accessoires': 'tech', 'ordinateurs-tablettes': 'tech', 'audio-video': 'tech', 'gaming-vr': 'tech',
+    'mode-beaute': 'mode', 'vetements-homme': 'mode', 'vetements-femme': 'mode', 'vetements-enfant': 'mode', 'chaussures': 'mode', 'sacs-maroquinerie': 'mode', 'montres-bijoux': 'mode', 'cosmetiques-soins': 'mode',
+    'maison-jardin': 'maison', 'mobilier': 'maison', 'electromenager': 'maison', 'luminaires': 'maison', 'cuisine-salle-bain': 'maison', 'jardinage-outils': 'maison',
+    'sport-loisirs': 'sport', 'fitness-musculation': 'sport', 'sports-exterieur': 'sport', 'jeux-jouets': 'sport', 'instruments-musique': 'sport',
+    'sante-bien-etre': 'lifestyle', 'bebe-enfant': 'lifestyle', 'livre-papeterie': 'lifestyle', 'voyage-bagages': 'lifestyle', 'animaux-accessoires': 'lifestyle',
+    'automobile-moto': 'automotive', 'outils-bricolage': 'automotive'
+  };
+
+  const group = CATEGORY_TO_GROUP[category.slug];
+  const groupConfig = group ? CATEGORY_GROUPS[group] : null;
+
+  return (
+    <div className="bg-white rounded-xl shadow-2xl border border-gray-200 h-full p-6 animate-in slide-in-from-left-2 duration-300">
+      {/* Header du mega menu */}
+      <div className="flex items-center mb-6 pb-4 border-b border-gray-100">
+        <span className={`text-3xl mr-4 ${groupConfig?.color || 'text-gray-400'}`}>
+          {groupConfig?.icon || '📁'}
+        </span>
+        <div>
+          <h2 className="text-xl font-bold text-gray-800">
+            {category.name}
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">
+            {category.children?.length || 0} sous-catégories disponibles
+          </p>
+        </div>
+      </div>
+
+      {/* Grille des sous-catégories */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 max-h-[350px] overflow-y-auto">
+        {category.children && category.children.length > 0 ? (
+          category.children.map((subcategory) => (
+            <Link
+              key={subcategory.id}
+              href={`/category/${subcategory.slug}`}
+              className="group"
+            >
+              <div className="p-4 rounded-lg border border-gray-100 hover:border-gray-300 hover:shadow-md transition-all duration-200 bg-gray-50 hover:bg-white">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-semibold text-gray-800 group-hover:text-blue-600 text-sm leading-tight">
+                    {subcategory.name}
+                  </h3>
+                  <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full ml-2 flex-shrink-0">
+                    {subcategory.product_count || 0}
+                  </span>
+                </div>
+                {subcategory.description && (
+                  <p className="text-xs text-gray-500 line-clamp-2">
+                    {subcategory.description}
+                  </p>
+                )}
+              </div>
+            </Link>
+          ))
+        ) : (
+          <div className="col-span-full text-center py-8">
+            <p className="text-gray-500">Aucune sous-catégorie disponible</p>
+            <p className="text-sm text-gray-400 mt-2">Cette catégorie n'a pas encore de sous-catégories</p>
+          </div>
+        )}
+      </div>
+
+      {/* Bouton "Voir tout" */}
+      <div className="mt-6 pt-4 border-t border-gray-100">
+        <Link href={`/category/${category.slug}`}>
+          <div className="w-full text-center p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl">
+            <span className="font-semibold">
+              🔍 Voir tous les produits {category.name}
+            </span>
+          </div>
+        </Link>
+      </div>
     </div>
   );
 };

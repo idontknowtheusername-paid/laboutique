@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react';
+import { ArrowRight, TrendingUp, Package, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CategoriesService, Category } from '@/lib/services';
 import Image from 'next/image';
@@ -69,11 +69,22 @@ const getDefaultImage = (slug: string): string => {
 export default function CarouselCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   
-  const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
+  // Configuration du carousel
+  const itemsPerSlide = 6;
+  const filteredCategories = categories;
+  const totalSlides = Math.ceil(filteredCategories.length / itemsPerSlide);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  };
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -98,62 +109,10 @@ export default function CarouselCategories() {
     loadCategories();
   }, []);
 
-  // Utilisation directe des catégories sans filtrage
-  const filteredCategories = categories;
-
-  // Configuration responsive SIMPLIFIÉE - 2 lignes horizontales
-  const getItemsPerSlide = () => {
-    if (typeof window === 'undefined') return 8;
-    if (window.innerWidth < 640) return 4; // Mobile: 2x2
-    if (window.innerWidth < 768) return 6; // Small tablet: 3x2
-    if (window.innerWidth < 1024) return 8; // Tablet: 4x2
-    if (window.innerWidth < 1280) return 10; // Desktop: 5x2
-    return 12; // Large desktop: 6x2
-  };
-
-  const [itemsPerSlide, setItemsPerSlide] = useState(8);
-
-  // Gestion du responsive
-  useEffect(() => {
-    const handleResize = () => {
-      setItemsPerSlide(getItemsPerSlide());
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const totalSlides = Math.ceil(filteredCategories.length / itemsPerSlide);
-
-  const nextSlide = () => {
-    setCurrentSlide(prev => (prev + 1) % totalSlides);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide(prev => (prev - 1 + totalSlides) % totalSlides);
-  };
-
-
-  const toggleAutoPlay = () => {
-    setIsAutoPlaying(!isAutoPlaying);
-  };
-
-  // Auto-play logic
-  useEffect(() => {
-    if (isAutoPlaying && !isHovered && totalSlides > 1) {
-      autoPlayRef.current = setInterval(() => {
-        setCurrentSlide(prev => (prev + 1) % totalSlides);
-      }, 4000);
-    } else if (autoPlayRef.current) {
-      clearInterval(autoPlayRef.current);
-    }
-
-    return () => {
-      if (autoPlayRef.current) {
-        clearInterval(autoPlayRef.current);
-      }
-    };
-  }, [isAutoPlaying, isHovered, totalSlides]);
+  // Catégories principales (8 premières) et populaires
+  const mainCategories = categories.slice(0, 8);
+  const popularCategories = categories.slice(0, 4);
+  const displayedCategories = showAll ? categories : mainCategories;
 
   if (loading) {
     return (

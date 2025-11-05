@@ -56,6 +56,8 @@ const Header = () => {
       subtitle: 'Jusqu\'à -30% sur électronique',
       href: '/category/electronique',
       bg: 'from-jomionstore-primary to-orange-700',
+      animation: 'animate-pulse',
+      emoji: '🔥'
     },
     {
       id: 'a2',
@@ -63,6 +65,8 @@ const Header = () => {
       subtitle: 'Tendances 2025 disponibles',
       href: '/category/mode',
       bg: 'from-rose-500 to-pink-600',
+      animation: 'animate-bounce',
+      emoji: '✨'
     },
     {
       id: 'a3',
@@ -70,6 +74,35 @@ const Header = () => {
       subtitle: 'Équipez votre intérieur',
       href: '/category/maison-jardin',
       bg: 'from-amber-500 to-orange-600',
+      animation: '',
+      emoji: '🏠'
+    },
+    {
+      id: 'a4',
+      title: 'BLACK FRIDAY PERMANENT',
+      subtitle: 'Prix cassés toute l\'année - Jusqu\'à -70%',
+      href: '/flash-sales',
+      bg: 'from-gray-900 to-black',
+      animation: 'animate-pulse',
+      emoji: '⚡'
+    },
+    {
+      id: 'a5',
+      title: 'LIVRAISON GRATUITE',
+      subtitle: 'Partout au Bénin - Commande dès 10,000 XOF',
+      href: '/delivery-info',
+      bg: 'from-green-600 to-emerald-700',
+      animation: 'animate-bounce',
+      emoji: '🚚'
+    },
+    {
+      id: 'a6',
+      title: 'MEGA PROMO GAMING',
+      subtitle: 'Setup complet à -50% - PS5, Xbox, PC',
+      href: '/category/gaming-vr',
+      bg: 'from-purple-600 to-indigo-700',
+      animation: 'animate-pulse',
+      emoji: '🎮'
     },
   ], []);
 
@@ -212,20 +245,21 @@ const Header = () => {
         isScrolled ? "shadow-md" : "shadow-sm"
       }`}
     >
-      {/* Announcement Bar - TEMPORAIREMENT MASQUÉ */}
-      {/* <div className="bg-gradient-to-r from-jomionstore-primary to-orange-700 text-white py-2">
+      {/* Announcement Bar */}
+      <div className="text-white py-2 overflow-hidden">
         <div className="container relative">
           <Carousel setApi={setAnnApi} opts={{ align: "start", loop: true }}>
             <CarouselContent>
               {announcements.map((a) => (
                 <CarouselItem key={a.id} className="basis-full">
                   <Link href={a.href} className="block">
-                    <div className="flex items-center justify-center text-center px-4 py-2">
-                      <div className="text-base md:text-lg font-medium">
+                    <div className={`bg-gradient-to-r ${a.bg} flex items-center justify-center text-center px-4 py-2 hover:opacity-90 transition-opacity`}>
+                      <div className="text-base md:text-lg font-medium text-white">
+                        <span className={`inline-block mr-2 ${a.animation}`}>{a.emoji}</span>
                         <span className="font-bold">{a.title}</span>
                         <span className="mx-2">•</span>
                         <span className="opacity-90">{a.subtitle}</span>
-                        <span className="ml-3 underline">Voir</span>
+                        <span className="ml-3 underline hover:no-underline">Voir →</span>
                       </div>
                     </div>
                   </Link>
@@ -234,7 +268,7 @@ const Header = () => {
             </CarouselContent>
           </Carousel>
         </div>
-      </div> */}
+      </div>
 
       {/* Main Header */}
       <div className="container py-4">
