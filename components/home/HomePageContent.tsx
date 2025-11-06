@@ -179,7 +179,7 @@ export default function HomePageContent() {
           </section>
 
           {/* Carousel Categories Section - Positioned early for better UX */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1" fallback={<div className="h-24 bg-gray-100 animate-pulse rounded-xl" />}>
             <CarouselCategories />
           </LazySection>
 
