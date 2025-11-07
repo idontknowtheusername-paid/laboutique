@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Header from '@/components/layout/Header';
-import ImprovedCategoryMenu from '@/components/layout/ImprovedCategoryMenu';
 import Footer from '@/components/layout/Footer';
 import { ProductsService, CategoriesService, Product, Category } from '@/lib/services';
 import { ProductSkeleton } from '@/components/ui/loading-skeleton';
@@ -162,9 +161,8 @@ export default function HomePageContent() {
       
       <main className="min-h-screen bg-jomionstore-background">
         <Header />
-        <ImprovedCategoryMenu />
 
-        <div className="pt-5 md:pt-10">
+        <div className="pt-20 md:pt-24">
           <section className="mb-1.5">
             <LazySection className="mb-1.5" fallback={<div className="h-[400px] lg:h-[500px] bg-gray-100 animate-pulse rounded-xl" />}>
               <HeroCarouselWithData 

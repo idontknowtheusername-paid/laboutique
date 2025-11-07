@@ -236,8 +236,7 @@ const ImprovedCategoryMenu = () => {
   // Loading state with better skeleton
   if (state.loading) {
     return (
-      <div className={`bg-white border-b transition-all duration-300 z-40 ${
-        isScrolled ? 'fixed top-0 left-0 right-0 py-2 shadow-md' : 'category-menu-offset py-3'
+      <div className={`bg-white border-b transition-all duration-300 z-40 fixed left-0 right-0 ${isScrolled ? 'top-0 py-2 shadow-md' : 'top-[88px] md:top-[96px] py-3'
       }`}>
         <div className="container">
           <div className="flex items-center justify-between">
@@ -260,8 +259,7 @@ const ImprovedCategoryMenu = () => {
   // Enhanced error state
   if (state.error) {
     return (
-      <div className={`bg-red-50 border-b border-red-200 transition-all duration-300 z-40 ${
-        isScrolled ? 'fixed top-0 left-0 right-0 py-2 shadow-md' : 'category-menu-offset py-3'
+      <div className={`bg-red-50 border-b border-red-200 transition-all duration-300 z-40 fixed left-0 right-0 ${isScrolled ? 'top-0 py-2 shadow-md' : 'top-[88px] md:top-[96px] py-3'
       }`}>
         <div className="container">
           <div className="flex items-center justify-between">
@@ -301,8 +299,7 @@ const ImprovedCategoryMenu = () => {
   }
 
   return (
-    <div className={`bg-white border-b transition-all duration-300 z-40 ${
-      isScrolled ? 'fixed top-0 left-0 right-0 py-2 shadow-lg' : 'category-menu-offset py-3'
+    <div className={`bg-white border-b transition-all duration-300 z-40 fixed left-0 right-0 ${isScrolled ? 'top-0 py-2 shadow-lg' : 'top-[88px] md:top-[96px] py-3'
     }`}>
       <div className="container">
         <div className="flex items-center justify-between">

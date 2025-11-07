@@ -4,15 +4,10 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, User, Heart, ShoppingCart, Menu, X, Crown, Package, CreditCard, MapPin, Bell, Settings, TicketPercent, Wallet, Shield, FileText } from 'lucide-react';
+import { Search, User, Heart, ShoppingCart, Menu, Crown, Package, CreditCard, MapPin, Bell, Settings, TicketPercent, Wallet, Shield, FileText, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { 
-  useMobileViewport, 
-  useTouchGestures,
-  MobileSpacing 
-} from '@/components/mobile/MobileOptimizations';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,33 +16,28 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import ClientSafe from '@/components/ui/client-safe';
 import SearchSuggestions from '@/components/search/SearchSuggestions';
 
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
   const [advancedSuggestions, setAdvancedSuggestions] = useState<any[]>([]);
   const [trendingSearches, setTrendingSearches] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const { getCartItemsCount } = useCart();
   const { user, profile, signOut } = useAuth();
   const pathname = usePathname();
-  const isHome = pathname === '/';
   const [annApi, setAnnApi] = useState<CarouselApi | null>(null);
   const router = useRouter();
-  
-  // Mobile optimizations
-  const { isMobile, isTablet } = useMobileViewport();
-  const { handleTouchStart, handleTouchMove, handleTouchEnd } = useTouchGestures();
 
   // Prevent hydration mismatch
   useEffect(() => {
@@ -160,11 +150,6 @@ const Header = () => {
           }
         } catch (error) {
           console.error('Erreur lors de la récupération des suggestions:', error);
-          // Fallback sur les suggestions statiques
-          const filtered = popularSearches.filter(term => 
-            term.toLowerCase().includes(searchQuery.toLowerCase())
-          );
-          setSearchSuggestions(filtered.slice(0, 5));
           setShowSuggestions(true);
         } finally {
           setIsLoadingSuggestions(false);
@@ -172,7 +157,6 @@ const Header = () => {
       } else {
         setAdvancedSuggestions([]);
         setTrendingSearches([]);
-        setSearchSuggestions([]);
         setShowSuggestions(false);
       }
     };
@@ -180,66 +164,33 @@ const Header = () => {
     // Debounce pour éviter trop de requêtes
     const timeoutId = setTimeout(fetchSuggestions, 300);
     return () => clearTimeout(timeoutId);
-  }, [searchQuery, popularSearches]);
+  }, [searchQuery]);
 
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     const trimmedQuery = searchQuery.trim();
     
     // Validation de la recherche
-    if (!trimmedQuery) {
-      // Feedback visuel pour recherche vide
-      const input = e.currentTarget.querySelector('input');
-      if (input) {
-        input.style.borderColor = '#ef4444';
-        input.style.backgroundColor = '#fef2f2';
-        setTimeout(() => {
-          input.style.borderColor = '';
-          input.style.backgroundColor = '';
-        }, 2000);
-      }
-      return;
-    }
-
-    // Validation de la longueur minimale
-    if (trimmedQuery.length < 2) {
-      // Feedback pour recherche trop courte
-      const input = e.currentTarget.querySelector('input');
-      if (input) {
-        input.style.borderColor = '#f59e0b';
-        input.style.backgroundColor = '#fffbeb';
-        setTimeout(() => {
-          input.style.borderColor = '';
-          input.style.backgroundColor = '';
-        }, 2000);
-      }
+    if (!trimmedQuery || trimmedQuery.length < 2) {
       return;
     }
 
     // Validation des caractères spéciaux
     const hasSpecialChars = /[<>:"/\\|?*]/.test(trimmedQuery);
     if (hasSpecialChars) {
-      // Feedback pour caractères invalides
-      const input = e.currentTarget.querySelector('input');
-      if (input) {
-        input.style.borderColor = '#dc2626';
-        input.style.backgroundColor = '#fef2f2';
-        setTimeout(() => {
-          input.style.borderColor = '';
-          input.style.backgroundColor = '';
-        }, 2000);
-      }
       return;
     }
 
     // Recherche valide - navigation
     setShowSuggestions(false);
+    setIsSearchModalOpen(false);
     router.push(`/search?q=${encodeURIComponent(trimmedQuery)}`);
   }, [searchQuery, router]);
 
   const handleSuggestionClick = useCallback((suggestion: string) => {
     setSearchQuery(suggestion);
     setShowSuggestions(false);
+    setIsSearchModalOpen(false);
     router.push(`/search?q=${encodeURIComponent(suggestion)}`);
   }, [router]);
 
@@ -247,8 +198,7 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 bg-white transition-shadow duration-300 ${
-        isScrolled ? "shadow-md" : "shadow-sm"
+      className={`fixed top-0 left-0 right-0 z-50 bg-gray-200 transition-all duration-300 ${isScrolled ? "shadow-lg" : "shadow-sm"
       }`}
     >
       {/* Announcement Bar - Pleine largeur */}
@@ -275,23 +225,23 @@ const Header = () => {
       </div>
 
       {/* Main Header */}
-      <div className="container py-3">
-        <div className="flex items-center justify-between gap-4">
-          {/* Logo - Plus grand et moderne */}
+      <div className="container py-3 md:py-4">
+        <div className="flex items-center justify-between gap-3 md:gap-6">
+          {/* Logo - Plus petit sur mobile */}
           <Link href="/" className="flex items-center header-logo flex-shrink-0">
-            <div className="relative w-40 h-14 sm:w-44 sm:h-14 md:w-48 md:h-16 lg:w-56 lg:h-16 rounded-lg overflow-hidden">
+            <div className="relative w-24 h-16 sm:w-28 sm:h-13 md:w-52 md:h-18 lg:w-100 lg:h-30 rounded-lg overflow-hidden">
               <Image
                 src="/images/latestlogo.jpg"
                 alt="JomionStore"
                 fill
                 className="object-contain"
                 priority
-                sizes="(max-width: 640px) 160px, (max-width: 768px) 176px, (max-width: 1024px) 192px, 224px"
+                sizes="(max-width: 640px) 80px, (max-width: 768px) 96px, (max-width: 1024px) 192px, 224px"
               />
             </div>
           </Link>
 
-          {/* Search Bar */}
+          {/* Search Bar - Desktop only */}
           <form
             onSubmit={handleSearch}
             className="hidden md:flex flex-1 max-w-2xl mx-8"
@@ -308,7 +258,7 @@ const Header = () => {
                 }
                 onFocus={() => setShowSuggestions(searchQuery.length >= 2)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                className="pr-12 h-12 text-base border-2 border-gray-200 focus:border-jomionstore-primary rounded-lg"
+                className="pr-14 h-14 text-base border-2 border-gray-200 focus:border-jomionstore-primary rounded-lg"
                 aria-label="Champ de recherche de produits"
                 aria-describedby="search-help"
                 aria-expanded={showSuggestions}
@@ -318,10 +268,10 @@ const Header = () => {
               <Button
                 type="submit"
                 size="sm"
-                className="absolute right-1 top-1 h-10 px-4 bg-jomionstore-secondary hover:bg-orange-600 rounded-md"
+                className="absolute right-1 top-1 h-12 px-5 bg-jomionstore-secondary hover:bg-orange-600 rounded-md"
                 aria-label="Lancer la recherche"
               >
-                <Search className="w-4 h-4" />
+                <Search className="w-5 h-5" />
               </Button>
 
               {/* Suggestions de recherche avancées */}
@@ -337,32 +287,66 @@ const Header = () => {
             </div>
           </form>
 
-          {/* Right Section */}
+          {/* Mobile Search Input - Inline */}
+          <form onSubmit={handleSearch} className="flex-1 md:hidden mx-2">
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Rechercher..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setShowSuggestions(searchQuery.length >= 2)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                className="h-11 text-sm pl-3 pr-11 border-2 border-gray-200 focus:border-jomionstore-primary rounded-lg"
+                aria-label="Recherche rapide"
+              />
+              <Button
+                type="submit"
+                size="sm"
+                className="absolute right-0.5 top-0.5 h-10 px-3 bg-jomionstore-secondary hover:bg-orange-600 rounded-md"
+                aria-label="Lancer la recherche"
+              >
+                <Search className="w-5 h-5" />
+              </Button>
 
-          <div className="flex items-center space-x-4">
-            {/* Account or Admin */}
+              {/* Suggestions de recherche - Mobile */}
+              {showSuggestions && (
+                <div className="md:hidden">
+                  <SearchSuggestions
+                    suggestions={advancedSuggestions}
+                    trending={trendingSearches}
+                    onSuggestionClick={handleSuggestionClick}
+                    onTrendingClick={handleSuggestionClick}
+                    isLoading={isLoadingSuggestions}
+                  />
+                </div>
+              )}
+            </div>
+          </form>
+
+          {/* Right Section */}
+          <div className="flex items-center gap-2 md:gap-4">
+            {/* Account or Admin - Desktop only */}
             {profile?.role === "admin" ? (
-              // Admin: Crown icon, direct link to dashboard, no dropdown
-              <Link href="/admin/dashboard">
+              <Link href="/admin/dashboard" className="hidden md:block">
                 <Button
                   variant="ghost"
                   className="flex items-center space-x-2 text-yellow-600 hover:text-yellow-700"
                   title="Admin Dashboard"
                   aria-label="Accéder au tableau de bord administrateur"
                 >
-                  <Crown className="w-6 h-6" />
-                  <span className="hidden lg:block text-sm font-medium">
+                  <Crown className="w-7 h-7" />
+                  <span className="hidden lg:block text-base font-medium">
                     Admin
                   </span>
                 </Button>
               </Link>
             ) : (
-              <>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="flex items-center space-x-2 text-gray-700 hover:text-jomionstore-primary"
+                      className="hidden md:flex items-center space-x-2 text-gray-700 hover:text-jomionstore-primary"
                       aria-label={
                         user
                           ? "Menu du compte utilisateur"
@@ -370,12 +354,12 @@ const Header = () => {
                       }
                       aria-expanded="false"
                     >
-                      <User className="w-5 h-5" />
+                      <User className="w-6 h-6" />
                       <div className="hidden lg:block text-left">
-                        <div className="text-xs text-gray-500">
+                        <div className="text-sm text-gray-500">
                           {user ? "Connecté" : "Se connecter"}
                         </div>
-                        <div className="text-sm font-medium">
+                        <div className="text-base font-medium">
                           {user
                             ? user.user_metadata?.first_name || "Mon profil"
                             : "Mon compte"}
@@ -415,19 +399,18 @@ const Header = () => {
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </>
             )}
 
-            {/* Wishlist (hide for admin) */}
+            {/* Wishlist */}
             {profile?.role !== "admin" && (
               <Link href="/wishlist" className="relative">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-700 hover:text-jomionstore-primary"
+                  className="text-gray-700 hover:text-jomionstore-primary p-0 h-11 w-11 md:h-12 md:w-12"
                   aria-label="Voir ma liste de souhaits"
                 >
-                  <Heart className="w-6 h-6" />
+                  <Heart className="w-6 h-6 md:w-7 md:h-7" />
                 </Button>
               </Link>
             )}
@@ -437,17 +420,17 @@ const Header = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-gray-700 hover:text-jomionstore-primary"
+                className="text-gray-700 hover:text-jomionstore-primary p-0 h-11 w-11 md:h-12 md:w-12"
                 aria-label={`Voir le panier${
                   cartItemsCount > 0 ? ` (${cartItemsCount} articles)` : ""
                 }`}
               >
-                <ShoppingCart className="w-6 h-6" />
+                <ShoppingCart className="w-6 h-6 md:w-7 md:h-7" />
                 {mounted && (
                   <ClientSafe>
                     {cartItemsCount > 0 && (
                       <Badge
-                        className="absolute -top-2 -right-2 bg-jomionstore-secondary text-white text-xs px-2 py-1"
+                        className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-jomionstore-secondary text-white text-xs px-1.5 py-0.5 min-w-[18px] h-[18px] flex items-center justify-center"
                         aria-label={`${cartItemsCount} articles dans le panier`}
                       >
                         {cartItemsCount}
@@ -464,14 +447,14 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="md:hidden"
+                  className="md:hidden p-0 h-11 w-11"
                   aria-label="Ouvrir le menu de navigation mobile"
                 >
                   <Menu className="w-6 h-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-80">
-                <SheetHeader>
+              <SheetContent side="right" className="w-80 p-0">
+                <SheetHeader className="sr-only">
                   <SheetTitle>Menu de navigation</SheetTitle>
                 </SheetHeader>
                 <MobileMenu />
@@ -479,33 +462,6 @@ const Header = () => {
             </Sheet>
           </div>
         </div>
-
-        {/* Mobile Search */}
-        <form
-          onSubmit={handleSearch}
-          className="md:hidden mt-4"
-          role="search"
-          aria-label="Recherche de produits mobile"
-        >
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Rechercher des produits, marques et catégories..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pr-12 h-10 border-2 border-gray-200 focus:border-jomionstore-primary rounded-lg"
-              aria-label="Champ de recherche de produits mobile"
-            />
-            <Button
-              type="submit"
-              size="sm"
-              className="absolute right-1 top-1 h-8 px-3 bg-jomionstore-secondary hover:bg-orange-600 rounded-md"
-              aria-label="Lancer la recherche mobile"
-            >
-              <Search className="w-4 h-4" />
-            </Button>
-          </div>
-        </form>
       </div>
     </header>
   );
@@ -513,84 +469,172 @@ const Header = () => {
 
 const MobileMenu = () => {
   const { user, signOut } = useAuth();
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
-  // Navigation items from account layout
-  const accountNavItems = [
-    { href: '/account', label: 'Tableau de bord', icon: Settings },
-    { href: '/account/orders', label: 'Commandes', icon: Package },
-    { href: '/account/returns', label: 'Retours', icon: FileText },
-    { href: '/account/coupons', label: 'Coupons', icon: TicketPercent },
-    { href: '/account/wallet', label: 'Wallet', icon: Wallet },
-    { href: '/account/points', label: 'Points', icon: Shield },
-    { href: '/account/wishlist', label: 'Wishlist', icon: Heart },
-    { href: '/account/payment-methods', label: 'Paiements', icon: CreditCard },
-    { href: '/account/addresses', label: 'Adresses', icon: MapPin },
-    { href: '/account/notifications', label: 'Notifications', icon: Bell },
-    { href: '/account/invoices', label: 'Factures', icon: FileText },
+  // Catégories organisées
+  const menuCategories = [
+    {
+      id: 'shopping',
+      title: 'Shopping',
+      icon: Package,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      items: [
+        { href: '/account/orders', label: 'Mes Commandes', icon: Package },
+        { href: '/account/wishlist', label: 'Ma Wishlist', icon: Heart },
+        { href: '/account/returns', label: 'Retours & SAV', icon: FileText },
+      ]
+    },
+    {
+      id: 'wallet',
+      title: 'Finances',
+      icon: Wallet,
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+      items: [
+        { href: '/account/wallet', label: 'Mon Wallet', icon: Wallet },
+        { href: '/account/coupons', label: 'Mes Coupons', icon: TicketPercent },
+        { href: '/account/points', label: 'Points Fidélité', icon: Shield },
+        { href: '/account/payment-methods', label: 'Moyens de paiement', icon: CreditCard },
+      ]
+    },
+    {
+      id: 'account',
+      title: 'Mon Compte',
+      icon: Settings,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      items: [
+        { href: '/account', label: 'Paramètres', icon: Settings },
+        { href: '/account/addresses', label: 'Mes Adresses', icon: MapPin },
+        { href: '/account/notifications', label: 'Notifications', icon: Bell },
+        { href: '/account/invoices', label: 'Factures', icon: FileText },
+      ]
+    }
   ];
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    }
+  };
+
+  const toggleSection = (sectionId: string) => {
+    setActiveSection(activeSection === sectionId ? null : sectionId);
+  };
+
   return (
-    <div className="flex flex-col space-y-4 p-4">
-      <div className="flex items-center space-x-2 pb-4 border-b">
-        <User className="w-8 h-8 text-jomionstore-primary" />
-        <div>
-          <div className="font-medium">
-            {user ? `${user.user_metadata?.first_name || 'Mon compte'}` : 'Se connecter'}
+    <div className="flex flex-col h-full bg-gray-50">
+      {/* En-tête utilisateur amélioré */}
+      <div className="bg-gradient-to-r from-jomionstore-primary to-orange-600 p-6 text-white">
+        <div className="flex items-center space-x-4">
+          <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
+            <User className="w-7 h-7" />
           </div>
-          <div className="text-sm text-gray-500">
-            {user ? user.email : 'Accédez à votre compte'}
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-lg">
+              Bonjour, {user?.user_metadata?.first_name || 'Visiteur'} 👋
+            </div>
+            <div className="text-sm text-white/80 truncate">
+              {user ? user.email : 'Accédez à votre compte'}
+            </div>
           </div>
         </div>
       </div>
 
-      {user ? (
-        <>
-          {/* Account Navigation - Same as dashboard */}
-          <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Mon compte</h3>
-            {accountNavItems.map((item) => {
-              const Icon = item.icon;
+      {/* Contenu scrollable */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {user ? (
+          <>
+            {/* Catégories avec items */}
+            {menuCategories.map((category) => {
+              const CategoryIcon = category.icon;
+              const isActive = activeSection === category.id;
+              
               return (
-                <Link 
-                  key={item.href}
-                  href={item.href} 
-                  className="flex items-center gap-3 py-2 px-3 text-gray-700 hover:text-jomionstore-primary hover:bg-gray-50 rounded-md"
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="text-sm">{item.label}</span>
-                </Link>
+                <div key={category.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
+                  {/* Header de catégorie */}
+                  <button
+                    onClick={() => toggleSection(category.id)}
+                    className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-lg ${category.bgColor} flex items-center justify-center`}>
+                        <CategoryIcon className={`w-5 h-5 ${category.color}`} />
+                      </div>
+                      <span className="font-semibold text-gray-900">{category.title}</span>
+                    </div>
+                    <X 
+                      className={`w-5 h-5 text-gray-400 transition-transform ${isActive ? 'rotate-45' : 'rotate-0'}`}
+                    />
+                  </button>
+
+                  {/* Items de la catégorie */}
+                  {isActive && (
+                    <div className="border-t border-gray-100">
+                      {category.items.map((item) => {
+                        const ItemIcon = item.icon;
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-b-0"
+                          >
+                            <div className="flex items-center gap-3">
+                              <ItemIcon className="w-4 h-4 text-gray-400" />
+                              <span className="text-sm text-gray-700">{item.label}</span>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               );
             })}
-          </div>
-          
-          <div className="pt-4 border-t">
-            <Button onClick={() => signOut()} variant="outline" className="w-full">
-              Se déconnecter
-            </Button>
-          </div>
-        </>
-      ) : (
-        <>
-          <Link href="/auth/login">
-            <Button className="w-full btn-primary">Se connecter</Button>
-          </Link>
-          <Link href="/auth/register">
-            <Button variant="outline" className="w-full">Créer un compte</Button>
-          </Link>
-        </>
-      )}
 
-      <div className="pt-4 border-t">
-        <Link href="/help" className="py-2 text-gray-700 hover:text-jomionstore-primary block">
-          Centre d'aide
-        </Link>
-        <Link href="/about" className="py-2 text-gray-700 hover:text-jomionstore-primary block">
-          À propos
-        </Link>
-        <Link href="/contact" className="py-2 text-gray-700 hover:text-jomionstore-primary block">
-          Contact
-        </Link>
+            {/* Liens d'aide en mode compact */}
+            <div className="bg-white rounded-xl shadow-sm p-3 space-y-1">
+              <Link href="/help" className="flex items-center gap-3 p-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                <span>Centre d&apos;aide</span>
+              </Link>
+              <Link href="/about" className="flex items-center gap-3 p-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                <span>À propos</span>
+              </Link>
+              <Link href="/contact" className="flex items-center gap-3 p-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                <span>Contact</span>
+              </Link>
+            </div>
+          </>
+        ) : (
+          <div className="space-y-3">
+            <Link href="/auth/login">
+              <Button className="w-full bg-jomionstore-primary hover:bg-jomionstore-primary/90 text-white font-medium py-3 rounded-lg">
+                Se connecter
+              </Button>
+            </Link>
+            <Link href="/auth/register">
+              <Button variant="outline" className="w-full border-2 border-gray-300 hover:border-jomionstore-primary text-gray-700 font-medium py-3 rounded-lg">
+                Créer un compte
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
+
+      {/* Footer avec bouton de déconnexion fixe */}
+      {user && (
+        <div className="p-4 bg-white border-t border-gray-200">
+          <Button
+            onClick={handleSignOut}
+            className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-lg"
+          >
+            Se déconnecter
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
