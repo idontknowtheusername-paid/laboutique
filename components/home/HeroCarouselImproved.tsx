@@ -184,7 +184,7 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
   }, [hoveredCategory]);
 
   return (
-    <div className={`w-full h-[300px] sm:h-[350px] md:h-[425px] lg:h-[510px] ${className} relative`}>
+    <div className={`w-full h-[400px] sm:h-[420px] md:h-[425px] lg:h-[510px] ${className} relative`}>
       {/* Layout Grid Responsive - Même structure sur tous les écrans */}
       <div className="grid grid-cols-12 grid-rows-2 gap-2 sm:gap-3 md:gap-4 h-full">
 
@@ -325,25 +325,25 @@ const MainHeroCarousel: React.FC = () => {
             <div className={`absolute inset-0 bg-gradient-to-r ${banner.gradient} opacity-90`} />
             
             {/* Content - Responsive */}
-            <div className="relative h-full flex items-center p-2 sm:p-4 md:p-6 lg:p-8">
-              <div className="max-w-[200px] sm:max-w-xs md:max-w-sm lg:max-w-md text-white">
+            <div className="relative h-full flex items-center p-4 sm:p-4 md:p-6 lg:p-8">
+              <div className="max-w-[240px] sm:max-w-xs md:max-w-sm lg:max-w-md text-white">
                 {/* Badge */}
-                <Badge className="mb-1 sm:mb-2 md:mb-3 lg:mb-4 bg-white/20 text-white border-white/30 text-[10px] sm:text-xs">
+                <Badge className="mb-1.5 sm:mb-2 md:mb-3 lg:mb-4 bg-white/20 text-white border-white/30 text-[10px] sm:text-xs">
                   {banner.badge}
                 </Badge>
 
                 {/* Title - Responsive */}
-                <h2 className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold mb-1 sm:mb-2 md:mb-3 leading-tight">
+                <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold mb-1.5 sm:mb-2 md:mb-3 leading-tight">
                   {banner.title}
                 </h2>
 
                 {/* Subtitle - Responsive */}
-                <h3 className="text-xs sm:text-sm md:text-base lg:text-lg font-light mb-1 sm:mb-2 md:mb-3 opacity-90 leading-tight">
+                <h3 className="text-xs sm:text-sm md:text-base lg:text-lg font-light mb-1.5 sm:mb-2 md:mb-3 opacity-90 leading-tight">
                   {banner.subtitle}
                 </h3>
 
-                {/* Description - Responsive */}
-                <p className="text-[10px] sm:text-xs md:text-sm lg:text-base mb-2 sm:mb-3 md:mb-4 lg:mb-6 opacity-80 leading-tight line-clamp-2 sm:line-clamp-3">
+                {/* Description - Responsive - Masqué sur très petit écran */}
+                <p className="hidden sm:block text-xs md:text-sm lg:text-base mb-2.5 sm:mb-3 md:mb-4 lg:mb-6 opacity-80 leading-tight line-clamp-2 sm:line-clamp-3">
                   {banner.description}
                 </p>
 
@@ -351,7 +351,7 @@ const MainHeroCarousel: React.FC = () => {
                 <Link href={banner.cta_link}>
                   <Button
                     size="sm"
-                    className="bg-white text-gray-900 hover:bg-gray-100 font-semibold px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 text-[10px] sm:text-xs md:text-sm lg:text-base"
+                    className="bg-white text-gray-900 hover:bg-gray-100 font-semibold px-3 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 text-[11px] sm:text-xs md:text-sm lg:text-base"
                   >
                     {banner.cta_text}
                   </Button>

@@ -79,8 +79,8 @@ const Header = () => {
     },
     {
       id: 'a4',
-      title: 'BLACK FRIDAY PERMANENT',
-      subtitle: 'Prix cassés toute l\'année - Jusqu\'à -70%',
+      title: 'Black Friday Permanent',
+      subtitle: 'Prix cassés - Jusqu\'à -70%',
       href: '/flash-sales',
       bg: 'from-gray-900 to-black',
       animation: 'animate-pulse',
@@ -88,8 +88,8 @@ const Header = () => {
     },
     {
       id: 'a5',
-      title: 'LIVRAISON GRATUITE',
-      subtitle: 'Partout au Bénin - Commande dès 10,000 XOF',
+      title: 'Livraison Gratuite',
+      subtitle: 'Partout au Bénin',
       href: '/delivery-info',
       bg: 'from-green-600 to-emerald-700',
       animation: 'animate-bounce',
@@ -97,8 +97,8 @@ const Header = () => {
     },
     {
       id: 'a6',
-      title: 'MEGA PROMO GAMING',
-      subtitle: 'Setup complet à -50% - PS5, Xbox, PC',
+      title: 'Méga Promo Gaming',
+      subtitle: 'Setup complet à -50%',
       href: '/category/gaming-vr',
       bg: 'from-purple-600 to-indigo-700',
       animation: 'animate-pulse',
@@ -253,8 +253,8 @@ const Header = () => {
               {announcements.map((a) => (
                 <CarouselItem key={a.id} className="basis-full">
                   <Link href={a.href} className="block">
-                    <div className={`bg-gradient-to-r ${a.bg} flex items-center justify-center text-center px-4 py-2 hover:opacity-90 transition-opacity`}>
-                      <div className="text-base md:text-lg font-medium text-white">
+                    <div className={`bg-gradient-to-r ${a.bg} flex items-center justify-center text-center px-4 py-1.5 hover:opacity-90 transition-opacity`}>
+                      <div className="text-sm md:text-base font-medium text-white">
                         <span className={`inline-block mr-2 ${a.animation}`}>{a.emoji}</span>
                         <span className="font-bold">{a.title}</span>
                         <span className="mx-2">•</span>

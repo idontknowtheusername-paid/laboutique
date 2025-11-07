@@ -191,6 +191,11 @@ const PersonalizedOffers = () => {
     }
   };
 
+  // Masquer la section si pas de produits
+  if (items.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-12 bg-gradient-to-br from-orange-50 to-orange-100">
       <div className="container">

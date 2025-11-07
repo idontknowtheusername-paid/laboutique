@@ -63,6 +63,11 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
   // Use products directly - no complex calculation needed
   const displayedProducts = products;
 
+  // Masquer la section si pas de produits
+  if (displayedProducts.length === 0) {
+    return null;
+  }
+
   return (
     <section className={`py-6 md:py-8 ${backgroundColor}`}>
       <div className="container">

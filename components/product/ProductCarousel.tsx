@@ -157,16 +157,9 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
     }
   };
 
+  // Masquer la section si pas de produits
   if (!products || products.length === 0) {
-    return (
-      <section className={`py-8 ${backgroundColor}`}>
-        <div className="container">
-          <div className="text-center text-gray-500 py-8">
-            Aucun produit disponible
-          </div>
-        </div>
-      </section>
-    );
+    return null;
   }
 
   const totalSlides = Math.ceil(products.length / 2); // Pour mobile (2 par vue)

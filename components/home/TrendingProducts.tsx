@@ -243,27 +243,9 @@ function TrendingProductsContent() {
     );
   }
 
-  // Empty state
+  // Masquer la section si pas de produits
   if (!loading && products.length === 0) {
-    return (
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Produits Tendance</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Découvrez les produits les plus populaires du moment
-            </p>
-          </div>
-
-          <ErrorState
-            type="empty"
-            title="Aucun produit tendance"
-            message="Aucun produit tendance n'est disponible pour le moment."
-            onRetry={handleRetry}
-          />
-        </div>
-      </section>
-    );
+    return null;
   }
 
   return (

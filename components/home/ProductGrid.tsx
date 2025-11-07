@@ -56,12 +56,6 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   const { showSuccess, showError } = useFeedback();
   const { trackProductView, trackAddToCart, trackAddToWishlist, trackButtonClick } = useAnalytics();
 
-  // Responsive grid columns - uniformisé avec FlashSales
-  const getGridCols = () => {
-    // Grille adaptative : 4 colonnes sur mobile/tablette, 6 sur desktop
-    return 'grid-cols-4 lg:grid-cols-6';
-  };
-
   // Memoize expensive calculations
   const formatPrice = useMemo(() => {
     return (price: number) => {
@@ -74,6 +68,12 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   }, []);
 
   const displayedProducts = useMemo(() => products.slice(0, maxItems), [products, maxItems]);
+
+  // Responsive grid columns - uniformisé avec FlashSales
+  const getGridCols = () => {
+    // Grille adaptative : 4 colonnes sur mobile/tablette, 6 sur desktop
+    return 'grid-cols-4 lg:grid-cols-6';
+  };
 
   // Enhanced retry function with exponential backoff
   const handleRetry = useCallback(() => {
@@ -103,6 +103,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({
       };
     });
   }, [displayedProducts]);
+
+  // Masquer la section si pas de produits (après chargement et après tous les hooks)
+  if (!isLoading && !error && displayedProducts.length === 0) {
+    return null;
+  }
 
   return (
     <section className={`py-6 ${backgroundColor}`}>
@@ -145,14 +150,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
           />
         )}
 
-        {/* Empty State */}
-        {!isLoading && !error && displayedProducts.length === 0 && (
-          <ErrorState
-            type="empty"
-            title="Aucun produit disponible"
-            message="Aucun produit n'est disponible dans cette catégorie pour le moment."
-          />
-        )}
+        {/* Empty State - Section masquée si pas de produits */}
 
         {/* Products Grid */}
         {!isLoading && !error && transformedProducts.length > 0 && (
