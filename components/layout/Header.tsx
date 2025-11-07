@@ -245,29 +245,27 @@ const Header = () => {
         isScrolled ? "shadow-md" : "shadow-sm"
       }`}
     >
-      {/* Announcement Bar */}
-      <div className="text-white overflow-hidden">
-        <div className="container relative">
-          <Carousel setApi={setAnnApi} opts={{ align: "start", loop: true }}>
-            <CarouselContent>
-              {announcements.map((a) => (
-                <CarouselItem key={a.id} className="basis-full">
-                  <Link href={a.href} className="block">
-                    <div className={`bg-gradient-to-r ${a.bg} flex items-center justify-center text-center px-4 py-1.5 hover:opacity-90 transition-opacity`}>
-                      <div className="text-sm md:text-base font-medium text-white">
-                        <span className={`inline-block mr-2 ${a.animation}`}>{a.emoji}</span>
-                        <span className="font-bold">{a.title}</span>
-                        <span className="mx-2">•</span>
-                        <span className="opacity-90">{a.subtitle}</span>
-                        <span className="ml-3 underline hover:no-underline">Voir →</span>
-                      </div>
+      {/* Announcement Bar - Pleine largeur */}
+      <div className="text-white overflow-hidden w-full">
+        <Carousel setApi={setAnnApi} opts={{ align: "start", loop: true }}>
+          <CarouselContent>
+            {announcements.map((a) => (
+              <CarouselItem key={a.id} className="basis-full">
+                <Link href={a.href} className="block">
+                  <div className={`bg-gradient-to-r ${a.bg} flex items-center justify-center text-center px-4 py-1.5 hover:opacity-90 transition-opacity`}>
+                    <div className="text-sm md:text-base font-medium text-white">
+                      <span className={`inline-block mr-2 ${a.animation}`}>{a.emoji}</span>
+                      <span className="font-bold">{a.title}</span>
+                      <span className="mx-2">•</span>
+                      <span className="opacity-90">{a.subtitle}</span>
+                      <span className="ml-3 underline hover:no-underline">Voir →</span>
                     </div>
-                  </Link>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-        </div>
+                  </div>
+                </Link>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
       </div>
 
       {/* Main Header */}

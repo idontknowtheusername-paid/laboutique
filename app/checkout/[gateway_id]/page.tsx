@@ -30,8 +30,16 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
         const lygosUrl = `https://pay.lygosapp.com/checkout/${gateway_id}`;
         console.log('[Redirect] Redirection vers Lygos:', lygosUrl);
 
-        // Redirection immédiate
-        window.location.href = lygosUrl;
+        // Ouvrir dans un nouvel onglet
+        const paymentWindow = window.open(lygosUrl, '_blank', 'noopener,noreferrer');
+
+        if (!paymentWindow || paymentWindow.closed || typeof paymentWindow.closed === 'undefined') {
+          console.warn('[Redirect] Popup bloqué, redirection directe...');
+          window.location.href = lygosUrl;
+        } else {
+          console.log('[Redirect] Nouvel onglet ouvert avec succès');
+          setLoading(false);
+        }
       } catch (err) {
         console.error('[Redirect] Erreur:', err);
         setError('Cette page n\'est plus utilisée. Retournez au checkout.');
@@ -61,8 +69,16 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
       const result = await response.json();
 
       if (result.success && result.payment_url) {
-        // Rediriger vers l'URL de paiement fournie par Lygos
-        window.location.href = result.payment_url;
+        // Ouvrir l'URL de paiement Lygos dans un nouvel onglet
+        const paymentWindow = window.open(result.payment_url, '_blank', 'noopener,noreferrer');
+
+        if (!paymentWindow || paymentWindow.closed || typeof paymentWindow.closed === 'undefined') {
+          console.warn('[Payment] Popup bloqué, redirection directe...');
+          window.location.href = result.payment_url;
+        } else {
+          console.log('[Payment] Nouvel onglet ouvert avec succès');
+          setLoading(false);
+        }
       } else {
         setError(result.error || 'Erreur lors de l\'initialisation du paiement');
         setLoading(false);

@@ -193,7 +193,13 @@ export default function RegisterPage() {
         : await AuthService.signInWithApple();
 
       if (result.success && result.data?.url) {
-        window.location.href = result.data.url;
+        // Ouvrir OAuth dans un nouvel onglet
+        const authWindow = window.open(result.data.url, '_blank', 'noopener,noreferrer');
+
+        if (!authWindow || authWindow.closed || typeof authWindow.closed === 'undefined') {
+          console.warn('[OAuth] Popup bloqué, redirection directe...');
+          window.location.href = result.data.url;
+        }
       } else {
         showErrorToast(result.error || `Erreur lors de l'inscription avec ${provider}`);
       }

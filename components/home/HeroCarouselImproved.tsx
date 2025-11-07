@@ -188,18 +188,18 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
       {/* Layout Grid Responsive - Même structure sur tous les écrans */}
       <div className="grid grid-cols-12 grid-rows-2 gap-2 sm:gap-3 md:gap-4 h-full">
 
-        {/* SECTION GAUCHE - Menu Catégories */}
-        <div className="col-span-3 sm:col-span-3 md:col-span-2 row-span-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg md:rounded-xl overflow-visible relative group/menu">
+        {/* SECTION GAUCHE - Menu Catégories (masqué sur mobile) */}
+        <div className="hidden md:block md:col-span-2 row-span-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg md:rounded-xl overflow-visible relative group/menu">
           <CategoriesMenu onCategoryHover={setHoveredCategory} />
         </div>
 
-        {/* SECTION PRINCIPALE - Hero Carousel */}
-        <div className="col-span-6 sm:col-span-7 md:col-span-8 row-span-2 bg-gray-100 rounded-lg md:rounded-xl overflow-hidden">
+        {/* SECTION PRINCIPALE - Hero Carousel (pleine largeur sur mobile) */}
+        <div className="col-span-9 md:col-span-8 row-span-2 bg-gray-100 rounded-lg md:rounded-xl overflow-hidden">
           <MainHeroCarousel />
         </div>
 
         {/* SECTION DROITE-1 - Contact & Partenariat */}
-        <div className="col-span-3 sm:col-span-2 md:col-span-2 row-span-1 bg-black rounded-lg md:rounded-xl p-1 sm:p-2 md:p-3 text-white">
+        <div className="col-span-3 md:col-span-2 row-span-1 bg-black rounded-lg md:rounded-xl p-1 sm:p-2 md:p-3 text-white">
           <div className="h-full flex flex-col justify-start space-y-1 sm:space-y-2 md:space-y-3">
             {/* Appelez pour commander */}
             <div className="mb-1 sm:mb-2">
@@ -237,7 +237,7 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
         </div>
 
         {/* SECTION DROITE-2 - Zone Publicitaire */}
-        <div className="col-span-3 sm:col-span-2 md:col-span-2 row-span-1 rounded-lg md:rounded-xl overflow-hidden">
+        <div className="col-span-3 md:col-span-2 row-span-1 rounded-lg md:rounded-xl overflow-hidden">
           <AdvertisingZone />
         </div>
 

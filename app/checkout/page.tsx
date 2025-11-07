@@ -365,13 +365,22 @@ export default function CheckoutPage() {
         throw new Error(json.error || 'Échec de l\'initialisation du paiement');
       }
 
-      // ✅ REDIRECTION DIRECTE vers la plateforme Lygos
+      // ✅ OUVERTURE dans un nouvel onglet vers la plateforme Lygos
       if (json.success && json.payment_url) {
         console.log('[Checkout Debug] 🔗 URL Lygos reçue:', json.payment_url);
-        console.log('[Checkout Debug] 🚀 Redirection DIRECTE vers Lygos...');
+        console.log('[Checkout Debug] 🚀 Ouverture dans un nouvel onglet...');
 
-        // Redirection directe vers la plateforme de paiement Lygos
-        window.location.href = json.payment_url;
+        // Ouvrir la plateforme de paiement Lygos dans un nouvel onglet
+        const paymentWindow = window.open(json.payment_url, '_blank', 'noopener,noreferrer');
+
+        // Vérifier si le popup a été bloqué
+        if (!paymentWindow || paymentWindow.closed || typeof paymentWindow.closed === 'undefined') {
+          console.warn('[Checkout Debug] ⚠️ Popup bloqué, redirection directe...');
+          window.location.href = json.payment_url;
+        } else {
+          console.log('[Checkout Debug] ✅ Nouvel onglet ouvert avec succès');
+          setPlaced(true); // Afficher la confirmation
+        }
         return;
       }
 
