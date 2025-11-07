@@ -1,80 +1,97 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAliExpressDropshipApiService } from '@/lib/services/aliexpress-dropship-api.service';
 
-export async function GET() {
+// Cache des catégories (1 heure)
+let categoriesCache: {
+  data: any[];
+  timestamp: number;
+} | null = null;
+
+const CACHE_DURATION = 60 * 60 * 1000; // 1 heure
+
+/**
+ * GET /api/aliexpress/categories
+ * Récupère toutes les catégories AliExpress disponibles
+ */
+export async function GET(request: NextRequest) {
   try {
-    console.log('[Categories API] Fetching AliExpress categories...');
+    // Vérifier le cache
+    if (categoriesCache && Date.now() - categoriesCache.timestamp < CACHE_DURATION) {
+      console.log('[AliExpress Categories] Returning cached categories');
+      return NextResponse.json({
+        success: true,
+        categories: categoriesCache.data,
+        cached: true
+      });
+    }
+
+    console.log('[AliExpress Categories] Fetching fresh categories from API...');
     
     const apiService = getAliExpressDropshipApiService();
     
-    // Récupérer les catégories via l'API AliExpress
+    // Appeler l'API pour récupérer les catégories
     const response = await (apiService as any).callApi('aliexpress.ds.category.get', {});
     
-    console.log('[Categories API] Raw response:', JSON.stringify(response, null, 2));
+    // Parser la réponse
+    const respResult = response.aliexpress_ds_category_get_response?.resp_result;
     
-    if (response?.aliexpress_ds_category_get_response?.resp_result) {
-      const categories = response.aliexpress_ds_category_get_response.resp_result;
-      
-      // Filtrer les catégories principales
-      const mainCategories = categories.filter((cat: any) => 
-        !cat.parent_category_id || 
-        ['200000343', '200000345', '509', '44', '1420', '21'].includes(cat.category_id)
-      ).slice(0, 25);
-      
-      console.log('[Categories API] Filtered categories:', mainCategories.length);
-      
+    if (!respResult || !respResult.result) {
       return NextResponse.json({
-        success: true,
-        categories: mainCategories,
-        total: mainCategories.length
-      });
+        success: false,
+        error: 'Format de réponse invalide'
+      }, { status: 500 });
     }
-    
-    // Si l'API ne fonctionne pas, retourner des catégories par défaut
-    const defaultCategories = [
-      { category_id: '200000343', category_name: 'Electronics & Accessories' },
-      { category_id: '200000345', category_name: 'Women\'s Fashion' },
-      { category_id: '509', category_name: 'Home & Garden' },
-      { category_id: '44', category_name: 'Sports & Entertainment' },
-      { category_id: '1420', category_name: 'Health & Beauty' },
-      { category_id: '21', category_name: 'Automotive & Motorcycles' },
-      { category_id: '1501', category_name: 'Jewelry & Accessories' },
-      { category_id: '200001996', category_name: 'Toys & Hobbies' },
-      { category_id: '200001075', category_name: 'Tools & Hardware' },
-      { category_id: '200000532', category_name: 'Luggage & Bags' },
-      { category_id: '200000297', category_name: 'Men\'s Fashion' },
-      { category_id: '200000298', category_name: 'Shoes' },
-      { category_id: '200000299', category_name: 'Watches' },
-      { category_id: '200000300', category_name: 'Computer & Office' },
-      { category_id: '200000301', category_name: 'Consumer Electronics' }
+
+    const result = respResult.result;
+    const allCategories = Array.isArray(result.categories?.category)
+      ? result.categories.category
+      : [result.categories?.category].filter(Boolean);
+
+    // Organiser les catégories
+    const topLevelCategories = allCategories
+      .filter(cat => !cat.parent_category_id)
+      .map(cat => ({
+        id: cat.category_id.toString(),
+        name: cat.category_name,
+        parent_id: null,
+        has_children: allCategories.some(c => c.parent_category_id === cat.category_id)
+      }));
+
+    const childCategories = allCategories
+      .filter(cat => cat.parent_category_id)
+      .map(cat => ({
+        id: cat.category_id.toString(),
+        name: cat.category_name,
+        parent_id: cat.parent_category_id.toString(),
+        has_children: allCategories.some(c => c.parent_category_id === cat.category_id)
+      }));
+
+    const organizedCategories = [
+      ...topLevelCategories,
+      ...childCategories
     ];
-    
-    console.log('[Categories API] Using default categories');
-    
+
+    // Mettre en cache
+    categoriesCache = {
+      data: organizedCategories,
+      timestamp: Date.now()
+    };
+
+    console.log(`[AliExpress Categories] Fetched ${organizedCategories.length} categories`);
+
     return NextResponse.json({
       success: true,
-      categories: defaultCategories,
-      total: defaultCategories.length,
-      source: 'default'
+      categories: organizedCategories,
+      total: organizedCategories.length,
+      top_level: topLevelCategories.length,
+      cached: false
     });
-    
+
   } catch (error) {
-    console.error('[Categories API] Error:', error);
-    
-    // En cas d'erreur, retourner des catégories par défaut
-    const fallbackCategories = [
-      { category_id: '200000343', category_name: 'Electronics' },
-      { category_id: '200000345', category_name: 'Fashion' },
-      { category_id: '509', category_name: 'Home & Garden' },
-      { category_id: '44', category_name: 'Sports' },
-      { category_id: '1420', category_name: 'Beauty' }
-    ];
-    
+    console.error('[AliExpress Categories] Error:', error);
     return NextResponse.json({
-      success: true,
-      categories: fallbackCategories,
-      total: fallbackCategories.length,
-      source: 'fallback'
-    });
+      success: false,
+      error: error instanceof Error ? error.message : 'Erreur lors de la récupération des catégories'
+    }, { status: 500 });
   }
 }

@@ -157,7 +157,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-3">
             <Link href="/admin/dashboard" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-jomionstore-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">B</span>
+                <span className="text-white font-bold text-sm">{avatarInitial}</span>
               </div>
               <span className="text-lg font-semibold text-gray-900 dark:text-white">Admin Panel</span>
             </Link>
@@ -192,19 +192,9 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
               )}
             </Button>
 
-            {/* User menu */}
-            <div className="flex items-center space-x-3">
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">{adminName}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Admin</p>
-              </div>
-              <div className="w-8 h-8 bg-jomionstore-primary rounded-full flex items-center justify-center">
-                <span className="text-white font-medium text-sm">{avatarInitial}</span>
-              </div>
-              <Button variant="outline" size="sm" onClick={signOut}>
-                Déconnexion
-              </Button>
-            </div>
+            <Button variant="outline" size="sm" onClick={signOut}>
+              Déconnexion
+            </Button>
           </div>
         </div>
       </header>

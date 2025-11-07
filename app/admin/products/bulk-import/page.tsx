@@ -1,24 +1,24 @@
 import { Metadata } from 'next';
-import BulkImportForm from '@/components/admin/BulkImportForm';
+import BulkImportFormWithCategories from '@/components/admin/BulkImportFormWithCategories';
 
 export const metadata: Metadata = {
-  title: 'Import par catégorie - Admin',
-  description: 'Rechercher et importer des produits AliExpress par mots-clés et filtres',
+  title: 'Import par catégorie AliExpress - Admin',
+  description: 'Importez des produits depuis 573 catégories AliExpress réelles',
 };
 
 export default function BulkImportPage() {
   return (
     <div className="container mx-auto py-8 space-y-6">
-      {/* En-tête simplifié */}
+      {/* En-tête */}
       <div>
-        <h1 className="text-3xl font-bold">Import par catégorie</h1>
+        <h1 className="text-3xl font-bold">Import par catégorie AliExpress</h1>
         <p className="text-muted-foreground mt-2">
-          Recherchez et importez des produits AliExpress par mots-clés et filtres
+          Importez des produits depuis 573 catégories AliExpress réelles avec système de tags intelligent
         </p>
       </div>
 
-      {/* Formulaire d'import */}
-      <BulkImportForm />
+      {/* Formulaire d'import avec catégories */}
+      <BulkImportFormWithCategories />
     </div>
   );
 }

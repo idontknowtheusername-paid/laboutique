@@ -30,8 +30,9 @@ export async function POST(request: NextRequest) {
     }
 
     const limit = Math.min(body.limit || 50, 100); // Max 100
+    const categoryId = body.category_id;
 
-    console.log(`[Bulk Import] Starting with feed_type: ${body.feed_type}, limit: ${limit}`);
+    console.log(`[Bulk Import] Starting with feed_type: ${body.feed_type}, category: ${categoryId || 'all'}, limit: ${limit}`);
 
     // Rechercher les produits via l'API AliExpress
     const apiService = getAliExpressDropshipApiService();
@@ -41,15 +42,23 @@ export async function POST(request: NextRequest) {
       // Utiliser les feeds multiples pour récupérer des produits variés
       products = await apiService.getProductsFromMultipleFeeds(limit, 1);
     } else {
-      // Utiliser un feed spécifique
-      const response = await (apiService as any).callApi('aliexpress.ds.recommend.feed.get', {
+      // Utiliser un feed spécifique avec catégorie optionnelle
+      const apiParams: any = {
         feed_name: body.feed_type,
         target_currency: 'USD',
         target_language: 'FR',
         ship_to_country: 'BJ',
         page_no: 1,
         page_size: limit,
-      });
+      };
+
+      // Ajouter la catégorie si fournie
+      if (categoryId) {
+        apiParams.category_id = categoryId;
+        console.log(`[Bulk Import] Filtering by category: ${categoryId}`);
+      }
+
+      const response = await (apiService as any).callApi('aliexpress.ds.recommend.feed.get', apiParams);
 
       if (response.aliexpress_ds_recommend_feed_get_response) {
         const result = response.aliexpress_ds_recommend_feed_get_response.result;

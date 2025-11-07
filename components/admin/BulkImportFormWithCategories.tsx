@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle, XCircle, Loader2, Search, Copy, ExternalLink } from 'lucide-react';
+import { CheckCircle, XCircle, Loader2, Search, Copy, ExternalLink, FolderTree } from 'lucide-react';
 
 interface ImportResult {
   success: boolean;
@@ -27,19 +27,11 @@ interface ImportResult {
   };
 }
 
-interface PreviewProduct {
+interface AliExpressCategory {
   id: string;
-  title: string;
-  price: number;
-  original_price?: number;
-  image: string;
-  images: string[];
-  source_url: string;
-  sku: string;
-  rating?: string;
-  sales?: number;
-  short_description: string;
-  selected?: boolean;
+  name: string;
+  parent_id: string | null;
+  has_children: boolean;
 }
 
 interface FeedOption {
@@ -49,40 +41,44 @@ interface FeedOption {
   icon: string;
 }
 
-export default function BulkImportForm() {
+const feedOptions: FeedOption[] = [
+  {
+    value: 'mixed',
+    label: 'Mélange varié (Recommandé)',
+    description: 'Combine tous les feeds pour plus de diversité',
+    icon: '🎯'
+  },
+  {
+    value: 'ds-bestselling',
+    label: 'Meilleures ventes',
+    description: 'Produits les plus vendus',
+    icon: '🔥'
+  },
+  {
+    value: 'ds-new-arrival',
+    label: 'Nouveautés',
+    description: 'Derniers produits ajoutés',
+    icon: '✨'
+  },
+  {
+    value: 'ds-promotion',
+    label: 'Promotions',
+    description: 'Produits en solde',
+    icon: '💰'
+  },
+  {
+    value: 'ds-choice',
+    label: 'Sélection AliExpress',
+    description: 'Choix éditorial',
+    icon: '⭐'
+  }
+];
+
+export default function BulkImportFormWithCategories() {
   const [selectedFeed, setSelectedFeed] = useState('mixed');
-  const [feedOptions] = useState<FeedOption[]>([
-    {
-      value: 'mixed',
-      label: 'Mélange varié (Recommandé)',
-      description: 'Combine tous les feeds pour plus de diversité',
-      icon: '🎯'
-    },
-    {
-      value: 'ds-bestselling',
-      label: 'Meilleures ventes',
-      description: 'Produits les plus vendus sur AliExpress',
-      icon: '🔥'
-    },
-    {
-      value: 'ds-new-arrival',
-      label: 'Nouveautés',
-      description: 'Derniers produits ajoutés récemment',
-      icon: '✨'
-    },
-    {
-      value: 'ds-promotion',
-      label: 'Promotions',
-      description: 'Produits en solde et offres spéciales',
-      icon: '💰'
-    },
-    {
-      value: 'ds-choice',
-      label: 'Sélection AliExpress',
-      description: 'Choix éditorial de la plateforme',
-      icon: '⭐'
-    }
-  ]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [categories, setCategories] = useState<AliExpressCategory[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
   const [generatedUrls, setGeneratedUrls] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -92,52 +88,27 @@ export default function BulkImportForm() {
   const [priceRange, setPriceRange] = useState({ min: '5', max: '100' });
   const [sortBy, setSortBy] = useState('sales_desc');
 
-  const generateUrls = async () => {
-    if (!selectedFeed) {
-      alert('Veuillez sélectionner un type de produits');
-      return;
-    }
+  // Charger les catégories au montage
+  useEffect(() => {
+    loadCategories();
+  }, []);
 
-    setIsGenerating(true);
-    setGeneratedUrls([]);
-
+  const loadCategories = async () => {
+    setLoadingCategories(true);
     try {
-      const response = await fetch('/api/products/generate-urls', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          feed_type: selectedFeed,
-          count: parseInt(urlCount),
-          min_price: priceRange.min ? parseFloat(priceRange.min) : undefined,
-          max_price: priceRange.max ? parseFloat(priceRange.max) : undefined,
-          sort: sortBy
-        })
-      });
-
+      const response = await fetch('/api/aliexpress/categories');
       const data = await response.json();
 
-      if (data.success && data.urls) {
-        setGeneratedUrls(data.urls);
-      } else {
-        alert(data.error || 'Erreur lors de la génération des URLs');
+      if (data.success && data.categories) {
+        // Filtrer seulement les catégories principales
+        const topLevel = data.categories.filter((cat: AliExpressCategory) => !cat.parent_id);
+        setCategories(topLevel);
+        console.log(`Loaded ${topLevel.length} top-level categories`);
       }
     } catch (error) {
-      console.error('Erreur génération URLs:', error);
-      alert('Erreur lors de la génération des URLs');
+      console.error('Erreur chargement catégories:', error);
     } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const copyUrls = async () => {
-    if (generatedUrls.length === 0) return;
-
-    try {
-      await navigator.clipboard.writeText(generatedUrls.join('\n'));
-      alert(`${generatedUrls.length} URLs copiées dans le presse-papiers !`);
-    } catch (error) {
-      console.error('Erreur copie:', error);
-      alert('Erreur lors de la copie');
+      setLoadingCategories(false);
     }
   };
 
@@ -161,6 +132,7 @@ export default function BulkImportForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           feed_type: selectedFeed,
+          category_id: selectedCategory || undefined,
           min_price: priceRange.min ? parseFloat(priceRange.min) : undefined,
           max_price: priceRange.max ? parseFloat(priceRange.max) : undefined,
           sort: sortBy,
@@ -185,81 +157,89 @@ export default function BulkImportForm() {
     }
   };
 
-
-
-
-
-
-
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
-            Import par type de contenu
+            <FolderTree className="h-5 w-5" />
+            Import par catégorie AliExpress
           </CardTitle>
           <CardDescription>
-            Importez automatiquement des produits AliExpress selon différents types de contenus disponibles
+            Importez des produits depuis 573 catégories AliExpress réelles
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
+            {/* Sélection de catégorie */}
+            <div className="space-y-2">
+              <Label htmlFor="category">Catégorie AliExpress (optionnel)</Label>
+              <Select
+                value={selectedCategory || "all"}
+                onValueChange={(value) => setSelectedCategory(value === "all" ? "" : value)}
+                disabled={loadingCategories || isLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={loadingCategories ? "Chargement..." : "Toutes les catégories"} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes les catégories</SelectItem>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-gray-500">
+                {categories.length} catégories principales disponibles
+              </p>
+            </div>
+
             {/* Sélection du type de feed */}
-            <div className="space-y-3">
-              <Label htmlFor="feed">Type de produits *</Label>
-              <div className="grid gap-3">
-                {feedOptions.map((option) => (
-                  <div
-                    key={option.value}
-                    className={`p-4 border rounded-lg cursor-pointer transition-all ${selectedFeed === option.value
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
-                      : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    onClick={() => setSelectedFeed(option.value)}
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="text-2xl">{option.icon}</span>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="radio"
-                            name="feed"
-                            value={option.value}
-                            checked={selectedFeed === option.value}
-                            onChange={() => setSelectedFeed(option.value)}
-                            disabled={isGenerating || isLoading}
-                            className="text-blue-600"
-                          />
-                          <span className="font-medium">{option.label}</span>
-                        </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          {option.description}
-                        </p>
+            <div className="space-y-2">
+              <Label htmlFor="feed">Type de contenu *</Label>
+              <Select
+                value={selectedFeed}
+                onValueChange={setSelectedFeed}
+                disabled={isLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choisir un type de contenu..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {feedOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      <div className="flex items-center gap-2">
+                        <span>{option.icon}</span>
+                        <span>{option.label}</span>
                       </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-gray-500">
+                {feedOptions.find(f => f.value === selectedFeed)?.description || 'Sélectionnez un type de contenu'}
+              </p>
             </div>
 
             {/* Filtres */}
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="count">Nombre d'URLs</Label>
+                <Label htmlFor="count">Nombre de produits</Label>
                 <Select
                   value={urlCount}
                   onValueChange={setUrlCount}
-                  disabled={isGenerating || isLoading}
+                  disabled={isLoading}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="10">10 URLs</SelectItem>
-                    <SelectItem value="25">25 URLs</SelectItem>
-                    <SelectItem value="50">50 URLs</SelectItem>
-                    <SelectItem value="100">100 URLs</SelectItem>
+                    <SelectItem value="10">10 produits</SelectItem>
+                    <SelectItem value="25">25 produits</SelectItem>
+                    <SelectItem value="50">50 produits</SelectItem>
+                    <SelectItem value="100">100 produits</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -271,7 +251,7 @@ export default function BulkImportForm() {
                   placeholder="5"
                   value={priceRange.min}
                   onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                  disabled={isGenerating || isLoading}
+                  disabled={isLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -282,38 +262,18 @@ export default function BulkImportForm() {
                   placeholder="100"
                   value={priceRange.max}
                   onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                  disabled={isGenerating || isLoading}
+                  disabled={isLoading}
                 />
               </div>
             </div>
 
-            {/* Tri */}
-            <div className="space-y-2">
-              <Label htmlFor="sort">Trier par</Label>
-              <Select
-                value={sortBy}
-                onValueChange={setSortBy}
-                disabled={isGenerating || isLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sales_desc">Meilleures ventes</SelectItem>
-                  <SelectItem value="price_asc">Prix croissant</SelectItem>
-                  <SelectItem value="price_desc">Prix décroissant</SelectItem>
-                  <SelectItem value="rating_desc">Meilleure note</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Boutons */}
-            <div className="flex gap-2 pt-4">
+            {/* Bouton d'import */}
+            <div className="pt-4">
               <Button
                 type="button"
                 onClick={importProducts}
                 disabled={isLoading || !selectedFeed}
-                className="flex-1 bg-green-600 hover:bg-green-700"
+                className="w-full bg-green-600 hover:bg-green-700"
               >
                 {isLoading ? (
                   <>
@@ -323,41 +283,10 @@ export default function BulkImportForm() {
                 ) : (
                   <>
                     <ExternalLink className="mr-2 h-4 w-4" />
-                    Importer produits
+                    Importer les produits
                   </>
                 )}
               </Button>
-
-              <Button 
-                type="button"
-                onClick={generateUrls}
-                disabled={isGenerating || !selectedFeed || isLoading}
-                variant="outline"
-              >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Génération...
-                  </>
-                ) : (
-                    <>
-                      <Search className="mr-2 h-4 w-4" />
-                      Générer URLs
-                    </>
-                )}
-              </Button>
-
-              {generatedUrls.length > 0 && (
-                <Button
-                  type="button"
-                  onClick={copyUrls}
-                  variant="outline"
-                  disabled={isLoading}
-                >
-                  <Copy className="mr-2 h-4 w-4" />
-                  Copier URLs
-                </Button>
-              )}
             </div>
           </div>
         </CardContent>
@@ -373,49 +302,6 @@ export default function BulkImportForm() {
                 <span>{progress}%</span>
               </div>
               <Progress value={progress} className="w-full" />
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* URLs générées */}
-      {generatedUrls.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>URLs générées ({generatedUrls.length})</span>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={copyUrls}>
-                  <Copy className="mr-2 h-4 w-4" />
-                  Copier toutes
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => window.open('/admin/products/bulk-urls', '_blank')}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Import URLs
-                </Button>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {generatedUrls.map((url, index) => (
-                <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded text-sm">
-                  <span className="text-gray-500 min-w-[30px]">{index + 1}.</span>
-                  <span className="flex-1 truncate font-mono text-xs">{url}</span>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => window.open(url, '_blank')}
-                    className="h-6 w-6 p-0"
-                  >
-                    <ExternalLink className="h-3 w-3" />
-                  </Button>
-                </div>
-              ))}
             </div>
           </CardContent>
         </Card>
@@ -466,7 +352,7 @@ export default function BulkImportForm() {
                 </div>
 
                 {/* Produits importés */}
-                {result.results.imported_products.length > 0 && (
+                {result.results.imported_products && result.results.imported_products.length > 0 && (
                   <div>
                     <h4 className="font-medium mb-2">Produits importés avec succès :</h4>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
@@ -486,7 +372,7 @@ export default function BulkImportForm() {
                 )}
 
                 {/* Erreurs */}
-                {result.results.errors.length > 0 && (
+                {result.results.errors && result.results.errors.length > 0 && (
                   <div>
                     <h4 className="font-medium mb-2 text-red-600">Erreurs :</h4>
                     <div className="space-y-1 max-h-32 overflow-y-auto">
