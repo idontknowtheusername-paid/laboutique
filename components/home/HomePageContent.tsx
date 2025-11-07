@@ -165,7 +165,7 @@ export default function HomePageContent() {
         <ImprovedCategoryMenu />
 
         <div className="pt-5 md:pt-10">
-          <section className="container mb-1.5">
+          <section className="mb-1.5">
             <LazySection className="mb-1.5" fallback={<div className="h-[400px] lg:h-[500px] bg-gray-100 animate-pulse rounded-xl" />}>
               <HeroCarouselWithData 
                 type="promotional"
@@ -183,13 +183,13 @@ export default function HomePageContent() {
             <CarouselCategories />
           </LazySection>
 
-          <section id="flash-sales" className="container mb-1.5">
+          <section id="flash-sales" className="mb-1.5">
             <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
               <FlashSalesConnected />
             </LazySection>
           </section>
 
-          <section className="container mb-1.5">
+          <section className="mb-1.5">
             <LazySection className="mb-1.5" fallback={<ProductSkeleton />}>
               <ProductGrid
                 title="Offres du Jour"
@@ -203,7 +203,7 @@ export default function HomePageContent() {
             </LazySection>
           </section>
 
-          <section id="trending-products" className="container mb-1.5">
+          <section id="trending-products" className="mb-1.5">
             <LazySection className="mb-1.5" fallback={<ProductSkeleton />}>
               <ProductGrid
                 title="Nouveautés"
@@ -216,7 +216,7 @@ export default function HomePageContent() {
             </LazySection>
           </section>
 
-          <section id="best-sellers" className="container mb-1.5">
+          <section id="best-sellers" className="mb-1.5">
             <LazySection className="mb-1.5" fallback={<ProductSkeleton />}>
               <ProductGrid
                 title="Top Ventes"
@@ -230,7 +230,7 @@ export default function HomePageContent() {
             </LazySection>
           </section>
 
-          <section className="container mb-1.5">
+          <section className="mb-1.5">
             <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
               <TrendingProducts />
             </LazySection>

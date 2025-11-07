@@ -111,9 +111,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
   return (
     <section className={`py-6 ${backgroundColor}`}>
-      <div className="container">
-        {/* Header */}
-        {isLoading ? (
+      {/* Header */}
+      {isLoading ? (
           <HeaderSkeleton />
         ) : (
           <div className="flex items-center justify-between mb-4 p-3 rounded-lg" style={{ background: '#FF5722' }}>
@@ -336,8 +335,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
               </Button>
             </Link>
           </div>
-        )}
-      </div>
+      )}
 
     </section>
   );

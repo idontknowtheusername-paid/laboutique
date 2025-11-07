@@ -50,8 +50,8 @@ export async function POST(request: NextRequest) {
     }
     
     // Organiser les catégories par parent
-    const topLevelCategories = categories.filter(cat => !cat.parent_category_id);
-    const childCategories = categories.filter(cat => cat.parent_category_id);
+    const topLevelCategories = categories.filter((cat: any) => !cat.parent_category_id);
+    const childCategories = categories.filter((cat: any) => cat.parent_category_id);
     
     return NextResponse.json({
       success,
@@ -62,9 +62,9 @@ export async function POST(request: NextRequest) {
       child_categories: childCategories.length,
       categories: categories.slice(0, 30), // Afficher 30 premières
       sample_top_level: topLevelCategories.slice(0, 10),
-      sample_with_children: topLevelCategories.slice(0, 5).map(parent => ({
+      sample_with_children: topLevelCategories.slice(0, 5).map((parent: any) => ({
         ...parent,
-        children: childCategories.filter(child => child.parent_category_id === parent.category_id).slice(0, 5)
+        children: childCategories.filter((child: any) => child.parent_category_id === parent.category_id).slice(0, 5)
       }))
     });
 

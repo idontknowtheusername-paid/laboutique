@@ -293,7 +293,7 @@ export default function FlashSalesConnected() {
 
   return (
     <section className="bg-jomionstore-background">
-      <div className="container">
+      <div className="px-4 md:px-6 lg:px-8">
         {/* Header avec fond dégradé */}
         <div className="mb-6 p-4 rounded-lg" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}>
           {/* Ligne principale : Titre - Countdown - Bouton */}

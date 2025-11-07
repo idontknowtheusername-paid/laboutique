@@ -250,7 +250,7 @@ function TrendingProductsContent() {
 
   return (
     <section className="bg-white">
-      <div className="container mx-auto px-4">
+      <div className="px-4 md:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-4 p-3 rounded-lg" style={{ background: '#FF5722' }}>
           <div>
             <h2 className="text-xl md:text-2xl font-bold text-white">Produits Tendance</h2>
@@ -414,8 +414,6 @@ function TrendingProductsContent() {
             />
           ))}
         </div>
-
-
       </div>
     </section>
   );

@@ -37,6 +37,7 @@ const Header = () => {
   const [advancedSuggestions, setAdvancedSuggestions] = useState<any[]>([]);
   const [trendingSearches, setTrendingSearches] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { getCartItemsCount } = useCart();
   const { user, profile, signOut } = useAuth();
   const pathname = usePathname();
@@ -47,6 +48,11 @@ const Header = () => {
   // Mobile optimizations
   const { isMobile, isTablet } = useMobileViewport();
   const { handleTouchStart, handleTouchMove, handleTouchEnd } = useTouchGestures();
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Memoize announcements to prevent re-renders
   const announcements = useMemo(() => [
@@ -437,16 +443,18 @@ const Header = () => {
                 }`}
               >
                 <ShoppingCart className="w-6 h-6" />
-                <ClientSafe>
-                  {cartItemsCount > 0 && (
-                    <Badge
-                      className="absolute -top-2 -right-2 bg-jomionstore-secondary text-white text-xs px-2 py-1"
-                      aria-label={`${cartItemsCount} articles dans le panier`}
-                    >
-                      {cartItemsCount}
-                    </Badge>
-                  )}
-                </ClientSafe>
+                {mounted && (
+                  <ClientSafe>
+                    {cartItemsCount > 0 && (
+                      <Badge
+                        className="absolute -top-2 -right-2 bg-jomionstore-secondary text-white text-xs px-2 py-1"
+                        aria-label={`${cartItemsCount} articles dans le panier`}
+                      >
+                        {cartItemsCount}
+                      </Badge>
+                    )}
+                  </ClientSafe>
+                )}
               </Button>
             </Link>
 

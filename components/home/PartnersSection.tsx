@@ -87,9 +87,8 @@ const PartnersSection = () => {
 
   return (
     <section className="py-16 bg-white border-t border-gray-100">
-      <div className="container">
-        {/* Header */}
-        <div className="text-center mb-12">
+      {/* Header */}
+      <div className="text-center mb-12">
           <Badge variant="outline" className="mb-4 text-orange-600 border-orange-200 bg-orange-50">
             Nos Partenaires
           </Badge>
@@ -152,7 +151,6 @@ const PartnersSection = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
           </a>
-        </div>
       </div>
     </section>
   );

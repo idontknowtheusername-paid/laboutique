@@ -121,9 +121,7 @@ export default function CarouselCategories() {
 
   return (
     <section className="py-4 bg-white">
-      <div className="container">
-
-        {/* Carousel Container - Single Line */}
+      {/* Carousel Container - Single Line */}
         <div 
           ref={scrollRef}
           className="overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
@@ -169,7 +167,6 @@ export default function CarouselCategories() {
               </Link>
             ))}
           </div>
-        </div>
       </div>
 
       <style jsx>{`

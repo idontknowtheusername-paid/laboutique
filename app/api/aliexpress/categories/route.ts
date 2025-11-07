@@ -49,21 +49,21 @@ export async function GET(request: NextRequest) {
 
     // Organiser les catégories
     const topLevelCategories = allCategories
-      .filter(cat => !cat.parent_category_id)
-      .map(cat => ({
+      .filter((cat: any) => !cat.parent_category_id)
+      .map((cat: any) => ({
         id: cat.category_id.toString(),
         name: cat.category_name,
         parent_id: null,
-        has_children: allCategories.some(c => c.parent_category_id === cat.category_id)
+        has_children: allCategories.some((c: any) => c.parent_category_id === cat.category_id)
       }));
 
     const childCategories = allCategories
-      .filter(cat => cat.parent_category_id)
-      .map(cat => ({
+      .filter((cat: any) => cat.parent_category_id)
+      .map((cat: any) => ({
         id: cat.category_id.toString(),
         name: cat.category_name,
         parent_id: cat.parent_category_id.toString(),
-        has_children: allCategories.some(c => c.parent_category_id === cat.category_id)
+        has_children: allCategories.some((c: any) => c.parent_category_id === cat.category_id)
       }));
 
     const organizedCategories = [

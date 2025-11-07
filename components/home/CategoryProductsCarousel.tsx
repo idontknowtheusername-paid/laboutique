@@ -170,7 +170,7 @@ export default function CategoryProductsCarousel({
   
   return (
     <section className={`bg-white ${className}`}>
-      <div className="container">
+      <div className="px-4 md:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-4 p-3 rounded-lg" style={{ background: '#FF5722' }}>
           <div>
             <h2 className="text-xl md:text-2xl font-bold text-white">{title}</h2>
@@ -296,8 +296,6 @@ export default function CategoryProductsCarousel({
             ))}
           </div>
         </div>
-
-
       </div>
     </section>
   );
