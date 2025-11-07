@@ -297,15 +297,15 @@ export default function FlashSalesConnected() {
         {/* Header avec fond dégradé */}
         <div className="mb-6 p-4 rounded-lg" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}>
           {/* Ligne principale : Titre - Countdown - Bouton */}
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2">
             {/* Titre à gauche */}
-            <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
+            <h2 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
               ⚡ Ventes Flash
             </h2>
 
             {/* Countdown Timer au centre */}
-            <div className="flex items-center space-x-1 bg-white/20 text-white px-4 py-2 rounded-full text-sm font-mono backdrop-blur-sm">
-              <Clock className="w-4 h-4" />
+            <div className="flex items-center space-x-1 bg-white/20 text-white px-3 py-1.5 rounded-full text-xs font-mono backdrop-blur-sm">
+              <Clock className="w-3 h-3" />
               <span>
                 {(() => {
                   const totalHours = timeLeft.hours;
@@ -325,7 +325,7 @@ export default function FlashSalesConnected() {
               <Button
                 variant="outline"
                 size="sm"
-                className="bg-white text-red-600 border-white hover:bg-red-50 hover:border-red-100 whitespace-nowrap"
+                className="bg-white text-red-600 border-white hover:bg-red-50 hover:border-red-100 whitespace-nowrap text-xs"
                 onClick={() => trackButtonClick('Voir toutes les offres flash', 'Flash Sales Header')}
               >
                 Voir tout
@@ -334,7 +334,7 @@ export default function FlashSalesConnected() {
           </div>
 
           {/* Description en dessous */}
-          <p className="text-red-100 text-sm">
+          <p className="text-red-100 text-xs">
             {urgencyMessage}
           </p>
         </div>
