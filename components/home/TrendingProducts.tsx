@@ -191,7 +191,7 @@ function TrendingProductsContent() {
   // Loading state
   if (loading && products.length === 0) {
     return (
-      <section className="py-16 bg-white">
+      <section className="bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Produits Tendance</h2>
@@ -222,7 +222,7 @@ function TrendingProductsContent() {
   // Error state with no cached data
   if (error && products.length === 0) {
     return (
-      <section className="py-16 bg-white">
+      <section className="bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Produits Tendance</h2>
@@ -249,7 +249,7 @@ function TrendingProductsContent() {
   }
 
   return (
-    <section className="py-16 bg-white">
+    <section className="bg-white">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-4 p-3 rounded-lg" style={{ background: '#FF5722' }}>
           <div>
@@ -426,7 +426,7 @@ export default function TrendingProducts() {
   return (
     <ErrorBoundary
       fallback={
-        <section className="py-16 bg-white">
+        <section className="bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Produits Tendance</h2>

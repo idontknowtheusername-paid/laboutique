@@ -292,7 +292,7 @@ export default function FlashSalesConnected() {
   const totalSlides = Math.ceil(products.length / ITEMS_PER_SLIDE);
 
   return (
-    <section className="py-12 bg-jomionstore-background">
+    <section className="bg-jomionstore-background">
       <div className="container">
         {/* Header avec fond dégradé */}
         <div className="mb-6 p-4 rounded-lg" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}>

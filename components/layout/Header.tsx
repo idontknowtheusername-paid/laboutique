@@ -246,7 +246,7 @@ const Header = () => {
       }`}
     >
       {/* Announcement Bar */}
-      <div className="text-white py-2 overflow-hidden">
+      <div className="text-white overflow-hidden">
         <div className="container relative">
           <Carousel setApi={setAnnApi} opts={{ align: "start", loop: true }}>
             <CarouselContent>
@@ -271,18 +271,18 @@ const Header = () => {
       </div>
 
       {/* Main Header */}
-      <div className="container py-4">
+      <div className="container py-3">
         <div className="flex items-center justify-between gap-4">
-          {/* Logo - image with dedicated container */}
+          {/* Logo - Plus grand et moderne */}
           <Link href="/" className="flex items-center header-logo flex-shrink-0">
-            <div className="relative w-32 h-12 sm:w-36 sm:h-12 md:w-40 md:h-12 lg:w-44 lg:h-12 rounded-lg overflow-hidden">
+            <div className="relative w-40 h-14 sm:w-44 sm:h-14 md:w-48 md:h-16 lg:w-56 lg:h-16 rounded-lg overflow-hidden">
               <Image
                 src="/images/latestlogo.jpg"
                 alt="JomionStore"
                 fill
-                className="object-contain mix-blend-multiply"
+                className="object-contain"
                 priority
-                sizes="(max-width: 640px) 128px, (max-width: 768px) 144px, (max-width: 1024px) 160px, 176px"
+                sizes="(max-width: 640px) 160px, (max-width: 768px) 176px, (max-width: 1024px) 192px, 224px"
               />
             </div>
           </Link>

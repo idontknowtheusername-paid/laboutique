@@ -115,7 +115,7 @@ export default function CategoryProductsCarousel({
   // Loading state
   if (loading && products.length === 0) {
     return (
-      <section className={`py-6 bg-white ${className}`}>
+      <section className={`bg-white ${className}`}>
         <div className="container">
           <div className="text-center mb-12 p-3 rounded-lg" style={{ background: '#FF5722' }}>
             <h2 className="text-xl md:text-2xl font-bold text-white">{title}</h2>
@@ -143,7 +143,7 @@ export default function CategoryProductsCarousel({
   // Error state
   if (error && products.length === 0) {
     return (
-      <section className={`py-6 bg-white ${className}`}>
+      <section className={`bg-white ${className}`}>
         <div className="container">
           <div className="text-center mb-12 p-3 rounded-lg" style={{ background: '#FF5722' }}>
             <h2 className="text-xl md:text-2xl font-bold text-white">{title}</h2>
@@ -169,7 +169,7 @@ export default function CategoryProductsCarousel({
   console.log('🔍 CategoryProductsCarousel - Rendering with products:', products.length);
   
   return (
-    <section className={`py-6 bg-white ${className}`}>
+    <section className={`bg-white ${className}`}>
       <div className="container">
         <div className="flex items-center justify-between mb-4 p-3 rounded-lg" style={{ background: '#FF5722' }}>
           <div>
