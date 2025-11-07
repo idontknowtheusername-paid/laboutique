@@ -56,10 +56,10 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   const { showSuccess, showError } = useFeedback();
   const { trackProductView, trackAddToCart, trackAddToWishlist, trackButtonClick } = useAnalytics();
 
-  // Responsive grid columns - optimisé pour mobile
+  // Responsive grid columns - uniformisé avec FlashSales
   const getGridCols = () => {
-    // Grille adaptative : 2 colonnes sur mobile, 4 sur desktop (cartes plus larges et présentables)
-    return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4';
+    // Grille adaptative : 4 colonnes sur mobile/tablette, 6 sur desktop
+    return 'grid-cols-4 lg:grid-cols-6';
   };
 
   // Memoize expensive calculations
@@ -156,12 +156,12 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
         {/* Products Grid */}
         {!isLoading && !error && transformedProducts.length > 0 && (
-          <div className={`grid ${getGridCols()} gap-2 sm:gap-3 md:gap-4 lg:gap-6`}>
+          <div className={`grid ${getGridCols()} gap-2`}>
             {transformedProducts.map((transformedProduct) => (
-                <Card key={transformedProduct.id} className="group hover-lift card-shadow h-full flex flex-col">
+              <Card key={transformedProduct.id} className="group hover:shadow-lg transition-all duration-300 border border-gray-200 h-full flex flex-col">
                   <Link href={`/product/${transformedProduct.slug}`} className="relative overflow-hidden block">
-                    {/* Product Image - Optimized for mobile */}
-                    <div className="aspect-square bg-gray-100 relative" style={{ minHeight: '180px' }}>
+                  {/* Product Image - Uniformisé */}
+                  <div className="aspect-square bg-gray-100 relative rounded">
                       <Image
                         src={transformedProduct.image}
                         alt={transformedProduct.name}
@@ -179,20 +179,20 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                       />
                     </div>
 
-                    {/* Badges */}
-                    <div className="absolute top-2 left-2 space-y-1">
+                  {/* Badges - Uniformisé */}
+                  <div className="absolute top-0.5 left-0.5 space-y-0.5">
                       {transformedProduct.discount && (
-                        <Badge className="bg-red-500 text-white text-xs">
+                      <Badge className="bg-red-500 text-white font-bold text-[10px] px-1 py-0">
                           -{transformedProduct.discount}%
                         </Badge>
                       )}
                       {transformedProduct.badge && (
-                        <Badge className={`${transformedProduct.badgeColor || 'bg-green-500'} text-white text-xs`}>
+                      <Badge className={`${transformedProduct.badgeColor || 'bg-green-500'} text-white text-[10px] px-1 py-0`}>
                           {transformedProduct.badge}
                         </Badge>
                       )}
                       {transformedProduct.status !== 'active' && (
-                        <Badge className="bg-gray-500 text-white text-xs">
+                      <Badge className="bg-gray-500 text-white text-[10px] px-1 py-0">
                           Indisponible
                         </Badge>
                       )}
@@ -239,48 +239,37 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                     </div>
                   </Link>
 
-                  <CardContent className="p-2 sm:p-3 md:p-4 flex flex-col flex-grow">
-                    <div className="space-y-1 sm:space-y-1.5 flex-grow">
-                      {/* Product Name - Optimisé pour mobile */}
-                      <h3 className="font-medium text-xs sm:text-sm md:text-base line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
+                <CardContent className="p-1 flex flex-col flex-grow">
+                  <div className="space-y-0.5 flex-grow">
+                    {/* Product Name - Uniformisé */}
+                    <h3 className="font-medium text-[10px] line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
                         {transformedProduct.name}
                       </h3>
 
-                      {/* Rating - Optimisé pour mobile */}
-                      <div className="flex items-center space-x-1 text-[9px] sm:text-[10px] md:text-xs">
+                    {/* Rating - Uniformisé */}
+                    <div className="flex items-center space-x-0.5">
                         <div className="flex items-center">
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              className={`w-2 h-2 sm:w-2.5 sm:h-2.5 ${i < Math.floor(transformedProduct.rating)
+                              className={`w-2 h-2 ${i < Math.floor(transformedProduct.rating)
                                 ? 'fill-yellow-400 text-yellow-400'
                                 : 'fill-gray-200 text-gray-200'
                                 }`}
                             />
                           ))}
                         </div>
-                        <span className="text-gray-500 truncate text-[9px] sm:text-[10px]">({transformedProduct.reviews})</span>
-                      </div>
+                      <span className="text-gray-600 text-[9px]">({transformedProduct.reviews})</span>
+                    </div>
 
-                      {/* Stock Status - Optimisé pour mobile */}
-                      {transformedProduct.track_quantity && (
-                        <div className="text-[10px] sm:text-xs">
-                          {transformedProduct.quantity > 0 ? (
-                            <span className="text-green-600">En stock ({transformedProduct.quantity})</span>
-                          ) : (
-                            <span className="text-red-600">Rupture de stock</span>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Price - Optimisé pour mobile */}
-                      <div>
-                        <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-                          <span className="font-bold text-jomionstore-primary text-xs sm:text-sm md:text-base truncate">
+                    {/* Price - Uniformisé */}
+                    <div className="space-y-0.5">
+                      <div className="flex items-center space-x-0.5 flex-wrap">
+                        <span className="font-bold text-[11px] text-jomionstore-primary">
                             {formatPrice(transformedProduct.price)}
                           </span>
                           {transformedProduct.comparePrice && (
-                            <span className="text-[10px] sm:text-xs text-gray-500 line-through truncate">
+                          <span className="text-[9px] text-gray-500 line-through">
                               {formatPrice(transformedProduct.comparePrice)}
                             </span>
                           )}
@@ -288,8 +277,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                       </div>
                     </div>
 
-                    {/* Add to Cart - Toujours en bas avec animation */}
-                    <div className="mt-auto pt-2">
+                  {/* Add to Cart - Uniformisé */}
+                  <div className="mt-auto">
                       <InteractiveFeedback
                         action="cart"
                         onAction={() => {
@@ -299,13 +288,15 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                         productName={transformedProduct.name}
                         className="w-full"
                       >
-                        <QuickAddToCart
-                          productId={transformedProduct.id}
-                          productName={transformedProduct.name}
-                          price={transformedProduct.price}
+                      <Button
+                        className="w-full bg-jomionstore-primary hover:bg-orange-700 text-white font-medium py-0.5 text-[10px] h-6"
                           disabled={transformedProduct.status !== 'active' || (transformedProduct.track_quantity && transformedProduct.quantity <= 0)}
-                          showQuantitySelector={false}
-                        />
+                      >
+                        {transformedProduct.status !== 'active' || (transformedProduct.track_quantity && transformedProduct.quantity <= 0)
+                          ? 'Indisponible'
+                          : 'Ajouter'
+                        }
+                      </Button>
                       </InteractiveFeedback>
                     </div>
                   </CardContent>

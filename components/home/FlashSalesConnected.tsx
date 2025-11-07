@@ -26,7 +26,7 @@ export default function FlashSalesConnected() {
   const { showSuccess, showError } = useFeedback();
   const { trackAddToCart, trackButtonClick } = useAnalytics();
 
-  const ITEMS_PER_SLIDE = 8; // Grille 4x2 (plus de produits, cartes plus petites)
+  const ITEMS_PER_SLIDE = 12; // Grille 6x2 (encore plus de produits, cartes compactes)
 
   // Détection de la taille d'écran - SSR compatible
   useEffect(() => {
@@ -283,17 +283,9 @@ export default function FlashSalesConnected() {
     );
   }
 
+  // Si pas de ventes flash, ne rien afficher (masquer la section complètement)
   if (products.length === 0) {
-    return (
-      <section className="py-12 bg-jomionstore-background">
-        <div className="container">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2 text-gray-900">⚡ Ventes Flash</h2>
-            <p className="text-gray-600">Aucune offre flash disponible pour le moment</p>
-          </div>
-        </div>
-      </section>
-    );
+    return null;
   }
 
   // Calculer le nombre total de slides
@@ -360,7 +352,7 @@ export default function FlashSalesConnected() {
 
                 return (
                   <div key={slideIndex} className="w-full flex-shrink-0">
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-4 lg:grid-cols-6 gap-2">
                       {slideProducts.map((flashSaleProduct) => {
                         const product = flashSaleProduct.product || flashSaleProduct;
 

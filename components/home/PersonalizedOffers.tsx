@@ -234,16 +234,16 @@ const PersonalizedOffers = () => {
             style={{ scrollbarWidth: 'none' as any }}
           >
           {items.map((product) => (
-            <Card key={product.id} className="group hover-lift card-shadow h-full flex flex-col bg-white border-orange-200 snap-start shrink-0 w-[240px]">
+            <Card key={product.id} className="group hover:shadow-lg transition-all duration-300 border border-orange-200 h-full flex flex-col bg-white snap-start shrink-0 w-[180px]">
               <Link href={`/product/${product.slug}`} className="relative overflow-hidden block">
-                {/* Product Image - harmonisé */}
-                <div className="aspect-square bg-gray-100 relative" style={{ minHeight: '180px' }}>
+                {/* Product Image - uniformisé */}
+                <div className="aspect-square bg-gray-100 relative rounded">
                   <Image
                     src={product.image}
                     alt={product.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    sizes="(max-width: 480px) 100vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                    sizes="180px"
                     loading="lazy"
                     quality={85}
                     onError={(e) => {
@@ -253,15 +253,15 @@ const PersonalizedOffers = () => {
                   />
                 </div>
 
-                {/* Badges harmonisés */}
-                <div className="absolute top-2 left-2 space-y-1">
-                  <Badge className="bg-orange-600 text-white text-xs">
-                    <Sparkles className="w-3 h-3 mr-1" />
+                {/* Badges uniformisés */}
+                <div className="absolute top-0.5 left-0.5 space-y-0.5">
+                  <Badge className="bg-orange-600 text-white text-[10px] px-1 py-0">
+                    <Sparkles className="w-2 h-2 mr-0.5" />
                     Pour vous
                   </Badge>
                   {product.isFlashOffer && (
-                    <Badge className="bg-red-500 text-white text-xs animate-pulse">
-                      <Zap className="w-3 h-3 mr-1" />
+                    <Badge className="bg-red-500 text-white text-[10px] px-1 py-0 animate-pulse">
+                      <Zap className="w-2 h-2 mr-0.5" />
                       Flash
                     </Badge>
                   )}
@@ -294,40 +294,33 @@ const PersonalizedOffers = () => {
                 </div>
               </Link>
 
-              <CardContent className="p-2 sm:p-3 md:p-4 flex flex-col flex-grow">
-                <div className="space-y-1 sm:space-y-1.5 flex-grow">
-                  {/* Raison de personnalisation (optionnelle) */}
-                  {product.personalizationReason && (
-                    <p className="text-xs text-orange-700 bg-orange-100 px-2 py-1 rounded-full text-center">
-                      {product.personalizationReason}
-                    </p>
-                  )}
-
-                  {/* Product Name - harmonisé */}
-                  <h3 className="font-medium text-xs sm:text-sm md:text-base line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
+              <CardContent className="p-1 flex flex-col flex-grow">
+                <div className="space-y-0.5 flex-grow">
+                  {/* Product Name - uniformisé */}
+                  <h3 className="font-medium text-[10px] line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
                     {product.name}
                   </h3>
 
-                  {/* Rating - harmonisé */}
-                  <div className="flex items-center space-x-1 text-[9px] sm:text-[10px] md:text-xs">
+                  {/* Rating - uniformisé */}
+                  <div className="flex items-center space-x-0.5">
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-2 h-2 sm:w-2.5 sm:h-2.5 ${i < Math.floor(generateConsistentRating(product.id, product.rating))
+                          className={`w-2 h-2 ${i < Math.floor(generateConsistentRating(product.id, product.rating))
                             ? 'fill-yellow-400 text-yellow-400'
                             : 'fill-gray-200 text-gray-200'
                             }`}
                         />
                       ))}
                     </div>
-                    <span className="text-gray-500 truncate text-[9px] sm:text-[10px]">({generateConsistentReviews(product.id, product.reviews)})</span>
+                    <span className="text-gray-600 text-[9px]">({generateConsistentReviews(product.id, product.reviews)})</span>
                   </div>
 
-                  {/* Price - harmonisé */}
-                  <div>
-                    <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-                      <span className="font-bold text-jomionstore-primary text-xs sm:text-sm md:text-base truncate">
+                  {/* Price - uniformisé */}
+                  <div className="space-y-0.5">
+                    <div className="flex items-center space-x-0.5 flex-wrap">
+                      <span className="font-bold text-jomionstore-primary text-[11px]">
                         {formatPrice(product.price)}
                       </span>
                       {product.comparePrice && (

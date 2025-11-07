@@ -2,11 +2,10 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight, Star, Heart, Eye } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import QuickAddToCart from './QuickAddToCart';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
 import { SliderSkeleton, HeaderSkeleton } from '@/components/ui/loading-skeleton';
@@ -82,66 +81,70 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
             style={{ scrollbarWidth: 'none' as any }}
           >
             {displayedProducts.map((product, index) => (
-                <Card key={`${product.id}-${index}`} className="group hover:shadow-lg transition-shadow duration-300 snap-start shrink-0 w-[260px] flex flex-col">
-                <CardContent className="p-4">
-                  <div className="relative mb-4">
+              <Card key={`${product.id}-${index}`} className="group hover:shadow-lg transition-all duration-300 border border-gray-200 snap-start shrink-0 w-[180px] flex flex-col">
+                <CardContent className="p-1">
+                  <div className="relative mb-1">
                     <Link href={`/product/${product.slug}`}>
-                      <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
+                      <div className="aspect-square relative overflow-hidden rounded bg-gray-100">
                         <Image
                           src={product.image}
                           alt={product.name}
                           fill
-                          className="object-contain group-hover:scale-105 transition-transform duration-300"
-                          sizes="260px"
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="180px"
+                          loading="lazy"
+                          quality={85}
                         />
                       </div>
                     </Link>
 
                     {product.discount && (
-                      <Badge className="absolute top-2 left-2 bg-red-500 text-white">
+                      <Badge className="absolute top-0.5 left-0.5 bg-red-500 text-white font-bold text-[10px] px-1 py-0">
                         -{product.discount}%
                       </Badge>
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-1">
+                  <div className="space-y-0.5">
+                    <Link href={`/product/${product.slug}`}>
+                      <h3 className="font-medium text-[10px] line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
+                        {product.name}
+                      </h3>
+                    </Link>
+
+                    <div className="flex items-center space-x-0.5">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-3 h-3 ${
+                          className={`w-2 h-2 ${
                             i < Math.floor(product.rating)
                               ? "fill-yellow-400 text-yellow-400"
                               : "fill-gray-200 text-gray-200"
                           }`}
                         />
                       ))}
-                      <span className="text-sm text-gray-600">({product.reviews})</span>
+                      <span className="text-[9px] text-gray-600">({product.reviews})</span>
                     </div>
 
-                    <Link href={`/product/${product.slug}`}>
-                      <h3 className="font-medium text-sm line-clamp-2 hover:text-jomionstore-primary">
-                        {product.name}
-                      </h3>
-                    </Link>
-
-                    <div className="flex items-center space-x-2">
-                      <span className="font-bold text-jomionstore-primary">
-                        {formatPrice(product.price)}
-                      </span>
-                      {product.comparePrice && (
-                        <span className="text-sm text-gray-500 line-through">
-                          {formatPrice(product.comparePrice)}
+                    <div className="space-y-0.5">
+                      <div className="flex items-center space-x-0.5 flex-wrap">
+                        <span className="font-bold text-[11px] text-jomionstore-primary">
+                          {formatPrice(product.price)}
                         </span>
-                      )}
+                        {product.comparePrice && (
+                          <span className="text-[9px] text-gray-500 line-through">
+                            {formatPrice(product.comparePrice)}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <QuickAddToCart
-                      productId={product.id}
-                      productName={product.name}
-                      price={product.price}
-                      showQuantitySelector={false}
-                    />
+                    <Button
+                      className="w-full bg-jomionstore-primary hover:bg-orange-700 text-white font-medium py-0.5 text-[10px] h-6"
+                      onClick={() => addToCart(product.id, product.name, product.price, 1, product.image)}
+                    >
+                      Ajouter
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
