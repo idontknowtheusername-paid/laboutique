@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAliExpressDropshipApiService, ProductSearchFilters } from '@/lib/services/aliexpress-dropship-api.service';
 import { supabaseAdmin } from '@/lib/supabase-server';
 import { findBestCategory, getDefaultCategory } from '@/lib/utils/category-matcher';
+import { analyzeProductName, improveCategorization, enrichProductDescription, generateSEOKeywords } from '@/lib/utils/product-tagger';
 
 /**
  * POST /api/products/import/bulk
@@ -12,32 +13,71 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Validation des paramètres requis
-    if (!body.keywords && !body.category_id) {
+    if (!body.feed_type) {
       return NextResponse.json(
-        { error: 'Au moins keywords ou category_id est requis' },
+        { error: 'feed_type est requis' },
         { status: 400 }
       );
     }
 
-    // Construire les filtres de recherche
-    const filters: ProductSearchFilters = {
-      keywords: body.keywords || '',
-      category_id: body.category_id,
-      min_price: body.min_price,
-      max_price: body.max_price,
-      min_sale_price: body.min_sale_price,
-      max_sale_price: body.max_sale_price,
-      sort: body.sort || 'sales_desc',
-      page_size: Math.min(body.limit || 50, 100), // Max 100
-      page_no: 1,
-      ship_to_country: 'BJ',
-    };
+    // Valider le feed_type
+    const validFeeds = ['mixed', 'ds-bestselling', 'ds-new-arrival', 'ds-promotion', 'ds-choice'];
+    if (!validFeeds.includes(body.feed_type)) {
+      return NextResponse.json(
+        { error: `feed_type invalide. Valeurs acceptées: ${validFeeds.join(', ')}` },
+        { status: 400 }
+      );
+    }
 
-    console.log('[Bulk Import] Starting with filters:', filters);
+    const limit = Math.min(body.limit || 50, 100); // Max 100
+
+    console.log(`[Bulk Import] Starting with feed_type: ${body.feed_type}, limit: ${limit}`);
 
     // Rechercher les produits via l'API AliExpress
     const apiService = getAliExpressDropshipApiService();
-    const products = await apiService.searchProducts(filters);
+    let products;
+
+    if (body.feed_type === 'mixed') {
+      // Utiliser les feeds multiples pour récupérer des produits variés
+      products = await apiService.getProductsFromMultipleFeeds(limit, 1);
+    } else {
+      // Utiliser un feed spécifique
+      const response = await (apiService as any).callApi('aliexpress.ds.recommend.feed.get', {
+        feed_name: body.feed_type,
+        target_currency: 'USD',
+        target_language: 'FR',
+        ship_to_country: 'BJ',
+        page_no: 1,
+        page_size: limit,
+      });
+
+      if (response.aliexpress_ds_recommend_feed_get_response) {
+        const result = response.aliexpress_ds_recommend_feed_get_response.result;
+        if (result && result.products && result.products.product) {
+          const rawProducts = result.products.product;
+          products = rawProducts.map((item: any) => ({
+            product_id: item.product_id || item.productId || '',
+            product_title: item.product_title || item.subject || 'Produit sans nom',
+            product_main_image_url: item.product_main_image_url || item.productMainImageUrl || '',
+            product_video_url: item.product_video_url || item.productVideoUrl,
+            product_small_image_urls: item.product_small_image_urls
+              ? (typeof item.product_small_image_urls === 'string'
+                ? item.product_small_image_urls.split(';')
+                : item.product_small_image_urls)
+              : [],
+            sale_price: item.sale_price || item.salePrice || item.target_sale_price || '0',
+            original_price: item.original_price || item.originalPrice || item.target_original_price,
+            product_detail_url: item.product_detail_url || item.productDetailUrl || `https://www.aliexpress.com/item/${item.product_id}.html`,
+            evaluate_rate: item.evaluate_rate || item.evaluateRate || '4.5',
+            lastest_volume: item.lastest_volume || item.volume || 0,
+          }));
+        } else {
+          products = [];
+        }
+      } else {
+        products = [];
+      }
+    }
 
     if (products.length === 0) {
       return NextResponse.json({
@@ -104,21 +144,57 @@ export async function POST(request: NextRequest) {
           product.product_detail_url
         );
 
-        // Matcher la catégorie
+        // Analyser le produit avec le système de tags
+        const taggingResult = analyzeProductName(productData.name, body.feed_type);
+        console.log(`[Bulk Import] Tags for ${product.product_id}:`, taggingResult.tags.slice(0, 3));
+
+        // Matcher la catégorie avec amélioration intelligente
         const { data: categories } = await supabase
           .from('categories')
           .select('id, name, slug');
 
-        const categoryId = categories && categories.length > 0
-          ? findBestCategory(productData.name, categories) || getDefaultCategory()
-          : getDefaultCategory();
+        let categoryId = getDefaultCategory();
+        if (categories && categories.length > 0) {
+          // Utiliser d'abord le système de tags intelligent
+          const improvedCategoryId = improveCategorization(
+            productData.name,
+            null,
+            categories,
+            body.feed_type
+          );
 
-        // Insérer le produit dans la base de données
+          // Fallback sur l'ancien système si pas de résultat
+          categoryId = improvedCategoryId ||
+            findBestCategory(productData.name, categories) ||
+            getDefaultCategory();
+        }
+
+        // Enrichir la description avec les tags
+        const enrichedDescription = enrichProductDescription(
+          productData.description,
+          taggingResult.tags,
+          body.feed_type
+        );
+
+        // Générer des mots-clés SEO
+        const seoKeywords = generateSEOKeywords(taggingResult.tags);
+
+        // Préparer les spécifications enrichies
+        const enrichedSpecifications = {
+          ...productData.specifications,
+          'Tags': taggingResult.tags.slice(0, 5).map(t => t.name).join(', '),
+          'Feed Type': body.feed_type,
+          'Catégorie suggérée': taggingResult.suggestedCategory || 'Non déterminée',
+          'Confiance': `${Math.round(taggingResult.confidence * 100)}%`,
+          'Mots-clés SEO': seoKeywords.join(', ')
+        };
+
+        // Insérer le produit dans la base de données avec enrichissements
         const { data: insertedProduct, error: insertError } = await supabase
           .from('products')
           .insert({
             name: productData.name,
-            description: productData.description,
+            description: enrichedDescription,
             short_description: productData.short_description,
             price: productData.price,
             original_price: productData.original_price,
@@ -128,7 +204,7 @@ export async function POST(request: NextRequest) {
             is_active: true,
             source_url: productData.source_url,
             source_platform: productData.source_platform,
-            specifications: productData.specifications,
+            specifications: enrichedSpecifications,
           })
           .select()
           .single();
@@ -181,8 +257,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Import terminé: ${results.imported}/${results.total_found} produits importés`,
+      message: `Import terminé: ${results.imported}/${results.total_found} produits importés depuis le feed ${body.feed_type}`,
       results,
+      feed_type: body.feed_type,
     });
 
   } catch (error) {

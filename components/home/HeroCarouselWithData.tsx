@@ -25,14 +25,9 @@ const HeroCarouselWithData: React.FC<HeroCarouselWithDataProps> = ({
 }) => {
   const { banners, isLoading, error } = useHeroBanners(type, limit);
 
-  // Force use fallback banners for testing
+  // Le nouveau HeroCarouselImproved utilise des bannières statiques intégrées
   return (
     <HeroCarouselImproved
-      banners={[]} // Force use fallback banners
-      autoRotate={autoRotate}
-      showControls={false} // Désactivé - auto-défilement uniquement
-      showIndicators={showIndicators}
-      showProgress={showProgress}
       className={className}
     />
   );

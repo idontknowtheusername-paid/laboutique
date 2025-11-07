@@ -184,47 +184,47 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
   }, [hoveredCategory]);
 
   return (
-    <div className={`w-full h-[425px] lg:h-[510px] ${className} relative`}>
-      {/* Layout Grid - 4 Sections */}
-      <div className="grid grid-cols-12 grid-rows-2 gap-4 h-full">
+    <div className={`w-full h-[300px] sm:h-[350px] md:h-[425px] lg:h-[510px] ${className} relative`}>
+      {/* Layout Grid Responsive - Même structure sur tous les écrans */}
+      <div className="grid grid-cols-12 grid-rows-2 gap-2 sm:gap-3 md:gap-4 h-full">
 
         {/* SECTION GAUCHE - Menu Catégories */}
-        <div className="col-span-12 md:col-span-2 row-span-1 md:row-span-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl overflow-visible relative group/menu">
+        <div className="col-span-3 sm:col-span-3 md:col-span-2 row-span-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg md:rounded-xl overflow-visible relative group/menu">
           <CategoriesMenu onCategoryHover={setHoveredCategory} />
         </div>
 
         {/* SECTION PRINCIPALE - Hero Carousel */}
-        <div className="col-span-12 md:col-span-8 row-span-1 md:row-span-2 bg-gray-100 rounded-xl overflow-hidden">
+        <div className="col-span-6 sm:col-span-7 md:col-span-8 row-span-2 bg-gray-100 rounded-lg md:rounded-xl overflow-hidden">
           <MainHeroCarousel />
         </div>
 
         {/* SECTION DROITE-1 - Contact & Partenariat */}
-        <div className="col-span-12 md:col-span-2 row-span-1 bg-black rounded-xl p-3 text-white">
-          <div className="h-full flex flex-col justify-start space-y-3">
+        <div className="col-span-3 sm:col-span-2 md:col-span-2 row-span-1 bg-black rounded-lg md:rounded-xl p-1 sm:p-2 md:p-3 text-white">
+          <div className="h-full flex flex-col justify-start space-y-1 sm:space-y-2 md:space-y-3">
             {/* Appelez pour commander */}
-            <div className="mb-2">
-              <div className="flex items-center mb-1">
-                <span className="text-lg mr-2">📞</span>
-                <h3 className="text-sm font-bold">Appelez pour commander</h3>
+            <div className="mb-1 sm:mb-2">
+              <div className="flex items-center mb-0.5 sm:mb-1">
+                <span className="text-xs sm:text-sm md:text-lg mr-1 sm:mr-2">📞</span>
+                <h3 className="text-[10px] sm:text-xs md:text-sm font-bold leading-tight">Appelez pour commander</h3>
               </div>
-              <a href="tel:+22997123456" className="text-xs font-semibold hover:underline ml-6">
+              <a href="tel:+22997123456" className="text-[9px] sm:text-xs md:text-xs font-semibold hover:underline ml-3 sm:ml-4 md:ml-6 block">
                 +229 97 12 34 56
               </a>
             </div>
 
-            {/* Vendez sur JomionStore */}
-            <div className="mb-2">
-              <div className="flex items-center mb-1">
-                <span className="text-lg mr-2">🏪</span>
+            {/* Vendez sur JomionStore - Masqué sur très petit écran */}
+            <div className="hidden sm:block mb-1 sm:mb-2">
+              <div className="flex items-center mb-0.5 sm:mb-1">
+                <span className="text-xs sm:text-sm md:text-lg mr-1 sm:mr-2">🏪</span>
                 <Link href="/become-seller" className="block">
-                  <h3 className="text-xs font-bold hover:underline">Vendez sur JomionStore</h3>
+                  <h3 className="text-[10px] sm:text-xs md:text-xs font-bold hover:underline leading-tight">Vendez sur JomionStore</h3>
                 </Link>
               </div>
-              <p className="text-xs opacity-90 ml-6">Devenez partenaire aujourd'hui</p>
+              <p className="text-[9px] sm:text-xs md:text-xs opacity-90 ml-3 sm:ml-4 md:ml-6">Devenez partenaire aujourd'hui</p>
             </div>
 
-            {/* Promotion */}
-            <div>
+            {/* Promotion - Masqué sur petit écran */}
+            <div className="hidden md:block">
               <div className="flex items-center mb-1">
                 <span className="text-lg mr-2">📧</span>
                 <Link href="/contact" className="block">
@@ -237,28 +237,27 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
         </div>
 
         {/* SECTION DROITE-2 - Zone Publicitaire */}
-        <div className="col-span-12 md:col-span-2 row-span-1 rounded-xl overflow-hidden">
+        <div className="col-span-3 sm:col-span-2 md:col-span-2 row-span-1 rounded-lg md:rounded-xl overflow-hidden">
           <AdvertisingZone />
         </div>
 
       </div>
 
-      {/* MEGA MENU OVERLAY - S'affiche par-dessus toute la section */}
+      {/* MEGA MENU OVERLAY - Desktop seulement */}
       {hoveredCategory && (
-        <div
-          className="absolute top-0 left-0 w-full h-full z-[70] pointer-events-none group/overlay"
+        <div className="hidden md:block absolute top-0 left-0 w-full h-full z-[70] pointer-events-none group/overlay"
           onMouseEnter={() => console.log('🎯 Entered overlay')}
           onMouseLeave={() => {
             console.log('🎯 Left overlay - closing');
             setTimeout(() => setHoveredCategory(null), 100);
           }}
         >
-          <div className="grid grid-cols-12 grid-rows-2 gap-4 h-full">
+          <div className="grid grid-cols-12 grid-rows-2 gap-2 sm:gap-3 md:gap-4 h-full">
             {/* Espace pour le menu des catégories - ZONE DE TOLÉRANCE */}
-            <div className="col-span-12 md:col-span-2 row-span-1 md:row-span-2 pointer-events-auto bg-transparent"></div>
+            <div className="col-span-3 sm:col-span-3 md:col-span-2 row-span-2 pointer-events-auto bg-transparent"></div>
 
             {/* MEGA MENU - Par-dessus la section principale */}
-            <div className="col-span-12 md:col-span-10 row-span-1 md:row-span-2 pointer-events-auto">
+            <div className="col-span-9 sm:col-span-9 md:col-span-10 row-span-2 pointer-events-auto">
               <MegaMenuOverlay category={hoveredCategory} />
             </div>
           </div>
@@ -325,34 +324,34 @@ const MainHeroCarousel: React.FC = () => {
             {/* Gradient Overlay */}
             <div className={`absolute inset-0 bg-gradient-to-r ${banner.gradient} opacity-90`} />
             
-            {/* Content */}
-            <div className="relative h-full flex items-center p-8">
-              <div className="max-w-md text-white">
+            {/* Content - Responsive */}
+            <div className="relative h-full flex items-center p-2 sm:p-4 md:p-6 lg:p-8">
+              <div className="max-w-[200px] sm:max-w-xs md:max-w-sm lg:max-w-md text-white">
                 {/* Badge */}
-                <Badge className="mb-4 bg-white/20 text-white border-white/30">
+                <Badge className="mb-1 sm:mb-2 md:mb-3 lg:mb-4 bg-white/20 text-white border-white/30 text-[10px] sm:text-xs">
                   {banner.badge}
                 </Badge>
 
-                {/* Title */}
-                <h2 className="text-3xl lg:text-4xl font-bold mb-3">
+                {/* Title - Responsive */}
+                <h2 className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold mb-1 sm:mb-2 md:mb-3 leading-tight">
                   {banner.title}
                 </h2>
 
-                {/* Subtitle */}
-                <h3 className="text-lg lg:text-xl font-light mb-3 opacity-90">
+                {/* Subtitle - Responsive */}
+                <h3 className="text-xs sm:text-sm md:text-base lg:text-lg font-light mb-1 sm:mb-2 md:mb-3 opacity-90 leading-tight">
                   {banner.subtitle}
                 </h3>
 
-                {/* Description */}
-                <p className="text-base mb-6 opacity-80">
+                {/* Description - Responsive */}
+                <p className="text-[10px] sm:text-xs md:text-sm lg:text-base mb-2 sm:mb-3 md:mb-4 lg:mb-6 opacity-80 leading-tight line-clamp-2 sm:line-clamp-3">
                   {banner.description}
                 </p>
 
-                {/* CTA Button */}
+                {/* CTA Button - Responsive */}
                 <Link href={banner.cta_link}>
                   <Button
-                    size="lg" 
-                    className="bg-white text-gray-900 hover:bg-gray-100 font-semibold px-6 py-3"
+                    size="sm"
+                    className="bg-white text-gray-900 hover:bg-gray-100 font-semibold px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 text-[10px] sm:text-xs md:text-sm lg:text-base"
                   >
                     {banner.cta_text}
                   </Button>
@@ -366,36 +365,36 @@ const MainHeroCarousel: React.FC = () => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-300 z-10"
+        className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-1 sm:p-2 rounded-full transition-all duration-300 z-10"
         aria-label="Slide précédent"
       >
-        <ChevronLeft className="w-5 h-5" />
+        <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" />
       </button>
 
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-300 z-10"
+        className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-1 sm:p-2 rounded-full transition-all duration-300 z-10"
         aria-label="Slide suivant"
       >
-        <ChevronRight className="w-5 h-5" />
+        <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" />
       </button>
 
       {/* Play/Pause Button */}
       <button
         onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-        className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-300"
+        className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-white/20 hover:bg-white/30 text-white p-1 sm:p-2 rounded-full transition-all duration-300"
         aria-label={isAutoPlaying ? 'Pause' : 'Play'}
       >
-        {isAutoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+        {isAutoPlaying ? <Pause className="w-3 h-3 sm:w-4 sm:h-4" /> : <Play className="w-3 h-3 sm:w-4 sm:h-4" />}
       </button>
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">
+      <div className="absolute bottom-3 sm:bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2 sm:space-x-3">
         {STATIC_BANNERS.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide
+            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${index === currentSlide
               ? 'bg-white scale-125'
               : 'bg-white/50 hover:bg-white/75'
               }`}
@@ -405,7 +404,7 @@ const MainHeroCarousel: React.FC = () => {
       </div>
 
       {/* Progress Bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 sm:h-1 bg-white/20">
         <div
           className="h-full bg-white transition-all duration-100"
           style={{
@@ -469,20 +468,20 @@ const AdvertisingZone: React.FC = () => {
         {/* Contenu principal avec animation */}
         <div
           key={animationKey}
-          className={`h-full flex flex-col justify-center items-center text-center p-4 ${getAnimationClass(currentAdvertisement.animation)}`}
+          className={`h-full flex flex-col justify-center items-center text-center p-1 sm:p-2 md:p-4 ${getAnimationClass(currentAdvertisement.animation)}`}
         >
           {/* Icon avec couleur */}
-          <div className={`text-4xl mb-3 ${currentAdvertisement.iconColor} transform group-hover:scale-110 transition-transform duration-300`}>
+          <div className={`text-lg sm:text-2xl md:text-4xl mb-1 sm:mb-2 md:mb-3 ${currentAdvertisement.iconColor} transform group-hover:scale-110 transition-transform duration-300`}>
             {currentAdvertisement.icon}
           </div>
 
           {/* Titre principal */}
-          <h3 className="text-white text-sm font-bold mb-2 leading-tight">
+          <h3 className="text-white text-[9px] sm:text-xs md:text-sm font-bold mb-1 sm:mb-2 leading-tight">
             {currentAdvertisement.title}
           </h3>
 
           {/* Sous-titre */}
-          <p className="text-gray-300 text-xs leading-tight">
+          <p className="text-gray-300 text-[8px] sm:text-[10px] md:text-xs leading-tight">
             {currentAdvertisement.subtitle}
           </p>
 
@@ -491,12 +490,12 @@ const AdvertisingZone: React.FC = () => {
         </div>
 
         {/* Indicateur discret en bas */}
-        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2">
-          <div className="flex space-x-1">
+        <div className="absolute bottom-1 sm:bottom-2 left-1/2 transform -translate-x-1/2">
+          <div className="flex space-x-0.5 sm:space-x-1">
             {DYNAMIC_ADVERTISEMENTS.map((_, index) => (
               <div
                 key={index}
-                className={`w-1 h-1 rounded-full transition-all duration-300 ${index === currentAd ? 'bg-white' : 'bg-gray-600'
+                className={`w-0.5 h-0.5 sm:w-1 sm:h-1 rounded-full transition-all duration-300 ${index === currentAd ? 'bg-white' : 'bg-gray-600'
                   }`}
               />
             ))}

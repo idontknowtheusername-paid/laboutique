@@ -141,7 +141,7 @@ const QuickAddToCart: React.FC<QuickAddToCartProps> = ({
         <ShoppingCart className="w-3 h-3 md:w-4 md:h-4 mr-2" />
         <span className="text-xs md:text-sm">
           <span className="md:hidden">+</span>
-          <span className="hidden md:inline">Ajouter</span>
+          <span className="hidden md:inline">Ajouter au panier</span>
         </span>
       </>
     );

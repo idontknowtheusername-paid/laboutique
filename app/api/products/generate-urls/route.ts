@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAliExpressDropshipApiService, ProductSearchFilters } from '@/lib/services/aliexpress-dropship-api.service';
 
 interface GenerateUrlsRequest {
-  category_id: string;
+  feed_type: string; // 'mixed' ou feed spécifique
   count: number;
   min_price?: number;
   max_price?: number;
@@ -14,34 +14,73 @@ interface GenerateUrlsRequest {
 
 /**
  * Génère de vraies URLs de produits individuels via l'API AliExpress
- * Utilise les feeds recommandés au lieu de la recherche par mots-clés
+ * Utilise les feeds recommandés selon le type sélectionné
  */
 async function generateRealProductUrls(params: GenerateUrlsRequest): Promise<string[]> {
-  const { count } = params;
+  const { feed_type, count } = params;
   const apiService = getAliExpressDropshipApiService();
 
-
+  console.log(`[Generate URLs] Using feed type: ${feed_type}, count: ${count}`);
 
   try {
-    // Utiliser les feeds multiples pour récupérer des produits variés
-    const products = await apiService.getProductsFromMultipleFeeds(count, 1);
+    let products;
+
+    if (feed_type === 'mixed') {
+      // Utiliser les feeds multiples pour récupérer des produits variés
+      products = await apiService.getProductsFromMultipleFeeds(count, 1);
+    } else {
+      // Utiliser un feed spécifique
+      const filters: ProductSearchFilters = {
+        keywords: '', // Pas utilisé pour les feeds
+        page_size: Math.min(count, 100),
+        page_no: 1,
+        ship_to_country: 'BJ',
+      };
+
+      // Utiliser directement l'API avec le feed spécifique
+      const response = await (apiService as any).callApi('aliexpress.ds.recommend.feed.get', {
+        feed_name: feed_type,
+        target_currency: 'USD',
+        target_language: 'FR',
+        ship_to_country: 'BJ',
+        page_no: 1,
+        page_size: Math.min(count, 100),
+      });
+
+      if (response.aliexpress_ds_recommend_feed_get_response) {
+        const result = response.aliexpress_ds_recommend_feed_get_response.result;
+        if (result && result.products && result.products.product) {
+          const rawProducts = result.products.product;
+          products = rawProducts.map((item: any) => ({
+            product_id: item.product_id || item.productId || '',
+            product_title: item.product_title || item.subject || 'Produit sans nom',
+            product_detail_url: item.product_detail_url || item.productDetailUrl || `https://www.aliexpress.com/item/${item.product_id}.html`,
+            // Autres champs...
+          }));
+        } else {
+          products = [];
+        }
+      } else {
+        products = [];
+      }
+    }
 
     if (products.length === 0) {
-      throw new Error('Aucun produit trouvé dans les feeds AliExpress');
+      throw new Error(`Aucun produit trouvé pour le feed ${feed_type}`);
     }
 
     // Extraire les URLs des produits
     const urls = products
-      .map(product => product.product_detail_url)
-      .filter(url => url && url.startsWith('http'));
+      .map((product: any) => product.product_detail_url)
+      .filter((url: string) => url && url.startsWith('http'));
 
-
+    console.log(`[Generate URLs] Generated ${urls.length} URLs from feed ${feed_type}`);
 
     return urls;
 
   } catch (error) {
     console.error('[Generate URLs] API feeds failed:', error);
-    throw new Error(`Échec de récupération des feeds AliExpress: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+    throw new Error(`Échec de récupération du feed ${feed_type}: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
   }
 }
 
@@ -50,12 +89,12 @@ async function generateRealProductUrls(params: GenerateUrlsRequest): Promise<str
 export async function POST(request: NextRequest) {
   try {
     const body: GenerateUrlsRequest = await request.json();
-    const { category_id, count, min_price, max_price, sort } = body;
+    const { feed_type, count, min_price, max_price, sort } = body;
 
-    if (!category_id) {
+    if (!feed_type) {
       return NextResponse.json({
         success: false,
-        error: 'category_id est requis'
+        error: 'feed_type est requis'
       }, { status: 400 });
     }
 
@@ -66,24 +105,33 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Valider le feed_type
+    const validFeeds = ['mixed', 'ds-bestselling', 'ds-new-arrival', 'ds-promotion', 'ds-choice'];
+    if (!validFeeds.includes(feed_type)) {
+      return NextResponse.json({
+        success: false,
+        error: `feed_type invalide. Valeurs acceptées: ${validFeeds.join(', ')}`
+      }, { status: 400 });
+    }
 
+    console.log(`[Generate URLs] Request: feed_type=${feed_type}, count=${count}`);
 
     // Générer les URLs de produits via l'API AliExpress
     const urls = await generateRealProductUrls({
-      category_id,
+      feed_type,
       count,
       min_price,
       max_price,
       sort
     });
 
-
+    console.log(`[Generate URLs] Success: ${urls.length} URLs generated`);
 
     return NextResponse.json({
       success: true,
       urls,
       count: urls.length,
-      category_id,
+      feed_type,
       source: 'aliexpress_api',
       filters: {
         min_price,

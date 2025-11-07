@@ -26,6 +26,8 @@ export default function FlashSalesConnected() {
   const { showSuccess, showError } = useFeedback();
   const { trackAddToCart, trackButtonClick } = useAnalytics();
 
+  const ITEMS_PER_SLIDE = 8; // Grille 4x2 (plus de produits, cartes plus petites)
+
   // Détection de la taille d'écran - SSR compatible
   useEffect(() => {
     const checkScreenSize = () => {
@@ -157,7 +159,7 @@ export default function FlashSalesConnected() {
     if (!flashSale || !flashSale.end_date) {
       // Pas de vente flash active, afficher un timer par défaut
       setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-      setUrgencyMessage('Offres limitées, ne les ratez pas !');
+      setUrgencyMessage('Profitez des meilleures promotions - Jusqu\'à 70% de réduction');
       return;
     }
 
@@ -181,15 +183,15 @@ export default function FlashSalesConnected() {
       // Messages d'urgence intelligents
       const totalMinutes = hours * 60 + minutes;
       if (totalMinutes <= 5) {
-        setUrgencyMessage('🔥 DERNIÈRES MINUTES !');
+        setUrgencyMessage('🔥 DERNIÈRES MINUTES - Jusqu\'à 70% de réduction !');
       } else if (totalMinutes <= 30) {
-        setUrgencyMessage('⚡ Plus que 30 minutes !');
+        setUrgencyMessage('⚡ Plus que 30 minutes - Profitez des meilleures promotions !');
       } else if (totalMinutes <= 60) {
-        setUrgencyMessage('⏰ Plus qu\'une heure !');
+        setUrgencyMessage('⏰ Plus qu\'une heure - Jusqu\'à 70% de réduction !');
       } else if (totalMinutes <= 120) {
-        setUrgencyMessage('🚀 Offres bientôt terminées');
+        setUrgencyMessage('🚀 Offres bientôt terminées - Profitez des meilleures promotions !');
       } else {
-        setUrgencyMessage('Ventes flash en cours');
+        setUrgencyMessage('Profitez des meilleures promotions - Jusqu\'à 70% de réduction');
       }
     };
 
@@ -258,14 +260,14 @@ export default function FlashSalesConnected() {
 
   const nextSlide = () => {
     trackButtonClick('Carousel Next', 'Flash Sales');
-    const maxIndex = Math.max(1, products.length - 2);
-    setCurrentIndex((prev) => (prev + 1) % Math.max(1, maxIndex));
+    const maxIndex = Math.ceil(products.length / ITEMS_PER_SLIDE);
+    setCurrentIndex((prev) => (prev + 1) % maxIndex);
   };
 
   const prevSlide = () => {
     trackButtonClick('Carousel Previous', 'Flash Sales');
-    const maxIndex = Math.max(1, products.length - 2);
-    setCurrentIndex((prev) => (prev - 1 + Math.max(1, maxIndex)) % Math.max(1, maxIndex));
+    const maxIndex = Math.ceil(products.length / ITEMS_PER_SLIDE);
+    setCurrentIndex((prev) => (prev - 1 + maxIndex) % maxIndex);
   };
 
   if (loading) {
@@ -294,188 +296,188 @@ export default function FlashSalesConnected() {
     );
   }
 
+  // Calculer le nombre total de slides
+  const totalSlides = Math.ceil(products.length / ITEMS_PER_SLIDE);
+
   return (
     <section className="py-12 bg-jomionstore-background">
       <div className="container">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-4 md:mb-8 p-2 md:p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}>
-          <div className="mb-2 md:mb-0">
-            <h2 className="text-lg md:text-2xl font-bold text-white flex items-center">
+        {/* Header avec fond dégradé */}
+        <div className="mb-6 p-4 rounded-lg" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}>
+          {/* Ligne principale : Titre - Countdown - Bouton */}
+          <div className="flex items-center justify-between mb-3">
+            {/* Titre à gauche */}
+            <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
               ⚡ Ventes Flash
             </h2>
-            <p className="text-red-100 text-xs md:text-sm truncate">
-              {urgencyMessage || 'Offres limitées, ne les ratez pas !'}
-            </p>
-          </div>
-          
-          {/* Countdown Timer */}
-          <div className="flex items-center space-x-2 md:space-x-4">
-            <div className="flex items-center space-x-1 md:space-x-2">
-              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full animate-pulse"></div>
-              <Clock className="w-3 h-3 md:w-4 md:h-4 text-white/80" />
-            </div>
-            <div className="flex space-x-0.5 md:space-x-1 text-white font-mono">
-              {(() => {
-                const totalHours = timeLeft.hours;
-                const days = Math.floor(totalHours / 24);
-                const remainingHours = totalHours % 24;
 
-                return (
-                  <>
-                    {days > 0 && (
-                      <>
-                        <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
-                          <div className="text-sm md:text-lg font-bold text-white">{days}</div>
-                          <div className="text-[10px] md:text-xs text-white/80">J</div>
-                        </div>
-                        <div className="text-white/60 text-sm md:text-lg animate-pulse">:</div>
-                      </>
-                    )}
-                    <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
-                      <div className="text-sm md:text-lg font-bold text-white">{String(remainingHours).padStart(2, '0')}</div>
-                      <div className="text-[10px] md:text-xs text-white/80">H</div>
-                    </div>
-                    <div className="text-white/60 text-sm md:text-lg animate-pulse">:</div>
-                    <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
-                      <div className="text-sm md:text-lg font-bold text-white">{String(timeLeft.minutes).padStart(2, '0')}</div>
-                      <div className="text-[10px] md:text-xs text-white/80">M</div>
-                    </div>
-                    <div className="text-white/60 text-sm md:text-lg animate-pulse">:</div>
-                    <div className="text-center px-1.5 md:px-2 py-0.5 md:py-1 min-w-[32px] md:min-w-[40px]">
-                      <div className="text-sm md:text-lg font-bold text-white">{String(timeLeft.seconds).padStart(2, '0')}</div>
-                      <div className="text-[10px] md:text-xs text-white/80">S</div>
-                    </div>
-                  </>
-                );
-              })()}
+            {/* Countdown Timer au centre */}
+            <div className="flex items-center space-x-1 bg-white/20 text-white px-4 py-2 rounded-full text-sm font-mono backdrop-blur-sm">
+              <Clock className="w-4 h-4" />
+              <span>
+                {(() => {
+                  const totalHours = timeLeft.hours;
+                  const days = Math.floor(totalHours / 24);
+                  const remainingHours = totalHours % 24;
+
+                  if (days > 0) {
+                    return `${days}j ${String(remainingHours).padStart(2, '0')}:${String(timeLeft.minutes).padStart(2, '0')}:${String(timeLeft.seconds).padStart(2, '0')}`;
+                  }
+                  return `${String(remainingHours).padStart(2, '0')}:${String(timeLeft.minutes).padStart(2, '0')}:${String(timeLeft.seconds).padStart(2, '0')}`;
+                })()}
+              </span>
             </div>
+
+            {/* Bouton Voir tout à droite */}
+            <Link href="/products?sale=true">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white text-red-600 border-white hover:bg-red-50 hover:border-red-100 whitespace-nowrap"
+                onClick={() => trackButtonClick('Voir toutes les offres flash', 'Flash Sales Header')}
+              >
+                Voir tout
+              </Button>
+            </Link>
           </div>
+
+          {/* Description en dessous */}
+          <p className="text-red-100 text-sm">
+            {urgencyMessage}
+          </p>
         </div>
 
-        {/* Products Carousel - Optimisé pour mobile */}
+        {/* Products Carousel - Grille 2x2 */}
         <div className="relative">
           <div className="overflow-hidden">
             <div 
               className="flex transition-transform duration-300 ease-in-out"
-              style={{ transform: `translateX(-${currentIndex * 50}%)` }}
+              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             >
-              {products.map((flashSaleProduct) => {
-                const product = flashSaleProduct.product || flashSaleProduct;
+              {Array.from({ length: totalSlides }).map((_, slideIndex) => {
+                const startIndex = slideIndex * ITEMS_PER_SLIDE;
+                const slideProducts = products.slice(startIndex, startIndex + ITEMS_PER_SLIDE);
 
-                // Calculer la réduction (nouveau système ou fallback)
-                let discount = 0;
-                if (product.is_flash_sale && product.flash_price && product.price) {
-                  discount = Math.round(((product.price - product.flash_price) / product.price) * 100);
-                } else if (product.compare_price && product.compare_price > product.price) {
-                  discount = calculateDiscount(product.price, product.compare_price);
-                }
-
-                const stockData = stockInfo.find(s => s.product_id === product.id);
-                
                 return (
-                  <div key={product.id} className="w-1/2 flex-shrink-0 px-2">
-                    <Card className="bg-white hover:shadow-xl transition-all duration-300 border border-gray-200 h-full">
-                      <CardContent className="p-4">
-                        <div className="relative mb-4">
-                          <Link href={`/product/${product.slug}`}>
-                            <div className="aspect-square relative overflow-hidden rounded-xl bg-gray-100">
-                              {product.images?.[0] ? (
-                                <Image
-                                  src={product.images[0]}
-                                  alt={product.name}
-                                  fill
-                                  className="object-cover hover:scale-105 transition-transform duration-300"
-                                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                                  loading="lazy"
-                                  quality={85}
-                                  placeholder="blur"
-                                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                  Pas d'image
+                  <div key={slideIndex} className="w-full flex-shrink-0">
+                    <div className="grid grid-cols-4 gap-2">
+                      {slideProducts.map((flashSaleProduct) => {
+                        const product = flashSaleProduct.product || flashSaleProduct;
+
+                        // Calculer la réduction (nouveau système ou fallback)
+                        let discount = 0;
+                        if (product.is_flash_sale && product.flash_price && product.price) {
+                          discount = Math.round(((product.price - product.flash_price) / product.price) * 100);
+                        } else if (product.compare_price && product.compare_price > product.price) {
+                          discount = calculateDiscount(product.price, product.compare_price);
+                        }
+
+                        const stockData = stockInfo.find(s => s.product_id === product.id);
+
+                        return (
+                          <Card key={product.id} className="bg-white hover:shadow-lg transition-all duration-300 border border-gray-200">
+                            <CardContent className="p-1">
+                              <div className="relative mb-1">
+                                <Link href={`/product/${product.slug}`}>
+                                  <div className="aspect-square relative overflow-hidden rounded bg-gray-100">
+                                    {product.images?.[0] ? (
+                                      <Image
+                                        src={product.images[0]}
+                                        alt={product.name}
+                                        fill
+                                        className="object-cover hover:scale-105 transition-transform duration-300"
+                                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                                        loading="lazy"
+                                        quality={85}
+                                        placeholder="blur"
+                                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">
+                                        Pas d'image
+                                      </div>
+                                    )}
+                                  </div>
+                                </Link>
+
+                                {discount > 0 && (
+                                  <Badge className="absolute top-0.5 left-0.5 bg-red-500 text-white font-bold text-[10px] px-1 py-0">
+                                    -{discount}%
+                                  </Badge>
+                                )}
+                              </div>
+
+                              <div className="space-y-0.5">
+                                <Link href={`/product/${product.slug}`}>
+                                  <h3 className="font-medium text-[10px] line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
+                                    {product.name}
+                                  </h3>
+                                </Link>
+
+                                <div className="flex items-center space-x-0.5">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`w-2 h-2 ${i < 4
+                                        ? 'fill-yellow-400 text-yellow-400'
+                                        : 'fill-gray-200 text-gray-200'
+                                        }`}
+                                    />
+                                  ))}
+                                  <span className="text-[9px] text-gray-600">(4.5)</span>
                                 </div>
-                              )}
-                            </div>
-                          </Link>
-                          
-                          {discount > 0 && (
-                            <Badge className="absolute top-2 left-2 bg-red-500 text-white font-bold text-sm px-2 py-1">
-                              -{discount}%
-                            </Badge>
-                          )}
-                        </div>
 
-                        <div className="space-y-3">
-                          <Link href={`/product/${product.slug}`}>
-                            <h3 className="font-semibold text-base line-clamp-2 hover:text-jomionstore-primary transition-colors leading-tight">
-                              {product.name}
-                            </h3>
-                          </Link>
+                                <div className="space-y-0.5">
+                                  <div className="flex items-center space-x-0.5 flex-wrap">
+                                    <span className="font-bold text-[11px] text-jomionstore-primary">
+                                      {formatPrice(product.flash_price || product.price)}
+                                    </span>
+                                    {(product.flash_price || product.compare_price) && (
+                                      <span className="text-[9px] text-gray-500 line-through">
+                                        {formatPrice(product.compare_price || product.price)}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
 
-                          <div className="flex items-center space-x-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-4 h-4 ${i < 4
-                                    ? 'fill-yellow-400 text-yellow-400'
-                                    : 'fill-gray-200 text-gray-200'
-                                  }`}
-                              />
-                            ))}
-                            <span className="text-sm text-gray-600">(4.5)</span>
-                          </div>
-
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2 flex-wrap">
-                              <span className="font-bold text-xl text-jomionstore-primary">
-                                {formatPrice(product.flash_price || product.price)}
-                              </span>
-                              {(product.flash_price || product.compare_price) && (
-                                <span className="text-base text-gray-500 line-through">
-                                  {formatPrice(product.compare_price || product.price)}
-                                </span>
-                              )}
-                            </div>
-                            
-
-                          </div>
-
-                          <InteractiveFeedback
-                            action="cart"
-                            onAction={() => handleAddToCart(flashSaleProduct)}
-                            disabled={!stockData?.is_available || product.status !== 'active'}
-                            productName={product.name}
-                            className="w-full"
-                          >
-                            <Button
-                              className="w-full bg-jomionstore-primary hover:bg-orange-700 text-white font-semibold py-2 text-base"
-                              disabled={!stockData?.is_available || product.status !== 'active'}
-                            >
-                              {!stockData?.is_available || product.status !== 'active'
-                                ? 'Indisponible'
-                                : 'Ajouter au panier'
-                              }
-                            </Button>
-                          </InteractiveFeedback>
-                        </div>
-                      </CardContent>
-                    </Card>
+                                <InteractiveFeedback
+                                  action="cart"
+                                  onAction={() => handleAddToCart(flashSaleProduct)}
+                                  disabled={!stockData?.is_available || product.status !== 'active'}
+                                  productName={product.name}
+                                  className="w-full"
+                                >
+                                  <Button
+                                    className="w-full bg-jomionstore-primary hover:bg-orange-700 text-white font-medium py-0.5 text-[10px] h-6"
+                                    disabled={!stockData?.is_available || product.status !== 'active'}
+                                  >
+                                    {!stockData?.is_available || product.status !== 'active'
+                                      ? 'Indisponible'
+                                      : 'Ajouter au panier'
+                                    }
+                                  </Button>
+                                </InteractiveFeedback>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* Navigation Buttons - Optimisé pour mobile */}
-          {products.length > 2 && (
+          {/* Navigation Buttons */}
+          {totalSlides > 1 && (
             <>
               <Button
                 variant="ghost"
                 size="sm"
                 className="absolute left-1 sm:left-0 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 p-0 shadow-lg border border-gray-200"
                 onClick={prevSlide}
-                aria-label="Produit précédent"
+                aria-label="Produits précédents"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </Button>
@@ -484,7 +486,7 @@ export default function FlashSalesConnected() {
                 size="sm"
                 className="absolute right-1 sm:right-0 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 p-0 shadow-lg border border-gray-200"
                 onClick={nextSlide}
-                aria-label="Produit suivant"
+                aria-label="Produits suivants"
               >
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </Button>
@@ -492,19 +494,22 @@ export default function FlashSalesConnected() {
           )}
         </div>
 
-        {/* View All Link - Optimisé pour mobile */}
-        <div className="text-center mt-6 sm:mt-8">
-          <Link href="/products?sale=true">
-            <Button 
-              variant="outline" 
-              className="bg-jomionstore-primary text-white border-jomionstore-primary hover:bg-orange-700 hover:border-orange-700 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-sm sm:text-base"
-              onClick={() => trackButtonClick('Voir toutes les offres flash', 'Flash Sales')}
-            >
-              Voir toutes les offres flash
-            </Button>
-          </Link>
-        </div>
-
+        {/* Indicateurs de pagination */}
+        {totalSlides > 1 && (
+          <div className="flex justify-center mt-6 space-x-2">
+            {Array.from({ length: totalSlides }).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex
+                  ? 'bg-red-500 w-6'
+                  : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
+                aria-label={`Aller à la page ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

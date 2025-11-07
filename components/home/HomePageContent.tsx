@@ -165,8 +165,8 @@ export default function HomePageContent() {
         <ImprovedCategoryMenu />
 
         <div className="pt-5 md:pt-10">
-          <section className="container mb-4">
-            <LazySection className="mb-2.5" fallback={<div className="h-[400px] lg:h-[500px] bg-gray-100 animate-pulse rounded-xl" />}>
+          <section className="container mb-1.5">
+            <LazySection className="mb-1.5" fallback={<div className="h-[400px] lg:h-[500px] bg-gray-100 animate-pulse rounded-xl" />}>
               <HeroCarouselWithData 
                 type="promotional"
                 limit={5}
@@ -179,18 +179,18 @@ export default function HomePageContent() {
           </section>
 
           {/* Carousel Categories Section - Positioned early for better UX */}
-          <LazySection className="mb-1" fallback={<div className="h-24 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-24 bg-gray-100 animate-pulse rounded-xl" />}>
             <CarouselCategories />
           </LazySection>
 
-          <section id="flash-sales" className="container mb-4">
-            <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <section id="flash-sales" className="container mb-1.5">
+            <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
               <FlashSalesConnected />
             </LazySection>
           </section>
 
-          <section className="container mb-4">
-            <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
+          <section className="container mb-1.5">
+            <LazySection className="mb-1.5" fallback={<ProductSkeleton />}>
               <ProductGrid
                 title="Offres du Jour"
                 subtitle="Offres limitées - Ne ratez pas ces bonnes affaires !"
@@ -203,8 +203,8 @@ export default function HomePageContent() {
             </LazySection>
           </section>
 
-          <section id="trending-products" className="container mb-4">
-            <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
+          <section id="trending-products" className="container mb-1.5">
+            <LazySection className="mb-1.5" fallback={<ProductSkeleton />}>
               <ProductGrid
                 title="Nouveautés"
                 subtitle="Découvrez nos derniers produits"
@@ -216,8 +216,8 @@ export default function HomePageContent() {
             </LazySection>
           </section>
 
-          <section id="best-sellers" className="container mb-4">
-            <LazySection className="mb-2.5" fallback={<ProductSkeleton />}>
+          <section id="best-sellers" className="container mb-1.5">
+            <LazySection className="mb-1.5" fallback={<ProductSkeleton />}>
               <ProductGrid
                 title="Top Ventes"
                 subtitle="Les produits les plus vendus cette semaine"
@@ -230,8 +230,8 @@ export default function HomePageContent() {
             </LazySection>
           </section>
 
-          <section className="container mb-4">
-            <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <section className="container mb-1.5">
+            <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
               <TrendingProducts />
             </LazySection>
           </section>
@@ -250,7 +250,7 @@ export default function HomePageContent() {
           {/* 🏆 ZONE PREMIUM - 5 CATÉGORIES IMPORTANTES */}
           
           {/* 1. Électronique - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="electronique"
               title="Électronique & High-Tech"
@@ -260,7 +260,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 2. Mode & Beauté - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="mode-beaute"
               title="Mode & Beauté"
@@ -270,7 +270,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 3. Maison & Jardin - GRILLE (pause visuelle) */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
               categorySlug="maison-jardin"
               title="Maison & Jardin"
@@ -280,7 +280,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 4. Téléphones & Accessoires - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="telephones-accessoires"
               title="Téléphones & Accessoires"
@@ -290,7 +290,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 5. Sport & Loisirs - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="sport-loisirs"
               title="Sport & Loisirs"
@@ -302,7 +302,7 @@ export default function HomePageContent() {
           {/* 🎯 ZONE PRINCIPALE - 8 CATÉGORIES MOYENNES */}
           
           {/* 6. Audio & Vidéo - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="audio-video"
               title="Audio & Vidéo"
@@ -312,7 +312,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 7. Gaming & VR - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="gaming-vr"
               title="Gaming & VR"
@@ -322,7 +322,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 8. Vêtements Homme - GRILLE */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
               categorySlug="vetements-homme"
               title="Vêtements Homme"
@@ -332,7 +332,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 9. Vêtements Femme - GRILLE (double grille = densité) */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
               categorySlug="vetements-femme"
               title="Vêtements Femme"
@@ -342,7 +342,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 10. Chaussures - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="chaussures"
               title="Chaussures"
@@ -352,7 +352,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 11. Sacs & Maroquinerie - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="sacs-maroquinerie"
               title="Sacs & Maroquinerie"
@@ -362,7 +362,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 12. Montres & Bijoux - GRILLE */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
               categorySlug="montres-bijoux"
               title="Montres & Bijoux"
@@ -372,7 +372,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 13. Cosmétiques & Soins - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="cosmetiques-soins"
               title="Cosmétiques & Soins"
@@ -384,7 +384,7 @@ export default function HomePageContent() {
           {/* 🔍 ZONE DÉCOUVERTE - 12 CATÉGORIES SPÉCIALISÉES */}
           
           {/* 14. Mobilier - GRILLE */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
               categorySlug="mobilier"
               title="Mobilier"
@@ -394,7 +394,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 15. Électroménager - GRILLE (double grille = densité) */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
               categorySlug="electromenager"
               title="Électroménager"
@@ -404,7 +404,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 16. Luminaires - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="luminaires"
               title="Luminaires"
@@ -414,7 +414,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 17. Cuisine & Salle de bain - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="cuisine-salle-bain"
               title="Cuisine & Salle de bain"
@@ -424,7 +424,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 18. Jardinage & Outils - GRILLE */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
               categorySlug="jardinage-outils"
               title="Jardinage & Outils"
@@ -434,7 +434,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 19. Fitness & Musculation - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="fitness-musculation"
               title="Fitness & Musculation"
@@ -444,7 +444,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 20. Sports d'extérieur - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="sports-exterieur"
               title="Sports d'extérieur"
@@ -454,7 +454,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 21. Jeux & Jouets - GRILLE */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
               categorySlug="jeux-jouets"
               title="Jeux & Jouets"
@@ -464,7 +464,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 22. Instruments de musique - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="instruments-musique"
               title="Instruments de musique"
@@ -474,7 +474,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 23. Livre & Papeterie - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="livre-papeterie"
               title="Livre & Papeterie"
@@ -484,7 +484,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 24. Santé & Bien-être - GRILLE */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
               categorySlug="sante-bien-etre"
               title="Santé & Bien-être"
@@ -494,7 +494,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 25. Bébé & Enfant - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="bebe-enfant"
               title="Bébé & Enfant"
@@ -506,7 +506,7 @@ export default function HomePageContent() {
           {/* 🎪 ZONE FINALE - 6 CATÉGORIES FINALES */}
           
           {/* 26. Automobile & Moto - GRILLE */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
               categorySlug="automobile-moto"
               title="Automobile & Moto"
@@ -516,7 +516,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 27. Outils & Bricolage - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="outils-bricolage"
               title="Outils & Bricolage"
@@ -526,7 +526,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 28. Voyage & Bagages - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="voyage-bagages"
               title="Voyage & Bagages"
@@ -536,7 +536,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 29. Animaux & Accessoires - GRILLE */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
               categorySlug="animaux-accessoires"
               title="Animaux & Accessoires"
@@ -546,7 +546,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 30. Ordinateurs & Tablettes - GRILLE */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsGrid
               categorySlug="ordinateurs-tablettes"
               title="Ordinateurs & Tablettes"
@@ -556,7 +556,7 @@ export default function HomePageContent() {
           </LazySection>
 
           {/* 31. Vêtements Enfant - CARROUSEL */}
-          <LazySection className="mb-2.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-96 bg-gray-100 animate-pulse rounded-xl" />}>
             <CategoryProductsCarousel
               categorySlug="vetements-enfant"
               title="Vêtements Enfant"
@@ -565,7 +565,7 @@ export default function HomePageContent() {
             />
           </LazySection>
 
-          <LazySection className="mb-2.5" fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-xl" />}>
+          <LazySection className="mb-1.5" fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-xl" />}>
             <TrustElements />
           </LazySection>
 
