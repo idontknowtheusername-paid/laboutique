@@ -1,84 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAliExpressDropshipApiService } from '@/lib/services/aliexpress-dropship-api.service';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+/**
+ * Test de l'API aliexpress.ds.category.get
+ * POST /api/aliexpress/test-categories
+ */
 export async function POST(request: NextRequest) {
   try {
-    console.log('[Test Categories] Starting API test...');
-    
+    const body = await request.json();
+    const { language = 'en' } = body;
+
+    console.log('[API Test Categories] 🔍 Récupération des catégories...');
+
     const apiService = getAliExpressDropshipApiService();
-    
-    // Test 1: Méthode catégories
-    try {
-      console.log('[Test Categories] Testing aliexpress.ds.category.get...');
-      const categoriesResponse = await (apiService as any).callApi('aliexpress.ds.category.get', {});
+
+    // Appeler l'API category.get
+    const response = await apiService['callApi']('aliexpress.ds.category.get', {
+      language: language,
+    });
+
+    console.log('[API Test Categories] 📦 Réponse brute:', JSON.stringify(response).substring(0, 500));
+
+    // Parser la réponse
+    if (response.aliexpress_ds_category_get_response) {
+      const result = response.aliexpress_ds_category_get_response;
       
-      return NextResponse.json({
-        success: true,
-        method: 'aliexpress.ds.category.get',
-        data: categoriesResponse,
-        message: 'Test catégories réussi'
-      });
-    } catch (error) {
-      console.error('[Test Categories] Categories API failed:', error);
-    }
-
-    // Test 2: Méthode image search
-    try {
-      console.log('[Test Categories] Testing aliexpress.ds.image.search...');
-      const imageResponse = await (apiService as any).callApi('aliexpress.ds.image.search', {
-        image_url: 'https://example.com/test.jpg'
-      });
-      
-      return NextResponse.json({
-        success: true,
-        method: 'aliexpress.ds.image.search',
-        data: imageResponse,
-        message: 'Test image search réussi'
-      });
-    } catch (error) {
-      console.error('[Test Categories] Image search failed:', error);
-    }
-
-    // Test 3: Feeds alternatifs
-    const feeds = ['ds-choice', 'ds-plus', 'ds-promotion'];
-    const results: Record<string, any> = {};
-
-    for (const feed of feeds) {
-      try {
-        console.log(`[Test Categories] Testing feed: ${feed}...`);
-        const feedResponse = await (apiService as any).callApi('aliexpress.ds.recommend.feed.get', {
-          feed_name: feed,
-          page_size: 5,
-          page_no: 1,
-          target_currency: 'USD',
-          target_language: 'FR',
-          ship_to_country: 'BJ'
-        });
+      if (result.resp_result && result.resp_result.result) {
+        const categories = result.resp_result.result.categories?.category || [];
         
-        results[feed] = {
+        console.log(`[API Test Categories] ✅ ${categories.length} catégories trouvées`);
+
+        return NextResponse.json({
           success: true,
-          hasProducts: feedResponse?.aliexpress_ds_recommend_feed_get_response?.result?.products?.product?.length > 0,
-          productCount: feedResponse?.aliexpress_ds_recommend_feed_get_response?.result?.products?.product?.length || 0
-        };
-      } catch (error) {
-        results[feed] = {
-          success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        };
+          categories: categories,
+          count: categories.length,
+        });
       }
     }
 
     return NextResponse.json({
-      success: true,
-      message: 'Tests des feeds alternatifs terminés',
-      feeds: results
+      success: false,
+      message: 'Aucune catégorie trouvée',
+      response: response,
     });
 
-  } catch (error) {
-    console.error('[Test Categories] Fatal error:', error);
-    return NextResponse.json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API Test Categories] ❌ Erreur:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message || 'Erreur lors de la récupération des catégories',
+      },
+      { status: 500 }
+    );
   }
 }

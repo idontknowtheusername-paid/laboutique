@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { getAliExpressOAuthService } from './aliexpress-oauth.service';
+import { getAliExpressSearchEnhancedService } from './aliexpress-search-enhanced.service';
 
 /**
  * Service pour l'API officielle AliExpress Dropship
@@ -280,79 +281,39 @@ export class AliExpressDropshipApiService {
   }
 
   /**
-   * Rechercher des produits via les feeds recommandés
-   * Méthode: aliexpress.ds.recommend.feed.get
-   * NOTE: Cette API ne supporte PAS la recherche par mots-clés, seulement les feeds prédéfinis
+   * Rechercher des produits avec filtrage amélioré côté serveur
+   * Utilise le service de recherche amélioré qui contourne les limitations de l'API
    */
   async searchProducts(filters: ProductSearchFilters): Promise<AliExpressProduct[]> {
     try {
-      // L'API ds.recommend.feed.get ne supporte que les feeds prédéfinis
-      const availableFeeds = ['ds-bestselling', 'ds-new-arrival', 'ds-promotion', 'ds-choice'];
-      const selectedFeed = availableFeeds[0]; // Utiliser bestselling par défaut
+      console.log('[AliExpress Dropship API] 🔍 Recherche avec filtres:', filters);
 
-      const params: Record<string, any> = {
-        feed_name: selectedFeed,
-        target_currency: 'USD',
-        target_language: 'FR',
-        ship_to_country: filters.ship_to_country || 'CI',
-        page_no: filters.page_no || 1,
-        page_size: Math.min(filters.page_size || 50, 100), // Max 100 par page
-      };
+      // Utiliser le service de recherche amélioré
+      const enhancedService = getAliExpressSearchEnhancedService();
 
-      // IMPORTANT: Cette API ne supporte PAS ces paramètres de recherche :
-      // - keywords (pas supporté)
-      // - category_id (pas supporté)
-      // - min_price/max_price (pas supporté)
-      // - sort (pas supporté)
-
-
-      if (filters.keywords) {
-        console.warn(`[AliExpress Dropship API] Keywords "${filters.keywords}" ignored - not supported by ds.recommend.feed.get`);
-      }
+      // Mapper les catégories vers des mots-clés si nécessaire
+      let categoryKeywords: string[] = [];
       if (filters.category_id) {
-        console.warn(`[AliExpress Dropship API] Category "${filters.category_id}" ignored - not supported by ds.recommend.feed.get`);
+        categoryKeywords = enhancedService.getCategoryKeywords(filters.category_id);
+        console.log(`[AliExpress Dropship API] 📂 Catégorie "${filters.category_id}" → Mots-clés:`, categoryKeywords);
       }
 
+      // Effectuer la recherche améliorée
+      const result = await enhancedService.searchWithFilters({
+        keywords: filters.keywords,
+        category_keywords: categoryKeywords.length > 0 ? categoryKeywords : undefined,
+        min_price: filters.min_price,
+        max_price: filters.max_price,
+        page_size: filters.page_size || 50,
+        feeds: ['ds-bestselling', 'ds-new-arrival', 'ds-promotion', 'ds-choice'],
+      });
 
+      console.log(`[AliExpress Dropship API] ✅ Recherche terminée: ${result.products.length} produits trouvés`);
+      console.log(`[AliExpress Dropship API] 📊 Stats: ${result.total_found} récupérés, ${result.filtered_count} après filtrage`);
 
-      const response = await this.callApi('aliexpress.ds.recommend.feed.get', params);
-
-      // Parser la réponse
-      if (response.aliexpress_ds_recommend_feed_get_response) {
-        const result = response.aliexpress_ds_recommend_feed_get_response.result;
-
-        if (result && result.products && result.products.product) {
-          const products = result.products.product;
-
-
-
-          // Convertir chaque produit au format unifié
-          return products.map((item: any) => {
-            const product: AliExpressProduct = {
-              product_id: item.product_id || item.productId || '',
-              product_title: item.product_title || item.subject || 'Produit sans nom',
-              product_main_image_url: item.product_main_image_url || item.productMainImageUrl || '',
-              product_video_url: item.product_video_url || item.productVideoUrl,
-              product_small_image_urls: item.product_small_image_urls
-                ? (typeof item.product_small_image_urls === 'string'
-                  ? item.product_small_image_urls.split(';')
-                  : item.product_small_image_urls)
-                : [],
-              sale_price: item.sale_price || item.salePrice || item.target_sale_price || '0',
-              original_price: item.original_price || item.originalPrice || item.target_original_price,
-              product_detail_url: item.product_detail_url || item.productDetailUrl || `https://www.aliexpress.com/item/${item.product_id}.html`,
-              evaluate_rate: item.evaluate_rate || item.evaluateRate || '4.5',
-              lastest_volume: item.lastest_volume || item.volume || 0,
-            };
-            return product;
-          }).filter((p: AliExpressProduct) => p.product_id); // Filtrer les produits sans ID
-        }
-      }
-
-
-      return [];
+      return result.products;
     } catch (error) {
-      console.error('[AliExpress Dropship API] searchProducts failed:', error);
+      console.error('[AliExpress Dropship API] ❌ searchProducts failed:', error);
       throw error;
     }
   }
