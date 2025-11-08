@@ -677,9 +677,9 @@ const Header = () => {
                 </DropdownMenu>
             )}
 
-            {/* Wishlist */}
+            {/* Wishlist - Masqué sur mobile */}
             {profile?.role !== "admin" && (
-              <Link href="/wishlist" className="relative">
+              <Link href="/wishlist" className="relative hidden md:block">
                 <Button
                   variant="ghost"
                   size="icon"
