@@ -502,7 +502,7 @@ const Header = () => {
 
       {/* Main Header */}
       <div className="container py-3 md:py-4">
-        <div className="flex items-center justify-between gap-3 md:gap-6">
+        <div className="flex items-center justify-between gap-1.5 md:gap-6">
           {/* Logo - Plus petit sur mobile */}
           <Link href="/" className="flex items-center header-logo flex-shrink-0">
             <div className="relative w-24 h-16 sm:w-28 sm:h-13 md:w-52 md:h-18 lg:w-100 lg:h-30 rounded-lg overflow-hidden">
@@ -601,7 +601,7 @@ const Header = () => {
           </form>
 
           {/* Right Section */}
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-1 md:gap-4">
             {/* Account or Admin - Desktop only */}
             {profile?.role === "admin" ? (
               <Link href="/admin/dashboard" className="hidden md:block">
