@@ -44,8 +44,278 @@ const Header = () => {
     setMounted(true);
   }, []);
 
-  // Memoize announcements to prevent re-renders
-  const announcements = useMemo(() => [
+  // Fonction pour obtenir les annonces saisonnières
+  const getSeasonalAnnouncements = useCallback(() => {
+    const now = new Date();
+    const month = now.getMonth(); // 0-11
+    const day = now.getDate();
+    
+    const seasonalAnnouncements = [];
+
+    // HIVER (Décembre - Février)
+    if (month === 11 || month === 0 || month === 1) {
+      seasonalAnnouncements.push(
+        {
+          id: 'winter1',
+          title: 'Fêtes de Fin d\'Année',
+          subtitle: 'Cadeaux parfaits pour tous',
+          href: '/category/cadeaux',
+          bg: 'from-red-600 via-green-600 to-red-600',
+          animation: 'animate-pulse',
+          emoji: '🎄'
+        },
+        {
+          id: 'winter2',
+          title: 'Collection Hiver Cosy',
+          subtitle: 'Restez au chaud avec style',
+          href: '/category/hiver',
+          bg: 'from-blue-900 to-slate-700',
+          animation: 'animate-bounce',
+          emoji: '❄️'
+        },
+        {
+          id: 'winter3',
+          title: 'Soldes d\'Hiver Géants',
+          subtitle: 'Jusqu\'à -60% sur tout',
+          href: '/winter-sales',
+          bg: 'from-cyan-500 to-blue-600',
+          animation: 'animate-pulse',
+          emoji: '🎁'
+        }
+      );
+    }
+
+    // PRINTEMPS (Mars - Mai)
+    if (month >= 2 && month <= 4) {
+      seasonalAnnouncements.push(
+        {
+          id: 'spring1',
+          title: 'Printemps des Nouveautés',
+          subtitle: 'Collections fraîches arrivent',
+          href: '/category/nouveautes',
+          bg: 'from-pink-400 via-rose-500 to-pink-600',
+          animation: 'animate-bounce',
+          emoji: '🌸'
+        },
+        {
+          id: 'spring2',
+          title: 'Jardin & Extérieur',
+          subtitle: 'Préparez votre espace vert',
+          href: '/category/jardin',
+          bg: 'from-lime-500 to-green-600',
+          animation: '',
+          emoji: '🌷'
+        },
+        {
+          id: 'spring3',
+          title: 'Sport & Fitness Boost',
+          subtitle: 'Remise en forme printemps',
+          href: '/category/sport',
+          bg: 'from-teal-500 to-emerald-600',
+          animation: 'animate-pulse',
+          emoji: '🏃'
+        }
+      );
+    }
+
+    // ÉTÉ (Juin - Août)
+    if (month >= 5 && month <= 7) {
+      seasonalAnnouncements.push(
+        {
+          id: 'summer1',
+          title: 'Soldes d\'Été Explosives',
+          subtitle: 'Profitez des vacances !',
+          href: '/summer-sales',
+          bg: 'from-yellow-400 via-orange-500 to-red-500',
+          animation: 'animate-pulse',
+          emoji: '☀️'
+        },
+        {
+          id: 'summer2',
+          title: 'Plage & Piscine',
+          subtitle: 'Tout pour vos vacances',
+          href: '/category/plage',
+          bg: 'from-sky-400 to-blue-500',
+          animation: 'animate-bounce',
+          emoji: '🏖️'
+        },
+        {
+          id: 'summer3',
+          title: 'Climatisation & Fraîcheur',
+          subtitle: 'Battez la chaleur',
+          href: '/category/climatisation',
+          bg: 'from-cyan-600 to-blue-700',
+          animation: '',
+          emoji: '❄️'
+        },
+        {
+          id: 'summer4',
+          title: 'Mode Estivale',
+          subtitle: 'Styles légers et colorés',
+          href: '/category/mode-ete',
+          bg: 'from-fuchsia-500 to-pink-600',
+          animation: 'animate-pulse',
+          emoji: '👗'
+        }
+      );
+    }
+
+    // AUTOMNE (Septembre - Novembre)
+    if (month >= 8 && month <= 10) {
+      seasonalAnnouncements.push(
+        {
+          id: 'fall1',
+          title: 'Rentrée des Classes',
+          subtitle: 'Fournitures & High-Tech',
+          href: '/category/rentree',
+          bg: 'from-amber-600 to-orange-700',
+          animation: 'animate-bounce',
+          emoji: '📚'
+        },
+        {
+          id: 'fall2',
+          title: 'Black November',
+          subtitle: 'Tout le mois à prix cassés',
+          href: '/black-november',
+          bg: 'from-gray-900 via-slate-800 to-black',
+          animation: 'animate-pulse',
+          emoji: '🖤'
+        },
+        {
+          id: 'fall3',
+          title: 'Tech & Innovation',
+          subtitle: 'Dernières nouveautés',
+          href: '/category/tech',
+          bg: 'from-indigo-600 to-purple-700',
+          animation: 'animate-pulse',
+          emoji: '💻'
+        }
+      );
+    }
+
+    // ÉVÉNEMENTS SPÉCIAUX PAR DATE
+    // Nouvel An (1er janvier)
+    if (month === 0 && day === 1) {
+      seasonalAnnouncements.push({
+        id: 'newyear',
+        title: 'Bonne Année 2025 !',
+        subtitle: 'Offres exceptionnelles',
+        href: '/new-year-deals',
+        bg: 'from-yellow-500 via-amber-500 to-orange-600',
+        animation: 'animate-bounce',
+        emoji: '🎊'
+      });
+    }
+
+    // Saint-Valentin (7-14 février)
+    if (month === 1 && day >= 7 && day <= 14) {
+      seasonalAnnouncements.push({
+        id: 'valentine',
+        title: 'Saint-Valentin d\'Amour',
+        subtitle: 'Cadeaux romantiques',
+        href: '/category/saint-valentin',
+        bg: 'from-pink-500 via-red-500 to-rose-600',
+        animation: 'animate-pulse',
+        emoji: '💝'
+      });
+    }
+
+    // Fête des Mères (20-31 mai)
+    if (month === 4 && day >= 20) {
+      seasonalAnnouncements.push({
+        id: 'mothersday',
+        title: 'Fête des Mères',
+        subtitle: 'Gâtez les mamans',
+        href: '/category/fete-meres',
+        bg: 'from-rose-400 via-pink-500 to-purple-600',
+        animation: 'animate-bounce',
+        emoji: '💐'
+      });
+    }
+
+    // Fête des Pères (15-21 juin)
+    if (month === 5 && day >= 15 && day <= 21) {
+      seasonalAnnouncements.push({
+        id: 'fathersday',
+        title: 'Fête des Pères',
+        subtitle: 'Cadeaux pour papas',
+        href: '/category/fete-peres',
+        bg: 'from-blue-600 via-indigo-600 to-slate-700',
+        animation: 'animate-pulse',
+        emoji: '👔'
+      });
+    }
+
+    // Halloween (20-31 octobre)
+    if (month === 9 && day >= 20) {
+      seasonalAnnouncements.push({
+        id: 'halloween',
+        title: 'Spécial Halloween',
+        subtitle: 'Déco & Costumes effrayants',
+        href: '/category/halloween',
+        bg: 'from-orange-600 via-amber-700 to-black',
+        animation: 'animate-pulse',
+        emoji: '🎃'
+      });
+    }
+
+    // Black Friday (20-30 novembre)
+    if (month === 10 && day >= 20) {
+      seasonalAnnouncements.push({
+        id: 'blackfriday',
+        title: 'BLACK FRIDAY',
+        subtitle: 'MÉGA PROMOS - 24H SEULEMENT',
+        href: '/black-friday',
+        bg: 'from-black via-gray-900 to-red-900',
+        animation: 'animate-pulse',
+        emoji: '💥'
+      });
+    }
+
+    // Cyber Monday (25-30 novembre)
+    if (month === 10 && day >= 25) {
+      seasonalAnnouncements.push({
+        id: 'cybermonday',
+        title: 'CYBER MONDAY',
+        subtitle: 'Tech à prix délirants',
+        href: '/cyber-monday',
+        bg: 'from-blue-600 via-cyan-600 to-purple-700',
+        animation: 'animate-pulse',
+        emoji: '💻'
+      });
+    }
+
+    // Noël (15-31 décembre)
+    if (month === 11 && day >= 15) {
+      seasonalAnnouncements.push({
+        id: 'christmas',
+        title: 'Magie de Noël',
+        subtitle: 'Livraison garantie avant Noël',
+        href: '/category/noel',
+        bg: 'from-red-700 via-green-700 to-red-700',
+        animation: 'animate-bounce',
+        emoji: '🎅'
+      });
+    }
+
+    // Semaine du e-commerce (11-17 novembre)
+    if (month === 10 && day >= 11 && day <= 17) {
+      seasonalAnnouncements.push({
+        id: 'ecomweek',
+        title: 'Semaine E-Commerce',
+        subtitle: 'Shopping en ligne récompensé',
+        href: '/ecommerce-week',
+        bg: 'from-purple-600 via-fuchsia-600 to-pink-600',
+        animation: 'animate-pulse',
+        emoji: '🛍️'
+      });
+    }
+
+    return seasonalAnnouncements;
+  }, []);
+
+  // Annonces permanentes par défaut
+  const defaultAnnouncements = useMemo(() => [
     {
       id: 'a1',
       title: 'Super Soldes du Week-end',
@@ -101,6 +371,12 @@ const Header = () => {
       emoji: '🎮'
     },
   ], []);
+
+  // Combine les annonces par défaut + saisonnières
+  const announcements = useMemo(() => {
+    const seasonal = getSeasonalAnnouncements();
+    return [...defaultAnnouncements, ...seasonal];
+  }, [defaultAnnouncements, getSeasonalAnnouncements]);
 
   // Suggestions de recherche populaires
   const popularSearches = useMemo(() => [

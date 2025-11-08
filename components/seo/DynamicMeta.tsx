@@ -28,7 +28,7 @@ const DynamicMeta: React.FC<DynamicMetaProps> = ({
     name: "JomionStore",
     description: description,
     url: url,
-      logo: `${url}/logo-jomion.svg`,
+    logo: `${url}/images/latestlogo.jpg`,
     sameAs: [
       "https://www.facebook.com/profile.php?id=61582896128428",
       "https://www.instagram.com/jomionstore?igsh=MWIxcjExaTMyMWFoaQ==",

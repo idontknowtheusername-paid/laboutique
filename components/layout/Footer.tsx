@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Mail, Phone, MapPin, Facebook, Instagram, Youtube, CheckCircle, AlertCircle, Gift, Star, Shield, Truck, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -180,86 +179,18 @@ const Footer = () => {
       {/* Footer Links - Amélioré */}
       <div className="py-12 bg-gray-900">
         <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {/* Brand - Amélioré */}
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <Image 
-                  src="/images/logo-header.png" 
-                  alt="JomionStore" 
-                  width={40}
-                  height={40}
-                  className="h-10 w-auto"
-                  sizes="40px" 
-                />
+              <div className="space-y-4 col-span-2 lg:col-span-1">
                 <div>
-                  <span className="text-xl font-bold text-white">JomionStore</span>
-                  <p className="text-sm text-gray-400">Centre commercial digital du Bénin</p>
-                </div>
+                  <span className="text-2xl font-bold text-white">JomionStore</span>
+                  <p className="text-sm text-gray-400 mt-1">Centre commercial digital du Bénin</p>
               </div>
               
               <p className="text-gray-300 text-sm leading-relaxed">
                 Votre destination shopping en ligne au Bénin. Des milliers de produits authentiques 
                 avec livraison rapide et service client exceptionnel.
-              </p>
-              
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3 text-gray-300">
-                  <MapPin className="w-5 h-5 text-orange-400 flex-shrink-0" />
-                  <span className="text-sm">Cotonou, Bénin</span>
-                </div>
-                <div className="flex items-center space-x-3 text-gray-300">
-                  <Phone className="w-5 h-5 text-orange-400 flex-shrink-0" />
-                  <span className="text-sm">+229 01 64 35 40 89</span>
-                </div>
-                <div className="flex items-center space-x-3 text-gray-300">
-                  <Mail className="w-5 h-5 text-orange-400 flex-shrink-0" />
-                  <span className="text-sm">contact@jomionstore.com</span>
-                </div>
-              </div>
-              
-              <div className="flex space-x-3 pt-2">
-                <Button 
-                  size="icon" 
-                  variant="outline" 
-                    className="border-blue-500 text-blue-500 hover:border-blue-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all duration-300"
-                  asChild
-                >
-                    <Link href="https://www.facebook.com/profile.php?id=61582896128428" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Facebook">
-                    <Facebook className="w-5 h-5" />
-                  </Link>
-                </Button>
-                <Button 
-                  size="icon" 
-                  variant="outline" 
-                    className="border-black text-black hover:border-gray-800 hover:text-gray-800 hover:bg-black/10 transition-all duration-300"
-                  asChild
-                >
-                    <Link href="https://tiktok.com/@jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur TikTok">
-                      <TikTokIcon className="w-5 h-5" />
-                  </Link>
-                </Button>
-                <Button 
-                  size="icon" 
-                  variant="outline" 
-                    className="border-pink-500 text-pink-500 hover:border-pink-400 hover:text-pink-400 hover:bg-pink-500/10 transition-all duration-300"
-                  asChild
-                >
-                    <Link href="https://www.instagram.com/jomionstore?igsh=MWIxcjExaTMyMWFoaQ==" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Instagram">
-                    <Instagram className="w-5 h-5" />
-                  </Link>
-                </Button>
-                <Button 
-                  size="icon" 
-                  variant="outline" 
-                    className="border-red-500 text-red-500 hover:border-red-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300"
-                  asChild
-                >
-                  <Link href="https://youtube.com/@jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur YouTube">
-                    <Youtube className="w-5 h-5" />
-                  </Link>
-                </Button>
-              </div>
+                </p>
             </div>
 
             {/* Shopping */}
@@ -358,44 +289,110 @@ const Footer = () => {
       {/* Bottom Bar - Amélioré */}
       <div className="border-t border-gray-700 bg-gray-800">
         <div className="container py-6">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-            <div className="flex flex-col sm:flex-row items-center gap-2 text-sm text-gray-400">
-              <p>© {new Date().getFullYear()} JomionStore</p>
-              <span className="hidden sm:inline">•</span>
-              <p>Fait avec ❤️ au Bénin</p>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-400">Moyens de paiement acceptés :</span>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-6 bg-gradient-to-r from-blue-600 to-blue-800 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
-                  VISA
+            <div className="space-y-6">
+              {/* Contact et Réseaux Sociaux */}
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-4 border-b border-gray-700">
+                {/* Informations de contact */}
+                <div className="flex flex-col sm:flex-row items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2 text-gray-300">
+                    <MapPin className="w-4 h-4 text-orange-400 flex-shrink-0" />
+                    <span>Cotonou, Bénin</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-300">
+                    <Phone className="w-4 h-4 text-orange-400 flex-shrink-0" />
+                    <span>+229 01 64 35 40 89</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-300">
+                    <Mail className="w-4 h-4 text-orange-400 flex-shrink-0" />
+                    <span>contact@jomionstore.com</span>
+                  </div>
                 </div>
-                <div className="w-8 h-6 bg-gradient-to-r from-red-600 to-red-800 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
-                  MC
-                </div>
-                <div className="w-8 h-6 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
-                  MTN
-                </div>
-                <div className="w-8 h-6 bg-gradient-to-r from-red-500 to-red-700 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
-                  AIR
-                </div>
-                <div className="w-8 h-6 bg-gradient-to-r from-green-600 to-green-800 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
-                  MOOV
+
+                {/* Réseaux sociaux */}
+                <div className="flex space-x-3">
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="border-blue-500 text-blue-500 hover:border-blue-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all duration-300"
+                    asChild
+                  >
+                    <Link href="https://www.facebook.com/profile.php?id=61582896128428" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Facebook">
+                      <Facebook className="w-5 h-5" />
+                    </Link>
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="border-black text-black hover:border-gray-800 hover:text-gray-800 hover:bg-black/10 transition-all duration-300"
+                    asChild
+                  >
+                    <Link href="https://tiktok.com/@jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur TikTok">
+                      <TikTokIcon className="w-5 h-5" />
+                    </Link>
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="border-pink-500 text-pink-500 hover:border-pink-400 hover:text-pink-400 hover:bg-pink-500/10 transition-all duration-300"
+                    asChild
+                  >
+                    <Link href="https://www.instagram.com/jomionstore?igsh=MWIxcjExaTMyMWFoaQ==" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Instagram">
+                      <Instagram className="w-5 h-5" />
+                    </Link>
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="border-red-500 text-red-500 hover:border-red-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300"
+                    asChild
+                  >
+                    <Link href="https://youtube.com/@jomionstore" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur YouTube">
+                      <Youtube className="w-5 h-5" />
+                    </Link>
+                  </Button>
                 </div>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-4 text-sm text-gray-400">
-              <Link href="/terms" className="hover:text-orange-400 transition-colors">
-                Conditions
-              </Link>
-              <Link href="/privacy" className="hover:text-orange-400 transition-colors">
-                Confidentialité
-              </Link>
-              <Link href="/cookies" className="hover:text-orange-400 transition-colors">
-                Cookies
-              </Link>
+
+              {/* Copyright et Paiements */}
+              <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row items-center gap-2 text-sm text-gray-400">
+                  <p>© {new Date().getFullYear()} JomionStore</p>
+                  <span className="hidden sm:inline">•</span>
+                  <p>Fait avec ❤️ au Bénin</p>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-center gap-4">
+                  <span className="text-sm text-gray-400">Moyens de paiement acceptés :</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-6 bg-gradient-to-r from-blue-600 to-blue-800 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
+                      VISA
+                    </div>
+                    <div className="w-8 h-6 bg-gradient-to-r from-red-600 to-red-800 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
+                      MC
+                    </div>
+                    <div className="w-8 h-6 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
+                      MTN
+                    </div>
+                    <div className="w-8 h-6 bg-gradient-to-r from-red-500 to-red-700 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
+                      AIR
+                    </div>
+                    <div className="w-8 h-6 bg-gradient-to-r from-green-600 to-green-800 rounded text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
+                      MOOV
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 text-sm text-gray-400">
+                  <Link href="/terms" className="hover:text-orange-400 transition-colors">
+                    Conditions
+                  </Link>
+                  <Link href="/privacy" className="hover:text-orange-400 transition-colors">
+                    Confidentialité
+                  </Link>
+                  <Link href="/cookies" className="hover:text-orange-400 transition-colors">
+                    Cookies
+                  </Link>
+                </div>
             </div>
           </div>
         </div>

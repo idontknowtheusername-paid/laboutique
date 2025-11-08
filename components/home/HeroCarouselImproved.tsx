@@ -8,6 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import CategoriesMenu from './CategoriesMenu';
 import { Category } from '@/lib/services';
+import { CustomAppBanner, CustomPromoBanner, CustomDeliveryBanner } from './CustomBanners';
 
 // Bannières statiques intégrées dans le code
 const STATIC_BANNERS = [
@@ -20,7 +21,8 @@ const STATIC_BANNERS = [
     cta_link: '/flash-sales',
     image_url: 'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=1200',
     gradient: 'from-red-600 via-orange-600 to-yellow-500',
-    badge: '🔥 FLASH SALE'
+    badge: '🔥 FLASH SALE',
+    type: 'image'
   },
   {
     id: 'banner-2',
@@ -31,7 +33,8 @@ const STATIC_BANNERS = [
     cta_link: '/category/mode-beaute',
     image_url: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=1200',
     gradient: 'from-purple-600 via-pink-600 to-rose-500',
-    badge: '✨ NOUVEAU'
+    badge: '✨ NOUVEAU',
+    type: 'image'
   },
   {
     id: 'banner-3',
@@ -42,7 +45,8 @@ const STATIC_BANNERS = [
     cta_link: '/category/gaming-vr',
     image_url: 'https://images.pexels.com/photos/1267350/pexels-photo-1267350.jpeg?auto=compress&cs=tinysrgb&w=1200',
     gradient: 'from-blue-600 via-purple-600 to-indigo-700',
-    badge: '🎮 GAMING'
+    badge: '🎮 GAMING',
+    type: 'image'
   },
   {
     id: 'banner-4',
@@ -53,7 +57,41 @@ const STATIC_BANNERS = [
     cta_link: '/products',
     image_url: 'https://images.pexels.com/photos/4393021/pexels-photo-4393021.jpeg?auto=compress&cs=tinysrgb&w=1200',
     gradient: 'from-green-600 via-teal-600 to-cyan-500',
-    badge: '🚚 GRATUIT'
+    badge: '🚚 GRATUIT',
+    type: 'image'
+  },
+  {
+    id: 'banner-app',
+    title: 'Téléchargez l\'App JomionStore',
+    subtitle: 'Shopping facile, partout, tout le temps',
+    description: 'Profitez d\'offres exclusives et d\'une expérience optimisée',
+    cta_text: 'TÉLÉCHARGER L\'APP',
+    cta_link: '/app',
+    gradient: 'from-blue-600 via-purple-600 to-violet-700',
+    badge: '📱 NOUVEAU',
+    type: 'custom-app'
+  },
+  {
+    id: 'banner-promo',
+    title: 'VENTES FLASH DU WEEKEND',
+    subtitle: 'Jusqu\'à -50% de réduction',
+    description: 'Sur une sélection de produits tendance',
+    cta_text: 'PROFITER MAINTENANT',
+    cta_link: '/flash-sales',
+    gradient: 'from-orange-600 via-red-600 to-pink-600',
+    badge: '🔥 -50%',
+    type: 'custom-promo'
+  },
+  {
+    id: 'banner-delivery',
+    title: 'LIVRAISON GRATUITE',
+    subtitle: 'Pour toute commande supérieure à 50 000 FCFA',
+    description: 'Recevez vos produits en 24-48h partout au Bénin',
+    cta_text: 'COMMANDER MAINTENANT',
+    cta_link: '/products',
+    gradient: 'from-green-600 via-emerald-600 to-teal-600',
+    badge: '🚚 OFFRE LIMITÉE',
+    type: 'custom-delivery'
   }
 ];
 
@@ -308,56 +346,70 @@ const MainHeroCarousel: React.FC = () => {
               index < currentSlide ? '-translate-x-full' : 'translate-x-full'
             }`}
           >
-            {/* Background Image */}
-            <div className="absolute inset-0">
-              <Image
-                src={banner.image_url}
-                alt={banner.title}
-                fill
-                className="object-cover"
-                priority={index === 0}
-                sizes="(max-width: 768px) 100vw, 50vw"
-                quality={90}
-              />
-            </div>
-            
-            {/* Gradient Overlay */}
-            <div className={`absolute inset-0 bg-gradient-to-r ${banner.gradient} opacity-90`} />
-            
-            {/* Content - Responsive */}
-            <div className="relative h-full flex items-center p-4 sm:p-4 md:p-6 lg:p-8">
-              <div className="max-w-[240px] sm:max-w-xs md:max-w-sm lg:max-w-md text-white">
-                {/* Badge */}
-                <Badge className="mb-1.5 sm:mb-2 md:mb-3 lg:mb-4 bg-white/20 text-white border-white/30 text-[10px] sm:text-xs">
-                  {banner.badge}
-                </Badge>
+            {banner.type === 'image' && banner.image_url ? (
+              // Bannière avec image classique
+              <>
+                {/* Background Image */}
+                <div className="absolute inset-0">
+                  <Image
+                    src={banner.image_url}
+                    alt={banner.title}
+                    fill
+                    className="object-cover"
+                    priority={index === 0}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    quality={90}
+                  />
+                </div>
 
-                {/* Title - Responsive */}
-                <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold mb-1.5 sm:mb-2 md:mb-3 leading-tight">
-                  {banner.title}
-                </h2>
+                {/* Gradient Overlay */}
+                <div className={`absolute inset-0 bg-gradient-to-r ${banner.gradient} opacity-90`} />
 
-                {/* Subtitle - Responsive */}
-                <h3 className="text-xs sm:text-sm md:text-base lg:text-lg font-light mb-1.5 sm:mb-2 md:mb-3 opacity-90 leading-tight">
-                  {banner.subtitle}
-                </h3>
+                {/* Content - Responsive */}
+                <div className="relative h-full flex items-center p-4 sm:p-4 md:p-6 lg:p-8">
+                  <div className="max-w-[240px] sm:max-w-xs md:max-w-sm lg:max-w-md text-white">
+                    {/* Badge */}
+                    <Badge className="mb-1.5 sm:mb-2 md:mb-3 lg:mb-4 bg-white/20 text-white border-white/30 text-[10px] sm:text-xs">
+                      {banner.badge}
+                    </Badge>
 
-                {/* Description - Responsive - Masqué sur très petit écran */}
-                <p className="hidden sm:block text-xs md:text-sm lg:text-base mb-2.5 sm:mb-3 md:mb-4 lg:mb-6 opacity-80 leading-tight line-clamp-2 sm:line-clamp-3">
-                  {banner.description}
-                </p>
+                    {/* Title - Responsive */}
+                    <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold mb-1.5 sm:mb-2 md:mb-3 leading-tight">
+                      {banner.title}
+                    </h2>
 
-                {/* CTA Button - Responsive */}
-                <Link href={banner.cta_link}>
-                  <Button
-                    size="sm"
-                    className="bg-white text-gray-900 hover:bg-gray-100 font-semibold px-3 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 text-[11px] sm:text-xs md:text-sm lg:text-base"
-                  >
-                    {banner.cta_text}
-                  </Button>
-                </Link>
-              </div>
-            </div>
+                    {/* Subtitle - Responsive */}
+                    <h3 className="text-xs sm:text-sm md:text-base lg:text-lg font-light mb-1.5 sm:mb-2 md:mb-3 opacity-90 leading-tight">
+                      {banner.subtitle}
+                    </h3>
+
+                    {/* Description - Responsive - Masqué sur très petit écran */}
+                    <p className="hidden sm:block text-xs md:text-sm lg:text-base mb-2.5 sm:mb-3 md:mb-4 lg:mb-6 opacity-80 leading-tight line-clamp-2 sm:line-clamp-3">
+                      {banner.description}
+                    </p>
+
+                    {/* CTA Button - Responsive */}
+                    <Link href={banner.cta_link}>
+                      <Button
+                        size="sm"
+                        className="bg-white text-gray-900 hover:bg-gray-100 font-semibold px-3 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 text-[11px] sm:text-xs md:text-sm lg:text-base"
+                      >
+                        {banner.cta_text}
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </>
+            ) : banner.type === 'custom-app' ? (
+              // Bannière App Mobile personnalisée
+              <CustomAppBanner banner={banner} />
+            ) : banner.type === 'custom-promo' ? (
+              // Bannière Promo Flash personnalisée
+              <CustomPromoBanner banner={banner} />
+            ) : banner.type === 'custom-delivery' ? (
+              // Bannière Livraison personnalisée
+              <CustomDeliveryBanner banner={banner} />
+            ) : null}
           </div>
         ))}
       </div>
