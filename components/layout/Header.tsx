@@ -564,7 +564,7 @@ const Header = () => {
           </form>
 
           {/* Mobile Search Input - Inline */}
-          <form onSubmit={handleSearch} className="flex-1 md:hidden mx-1 min-w-0">
+          <form onSubmit={handleSearch} className="flex-1 md:hidden min-w-0">
             <div className="relative w-full">
               <Input
                 type="text"
