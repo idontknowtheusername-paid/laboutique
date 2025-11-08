@@ -505,7 +505,7 @@ const Header = () => {
         <div className="flex items-center justify-between gap-1.5 md:gap-6">
           {/* Logo - Plus petit sur mobile */}
           <Link href="/" className="flex items-center header-logo flex-shrink-0 -mr-3 md:mr-0">
-            <div className="relative w-24 h-16 sm:w-28 sm:h-13 md:w-55 md:h-18 lg:w-100 lg:h-35 rounded-lg overflow-hidden">
+            <div className="relative w-32 h-20 sm:w-36 sm:h-24 md:w-52 md:h-18 lg:w-100 lg:h-35 rounded-lg overflow-hidden">
               <Image
                 src="/images/latestlogo.jpg"
                 alt="JomionStore"

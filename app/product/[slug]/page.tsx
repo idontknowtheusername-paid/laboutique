@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ReviewForm } from '@/components/product/ReviewForm';
 import { ReviewList } from '@/components/product/ReviewList';
+import ShareButtons from '@/components/product/ShareButtons';
 import { 
   Star, 
   Heart, 
@@ -437,9 +438,13 @@ export default function ProductDetailPage() {
                 Ajouter au panier
               </Button>
               <div className="grid grid-cols-2 gap-3">
-                <Button variant="outline" className="h-12">
-                  Acheter maintenant
-                </Button>
+                {product && (
+                  <ShareButtons
+                    productName={product.name}
+                    productUrl={`https://jomionstore.com/product/${product.slug}`}
+                    productImage={product.images?.[0]}
+                  />
+                )}
                 <WishlistButton
                   productId={product?.id || ''}
                   productName={product?.name || ''}
