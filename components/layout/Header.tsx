@@ -564,8 +564,8 @@ const Header = () => {
           </form>
 
           {/* Mobile Search Input - Inline */}
-          <form onSubmit={handleSearch} className="flex-1 md:hidden mx-2">
-            <div className="relative">
+          <form onSubmit={handleSearch} className="flex-1 md:hidden mx-1 min-w-0">
+            <div className="relative w-full">
               <Input
                 type="text"
                 placeholder="Rechercher..."
@@ -573,16 +573,16 @@ const Header = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setShowSuggestions(searchQuery.length >= 2)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                className="h-11 text-sm pl-3 pr-11 border-2 border-gray-200 focus:border-jomionstore-primary rounded-lg"
+                className="h-10 text-sm pl-3 pr-10 border-2 border-gray-200 focus:border-jomionstore-primary rounded-lg w-full"
                 aria-label="Recherche rapide"
               />
               <Button
                 type="submit"
                 size="sm"
-                className="absolute right-0.5 top-0.5 h-10 px-3 bg-jomionstore-secondary hover:bg-orange-600 rounded-md"
+                className="absolute right-0.5 top-0.5 h-9 px-2.5 bg-jomionstore-secondary hover:bg-orange-600 rounded-md"
                 aria-label="Lancer la recherche"
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-4 h-4" />
               </Button>
 
               {/* Suggestions de recherche - Mobile */}
