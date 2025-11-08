@@ -478,9 +478,8 @@ export default function ProductDetailPage() {
         {/* Product Details Tabs */}
         <Card className="mb-12">
           <Tabs defaultValue="description" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="description">Description</TabsTrigger>
-              <TabsTrigger value="specifications">Caractéristiques</TabsTrigger>
               <TabsTrigger value="reviews">Avis ({generateConsistentReviews(product?.id || '', product?.reviews_count)})</TabsTrigger>
               <TabsTrigger value="qa">Questions & Réponses</TabsTrigger>
             </TabsList>
@@ -503,24 +502,7 @@ export default function ProductDetailPage() {
                 </div>
               </div>
             </TabsContent>
-            
-            <TabsContent value="specifications" className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {product?.sku && (
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="font-medium text-gray-600">SKU:</span>
-                    <span className="text-gray-900">{product.sku}</span>
-                  </div>
-                )}
-                {product?.vendor?.name && (
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="font-medium text-gray-600">Vendeur:</span>
-                    <span className="text-gray-900">{product.vendor.name}</span>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-            
+
             <TabsContent value="reviews" className="p-6">
               <div className="space-y-6">
                 {/* Reviews Summary */}

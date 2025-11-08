@@ -77,7 +77,7 @@ const Header = () => {
           id: 'winter3',
           title: 'Soldes d\'Hiver Géants',
           subtitle: 'Jusqu\'à -60% sur tout',
-          href: '/winter-sales',
+          href: '/products?sale=true',
           bg: 'from-cyan-500 to-blue-600',
           animation: 'animate-pulse',
           emoji: '🎁'
@@ -125,7 +125,7 @@ const Header = () => {
           id: 'summer1',
           title: 'Soldes d\'Été Explosives',
           subtitle: 'Profitez des vacances !',
-          href: '/summer-sales',
+          href: '/products?sale=true',
           bg: 'from-yellow-400 via-orange-500 to-red-500',
           animation: 'animate-pulse',
           emoji: '☀️'
@@ -176,7 +176,7 @@ const Header = () => {
           id: 'fall2',
           title: 'Black November',
           subtitle: 'Tout le mois à prix cassés',
-          href: '/black-november',
+          href: '/products?sale=true',
           bg: 'from-gray-900 via-slate-800 to-black',
           animation: 'animate-pulse',
           emoji: '🖤'
@@ -200,7 +200,7 @@ const Header = () => {
         id: 'newyear',
         title: 'Bonne Année 2025 !',
         subtitle: 'Offres exceptionnelles',
-        href: '/new-year-deals',
+        href: '/products?sale=true',
         bg: 'from-yellow-500 via-amber-500 to-orange-600',
         animation: 'animate-bounce',
         emoji: '🎊'
@@ -265,7 +265,7 @@ const Header = () => {
         id: 'blackfriday',
         title: 'BLACK FRIDAY',
         subtitle: 'MÉGA PROMOS - 24H SEULEMENT',
-        href: '/black-friday',
+        href: '/products?sale=true',
         bg: 'from-black via-gray-900 to-red-900',
         animation: 'animate-pulse',
         emoji: '💥'
@@ -278,7 +278,7 @@ const Header = () => {
         id: 'cybermonday',
         title: 'CYBER MONDAY',
         subtitle: 'Tech à prix délirants',
-        href: '/cyber-monday',
+        href: '/products?sale=true',
         bg: 'from-blue-600 via-cyan-600 to-purple-700',
         animation: 'animate-pulse',
         emoji: '💻'
@@ -304,7 +304,7 @@ const Header = () => {
         id: 'ecomweek',
         title: 'Semaine E-Commerce',
         subtitle: 'Shopping en ligne récompensé',
-        href: '/ecommerce-week',
+        href: '/products?sale=true',
         bg: 'from-purple-600 via-fuchsia-600 to-pink-600',
         animation: 'animate-pulse',
         emoji: '🛍️'
@@ -347,7 +347,7 @@ const Header = () => {
       id: 'a4',
       title: 'Black Friday Permanent',
       subtitle: 'Prix cassés - Jusqu\'à -70%',
-      href: '/flash-sales',
+      href: '/products?sale=true',
       bg: 'from-gray-900 to-black',
       animation: 'animate-pulse',
       emoji: '⚡'

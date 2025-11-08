@@ -206,7 +206,7 @@ const Footer = () => {
                 <Link href="/search" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
                   Recherche avancée
                 </Link>
-                <Link href="/flash-sales" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
+                  <Link href="/products?sale=true" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
                   Ventes flash
                 </Link>
                 <Link href="/#trending-products" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">

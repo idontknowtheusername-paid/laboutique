@@ -18,7 +18,7 @@ const STATIC_BANNERS = [
     subtitle: 'Jusqu\'à -70% sur l\'électronique',
     description: 'iPhone, Samsung, laptops et plus encore avec livraison gratuite',
     cta_text: 'DÉCOUVRIR LES OFFRES',
-    cta_link: '/flash-sales',
+    cta_link: '/products?sale=true',
     image_url: 'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=1200',
     gradient: 'from-red-600 via-orange-600 to-yellow-500',
     badge: '🔥 FLASH SALE',
@@ -77,7 +77,7 @@ const STATIC_BANNERS = [
     subtitle: 'Jusqu\'à -50% de réduction',
     description: 'Sur une sélection de produits tendance',
     cta_text: 'PROFITER MAINTENANT',
-    cta_link: '/flash-sales',
+    cta_link: '/products?sale=true',
     gradient: 'from-orange-600 via-red-600 to-pink-600',
     badge: '🔥 -50%',
     type: 'custom-promo'
@@ -113,7 +113,7 @@ const DYNAMIC_ADVERTISEMENTS = [
     title: 'Black Friday toute l\'année',
     subtitle: 'Des prix cassés tous les jours !',
     animation: 'slideFromBottom',
-    link: '/flash-sales'
+    link: '/products?sale=true'
   },
   {
     id: 'ad-3',
@@ -122,7 +122,7 @@ const DYNAMIC_ADVERTISEMENTS = [
     title: 'Flash Deals en continu',
     subtitle: 'Nouvelles offres toutes les 2h',
     animation: 'slideFromLeft',
-    link: '/flash-sales'
+    link: '/products?sale=true'
   },
   {
     id: 'ad-4',
