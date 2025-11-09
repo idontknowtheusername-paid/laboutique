@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { 
   Menu, 
   X, 
@@ -64,6 +64,7 @@ export default function MobileNavigation({
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-80 p-0">
+        <SheetTitle className="sr-only">Menu de navigation administrateur</SheetTitle>
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
