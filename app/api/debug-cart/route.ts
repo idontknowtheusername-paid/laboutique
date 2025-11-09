@@ -6,12 +6,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { items } = body;
 
-    console.log('[Debug Cart] Items reçus:', JSON.stringify(items, null, 2));
+    import { logger } from '@/lib/utils/logger';
+    logger.debug('Items reçus:', JSON.stringify(items, null, 2));
 
     // Tester la validation
     const validation = await validateCartItems(items);
     
-    console.log('[Debug Cart] Résultat validation:', validation);
+    logger.debug('Résultat validation:', validation);
 
     return NextResponse.json({
       success: true,

@@ -51,7 +51,8 @@ export async function POST(request: NextRequest) {
       html: htmlContent
     });
 
-    console.log('Email envoyé:', info.messageId);
+    import { logger } from '@/lib/utils/logger';
+    logger.info('Email envoyé:', info.messageId);
     
     return NextResponse.json({ 
       success: true, 

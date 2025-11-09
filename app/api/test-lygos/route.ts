@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LygosService } from '@/lib/services/lygos.service';
 
+import { lygosLogger } from '@/lib/utils/logger';
+
 export async function GET(request: NextRequest) {
   try {
-    console.log('🧪 [TEST LYGOS] Début des tests...');
+    lygosLogger.debug('Début des tests...');
 
     // Test 1: Configuration (skip si pas d'API Key)
     console.log('📋 Test 1: Configuration Lygos');

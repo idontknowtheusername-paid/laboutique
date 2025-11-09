@@ -31,9 +31,9 @@ export async function POST(request: NextRequest) {
         let verifiedStatus;
         try {
             verifiedStatus = await LygosService.getPaymentStatus(order_id || gateway_id);
-            console.log('[Lygos Webhook] Statut vérifié:', verifiedStatus);
+            lygosLogger.info('Statut vérifié:', verifiedStatus);
         } catch (error) {
-            console.error('[Lygos Webhook] Erreur vérification:', error);
+            lygosLogger.error('Erreur vérification:', error);
             // Utiliser les données du webhook si la vérification échoue
             verifiedStatus = { status, order_id, gateway_id, transaction_id, amount, currency };
         }
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
                     notes: `Lygos webhook - Gateway: ${gateway_id} - Transaction: ${transaction_id} - Statut: ${verifiedStatus.status} - ${message || ''}`
                 } as any);
 
-                console.log('[Lygos Webhook] Commande mise à jour:', {
+                lygosLogger.info('Commande mise à jour:', {
                     order_db_id: ord.id,
                     order_ref: order_id,
                     gateway_id,
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
                     payment_status: paymentStatus
                 });
             } else {
-                console.warn('[Lygos Webhook] Commande non trouvée:', { order_id, gateway_id });
+                lygosLogger.warn('Commande non trouvée:', { order_id, gateway_id });
             }
         } catch (updateError) {
             console.error('[Lygos Webhook] Erreur mise à jour commande:', updateError);

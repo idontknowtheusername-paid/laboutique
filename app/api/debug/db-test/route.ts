@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
 
+import { dbLogger } from '@/lib/utils/logger';
+
 export async function GET(request: NextRequest) {
   try {
-    console.log('[DB-TEST] Testing database connection and tables...');
+    dbLogger.info('Testing database connection and tables...');
     
     // Test categories table
     const { data: categories, error: categoriesError } = await supabaseAdmin
@@ -11,7 +13,7 @@ export async function GET(request: NextRequest) {
       .select('id, name, slug, status')
       .limit(5);
     
-    console.log('[DB-TEST] Categories result:', { 
+    dbLogger.info('Categories result:', { 
       count: categories?.length || 0, 
       error: categoriesError?.message || null,
       data: categories 
@@ -23,7 +25,7 @@ export async function GET(request: NextRequest) {
       .select('id, name, slug, status')
       .limit(5);
     
-    console.log('[DB-TEST] Vendors result:', { 
+    dbLogger.info('Vendors result:', { 
       count: vendors?.length || 0, 
       error: vendorsError?.message || null,
       data: vendors 
@@ -35,7 +37,7 @@ export async function GET(request: NextRequest) {
       .select('id, name, category_id, vendor_id, status')
       .limit(5);
     
-    console.log('[DB-TEST] Products result:', { 
+    dbLogger.info('Products result:', { 
       count: products?.length || 0, 
       error: productsError?.message || null,
       data: products 

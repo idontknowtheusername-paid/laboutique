@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LygosService } from '@/lib/services/lygos.service';
 import { OrdersService } from '@/lib/services/orders.service';
+import { paymentLogger } from '@/lib/utils/logger';
 
 /**
  * API pour vérifier le statut d'une transaction Lygos
@@ -16,15 +17,15 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    console.log('[Lygos Verify] Vérification transaction:', { order_id, gateway_id });
+    paymentLogger.info('Vérification transaction:', { order_id, gateway_id });
 
     // Vérifier le statut auprès de Lygos
       let status;
       try {
           status = await LygosService.getPaymentStatus(order_id || gateway_id);
-          console.log('[Lygos Verify] Statut reçu:', status);
+        paymentLogger.info('Statut reçu:', status);
     } catch (statusError) {
-        console.error('[Lygos Verify] Erreur récupération statut:', statusError);
+        paymentLogger.error('Erreur récupération statut:', statusError);
         // Retourner un statut par défaut si Lygos ne répond pas
         status = {
             order_id: order_id || gateway_id,
@@ -61,9 +62,9 @@ export async function POST(request: NextRequest) {
           notes: `Lygos gateway: ${status.gateway_id} - Statut: ${status.status} - ${status.message || ''}`
         } as any);
 
-        console.log('[Lygos Verify] Commande mise à jour:', { order_id, orderStatus, paymentStatus });
+        paymentLogger.info('Commande mise à jour:', { order_id, orderStatus, paymentStatus });
       } catch (updateError) {
-        console.error('[Lygos Verify] Erreur mise à jour commande:', updateError);
+        paymentLogger.error('Erreur mise à jour commande:', updateError);
       }
     }
 
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('❌ [Lygos Verify] Erreur:', error);
+    paymentLogger.error('Erreur:', error);
     return NextResponse.json({ 
       error: error?.message || 'Erreur lors de la vérification du paiement',
       success: false 

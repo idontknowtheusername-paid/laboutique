@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LygosService } from '@/lib/services/lygos.service';
 import { OrdersService } from '@/lib/services/orders.service';
+import { lygosLogger } from '@/lib/utils/logger';
 
 /**
  * Webhook Lygos pour recevoir les notifications de paiement
@@ -9,7 +10,7 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
-        console.log('[Lygos Webhook] Notification reçue:', body);
+        lygosLogger.info('Notification reçue:', body);
 
         // Extraire les données importantes du webhook
         const {
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
         } = body;
 
         if (!order_id && !gateway_id) {
-            console.error('[Lygos Webhook] Données manquantes:', body);
+            lygosLogger.error('Données manquantes:', body);
             return NextResponse.json({ error: 'order_id ou gateway_id manquant' }, { status: 400 });
         }
 
@@ -31,9 +32,9 @@ export async function POST(request: NextRequest) {
         let verifiedStatus;
         try {
             verifiedStatus = await LygosService.getPaymentStatus(order_id || gateway_id);
-            console.log('[Lygos Webhook] Statut vérifié:', verifiedStatus);
+            lygosLogger.info('Statut vérifié:', verifiedStatus);
         } catch (error) {
-            console.error('[Lygos Webhook] Erreur vérification:', error);
+            lygosLogger.error('Erreur vérification:', error);
             // Utiliser les données du webhook si la vérification échoue
             verifiedStatus = { status, order_id, gateway_id, transaction_id, amount, currency };
         }
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest) {
                     notes: `Lygos webhook - Gateway: ${gateway_id} - Transaction: ${transaction_id} - Statut: ${verifiedStatus.status} - ${message || ''}`
                 } as any);
 
-                console.log('[Lygos Webhook] Commande mise à jour:', {
+                lygosLogger.info('Commande mise à jour:', {
                     order_db_id: ord.id,
                     order_ref: order_id,
                     gateway_id,
@@ -91,10 +92,10 @@ export async function POST(request: NextRequest) {
                     payment_status: paymentStatus
                 });
             } else {
-                console.warn('[Lygos Webhook] Commande non trouvée:', { order_id, gateway_id });
+                lygosLogger.warn('Commande non trouvée:', { order_id, gateway_id });
             }
         } catch (updateError) {
-            console.error('[Lygos Webhook] Erreur mise à jour commande:', updateError);
+            lygosLogger.error('Erreur mise à jour commande:', updateError);
         }
 
         // Répondre à Lygos que le webhook a été traité
@@ -106,7 +107,7 @@ export async function POST(request: NextRequest) {
         });
 
     } catch (error: any) {
-        console.error('❌ [Lygos Webhook] Erreur:', error);
+        lygosLogger.error('Erreur:', error);
         return NextResponse.json({
             error: 'Erreur lors du traitement du webhook',
             success: false

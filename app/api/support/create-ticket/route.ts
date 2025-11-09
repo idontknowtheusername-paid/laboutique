@@ -8,7 +8,8 @@ export async function POST(request: NextRequest) {
     // TODO: Implémenter la vraie création dans Supabase une fois les tables créées
     const ticketId = `TICKET-${Date.now()}`;
     
-    console.log('🎫 Ticket créé (simulation):', {
+    import { logger } from '@/lib/utils/logger';
+    logger.info('Ticket créé (simulation):', {
       id: ticketId,
       conversationId,
       subject,
