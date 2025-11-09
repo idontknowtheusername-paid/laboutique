@@ -1,186 +1,147 @@
+// Service Worker for JomionStore
+// Provides offline support and caching strategies
+
 const CACHE_NAME = 'jomionstore-v1';
-const STATIC_CACHE_NAME = 'jomionstore-static-v1';
-const DYNAMIC_CACHE_NAME = 'jomionstore-dynamic-v1';
+const STATIC_CACHE = 'jomionstore-static-v1';
+const DYNAMIC_CACHE = 'jomionstore-dynamic-v1';
+const IMAGE_CACHE = 'jomionstore-images-v1';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
   '/',
-  '/images/placeholder-product.jpg',
+  '/offline',
+  '/images/latestlogo.jpg',
   '/favicon.ico',
-  '/favicon.svg',
-  '/manifest.json',
-  // Add other static assets
-];
-
-// API endpoints to cache
-const API_ENDPOINTS = [
-  '/api/products',
-  '/api/categories',
 ];
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(STATIC_CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(STATIC_ASSETS);
-      })
-      .then(() => {
-        return self.skipWaiting();
-      })
+    caches.open(STATIC_CACHE).then((cache) => {
+      return cache.addAll(STATIC_ASSETS).catch((err) => {
+        console.log('Cache install error:', err);
+      });
+    })
   );
+  self.skipWaiting();
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames
-            .filter((cacheName) => {
-              return cacheName !== STATIC_CACHE_NAME && 
-                     cacheName !== DYNAMIC_CACHE_NAME;
-            })
-            .map((cacheName) => {
-              return caches.delete(cacheName);
-            })
-        );
-      })
-      .then(() => {
-        return self.clients.claim();
-      })
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => {
+            return name !== STATIC_CACHE && 
+                   name !== DYNAMIC_CACHE && 
+                   name !== IMAGE_CACHE;
+          })
+          .map((name) => caches.delete(name))
+      );
+    })
   );
+  self.clients.claim();
 });
 
-// Fetch event - serve cached content when offline
+// Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Handle API requests
+  // Skip non-GET requests
+  if (request.method !== 'GET') return;
+
+  // Skip chrome extensions and other protocols
+  if (!url.protocol.startsWith('http')) return;
+
+  // Handle API requests - network first
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(
-      caches.open(DYNAMIC_CACHE_NAME)
-        .then((cache) => {
-          return fetch(request)
-            .then((response) => {
-              // Only cache successful responses
-              if (response.status === 200) {
-                cache.put(request, response.clone());
-              }
-              return response;
-            })
-            .catch(() => {
-              // Return cached version if available
-              return cache.match(request);
+      fetch(request)
+        .then((response) => {
+          // Clone and cache successful responses
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(DYNAMIC_CACHE).then((cache) => {
+              cache.put(request, responseClone);
             });
+          }
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache if network fails
+          return caches.match(request);
         })
     );
     return;
   }
 
-  // Handle image requests with longer cache
+  // Handle images - cache first
   if (request.destination === 'image') {
     event.respondWith(
-      caches.open(STATIC_CACHE_NAME)
-        .then((cache) => {
-          return cache.match(request)
-            .then((cachedResponse) => {
-              if (cachedResponse) {
-                return cachedResponse;
-              }
-              
-              return fetch(request)
-                .then((response) => {
-                  if (response.status === 200) {
-                    cache.put(request, response.clone());
-                  }
-                  return response;
-                });
-            });
-        })
-    );
-    return;
-  }
-
-  // Handle navigation requests
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .catch(() => {
-          return caches.match('/') || caches.match('/offline.html');
-        })
-    );
-    return;
-  }
-
-  // Default strategy: cache first, then network
-  event.respondWith(
-    caches.match(request)
-      .then((cachedResponse) => {
+      caches.match(request).then((cachedResponse) => {
         if (cachedResponse) {
           return cachedResponse;
         }
-        
-        return fetch(request)
-          .then((response) => {
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            const responseToCache = response.clone();
-            caches.open(DYNAMIC_CACHE_NAME)
-              .then((cache) => {
-                cache.put(request, responseToCache);
-              });
-
-            return response;
-          });
+        return fetch(request).then((response) => {
+          // Cache images for future use
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(IMAGE_CACHE).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          }
+          return response;
+        });
       })
+    );
+    return;
+  }
+
+  // Handle other requests - cache first, fallback to network
+  event.respondWith(
+    caches.match(request).then((cachedResponse) => {
+      if (cachedResponse) {
+        // Return cached version and update in background
+        fetch(request).then((response) => {
+          if (response.ok) {
+            caches.open(DYNAMIC_CACHE).then((cache) => {
+              cache.put(request, response);
+            });
+          }
+        }).catch(() => {});
+        return cachedResponse;
+      }
+
+      // Not in cache, fetch from network
+      return fetch(request).then((response) => {
+        // Cache successful responses
+        if (response.ok) {
+          const responseClone = response.clone();
+          caches.open(DYNAMIC_CACHE).then((cache) => {
+            cache.put(request, responseClone);
+          });
+        }
+        return response;
+      }).catch(() => {
+        // Network failed, return offline page for navigation requests
+        if (request.destination === 'document') {
+          return caches.match('/offline');
+        }
+      });
+    })
   );
 });
 
 // Background sync for offline actions
 self.addEventListener('sync', (event) => {
-  if (event.tag === 'background-sync') {
-    event.waitUntil(
-      // Handle offline actions when connection is restored
-      handleBackgroundSync()
-    );
+  if (event.tag === 'sync-cart') {
+    event.waitUntil(syncCart());
   }
 });
 
-async function handleBackgroundSync() {
-  // Implement offline action handling here
-  // For example, sync cart updates, wishlist changes, etc.
-  console.log('Background sync triggered');
+async function syncCart() {
+  // Implement cart sync logic here
+  console.log('Syncing cart...');
 }
-
-// Push notifications (if needed)
-self.addEventListener('push', (event) => {
-  if (event.data) {
-    const data = event.data.json();
-    const options = {
-      body: data.body,
-      icon: '/favicon.ico',
-      badge: '/favicon.ico',
-      tag: data.tag || 'notification',
-      actions: data.actions || []
-    };
-
-    event.waitUntil(
-      self.registration.showNotification(data.title, options)
-    );
-  }
-});
-
-// Notification click handling
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-
-  event.waitUntil(
-    clients.openWindow(event.notification.data?.url || '/')
-  );
-});

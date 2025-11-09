@@ -3,6 +3,75 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Font optimization */
+@layer base {
+  html {
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
+  /* Prevent layout shift from images */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Prevent CLS from lazy-loaded content */
+  [data-lazy] {
+    min-height: 200px;
+  }
+  
+  /* Improve touch targets for mobile accessibility */
+  @media (pointer: coarse) {
+    button, a, [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+  
+  /* Focus visible for keyboard navigation */
+  *:focus-visible {
+    outline: 2px solid #FF5722;
+    outline-offset: 2px;
+  }
+  
+  /* Aspect ratio containers to prevent CLS */
+  .aspect-product {
+    aspect-ratio: 1 / 1;
+  }
+  
+  .aspect-banner {
+    aspect-ratio: 16 / 9;
+  }
+  
+  .aspect-hero {
+    aspect-ratio: 21 / 9;
+  }
+  
+  /* Skeleton loading states */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      #f3f4f6 0%,
+      #e5e7eb 50%,
+      #f3f4f6 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes skeleton-loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+}
+
 /* Masquer la toolbar Vercel en production */
 [data-vercel-toolbar] {
   display: none !important;

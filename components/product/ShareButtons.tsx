@@ -79,6 +79,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ productName, productUrl, pr
         <Button
           variant="outline"
           className="gap-2 text-gray-700 hover:text-jomionstore-primary border-gray-300 w-full h-12"
+          aria-label="Partager ce produit sur les réseaux sociaux"
         >
           <Share2 className="w-5 h-5" />
           <span>Partager</span>

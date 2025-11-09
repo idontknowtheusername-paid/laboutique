@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import Script from 'next/script';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { ProductsService, CategoriesService, Product, Category } from '@/lib/services';
@@ -10,6 +11,7 @@ import LazySection from '@/components/ui/LazySection';
 import DynamicMeta from '@/components/seo/DynamicMeta';
 import ProductSectionMeta from '@/components/seo/ProductSectionMeta';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { generateOrganizationSchema } from '@/lib/utils/seo-helpers';
 
 // Optimized lazy loading components with better loading states and code splitting
 const HeroCarouselWithData = dynamic(() => import('@/components/home/HeroCarouselWithData'), {
@@ -149,8 +151,37 @@ export default function HomePageContent() {
   const bestSellersProducts = topSellers;
 
 
+  // Generate structured data for homepage
+  const organizationSchema = generateOrganizationSchema();
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'JomionStore',
+    url: 'https://www.jomionstore.com',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://www.jomionstore.com/search?q={search_term_string}'
+      },
+      'query-input': 'required name=search_term_string'
+    }
+  };
+
   return (
     <>
+      {/* Structured Data for SEO */}
+      <Script
+        id="organization-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <Script
+        id="website-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+
       {/* Meta tags dynamiques */}
       <DynamicMeta
         title="JomionStore - Centre commercial digital du Bénin"

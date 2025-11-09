@@ -1,39 +1,91 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import { Inter } from 'next/font/google';
 import { AppProviders } from "@/components/providers/AppProviders";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { WebVitals } from "@/components/analytics/WebVitals";
 import GlobalCartAnimation from '@/components/ui/GlobalCartAnimation';
 import CookieBanner from '@/components/layout/CookieBanner';
 import NewsletterPopupManager from '@/components/layout/NewsletterPopupManager';
 import PopupManager from '@/components/layout/PopupManager';
 
+// Optimize font loading
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
 export const metadata: Metadata = {
-  title: "JomionStore - Benin Elite Shopping Experience",
+  title: {
+    default: "JomionStore - Centre commercial digital du Bénin",
+    template: "%s | JomionStore"
+  },
   description:
     "JomionStore - Le centre commercial digital du Bénin. Découvrez des milliers de produits authentiques avec une livraison rapide et un service client exceptionnel.",
-  keywords:
-    "e-commerce Bénin, shopping en ligne, électronique, mode, maison, beauté, JomionStore",
+  keywords: [
+    "e-commerce Bénin",
+    "shopping en ligne",
+    "électronique",
+    "mode",
+    "maison",
+    "beauté",
+    "JomionStore",
+    "achat en ligne Bénin",
+    "livraison Cotonou",
+    "boutique en ligne"
+  ],
   authors: [{ name: "JomionStore Team" }],
-  viewport: "width=device-width, initial-scale=1",
-  robots: "index, follow",
+  creator: "JomionStore",
+  publisher: "JomionStore",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   openGraph: {
     type: "website",
     locale: "fr_BJ",
     url: "https://www.jomionstore.com",
     siteName: "JomionStore",
-    title: "JomionStore - Benin Elite Shopping Experience",
-    description: "JomionStore - Le centre commercial digital du Bénin",
-    images: ["/images/og-image.jpg"],
+    title: "JomionStore - Centre commercial digital du Bénin",
+    description: "Découvrez des milliers de produits authentiques avec une livraison rapide et un service client exceptionnel.",
+    images: [
+      {
+        url: "/images/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "JomionStore - Shopping en ligne au Bénin"
+      }
+    ],
   },
   twitter: {
     card: "summary_large_image",
     site: "@JomionStoreBenin",
-    title: "JomionStore - Benin Elite Shopping Experience",
-    description: "JomionStore - Le centre commercial digital du Bénin",
+    creator: "@JomionStoreBenin",
+    title: "JomionStore - Centre commercial digital du Bénin",
+    description: "Découvrez des milliers de produits authentiques avec une livraison rapide et un service client exceptionnel.",
     images: ["/images/twitter-image.jpg"],
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.jomionstore.com'),
+  alternates: {
+    canonical: '/',
+  },
+  verification: {
+    google: 'your-google-verification-code', // Add your Google Search Console verification code
+  },
 };
 
 export default function RootLayout({
@@ -42,7 +94,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={inter.variable}>
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -54,14 +106,22 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="JomionStore" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+        {/* Preconnect to critical domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://qdagyxqkqgbzqrqzjvzz.supabase.co" />
+
+        {/* DNS prefetch for non-critical domains */}
         <link rel="dns-prefetch" href="https://images.pexels.com" />
-        <link rel="dns-prefetch" href="https://qdagyxqkqgbzqrqzjvzz.supabase.co" />
+
+        {/* Preload critical assets */}
+        <link rel="preload" as="image" href="/images/latestlogo.jpg" fetchPriority="high" />
+
         <meta name="format-detection" content="telephone=no" />
       </head>
       <body className="font-sans antialiased">
+        <WebVitals />
         <AppProviders>
           {children}
           <GlobalCartAnimation />

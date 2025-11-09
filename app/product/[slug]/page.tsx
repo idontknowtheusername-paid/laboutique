@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
+import Script from 'next/script';
 import Header from '@/components/layout/Header';
 import CategoryMenu from '@/components/layout/CategoryMenu';
 import Footer from '@/components/layout/Footer';
@@ -36,6 +37,7 @@ import { WishlistButton } from '@/components/ui/wishlist-button';
 import { ProductsService, Product as ProductType } from '@/lib/services/products.service';
 import { ErrorState } from '@/components/ui/error-state';
 import { generateConsistentRating, generateConsistentReviews } from '@/lib/utils/rating';
+import { generateProductSchema, generateBreadcrumbSchema } from '@/lib/utils/seo-helpers';
 
 // Slider product type for mapping
 type SliderProduct = {
@@ -204,8 +206,48 @@ export default function ProductDetailPage() {
     }
   }, [product]);
 
+  // Generate structured data for SEO
+  const productSchema = product ? generateProductSchema({
+    name: product.name,
+    description: product.description || product.short_description || '',
+    image: product.images || [],
+    price: product.price,
+    currency: 'XOF',
+    availability: (!product.track_quantity || product.quantity > 0) ? 'in_stock' : 'out_of_stock',
+    brand: product.brand || product.vendor?.name,
+    sku: product.id,
+    rating: generateConsistentRating(product.id, product.average_rating),
+    reviewCount: generateConsistentReviews(product.id, product.reviews_count),
+    url: `https://www.jomionstore.com/product/${product.slug}`,
+  }) : null;
+
+  const breadcrumbSchema = product ? generateBreadcrumbSchema([
+    { name: 'Accueil', url: 'https://www.jomionstore.com' },
+    ...(product.category ? [{
+      name: product.category.name,
+      url: `https://www.jomionstore.com/category/${product.category.slug}`
+    }] : []),
+    { name: product.name, url: `https://www.jomionstore.com/product/${product.slug}` },
+  ]) : null;
+
   return (
     <div className="min-h-screen bg-jomionstore-background">
+      {/* Structured Data for SEO */}
+      {productSchema && (
+        <Script
+          id="product-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        />
+      )}
+      {breadcrumbSchema && (
+        <Script
+          id="breadcrumb-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
+      )}
+
       <Header />
       <CategoryMenu />
       
