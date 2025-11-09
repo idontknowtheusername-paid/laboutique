@@ -1,11 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-export const metadata = {
-  title: 'Hors ligne | JomionStore',
-  description: 'Vous êtes actuellement hors ligne',
-};
 
 export default function OfflinePage() {
   return (
