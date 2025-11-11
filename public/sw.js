@@ -1,10 +1,10 @@
 // Service Worker for JomionStore
 // Provides offline support and caching strategies
 
-const CACHE_NAME = 'jomionstore-v1';
-const STATIC_CACHE = 'jomionstore-static-v1';
-const DYNAMIC_CACHE = 'jomionstore-dynamic-v1';
-const IMAGE_CACHE = 'jomionstore-images-v1';
+const CACHE_NAME = 'jomionstore-v2-' + Date.now();
+const STATIC_CACHE = 'jomionstore-static-v2-' + Date.now();
+const DYNAMIC_CACHE = 'jomionstore-dynamic-v2-' + Date.now();
+const IMAGE_CACHE = 'jomionstore-images-v2-' + Date.now();
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
@@ -99,37 +99,29 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Handle other requests - cache first, fallback to network
+  // Handle other requests - NETWORK FIRST for HTML, cache for others
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Return cached version and update in background
-        fetch(request).then((response) => {
-          if (response.ok) {
-            caches.open(DYNAMIC_CACHE).then((cache) => {
-              cache.put(request, response);
-            });
-          }
-        }).catch(() => {});
-        return cachedResponse;
+    fetch(request).then((response) => {
+      // Cache successful responses
+      if (response.ok && request.destination !== 'document') {
+        const responseClone = response.clone();
+        caches.open(DYNAMIC_CACHE).then((cache) => {
+          cache.put(request, responseClone);
+        });
       }
-
-      // Not in cache, fetch from network
-      return fetch(request).then((response) => {
-        // Cache successful responses
-        if (response.ok) {
-          const responseClone = response.clone();
-          caches.open(DYNAMIC_CACHE).then((cache) => {
-            cache.put(request, responseClone);
-          });
+      return response;
+    }).catch(() => {
+      // Network failed, try cache
+      return caches.match(request).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
         }
-        return response;
-      }).catch(() => {
+
         // Network failed, return offline page for navigation requests
         if (request.destination === 'document') {
           return caches.match('/offline');
         }
-      });
+      })
     })
   );
 });
