@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { logger } from '@/lib/utils/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,7 +52,6 @@ export async function POST(request: NextRequest) {
       html: htmlContent
     });
 
-    import { logger } from '@/lib/utils/logger';
     logger.info('Email envoyé:', info.messageId);
     
     return NextResponse.json({ 

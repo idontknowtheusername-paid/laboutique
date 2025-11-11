@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/utils/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -7,8 +8,7 @@ export async function POST(request: NextRequest) {
     // Pour l'instant, on simule la création du ticket
     // TODO: Implémenter la vraie création dans Supabase une fois les tables créées
     const ticketId = `TICKET-${Date.now()}`;
-    
-    import { logger } from '@/lib/utils/logger';
+
     logger.info('Ticket créé (simulation):', {
       id: ticketId,
       conversationId,

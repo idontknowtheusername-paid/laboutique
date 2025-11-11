@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCartItems } from '@/lib/helpers/validate-cart';
+import { logger } from '@/lib/utils/logger';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { items } = body;
 
-    import { logger } from '@/lib/utils/logger';
     logger.debug('Items reçus:', JSON.stringify(items, null, 2));
 
     // Tester la validation
