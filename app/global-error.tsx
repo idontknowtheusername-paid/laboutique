@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
 
@@ -11,6 +11,20 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // Auto-reload on chunk loading errors
+  useEffect(() => {
+    const isChunkError = error?.message?.includes('Failed to load chunk') ||
+      error?.message?.includes('Loading chunk') ||
+      error?.message?.includes('ChunkLoadError');
+
+    if (isChunkError && typeof window !== 'undefined') {
+      console.warn('Chunk loading error detected, reloading...');
+      if (!sessionStorage.getItem('chunk-reload-attempted')) {
+        sessionStorage.setItem('chunk-reload-attempted', 'true');
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    }
+  }, [error]);
   return (
     <html lang="fr">
       <body className="min-h-screen bg-gray-50">

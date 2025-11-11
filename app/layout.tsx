@@ -154,6 +154,33 @@ export default function RootLayout({
           />
         )}
         
+        {/* Chunk Loading Error Handler */}
+        <Script
+          id="chunk-error-handler"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Detect chunk loading errors and reload the page
+              window.addEventListener('error', function(event) {
+                if (event.message && (
+                  event.message.includes('Failed to load chunk') ||
+                  event.message.includes('Loading chunk') ||
+                  event.message.includes('ChunkLoadError')
+                )) {
+                  console.warn('Chunk loading error detected, reloading page...');
+                  // Reload only once to avoid infinite loops
+                  if (!sessionStorage.getItem('chunk-reload-attempted')) {
+                    sessionStorage.setItem('chunk-reload-attempted', 'true');
+                    window.location.reload();
+                  } else {
+                    sessionStorage.removeItem('chunk-reload-attempted');
+                  }
+                }
+              }, true);
+            `,
+          }}
+        />
+
         {/* Service Worker Registration */}
         <Script
           id="sw-registration"
@@ -165,6 +192,10 @@ export default function RootLayout({
                   navigator.serviceWorker.register('/sw.js')
                     .then(function(registration) {
                       console.log('SW registered: ', registration);
+                      // Check for updates every 5 minutes
+                      setInterval(function() {
+                        registration.update();
+                      }, 5 * 60 * 1000);
                     })
                     .catch(function(registrationError) {
                       console.log('SW registration failed: ', registrationError);

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, User, Heart, ShoppingCart, Menu, Crown, Package, CreditCard, MapPin, Bell, Settings, TicketPercent, Wallet, Shield, FileText, X } from 'lucide-react';
+import { Search, User, Heart, ShoppingCart, Menu, Crown, Package, CreditCard, MapPin, Bell, Settings, TicketPercent, Wallet, Shield, FileText, X, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -744,7 +744,7 @@ const Header = () => {
 };
 
 const MobileMenu = () => {
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
   // Catégories organisées
@@ -803,86 +803,121 @@ const MobileMenu = () => {
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      {/* En-tête utilisateur amélioré */}
-      <div className="bg-gradient-to-r from-jomionstore-primary to-orange-600 p-6 text-white">
-        <div className="flex items-center space-x-4">
-          <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
-            <User className="w-7 h-7" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="font-semibold text-lg">
-              Bonjour, {user?.user_metadata?.first_name || 'Visiteur'} 👋
+      {/* En-tête ADMIN ou utilisateur */}
+      {profile?.role === "admin" ? (
+        <div className="bg-gradient-to-r from-yellow-500 to-orange-600 p-6 text-white">
+          <div className="flex items-center space-x-4">
+            <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
+              <Crown className="w-7 h-7" />
             </div>
-            <div className="text-sm text-white/80 truncate">
-              {user ? user.email : 'Accédez à votre compte'}
+            <div className="flex-1 min-w-0">
+              <div className="font-bold text-lg flex items-center gap-2">
+                Mode Administrateur
+              </div>
+              <div className="text-sm text-white/90 truncate">
+                {user?.user_metadata?.first_name || user?.email}
+              </div>
+            </div>
+          </div>
+          {/* Bouton d'accès direct au dashboard - Ouvre dans nouvel onglet */}
+          <a
+            href="/admin/dashboard"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 block"
+          >
+            <Button className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2">
+              <LayoutGrid className="w-5 h-5" />
+              Accéder au Dashboard Admin
+            </Button>
+          </a>
+        </div>
+      ) : (
+        <div className="bg-gradient-to-r from-jomionstore-primary to-orange-600 p-6 text-white">
+          <div className="flex items-center space-x-4">
+            <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
+              <User className="w-7 h-7" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold text-lg">
+                Bonjour, {user?.user_metadata?.first_name || 'Visiteur'} 👋
+              </div>
+              <div className="text-sm text-white/80 truncate">
+                {user ? user.email : 'Accédez à votre compte'}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Contenu scrollable */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {user ? (
           <>
-            {/* Catégories avec items */}
-            {menuCategories.map((category) => {
-              const CategoryIcon = category.icon;
-              const isActive = activeSection === category.id;
-              
-              return (
-                <div key={category.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
-                  {/* Header de catégorie */}
-                  <button
-                    onClick={() => toggleSection(category.id)}
-                    className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-lg ${category.bgColor} flex items-center justify-center`}>
-                        <CategoryIcon className={`w-5 h-5 ${category.color}`} />
-                      </div>
-                      <span className="font-semibold text-gray-900">{category.title}</span>
-                    </div>
-                    <X 
-                      className={`w-5 h-5 text-gray-400 transition-transform ${isActive ? 'rotate-45' : 'rotate-0'}`}
-                    />
-                  </button>
+            {/* Si ADMIN : ne rien afficher ici, juste le bouton dashboard en haut */}
+            {profile?.role !== "admin" && (
+              <>
+                {/* Catégories avec items */}
+                {menuCategories.map((category) => {
+                  const CategoryIcon = category.icon;
+                  const isActive = activeSection === category.id;
 
-                  {/* Items de la catégorie */}
-                  {isActive && (
-                    <div className="border-t border-gray-100">
-                      {category.items.map((item) => {
-                        const ItemIcon = item.icon;
-                        return (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-b-0"
-                          >
-                            <div className="flex items-center gap-3">
-                              <ItemIcon className="w-4 h-4 text-gray-400" />
-                              <span className="text-sm text-gray-700">{item.label}</span>
-                            </div>
-                          </Link>
-                        );
-                      })}
+                  return (
+                    <div key={category.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
+                      {/* Header de catégorie */}
+                      <button
+                        onClick={() => toggleSection(category.id)}
+                        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-lg ${category.bgColor} flex items-center justify-center`}>
+                            <CategoryIcon className={`w-5 h-5 ${category.color}`} />
+                          </div>
+                          <span className="font-semibold text-gray-900">{category.title}</span>
+                        </div>
+                        <X
+                          className={`w-5 h-5 text-gray-400 transition-transform ${isActive ? 'rotate-45' : 'rotate-0'}`}
+                        />
+                      </button>
+
+                      {/* Items de la catégorie */}
+                      {isActive && (
+                        <div className="border-t border-gray-100">
+                          {category.items.map((item) => {
+                            const ItemIcon = item.icon;
+                            return (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-b-0"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <ItemIcon className="w-4 h-4 text-gray-400" />
+                                  <span className="text-sm text-gray-700">{item.label}</span>
+                                </div>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
-                  )}
+                  );
+                })}
+
+                {/* Liens d'aide en mode compact */}
+                <div className="bg-white rounded-xl shadow-sm p-3 space-y-1">
+                  <Link href="/help" className="flex items-center gap-3 p-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <span>Centre d&apos;aide</span>
+                  </Link>
+                  <Link href="/about" className="flex items-center gap-3 p-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <span>À propos</span>
+                  </Link>
+                  <Link href="/contact" className="flex items-center gap-3 p-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <span>Contact</span>
+                  </Link>
                 </div>
-              );
-            })}
-
-            {/* Liens d'aide en mode compact */}
-            <div className="bg-white rounded-xl shadow-sm p-3 space-y-1">
-              <Link href="/help" className="flex items-center gap-3 p-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
-                <span>Centre d&apos;aide</span>
-              </Link>
-              <Link href="/about" className="flex items-center gap-3 p-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
-                <span>À propos</span>
-              </Link>
-              <Link href="/contact" className="flex items-center gap-3 p-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
-                <span>Contact</span>
-              </Link>
-            </div>
+              </>
+            )}
           </>
         ) : (
           <div className="space-y-3">
