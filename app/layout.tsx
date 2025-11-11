@@ -181,30 +181,32 @@ export default function RootLayout({
           }}
         />
 
-        {/* Service Worker Registration */}
-        <Script
-          id="sw-registration"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js')
-                    .then(function(registration) {
-                      console.log('SW registered: ', registration);
-                      // Check for updates every 5 minutes
-                      setInterval(function() {
-                        registration.update();
-                      }, 5 * 60 * 1000);
-                    })
-                    .catch(function(registrationError) {
-                      console.log('SW registration failed: ', registrationError);
-                    });
-                });
-              }
-            `,
-          }}
-        />
+        {/* Service Worker Registration - Production only */}
+        {process.env.NODE_ENV === 'production' && (
+          <Script
+            id="sw-registration"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
+                  window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js')
+                      .then(function(registration) {
+                        console.log('SW registered:', registration.scope);
+                        // Check for updates every 5 minutes
+                        setInterval(function() {
+                          registration.update();
+                        }, 5 * 60 * 1000);
+                      })
+                      .catch(function(error) {
+                        console.log('SW registration failed:', error);
+                      });
+                  });
+                }
+              `,
+            }}
+          />
+        )}
 
         {/* Performance monitoring */}
         <Script

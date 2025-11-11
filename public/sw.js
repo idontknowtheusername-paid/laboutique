@@ -1,50 +1,73 @@
-// Service Worker for JomionStore
-// Provides offline support and caching strategies
+// Service Worker JomionStore - Optimisé pour e-commerce
+// Version: Change à chaque déploiement pour forcer la mise à jour
+const VERSION = 'v2.1.0-' + '20250212'; // Mettre la date du déploiement
+const IS_PRODUCTION = self.location.hostname !== 'localhost';
 
-const CACHE_NAME = 'jomionstore-v2-' + Date.now();
-const STATIC_CACHE = 'jomionstore-static-v2-' + Date.now();
-const DYNAMIC_CACHE = 'jomionstore-dynamic-v2-' + Date.now();
-const IMAGE_CACHE = 'jomionstore-images-v2-' + Date.now();
+// Cache names
+const CACHE_STATIC = `jomionstore-static-${VERSION}`;
+const CACHE_IMAGES = `jomionstore-images-${VERSION}`;
+const CACHE_API = `jomionstore-api-${VERSION}`;
 
-// Assets to cache immediately
-const STATIC_ASSETS = [
+// Durées de cache (en millisecondes)
+const CACHE_DURATION = {
+  images: 7 * 24 * 60 * 60 * 1000,  // 7 jours
+  api: 3 * 60 * 1000,                // 3 minutes
+};
+
+// Assets critiques (seulement ceux qui existent vraiment)
+const CRITICAL_ASSETS = [
   '/',
   '/offline',
   '/images/latestlogo.jpg',
   '/favicon.ico',
 ];
 
-// Install event - cache static assets
+// ============================================
+// INSTALL - Cache les assets critiques
+// ============================================
 self.addEventListener('install', (event) => {
+  console.log('[SW] Installing version:', VERSION);
+  
   event.waitUntil(
-    caches.open(STATIC_CACHE).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.log('Cache install error:', err);
-      });
-    })
+    caches.open(CACHE_STATIC)
+      .then(cache => cache.addAll(CRITICAL_ASSETS))
+      .then(() => self.skipWaiting())
+      .catch(err => {
+        console.error('[SW] Install failed:', err);
+        // Continue quand même l'installation
+        return self.skipWaiting();
+      })
   );
-  self.skipWaiting();
 });
 
-// Activate event - clean up old caches
+// ============================================
+// ACTIVATE - Nettoie les vieux caches
+// ============================================
 self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating version:', VERSION);
+  
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => {
-            return name !== STATIC_CACHE && 
-                   name !== DYNAMIC_CACHE && 
-                   name !== IMAGE_CACHE;
-          })
-          .map((name) => caches.delete(name))
-      );
-    })
+    caches.keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames
+            .filter(name => name.startsWith('jomionstore-') && 
+                           name !== CACHE_STATIC && 
+                           name !== CACHE_IMAGES && 
+                           name !== CACHE_API)
+            .map(name => {
+              console.log('[SW] Deleting old cache:', name);
+              return caches.delete(name);
+            })
+        );
+      })
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
+// ============================================
+// FETCH - Stratégies de cache intelligentes
+// ============================================
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -52,88 +75,192 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (request.method !== 'GET') return;
 
-  // Skip chrome extensions and other protocols
+  // Skip non-http protocols
   if (!url.protocol.startsWith('http')) return;
 
-  // Handle API requests - network first
+  // Skip localhost en développement (pas de cache local)
+  if (!IS_PRODUCTION && url.hostname === 'localhost') {
+    return;
+  }
+
+  // Router selon le type de requête
   if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Clone and cache successful responses
-          if (response.ok) {
-            const responseClone = response.clone();
-            caches.open(DYNAMIC_CACHE).then((cache) => {
-              cache.put(request, responseClone);
-            });
-          }
-          return response;
-        })
-        .catch(() => {
-          // Fallback to cache if network fails
-          return caches.match(request);
-        })
-    );
-    return;
+    event.respondWith(handleAPI(request));
+  } else if (request.destination === 'image') {
+    event.respondWith(handleImage(request));
+  } else if (request.destination === 'document') {
+    event.respondWith(handleDocument(request));
+  } else if (url.pathname.startsWith('/_next/static/')) {
+    event.respondWith(handleStatic(request));
   }
+});
 
-  // Handle images - cache first
-  if (request.destination === 'image') {
-    event.respondWith(
-      caches.match(request).then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-        return fetch(request).then((response) => {
-          // Cache images for future use
-          if (response.ok) {
-            const responseClone = response.clone();
-            caches.open(IMAGE_CACHE).then((cache) => {
-              cache.put(request, responseClone);
-            });
-          }
-          return response;
-        });
-      })
-    );
-    return;
-  }
-
-  // Handle other requests - NETWORK FIRST for HTML, cache for others
-  event.respondWith(
-    fetch(request).then((response) => {
-      // Cache successful responses
-      if (response.ok && request.destination !== 'document') {
-        const responseClone = response.clone();
-        caches.open(DYNAMIC_CACHE).then((cache) => {
-          cache.put(request, responseClone);
-        });
+// ============================================
+// STRATÉGIE: API - Network first (0-3 min cache)
+// ============================================
+async function handleAPI(request) {
+  try {
+    const response = await fetch(request);
+    
+    // Cache seulement les réponses réussies
+    if (response.ok) {
+      const cache = await caches.open(CACHE_API);
+      cache.put(request, response.clone());
+      
+      // Nettoyer les entrées expirées
+      setTimeout(() => cleanExpiredCache(CACHE_API, CACHE_DURATION.api), 1000);
+    }
+    
+    return response;
+  } catch (error) {
+    // Fallback vers le cache si réseau échoue
+    const cached = await caches.match(request);
+    if (cached) {
+      console.log('[SW] API from cache:', request.url);
+      return cached;
+    }
+    
+    // Retourner une erreur JSON
+    return new Response(
+      JSON.stringify({ error: 'Network unavailable', offline: true }),
+      { 
+        status: 503,
+        headers: { 'Content-Type': 'application/json' }
       }
-      return response;
-    }).catch(() => {
-      // Network failed, try cache
-      return caches.match(request).then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
+    );
+  }
+}
 
-        // Network failed, return offline page for navigation requests
-        if (request.destination === 'document') {
-          return caches.match('/offline');
+// ============================================
+// STRATÉGIE: Images - Cache first (1-7 jours)
+// ============================================
+async function handleImage(request) {
+  const cached = await caches.match(request);
+  
+  if (cached) {
+    // Retourner le cache et mettre à jour en arrière-plan
+    fetch(request)
+      .then(response => {
+        if (response.ok) {
+          caches.open(CACHE_IMAGES).then(cache => {
+            cache.put(request, response.clone());
+          });
         }
       })
-    })
-  );
-});
+      .catch(() => {});
+    
+    return cached;
+  }
+  
+  // Pas en cache, fetch depuis le réseau
+  try {
+    const response = await fetch(request);
+    
+    if (response.ok) {
+      const cache = await caches.open(CACHE_IMAGES);
+      cache.put(request, response.clone());
+      
+      // Nettoyer les vieilles images
+      setTimeout(() => cleanExpiredCache(CACHE_IMAGES, CACHE_DURATION.images), 1000);
+    }
+    
+    return response;
+  } catch (error) {
+    // Image placeholder SVG
+    return new Response(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect fill="#f0f0f0" width="400" height="400"/><text fill="#999" x="50%" y="50%" text-anchor="middle" dy=".3em" font-family="sans-serif" font-size="18">Image indisponible</text></svg>',
+      { headers: { 'Content-Type': 'image/svg+xml' } }
+    );
+  }
+}
 
-// Background sync for offline actions
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-cart') {
-    event.waitUntil(syncCart());
+// ============================================
+// STRATÉGIE: HTML - Network first (max 5 min)
+// ============================================
+async function handleDocument(request) {
+  try {
+    const response = await fetch(request);
+    
+    // Ne pas cacher les pages HTML (toujours fresh)
+    return response;
+  } catch (error) {
+    // Fallback vers le cache
+    const cached = await caches.match(request);
+    if (cached) {
+      console.log('[SW] Document from cache:', request.url);
+      return cached;
+    }
+    
+    // Page offline
+    return caches.match('/offline');
+  }
+}
+
+// ============================================
+// STRATÉGIE: Static assets - Cache first (1 an)
+// ============================================
+async function handleStatic(request) {
+  const cached = await caches.match(request);
+  
+  if (cached) {
+    return cached;
+  }
+  
+  try {
+    const response = await fetch(request);
+    
+    if (response.ok) {
+      const cache = await caches.open(CACHE_STATIC);
+      cache.put(request, response.clone());
+    }
+    
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// ============================================
+// UTILITAIRE: Nettoyer les entrées expirées
+// ============================================
+async function cleanExpiredCache(cacheName, maxAge) {
+  try {
+    const cache = await caches.open(cacheName);
+    const requests = await cache.keys();
+    const now = Date.now();
+    
+    for (const request of requests) {
+      const response = await cache.match(request);
+      const dateHeader = response?.headers.get('date');
+      
+      if (dateHeader) {
+        const cacheDate = new Date(dateHeader).getTime();
+        if (now - cacheDate > maxAge) {
+          await cache.delete(request);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('[SW] Cache cleanup error:', error);
+  }
+}
+
+// ============================================
+// MESSAGE: Communication avec l'app
+// ============================================
+self.addEventListener('message', (event) => {
+  if (event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  } else if (event.data.action === 'clearCache') {
+    event.waitUntil(
+      caches.keys().then(names => {
+        return Promise.all(
+          names.filter(n => n.startsWith('jomionstore-'))
+               .map(n => caches.delete(n))
+        );
+      })
+    );
   }
 });
 
-async function syncCart() {
-  // Implement cart sync logic here
-  console.log('Syncing cart...');
-}
+console.log('[SW] Service Worker loaded - Version:', VERSION, '- Production:', IS_PRODUCTION);
