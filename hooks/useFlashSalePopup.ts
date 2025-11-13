@@ -42,10 +42,10 @@ export function useFlashSalePopup(): FlashSalePopupState {
 
   useEffect(() => {
     if (!hasSeenPopup && isFlashSaleActive) {
-      // Afficher le pop-up après 30 secondes
+      // Afficher le pop-up après 20 secondes (priorité haute pour ventes flash)
       const timer = setTimeout(() => {
         setIsVisible(true);
-      }, 30000);
+      }, 20000);
 
       return () => clearTimeout(timer);
     }

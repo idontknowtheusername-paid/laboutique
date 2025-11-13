@@ -6,19 +6,34 @@ import DiscountPopup from './DiscountPopup';
 import FlashSalePopup from './FlashSalePopup';
 import FreeShippingPopup from './FreeShippingPopup';
 import GiftPopup from './GiftPopup';
+import WelcomePopup from './WelcomePopup';
 import { useDiscountPopup } from '@/hooks/useDiscountPopup';
 import { useFlashSalePopup } from '@/hooks/useFlashSalePopup';
 import { useFreeShippingPopup } from '@/hooks/useFreeShippingPopup';
 import { useGiftPopup } from '@/hooks/useGiftPopup';
+import { useWelcomePopup } from '@/hooks/useWelcomePopup';
 
 export default function PopupManager() {
   const pathname = usePathname();
   
   // Hooks pour chaque pop-up
+  const welcomePopup = useWelcomePopup();
   const discountPopup = useDiscountPopup();
   const flashSalePopup = useFlashSalePopup();
   const freeShippingPopup = useFreeShippingPopup();
   const giftPopup = useGiftPopup();
+
+  // Tracker pour s'assurer qu'un seul popup s'affiche par session
+  const [hasShownPopupThisSession, setHasShownPopupThisSession] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const shown = sessionStorage.getItem('popup-shown-this-session');
+      if (shown === 'true') {
+        setHasShownPopupThisSession(true);
+      }
+    }
+  }, []);
 
   // Simuler un panier pour le pop-up de livraison gratuite
   // En production, cela viendrait du contexte du panier
@@ -46,56 +61,63 @@ export default function PopupManager() {
   const isProductPage = pathname.startsWith('/products/');
   const isCheckoutPage = pathname.startsWith('/checkout');
 
-  // Logique de priorité des pop-ups
-  const getVisiblePopups = () => {
-    const visiblePopups = [];
-
-    // 1. Pop-up de réduction (toutes pages sauf checkout)
-    if (!isCheckoutPage && discountPopup.isVisible) {
-      visiblePopups.push({
-        component: <DiscountPopup key="discount" onClose={discountPopup.hidePopup} />,
-        priority: 1
-      });
+  // Fonction pour marquer qu'un popup a été affiché
+  const markPopupShown = () => {
+    setHasShownPopupThisSession(true);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('popup-shown-this-session', 'true');
     }
-
-    // 2. Pop-up vente flash (page d'accueil uniquement)
-    if (isHomePage && flashSalePopup.isVisible) {
-      visiblePopups.push({
-        component: <FlashSalePopup key="flash-sale" onClose={flashSalePopup.hidePopup} />,
-        priority: 2
-      });
-    }
-
-    // 3. Pop-up livraison gratuite (toutes pages sauf checkout)
-    if (!isCheckoutPage && freeShippingPopup.isVisible) {
-      visiblePopups.push({
-        component: <FreeShippingPopup key="free-shipping" onClose={freeShippingPopup.hidePopup} cartTotal={mockCartTotal} />,
-        priority: 3
-      });
-    }
-
-    // 4. Pop-up cadeau (pages produits uniquement)
-    if (isProductPage && giftPopup.isVisible) {
-      visiblePopups.push({
-        component: <GiftPopup key="gift" onClose={giftPopup.hidePopup} />,
-        priority: 4
-      });
-    }
-
-    // Trier par priorité et retourner le premier
-    return visiblePopups.sort((a, b) => a.priority - b.priority);
   };
 
-  const visiblePopups = getVisiblePopups();
+  // Wrapper pour les callbacks onClose
+  const createCloseHandler = (originalClose: () => void) => {
+    return () => {
+      markPopupShown();
+      originalClose();
+    };
+  };
+
+  // Logique de priorité des pop-ups avec système "un seul par session"
+  const getVisiblePopup = () => {
+    // Si un popup a déjà été affiché cette session, ne rien montrer
+    if (hasShownPopupThisSession) {
+      return null;
+    }
+
+    // PRIORITÉ 0: Pop-up de bienvenue (nouveaux visiteurs uniquement)
+    if (welcomePopup.isVisible && welcomePopup.isFirstVisit) {
+      return <WelcomePopup key="welcome" onClose={createCloseHandler(welcomePopup.hidePopup)} />;
+    }
+
+    // PRIORITÉ 1: Pop-up vente flash (si active - haute priorité)
+    if (isHomePage && flashSalePopup.isVisible && flashSalePopup.isFlashSaleActive) {
+      return <FlashSalePopup key="flash-sale" onClose={createCloseHandler(flashSalePopup.hidePopup)} />;
+    }
+
+    // PRIORITÉ 2: Pop-up livraison gratuite (contexte panier)
+    if (!isCheckoutPage && freeShippingPopup.isVisible) {
+      return <FreeShippingPopup key="free-shipping" onClose={createCloseHandler(freeShippingPopup.hidePopup)} cartTotal={mockCartTotal} />;
+    }
+
+    // PRIORITÉ 3: Pop-up de réduction (toutes pages sauf checkout)
+    if (!isCheckoutPage && discountPopup.isVisible) {
+      return <DiscountPopup key="discount" onClose={createCloseHandler(discountPopup.hidePopup)} />;
+    }
+
+    // PRIORITÉ 4: Pop-up cadeau (période fêtes uniquement)
+    if (isProductPage && giftPopup.isVisible && giftPopup.isHolidaySeason) {
+      return <GiftPopup key="gift" onClose={createCloseHandler(giftPopup.hidePopup)} />;
+    }
+
+    return null;
+  };
+
+  const visiblePopup = getVisiblePopup();
 
   // Afficher seulement le pop-up de plus haute priorité
-  if (visiblePopups.length === 0) {
+  if (!visiblePopup) {
     return null;
   }
 
-  return (
-    <>
-      {visiblePopups[0].component}
-    </>
-  );
+  return <>{visiblePopup}</>;
 }

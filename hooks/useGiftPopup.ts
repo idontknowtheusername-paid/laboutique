@@ -45,10 +45,10 @@ export function useGiftPopup(): GiftPopupState {
 
   useEffect(() => {
     if (!hasSeenPopup && isHolidaySeason) {
-      // Afficher le pop-up après 45 secondes
+      // Afficher le pop-up après 90 secondes (optimisé pour meilleure UX)
       const timer = setTimeout(() => {
         setIsVisible(true);
-      }, 45000);
+      }, 90000);
 
       return () => clearTimeout(timer);
     }

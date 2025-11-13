@@ -1,6 +1,6 @@
 // Service Worker JomionStore - Optimisé pour e-commerce
-// Version: Change à chaque déploiement pour forcer la mise à jour
-const VERSION = 'v2.1.0-' + '20250212'; // Mettre la date du déploiement
+// Version: Change automatiquement à chaque build
+const VERSION = 'v2.2.0-' + Date.now(); // Version dynamique pour forcer la mise à jour
 const IS_PRODUCTION = self.location.hostname !== 'localhost';
 
 // Cache names
@@ -175,24 +175,19 @@ async function handleImage(request) {
 }
 
 // ============================================
-// STRATÉGIE: HTML - Network first (max 5 min)
+// STRATÉGIE: HTML - Network ONLY (jamais de cache)
 // ============================================
 async function handleDocument(request) {
   try {
-    const response = await fetch(request);
-    
-    // Ne pas cacher les pages HTML (toujours fresh)
+    // TOUJOURS récupérer depuis le réseau (pas de cache)
+    const response = await fetch(request, { cache: 'no-store' });
     return response;
   } catch (error) {
-    // Fallback vers le cache
-    const cached = await caches.match(request);
-    if (cached) {
-      console.log('[SW] Document from cache:', request.url);
-      return cached;
-    }
-    
-    // Page offline
-    return caches.match('/offline');
+    // En cas d'erreur réseau, page offline uniquement
+    return caches.match('/offline') || new Response(
+      '<html><body><h1>Hors ligne</h1><p>Vérifiez votre connexion internet.</p></body></html>',
+      { headers: { 'Content-Type': 'text/html' } }
+    );
   }
 }
 
@@ -256,8 +251,17 @@ self.addEventListener('message', (event) => {
       caches.keys().then(names => {
         return Promise.all(
           names.filter(n => n.startsWith('jomionstore-'))
-               .map(n => caches.delete(n))
+               .map(n => {
+                 console.log('[SW] Clearing cache:', n);
+                 return caches.delete(n);
+               })
         );
+      }).then(() => {
+        console.log('[SW] All caches cleared');
+        // Forcer le rechargement de toutes les pages
+        self.clients.matchAll().then(clients => {
+          clients.forEach(client => client.postMessage({ action: 'cacheCleared' }));
+        });
       })
     );
   }

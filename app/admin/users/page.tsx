@@ -100,56 +100,6 @@ export default function AdminUsersPage() {
     }
   }
 
-  // Test de connexion à la base de données
-  async function testDatabaseConnection() {
-    try {
-      const client = (AuthService as any).getSupabaseClient();
-      
-      // Test 1: Vérifier la connexion de base
-      const { data: connectionTest, error: connectionError } = await client
-        .from('profiles')
-        .select('count')
-        .limit(1);
-      
-      if (connectionError) {
-        error('Erreur de connexion', `Impossible de se connecter à la base: ${connectionError.message}`);
-        return;
-      }
-
-      // Test 2: Vérifier les permissions de lecture
-      const { data: readTest, error: readError } = await client
-        .from('profiles')
-        .select('id, email, role')
-        .limit(5);
-      
-      if (readError) {
-        error('Erreur de lecture', `Impossible de lire les données: ${readError.message}`);
-        return;
-      }
-
-      // Test 3: Vérifier les permissions d'écriture (test en lecture seule)
-      const { data: writeTest, error: writeError } = await client
-        .from('profiles')
-        .select('id')
-        .limit(1);
-      
-      if (writeError) {
-        error('Erreur d\'écriture', `Problème de permissions: ${writeError.message}`);
-        return;
-      }
-
-      // Test 4: Vérifier la latence
-      const startTime = Date.now();
-      await client.from('profiles').select('count').limit(1);
-      const latency = Date.now() - startTime;
-
-      success('Connexion réussie', `Base de données accessible (latence: ${latency}ms, ${readTest?.length || 0} utilisateurs trouvés)`);
-      
-    } catch (err) {
-      error('Erreur de connexion', `Impossible de se connecter à la base de données: ${err instanceof Error ? err.message : 'Erreur inconnue'}`);
-    }
-  }
-
   // Export CSV
   function handleExportCSV() {
     if (!users.length) {
@@ -197,9 +147,6 @@ export default function AdminUsersPage() {
         subtitle="Gestion des comptes et rôles"
         actions={
           <>
-            <Button variant="outline" onClick={testDatabaseConnection}>
-              🔍 Test DB
-            </Button>
             <Button variant="outline" onClick={load} disabled={loading}>
               <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
             </Button>

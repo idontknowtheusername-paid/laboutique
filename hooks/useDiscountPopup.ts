@@ -37,10 +37,10 @@ export function useDiscountPopup(): DiscountPopupState {
 
   useEffect(() => {
     if (!hasSeenPopup) {
-      // Afficher le pop-up après 5 secondes
+      // Afficher le pop-up après 45 secondes (optimisé pour meilleure UX)
       const timer = setTimeout(() => {
         setIsVisible(true);
-      }, 5000);
+      }, 45000);
 
       return () => clearTimeout(timer);
     }

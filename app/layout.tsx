@@ -5,6 +5,7 @@ import { Inter } from 'next/font/google';
 import { AppProviders } from "@/components/providers/AppProviders";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { WebVitals } from "@/components/analytics/WebVitals";
+import PageTracker from '@/components/analytics/PageTracker';
 import GlobalCartAnimation from '@/components/ui/GlobalCartAnimation';
 import CookieBanner from '@/components/layout/CookieBanner';
 import NewsletterPopupManager from '@/components/layout/NewsletterPopupManager';
@@ -122,6 +123,7 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased">
         <WebVitals />
+        <PageTracker />
         <AppProviders>
           {children}
           <GlobalCartAnimation />

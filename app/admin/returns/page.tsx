@@ -87,20 +87,6 @@ export default function AdminReturnsPage() {
     );
   };
 
-  // Test de connexion à la base de données
-  const testDatabaseConnection = async () => {
-    try {
-      const result = await ReturnsService.getStats();
-      if (result.success) {
-        success('Connexion réussie', 'La base de données est accessible');
-      } else {
-        error('Erreur de connexion', result.error || 'Impossible de se connecter à la base');
-      }
-    } catch (err) {
-      error('Erreur de connexion', 'Impossible de se connecter à la base de données');
-    }
-  };
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
@@ -152,9 +138,6 @@ export default function AdminReturnsPage() {
         subtitle="Gestion des demandes de retour et remboursements"
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={testDatabaseConnection}>
-              🔍 Test DB
-            </Button>
             <Button variant="outline" onClick={loadReturns} disabled={loading}>
               <RefreshCw className="w-4 h-4 mr-2" />
               Rafraîchir

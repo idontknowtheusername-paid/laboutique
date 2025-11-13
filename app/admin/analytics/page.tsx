@@ -140,19 +140,7 @@ export default function AdminAnalyticsPage() {
     }
   };
 
-  // Test de connexion à la base de données
-  const testDatabaseConnection = async () => {
-    try {
-      const result = await AnalyticsService.getMetrics({ time_range: '7d' });
-      if (result.success) {
-        success('Connexion réussie', 'La base de données est accessible');
-      } else {
-        error('Erreur de connexion', result.error || 'Impossible de se connecter à la base');
-      }
-    } catch (err) {
-      error('Erreur de connexion', 'Impossible de se connecter à la base de données');
-    }
-  };
+
 
   const formatPrice = (price: number) => new Intl.NumberFormat('fr-BJ', {
     style: 'currency', currency: 'XOF', minimumFractionDigits: 0,
@@ -176,111 +164,149 @@ export default function AdminAnalyticsPage() {
         subtitle="Tableaux de bord et métriques détaillées"
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={testDatabaseConnection}>
-              🔍 Test DB
-            </Button>
             <Button variant="outline" onClick={loadAnalyticsData} disabled={loading}>
               <RefreshCw className="w-4 h-4 mr-2" />
               Rafraîchir
             </Button>
-            <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7d">7 derniers jours</SelectItem>
-                <SelectItem value="30d">30 derniers jours</SelectItem>
-                <SelectItem value="90d">90 derniers jours</SelectItem>
-                <SelectItem value="1y">1 an</SelectItem>
-              </SelectContent>
-            </Select>
             <Button variant="outline" onClick={() => handleExport('csv')}>
               <Download className="w-4 h-4 mr-2" />
-              CSV
-            </Button>
-            <Button variant="outline" onClick={() => handleExport('json')}>
-              <Download className="w-4 h-4 mr-2" />
-              JSON
+              Exporter CSV
             </Button>
           </div>
         }
       />
 
-      {/* Métriques principales */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Chiffre d'affaires</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {metrics ? formatPrice(metrics.revenue) : '0 FCFA'}
+      {/* Message d'aide si pas de données */}
+      {metrics && metrics.visitors_all_time === 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <Eye className="w-5 h-5 text-blue-600" />
             </div>
-            <p className={`text-xs flex items-center ${
-              metrics && metrics.revenue_growth >= 0 ? 'text-green-600' : 'text-red-600'
-            }`}>
-              <TrendingUp className="w-3 h-3 mr-1" />
-              {metrics ? `${metrics.revenue_growth >= 0 ? '+' : ''}${metrics.revenue_growth.toFixed(1)}%` : '0%'} par rapport à la période précédente
+            <div>
+              <h3 className="font-semibold text-blue-900 mb-1">Aucune donnée de tracking pour le moment</h3>
+              <p className="text-sm text-blue-700 mb-2">
+                Le système de tracking est actif et prêt à collecter des données. Pour voir les statistiques :
+              </p>
+              <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
+                <li>Visitez votre site en tant que visiteur (ouvrez un nouvel onglet en navigation privée)</li>
+                <li>Naviguez sur quelques pages (accueil, produits, etc.)</li>
+                <li>Attendez 30 secondes puis revenez ici et cliquez sur "Rafraîchir"</li>
+              </ul>
+              <p className="text-xs text-blue-600 mt-2">
+                💡 Astuce : Ouvrez la console du navigateur (F12) pour vérifier que les requêtes vers /api/analytics/track sont envoyées.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Métriques principales - REDESIGN */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+        <Card className="border-l-4 border-l-green-500">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Actifs</CardTitle>
+            <div className="relative">
+              <Users className="h-4 w-4 text-green-600" />
+              <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {metrics?.active_visitors || 0}
+            </div>
+            <p className="text-xs text-gray-500">
+              En ce moment
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-l-4 border-l-blue-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Commandes</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">24 heures</CardTitle>
+            <Clock className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics?.orders || 0}</div>
-            <p className={`text-xs flex items-center ${
-              metrics && metrics.orders_growth >= 0 ? 'text-green-600' : 'text-red-600'
-            }`}>
-              <TrendingUp className="w-3 h-3 mr-1" />
-              {metrics ? `${metrics.orders_growth >= 0 ? '+' : ''}${metrics.orders_growth.toFixed(1)}%` : '0%'} par rapport à la période précédente
+            <div className="text-2xl font-bold text-blue-600">
+              {metrics?.visitors_24h || 0}
+            </div>
+            <p className="text-xs text-gray-500">
+              Dernières 24h
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-l-4 border-l-indigo-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Visiteurs</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">7 jours</CardTitle>
+            <Users className="h-4 w-4 text-indigo-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics?.visitors || 0}</div>
-            <p className={`text-xs flex items-center ${
-              metrics && metrics.visitors_growth >= 0 ? 'text-green-600' : 'text-red-600'
-            }`}>
-              <TrendingUp className="w-3 h-3 mr-1" />
-              {metrics ? `${metrics.visitors_growth >= 0 ? '+' : ''}${metrics.visitors_growth.toFixed(1)}%` : '0%'} par rapport à la période précédente
+            <div className="text-2xl font-bold text-indigo-600">
+              {metrics?.visitors_7d || 0}
+            </div>
+            <p className="text-xs text-gray-500">
+              Cette semaine
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-l-4 border-l-purple-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Taux de conversion</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">30 jours</CardTitle>
+            <Users className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics ? `${metrics.conversion_rate.toFixed(1)}%` : '0%'}</div>
+            <div className="text-2xl font-bold text-purple-600">
+              {metrics?.visitors_30d || 0}
+            </div>
+            <p className="text-xs text-gray-500">
+              Ce mois
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-l-4 border-l-pink-500">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total</CardTitle>
+            <Users className="h-4 w-4 text-pink-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-pink-600">
+              {metrics?.visitors_all_time || 0}
+            </div>
+            <p className="text-xs text-gray-500">
+              Depuis le début
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-l-4 border-l-orange-500">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Conversion</CardTitle>
+            <Target className="h-4 w-4 text-orange-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-600">
+              {metrics ? `${metrics.conversion_rate.toFixed(1)}%` : '0%'}
+            </div>
             <p className={`text-xs flex items-center ${
               metrics && metrics.conversion_growth >= 0 ? 'text-green-600' : 'text-red-600'
             }`}>
               <TrendingUp className="w-3 h-3 mr-1" />
-              {metrics ? `${metrics.conversion_growth >= 0 ? '+' : ''}${metrics.conversion_growth.toFixed(1)}%` : '0%'} par rapport à la période précédente
+              {metrics ? `${metrics.conversion_growth >= 0 ? '+' : ''}${metrics.conversion_growth.toFixed(1)}%` : '0%'}
             </p>
           </CardContent>
         </Card>
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
-          <TabsTrigger value="sales">Ventes</TabsTrigger>
-          <TabsTrigger value="traffic">Trafic</TabsTrigger>
-          <TabsTrigger value="products">Produits</TabsTrigger>
+          <TabsTrigger value="traffic">Trafic détaillé</TabsTrigger>
           <TabsTrigger value="conversion">Conversion</TabsTrigger>
         </TabsList>
 
@@ -288,16 +314,18 @@ export default function AdminAnalyticsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Évolution des ventes</CardTitle>
+                <CardTitle>Évolution des visiteurs</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={salesData}>
+                  <AreaChart data={trafficData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" />
                     <YAxis />
-                    <Tooltip formatter={(value: any) => formatPrice(Number(value))} />
-                    <Area type="monotone" dataKey="revenue" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.1} />
+                    <Tooltip />
+                    <Legend />
+                    <Area type="monotone" dataKey="visitors" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.2} name="Visiteurs" />
+                    <Area type="monotone" dataKey="pageviews" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.1} name="Pages vues" />
                   </AreaChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -330,122 +358,102 @@ export default function AdminAnalyticsPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="sales">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Revenus et commandes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={salesData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis yAxisId="left" />
-                    <YAxis yAxisId="right" orientation="right" />
-                    <Tooltip />
-                    <Legend />
-                    <Line yAxisId="left" type="monotone" dataKey="revenue" stroke="#3B82F6" name="Revenus" />
-                    <Line yAxisId="right" type="monotone" dataKey="orders" stroke="#10B981" name="Commandes" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Nouveaux clients</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={salesData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="customers" fill="#F59E0B" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
 
         <TabsContent value="traffic">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Visiteurs et pages vues</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={trafficData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="visitors" stroke="#3B82F6" name="Visiteurs" />
-                    <Line type="monotone" dataKey="pageviews" stroke="#10B981" name="Pages vues" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Visiteurs et pages vues</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={trafficData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Line type="monotone" dataKey="visitors" stroke="#8B5CF6" name="Visiteurs" strokeWidth={2} />
+                      <Line type="monotone" dataKey="pageviews" stroke="#3B82F6" name="Pages vues" strokeWidth={2} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
 
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sources de trafic</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {conversionData.length > 0 ? (
+                      conversionData.map((source, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                          <div>
+                            <div className="font-medium text-gray-900">{source.source}</div>
+                            <div className="text-sm text-gray-500">
+                              {source.visitors.toLocaleString()} visiteurs
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold text-gray-900">{source.conversions} conversions</div>
+                            <div className="text-sm text-green-600">{source.rate.toFixed(1)}% taux</div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-500 text-center py-8">
+                        Aucune source de trafic détectée pour le moment.
+                        <br />
+                        Les données apparaîtront dès que des visiteurs accèdent au site.
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Pages les plus visitées */}
             <Card>
               <CardHeader>
-                <CardTitle>Sources de trafic</CardTitle>
+                <CardTitle>Pages les plus visitées</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {conversionData.map((source, index) => (
-                    <div key={index} className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium">{source.source}</div>
-                        <div className="text-sm text-gray-500">
-                          {source.visitors.toLocaleString()} visiteurs
+                <div className="space-y-3">
+                  {topProducts.length > 0 ? (
+                    topProducts.slice(0, 5).map((page, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">{index + 1}</span>
+                          </div>
+                          <div>
+                            <div className="font-medium truncate max-w-xs">{page.name}</div>
+                            <div className="text-sm text-gray-500">{page.sales} vues</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold">{page.sales}</div>
+                          <div className="text-sm text-gray-500">visiteurs uniques</div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="font-bold">{source.conversions} conversions</div>
-                        <div className="text-sm text-gray-500">{source.rate}% taux</div>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500 text-center py-8">
+                      Aucune donnée de pages disponible pour le moment.
+                      <br />
+                      Les données apparaîtront dès que des visiteurs navigueront sur le site.
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>
           </div>
         </TabsContent>
 
-        <TabsContent value="products">
-          <Card>
-            <CardHeader>
-              <CardTitle>Top produits</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {topProducts.map((product, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 bg-jomionstore-primary rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">{index + 1}</span>
-                      </div>
-                      <div>
-                        <div className="font-medium">{product.name}</div>
-                        <div className="text-sm text-gray-500">{product.sales} ventes</div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-bold">{formatPrice(product.revenue)}</div>
-                      <div className="text-sm text-gray-500">Revenus</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+
 
         <TabsContent value="conversion">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -486,14 +494,14 @@ export default function AdminAnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="w-5 h-5" />
-                  AOV moyen
+                  Panier moyen
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">
                   {metrics ? formatPrice(metrics.average_order_value) : '0 FCFA'}
                 </div>
-                <p className="text-sm text-gray-500">Panier moyen</p>
+                <p className="text-sm text-gray-500">Valeur moyenne par commande</p>
               </CardContent>
             </Card>
           </div>

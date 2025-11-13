@@ -225,20 +225,6 @@ export default function AdminCouponsPage() {
     );
   };
 
-  // Test de connexion à la base de données
-  const testDatabaseConnection = async () => {
-    try {
-      const result = await CouponsService.getStats();
-      if (result.success) {
-        success('Connexion réussie', 'La base de données est accessible');
-      } else {
-        error('Erreur de connexion', result.error || 'Impossible de se connecter à la base');
-      }
-    } catch (err) {
-      error('Erreur de connexion', 'Impossible de se connecter à la base de données');
-    }
-  };
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
@@ -284,9 +270,6 @@ export default function AdminCouponsPage() {
         subtitle="Gestion des codes de réduction et offres spéciales"
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={testDatabaseConnection}>
-              🔍 Test DB
-            </Button>
             <Button variant="outline" onClick={loadCoupons} disabled={loading}>
               <RefreshCw className="w-4 h-4 mr-2" />
               Rafraîchir
