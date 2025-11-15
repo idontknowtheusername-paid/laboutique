@@ -6,11 +6,21 @@
     "dev": "next dev",
     "prebuild": "node scripts/validate-env.js",
     "build": "next build",
+    "build:mobile": "next build && npx cap sync",
     "analyze": "ANALYZE=true npm run build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cap:sync": "npx cap sync",
+    "cap:open:android": "npx cap open android",
+    "cap:open:ios": "npx cap open ios",
+    "cap:run:android": "npx cap run android",
+    "cap:run:ios": "npx cap run ios"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.4",
+    "@capacitor/cli": "^7.4.4",
+    "@capacitor/core": "^7.4.4",
+    "@capacitor/ios": "^7.4.4",
     "@getbrevo/brevo": "^3.0.1",
     "@hookform/resolvers": "^5.2.1",
     "@next/swc-wasm-nodejs": "13.5.1",

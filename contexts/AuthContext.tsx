@@ -275,6 +275,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Ignorer les erreurs de refresh token (normales en navigation privée)
+      if (event === 'TOKEN_REFRESHED' && !session) {
+        return;
+      }
+
       // Auth state changed: ${event}
       setSession(session);
       setUser(session?.user ?? null);
