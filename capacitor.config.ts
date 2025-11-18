@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   webDir: 'public', // Pas besoin de build, on pointe vers le site web
   server: {
     // MODE HYBRIDE: L'app charge le site web en production
-    url: 'https://jomionstore.com', // ⚠️ REMPLACE par ton URL de production
+    url: 'https://jomionstore.com',
     cleartext: false, // HTTPS obligatoire en production
     androidScheme: 'https',
     iosScheme: 'https',
@@ -20,6 +20,25 @@ const config: CapacitorConfig = {
       iosSpinnerStyle: 'small',
       spinnerColor: '#FFFFFF',
     },
+    StatusBar: {
+      style: 'light',
+      backgroundColor: '#FF5722',
+    },
+    Keyboard: {
+      resizeOnFullScreen: true,
+    },
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'],
+    },
+  },
+  android: {
+    allowMixedContent: false,
+    captureInput: true,
+    webContentsDebuggingEnabled: false,
+  },
+  ios: {
+    contentInset: 'automatic',
+    scrollEnabled: true,
   },
 };
 

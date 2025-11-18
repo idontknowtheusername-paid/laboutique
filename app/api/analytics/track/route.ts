@@ -49,9 +49,9 @@ export async function POST(request: NextRequest) {
         .from('analytics_sessions')
         .select('id')
         .eq('session_id', session_id)
-        .single();
+        .maybeSingle();
 
-      if (existingSession && existingSession.id) {
+      if (existingSession?.id) {
         session_record_id = existingSession.id as number;
         
         // Mettre à jour last_activity_at
