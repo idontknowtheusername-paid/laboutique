@@ -1,6 +1,6 @@
 // Service Worker JomionStore - Optimisé pour e-commerce
 // Version: Change automatiquement à chaque build
-const VERSION = 'v2.2.0-' + Date.now(); // Version dynamique pour forcer la mise à jour
+const VERSION = 'v3.0.0-force-update-' + Date.now(); // FORCE UPDATE - Nouvelle version majeure
 const IS_PRODUCTION = self.location.hostname !== 'localhost';
 
 // Cache names

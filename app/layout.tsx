@@ -11,6 +11,7 @@ import GlobalCartAnimation from '@/components/ui/GlobalCartAnimation';
 import CookieBanner from '@/components/layout/CookieBanner';
 import NewsletterPopupManager from '@/components/layout/NewsletterPopupManager';
 import PopupManager from '@/components/layout/PopupManager';
+import ServiceWorkerUpdater from '@/components/ServiceWorkerUpdater';
 
 // Optimize font loading
 const inter = Inter({
@@ -133,9 +134,16 @@ export default function RootLayout({
           <CookieBanner />
           <NewsletterPopupManager />
           <PopupManager />
+          <ServiceWorkerUpdater />
         </AppProviders>
         <SpeedInsights />
         
+        {/* Service Worker Registration avec force update */}
+        <Script
+          src="/register-sw.js"
+          strategy="afterInteractive"
+        />
+
         {/* Désactiver la toolbar Vercel en production */}
         {process.env.NODE_ENV === 'production' && (
           <Script
