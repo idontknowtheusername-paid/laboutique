@@ -73,18 +73,24 @@ export default function ServiceWorkerUpdater() {
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         window.location.reload();
       });
-    } else {
-      // Forcer le rechargement et vider le cache
-      if ('caches' in window) {
-        caches.keys().then(names => {
-          names.forEach(name => caches.delete(name));
-        }).then(() => {
-          window.location.reload();
-        });
-      } else {
+      return;
+    }
+
+    // Forcer le rechargement et vider le cache
+    const clearCachesAndReload = async () => {
+      try {
+        if ('caches' in window) {
+          const names = await caches.keys();
+          await Promise.all(names.map(name => caches.delete(name)));
+        }
+      } catch (error) {
+        console.error('Error clearing caches:', error);
+      } finally {
         window.location.reload();
       }
-    }
+    };
+
+    clearCachesAndReload();
   };
 
   if (!showUpdate) return null;
