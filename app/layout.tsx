@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     description: "Découvrez des milliers de produits authentiques avec une livraison rapide et un service client exceptionnel.",
     images: [
       {
-        url: "/images/og-image.jpg",
+        url: "/images/latestlogo.jpg",
         width: 1200,
         height: 630,
         alt: "JomionStore - Shopping en ligne au Bénin"
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     creator: "@JomionStoreBenin",
     title: "JomionStore - Centre commercial digital du Bénin",
     description: "Découvrez des milliers de produits authentiques avec une livraison rapide et un service client exceptionnel.",
-    images: ["/images/twitter-image.jpg"],
+    images: ["/images/latestlogo.jpg"],
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.jomionstore.com'),
   alternates: {

@@ -16,7 +16,7 @@ const DynamicMeta: React.FC<DynamicMetaProps> = ({
   title = "JomionStore - Centre commercial digital du Bénin",
   description = "Découvrez des milliers de produits authentiques sur JomionStore. Électronique, mode, maison, sport et bien plus. Livraison rapide et service client exceptionnel.",
   keywords = "e-commerce, Bénin, produits, électronique, mode, maison, sport, livraison, achat en ligne",
-  image = "/images/jomionstore-og.jpg",
+  image = "/images/latestlogo.jpg",
   url = "https://jomionstore.com",
   type = "website",
   section
@@ -118,7 +118,7 @@ const DynamicMeta: React.FC<DynamicMetaProps> = ({
         sizes="512x512"
         href="/android-chrome-512.png"
       />
-      <meta property="og:image" content="/og-image-1200x630.png" />
+      <meta property="og:image" content="/images/latestlogo.jpg" />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
 

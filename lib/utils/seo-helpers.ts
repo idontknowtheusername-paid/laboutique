@@ -202,7 +202,7 @@ export function generateOpenGraphTags(metadata: SEOMetadata) {
     'og:url': metadata.url || baseUrl,
     'og:title': metadata.title,
     'og:description': metadata.description,
-    'og:image': metadata.image || `${baseUrl}/images/og-image.jpg`,
+    'og:image': metadata.image || `${baseUrl}/images/latestlogo.jpg`,
     'og:site_name': 'JomionStore',
     'og:locale': 'fr_BJ',
     ...(metadata.price && {
@@ -227,7 +227,7 @@ export function generateTwitterCardTags(metadata: SEOMetadata) {
     'twitter:creator': '@JomionStoreBenin',
     'twitter:title': metadata.title,
     'twitter:description': metadata.description,
-    'twitter:image': metadata.image || `${baseUrl}/images/twitter-image.jpg`,
+    'twitter:image': metadata.image || `${baseUrl}/images/latestlogo.jpg`,
   };
 }
 

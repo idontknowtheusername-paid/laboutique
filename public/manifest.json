@@ -51,9 +51,9 @@
   ],
   "screenshots": [
     {
-      "src": "/og-image-1200x630.png",
+      "src": "/images/latestlogo.jpg",
       "sizes": "1200x630",
-      "type": "image/png",
+      "type": "image/jpeg",
       "form_factor": "wide"
     }
   ],
