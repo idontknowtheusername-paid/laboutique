@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { Inter } from 'next/font/google';
+import { Suspense } from 'react';
 import { AppProviders } from "@/components/providers/AppProviders";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { WebVitals } from "@/components/analytics/WebVitals";
@@ -123,7 +124,9 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased">
         <WebVitals />
-        <PageTracker />
+        <Suspense fallback={null}>
+          <PageTracker />
+        </Suspense>
         <AppProviders>
           {children}
           <GlobalCartAnimation />
