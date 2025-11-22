@@ -390,15 +390,15 @@ export default function AdminAnalyticsPage() {
                   <div className="space-y-4">
                     {conversionData.length > 0 ? (
                       conversionData.map((source, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                           <div>
-                            <div className="font-medium text-gray-900">{source.source}</div>
+                            <div className="font-medium text-gray-900 dark:text-white">{source.source}</div>
                             <div className="text-sm text-gray-500">
                               {source.visitors.toLocaleString()} visiteurs
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="font-bold text-gray-900">{source.conversions} conversions</div>
+                            <div className="font-bold text-gray-900 dark:text-white">{source.conversions} conversions</div>
                             <div className="text-sm text-green-600">{source.rate.toFixed(1)}% taux</div>
                           </div>
                         </div>
@@ -424,7 +424,7 @@ export default function AdminAnalyticsPage() {
                 <div className="space-y-3">
                   {topProducts.length > 0 ? (
                     topProducts.slice(0, 5).map((page, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
                             <span className="text-white font-bold text-sm">{index + 1}</span>

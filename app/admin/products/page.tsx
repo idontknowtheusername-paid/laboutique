@@ -313,7 +313,7 @@ export default function AdminProductsPage() {
                 onChange={(e) => setPriceMin(e.target.value)}
                 className="w-24"
               />
-              <span className="text-gray-500">-</span>
+              <span className="text-gray-500 dark:text-gray-400">-</span>
               <Input
                 type="number"
                 placeholder="Prix max"
@@ -367,10 +367,10 @@ export default function AdminProductsPage() {
                 Réinitialiser
               </Button>
               <div className="flex flex-col items-end">
-                <span className="text-sm font-semibold text-gray-900">
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">
                   {totalCount} produits
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-500 dark:text-gray-400">
                   {search || category !== 'all' || platform !== 'all' || status !== 'all' || priceMin || priceMax
                     ? 'Filtrés'
                     : 'Total dans la base'}

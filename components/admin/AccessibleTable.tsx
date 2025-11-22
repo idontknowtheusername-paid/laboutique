@@ -55,7 +55,7 @@ interface AccessibleTableBodyProps {
 
 export function AccessibleTableBody({ children, className }: AccessibleTableBodyProps) {
   return (
-    <tbody className={cn("bg-white divide-y divide-gray-200", className)} role="rowgroup">
+    <tbody className={cn("bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700", className)} role="rowgroup">
       {children}
     </tbody>
   );

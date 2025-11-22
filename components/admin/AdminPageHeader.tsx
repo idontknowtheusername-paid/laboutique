@@ -14,8 +14,8 @@ export default function AdminPageHeader({ title, subtitle, actions }: AdminPageH
     <div className="mb-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold leading-tight">{title}</h1>
-          {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
+          <h1 className="text-2xl font-bold leading-tight text-gray-900 dark:text-white">{title}</h1>
+          {subtitle && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{subtitle}</p>}
         </div>
         {actions && (
           <div className="flex items-center gap-2">{actions}</div>

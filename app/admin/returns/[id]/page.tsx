@@ -262,7 +262,7 @@ export default function AdminReturnDetailPage() {
 
               <div>
                 <Label className="text-sm font-medium text-gray-500">Raison du retour</Label>
-                <div className="mt-1 p-3 bg-gray-50 rounded-lg">
+                <div className="mt-1 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                   {returnRequest.reason}
                 </div>
               </div>
@@ -408,7 +408,7 @@ export default function AdminReturnDetailPage() {
               {returnRequest.admin_notes && (
                 <div>
                   <Label className="text-sm font-medium text-gray-500">Notes actuelles</Label>
-                  <div className="mt-1 p-3 bg-gray-50 rounded-lg text-sm">
+                  <div className="mt-1 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm">
                     {returnRequest.admin_notes}
                   </div>
                 </div>

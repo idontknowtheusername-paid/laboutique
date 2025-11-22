@@ -5,11 +5,15 @@ export interface DashboardStats {
     current: number;
     previous: number;
     growth_percentage: number;
+    yearly: number;
+    yearly_growth_percentage: number;
   };
   orders: {
     current: number;
     previous: number;
     growth_percentage: number;
+    yearly: number;
+    yearly_growth_percentage: number;
   };
   users: {
     current: number;
@@ -53,6 +57,11 @@ export class StatsService extends BaseService {
       const previousMonthStart = new Date(previousMonth.getFullYear(), previousMonth.getMonth(), 1);
       const previousMonthEnd = new Date(previousMonth.getFullYear(), previousMonth.getMonth() + 1, 0);
 
+      // Dates pour l'année en cours et précédente
+      const currentYearStart = new Date(currentMonth.getFullYear(), 0, 1);
+      const previousYearStart = new Date(currentMonth.getFullYear() - 1, 0, 1);
+      const previousYearEnd = new Date(currentMonth.getFullYear() - 1, 11, 31);
+
       // Récupérer les commandes du mois actuel
       const { data: currentOrders, error: currentOrdersError } = await this.getSupabaseClient()
         .from('orders')
@@ -71,15 +80,42 @@ export class StatsService extends BaseService {
 
       if (previousOrdersError) throw previousOrdersError;
 
-      // Calculer le chiffre d'affaires
+      // Récupérer les commandes de l'année en cours
+      const { data: currentYearOrders, error: currentYearOrdersError } = await this.getSupabaseClient()
+        .from('orders')
+        .select('total_amount, created_at')
+        .gte('created_at', currentYearStart.toISOString());
+
+      if (currentYearOrdersError) throw currentYearOrdersError;
+
+      // Récupérer les commandes de l'année précédente
+      const { data: previousYearOrders, error: previousYearOrdersError } = await this.getSupabaseClient()
+        .from('orders')
+        .select('total_amount, created_at')
+        .gte('created_at', previousYearStart.toISOString())
+        .lte('created_at', previousYearEnd.toISOString());
+
+      if (previousYearOrdersError) throw previousYearOrdersError;
+
+      // Calculer le chiffre d'affaires mensuel
       const currentRevenue = (currentOrders || []).reduce((sum: number, order: any) => sum + order.total_amount, 0);
       const previousRevenue = (previousOrders || []).reduce((sum: number, order: any) => sum + order.total_amount, 0);
       const revenueGrowth = previousRevenue > 0 ? ((currentRevenue - previousRevenue) / previousRevenue) * 100 : 0;
 
-      // Calculer le nombre de commandes
+      // Calculer le chiffre d'affaires annuel
+      const currentYearRevenue = (currentYearOrders || []).reduce((sum: number, order: any) => sum + order.total_amount, 0);
+      const previousYearRevenue = (previousYearOrders || []).reduce((sum: number, order: any) => sum + order.total_amount, 0);
+      const yearlyRevenueGrowth = previousYearRevenue > 0 ? ((currentYearRevenue - previousYearRevenue) / previousYearRevenue) * 100 : 0;
+
+      // Calculer le nombre de commandes mensuelles
       const currentOrdersCount = (currentOrders || []).length;
       const previousOrdersCount = (previousOrders || []).length;
       const ordersGrowth = previousOrdersCount > 0 ? ((currentOrdersCount - previousOrdersCount) / previousOrdersCount) * 100 : 0;
+
+      // Calculer le nombre de commandes annuelles
+      const currentYearOrdersCount = (currentYearOrders || []).length;
+      const previousYearOrdersCount = (previousYearOrders || []).length;
+      const yearlyOrdersGrowth = previousYearOrdersCount > 0 ? ((currentYearOrdersCount - previousYearOrdersCount) / previousYearOrdersCount) * 100 : 0;
 
       // Récupérer les utilisateurs actifs (créés ce mois)
       const { data: currentUsers, error: currentUsersError } = await this.getSupabaseClient()
@@ -131,12 +167,16 @@ export class StatsService extends BaseService {
         revenue: {
           current: currentRevenue,
           previous: previousRevenue,
-          growth_percentage: Math.round(revenueGrowth * 10) / 10
+          growth_percentage: Math.round(revenueGrowth * 10) / 10,
+          yearly: currentYearRevenue,
+          yearly_growth_percentage: Math.round(yearlyRevenueGrowth * 10) / 10
         },
         orders: {
           current: currentOrdersCount,
           previous: previousOrdersCount,
-          growth_percentage: Math.round(ordersGrowth * 10) / 10
+          growth_percentage: Math.round(ordersGrowth * 10) / 10,
+          yearly: currentYearOrdersCount,
+          yearly_growth_percentage: Math.round(yearlyOrdersGrowth * 10) / 10
         },
         users: {
           current: currentUsersCount,
@@ -153,8 +193,8 @@ export class StatsService extends BaseService {
       return this.createResponse(stats);
     } catch (error) {
       return this.createResponse({
-        revenue: { current: 0, previous: 0, growth_percentage: 0 },
-        orders: { current: 0, previous: 0, growth_percentage: 0 },
+        revenue: { current: 0, previous: 0, growth_percentage: 0, yearly: 0, yearly_growth_percentage: 0 },
+        orders: { current: 0, previous: 0, growth_percentage: 0, yearly: 0, yearly_growth_percentage: 0 },
         users: { current: 0, previous: 0, growth_percentage: 0 },
         vendors: { current: 0, previous: 0, growth_percentage: 0 }
       }, this.handleError(error));

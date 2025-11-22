@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -13,16 +13,13 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { Users, ShoppingCart, DollarSign, Package, TrendingUp, Star, Bell, AlertTriangle, Clock, CheckCircle } from 'lucide-react';
+import { ShoppingCart, DollarSign, TrendingUp, Star, AlertTriangle, Clock, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { VendorsService, Vendor } from '@/lib/services/vendors.service';
-import { ProductsService } from '@/lib/services/products.service';
 import { OrdersService, Order } from '@/lib/services/orders.service';
-import { StatsService, DashboardStats, SalesData, CategoryData } from '@/lib/services/stats.service';
-import { NotificationsService, Alert, PendingTask } from '@/lib/services/notifications.service';
-import { InventoryService, StockAlert } from '@/lib/services/inventory.service';
-import { PaymentsService, PaymentAlert } from '@/lib/services/payments.service';
+import { StatsService, DashboardStats } from '@/lib/services/stats.service';
+import { Alert, PendingTask } from '@/lib/services/notifications.service';
 
 type SalesDatum = { month: string; revenue: number };
 type CategoryDatum = { name: string; value: number; color: string };
@@ -36,8 +33,6 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [pendingTasks, setPendingTasks] = useState<PendingTask[]>([]);
-  const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([]);
-  const [paymentAlerts, setPaymentAlerts] = useState<PaymentAlert[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -98,31 +93,6 @@ export default function AdminDashboard() {
           setPendingTasks([]);
         }
 
-        // Services optionnels - ne pas bloquer si indisponibles
-        try {
-          if (typeof InventoryService !== 'undefined') {
-            const stockAlertsRes = await InventoryService.getStockAlerts();
-            if (stockAlertsRes.success && stockAlertsRes.data) {
-              setStockAlerts(stockAlertsRes.data);
-            }
-          }
-        } catch (err) {
-          console.warn('InventoryService non disponible:', err);
-          setStockAlerts([]);
-        }
-
-        try {
-          if (typeof PaymentsService !== 'undefined') {
-            const paymentAlertsRes = await PaymentsService.getPaymentAlerts();
-            if (paymentAlertsRes.success && paymentAlertsRes.data) {
-              setPaymentAlerts(paymentAlertsRes.data);
-            }
-          }
-        } catch (err) {
-          console.warn('PaymentsService non disponible:', err);
-          setPaymentAlerts([]);
-        }
-
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error);
       } finally {
@@ -131,7 +101,22 @@ export default function AdminDashboard() {
     })();
   }, []);
 
-  const formatPrice = (price: number) => new Intl.NumberFormat('fr-BJ', {
+  // Formatage intelligent des montants (responsive)
+  const formatPrice = (price: number) => {
+    if (price >= 1000000000) {
+      return `${(price / 1000000000).toFixed(1)} Mrd FCFA`;
+    } else if (price >= 1000000) {
+      return `${(price / 1000000).toFixed(1)} M FCFA`;
+    } else if (price >= 1000) {
+      return `${(price / 1000).toFixed(0)} K FCFA`;
+    }
+    return new Intl.NumberFormat('fr-BJ', {
+      style: 'currency', currency: 'XOF', minimumFractionDigits: 0,
+    }).format(price);
+  };
+
+  // Format complet pour les tooltips
+  const formatPriceFull = (price: number) => new Intl.NumberFormat('fr-BJ', {
     style: 'currency', currency: 'XOF', minimumFractionDigits: 0,
   }).format(price);
 
@@ -158,87 +143,95 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-jomionstore-background dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* CA Mensuel */}
+          <Card className="hover:shadow-lg transition-shadow border-l-4 border-l-slate-700 dark:border-l-slate-400">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Chiffre d'affaires</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">CA du mois</CardTitle>
+              <div className="h-10 w-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {dashboardStats ? formatPrice(dashboardStats.revenue.current) : formatPrice(0)}
+              <div className="text-2xl font-bold text-slate-900 dark:text-white" title={dashboardStats ? formatPriceFull(dashboardStats.revenue.current) : '0'}>
+                {dashboardStats ? formatPrice(dashboardStats.revenue.current) : '0 FCFA'}
               </div>
-              <p className={`text-xs flex items-center ${
-                dashboardStats && dashboardStats.revenue.growth_percentage >= 0 ? 'text-green-600' : 'text-red-600'
+              <p className={`text-xs flex items-center mt-1 font-medium ${dashboardStats && dashboardStats.revenue.growth_percentage >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
               }`}>
                 <TrendingUp className="w-3 h-3 mr-1" />
                 {dashboardStats ? 
-                  `${dashboardStats.revenue.growth_percentage >= 0 ? '+' : ''}${dashboardStats.revenue.growth_percentage}% par rapport au mois dernier` :
+                  `${dashboardStats.revenue.growth_percentage >= 0 ? '+' : ''}${dashboardStats.revenue.growth_percentage}% vs mois dernier` :
                   'Chargement...'
                 }
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          {/* CA Annuel */}
+          <Card className="hover:shadow-lg transition-shadow border-l-4 border-l-emerald-600 dark:border-l-emerald-400">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Commandes totales</CardTitle>
-              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">CA annuel</CardTitle>
+              <div className="h-10 w-10 rounded-lg bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-slate-900 dark:text-white" title={dashboardStats ? formatPriceFull(dashboardStats.revenue.yearly) : '0'}>
+                {dashboardStats ? formatPrice(dashboardStats.revenue.yearly) : '0 FCFA'}
+              </div>
+              <p className={`text-xs flex items-center mt-1 font-medium ${dashboardStats && dashboardStats.revenue.yearly_growth_percentage >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+              }`}>
+                <TrendingUp className="w-3 h-3 mr-1" />
+                {dashboardStats ? 
+                  `${dashboardStats.revenue.yearly_growth_percentage >= 0 ? '+' : ''}${dashboardStats.revenue.yearly_growth_percentage}% vs année dernière` :
+                  'Chargement...'
+                }
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Commandes Mensuelles */}
+          <Card className="hover:shadow-lg transition-shadow border-l-4 border-l-amber-600 dark:border-l-amber-400">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">Commandes du mois</CardTitle>
+              <div className="h-10 w-10 rounded-lg bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
+                <ShoppingCart className="h-5 w-5 text-amber-700 dark:text-amber-300" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">
                 {dashboardStats ? dashboardStats.orders.current.toLocaleString() : '0'}
               </div>
-              <p className={`text-xs flex items-center ${
-                dashboardStats && dashboardStats.orders.growth_percentage >= 0 ? 'text-green-600' : 'text-red-600'
+              <p className={`text-xs flex items-center mt-1 font-medium ${dashboardStats && dashboardStats.orders.growth_percentage >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
               }`}>
                 <TrendingUp className="w-3 h-3 mr-1" />
                 {dashboardStats ? 
-                  `${dashboardStats.orders.growth_percentage >= 0 ? '+' : ''}${dashboardStats.orders.growth_percentage}% par rapport au mois dernier` :
+                  `${dashboardStats.orders.growth_percentage >= 0 ? '+' : ''}${dashboardStats.orders.growth_percentage}% vs mois dernier` :
                   'Chargement...'
                 }
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          {/* Commandes Annuelles */}
+          <Card className="hover:shadow-lg transition-shadow border-l-4 border-l-indigo-600 dark:border-l-indigo-400">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Utilisateurs actifs</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">Commandes annuelles</CardTitle>
+              <div className="h-10 w-10 rounded-lg bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                <ShoppingCart className="h-5 w-5 text-indigo-700 dark:text-indigo-300" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {dashboardStats ? dashboardStats.users.current.toLocaleString() : '0'}
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                {dashboardStats ? dashboardStats.orders.yearly.toLocaleString() : '0'}
               </div>
-              <p className={`text-xs flex items-center ${
-                dashboardStats && dashboardStats.users.growth_percentage >= 0 ? 'text-green-600' : 'text-red-600'
+              <p className={`text-xs flex items-center mt-1 font-medium ${dashboardStats && dashboardStats.orders.yearly_growth_percentage >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
               }`}>
                 <TrendingUp className="w-3 h-3 mr-1" />
                 {dashboardStats ? 
-                  `${dashboardStats.users.growth_percentage >= 0 ? '+' : ''}${dashboardStats.users.growth_percentage}% par rapport au mois dernier` :
-                  'Chargement...'
-                }
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Vendeurs actifs</CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {dashboardStats ? dashboardStats.vendors.current.toLocaleString() : '0'}
-              </div>
-              <p className={`text-xs flex items-center ${
-                dashboardStats && dashboardStats.vendors.growth_percentage >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}>
-                <TrendingUp className="w-3 h-3 mr-1" />
-                {dashboardStats ? 
-                  `${dashboardStats.vendors.growth_percentage >= 0 ? '+' : ''}${dashboardStats.vendors.growth_percentage}% par rapport au mois dernier` :
+                  `${dashboardStats.orders.yearly_growth_percentage >= 0 ? '+' : ''}${dashboardStats.orders.yearly_growth_percentage}% vs année dernière` :
                   'Chargement...'
                 }
               </p>
@@ -263,15 +256,15 @@ export default function AdminDashboard() {
                     <p className="text-xs mt-1">Tout fonctionne correctement ✅</p>
                   </div>
                 ) : alerts.map((alert) => (
-                  <div key={alert.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div key={alert.id} className="flex items-center justify-between p-3 border dark:border-gray-700 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className={`w-3 h-3 rounded-full ${
                         alert.type === 'error' ? 'bg-red-500' : 
                         alert.type === 'warning' ? 'bg-yellow-500' : 'bg-orange-500'
                       }`}></div>
-                      <span className="font-medium">{alert.message}</span>
+                      <span className="font-medium dark:text-white">{alert.message}</span>
                     </div>
-                    <Badge className="bg-gray-100 text-gray-800">{alert.count}</Badge>
+                    <Badge className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">{alert.count}</Badge>
                   </div>
                 ))}
               </div>
@@ -293,15 +286,15 @@ export default function AdminDashboard() {
                     <p className="text-xs mt-1">Vous êtes à jour ! 🎉</p>
                   </div>
                 ) : pendingTasks.map((task) => (
-                  <div key={task.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div key={task.id} className="flex items-center justify-between p-3 border dark:border-gray-700 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <CheckCircle className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium">{task.title}</span>
+                      <CheckCircle className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                      <span className="font-medium dark:text-white">{task.title}</span>
                     </div>
                     <Badge className={
-                      task.priority === 'high' ? 'bg-red-100 text-red-800' :
-                      task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-gray-100 text-gray-800'
+                      task.priority === 'high' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
+                        task.priority === 'medium' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
+                          'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
                     }>
                       {task.priority}
                     </Badge>
@@ -374,14 +367,14 @@ export default function AdminDashboard() {
               {recentOrders.length > 0 ? (
                 <div className="space-y-4">
                   {recentOrders.map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => window.location.href = `/admin/orders/${order.id}`}>
+                    <div key={order.id} className="flex items-center justify-between p-4 border dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer" onClick={() => window.location.href = `/admin/orders/${order.id}`}>
                       <div className="space-y-1">
-                        <p className="font-medium">{order.order_number}</p>
-                        <p className="text-sm text-gray-600">{order.user?.first_name} {order.user?.last_name}</p>
-                        <p className="text-xs text-gray-500">{order.order_items?.[0]?.vendor?.name || '—'}</p>
+                        <p className="font-medium dark:text-white">{order.order_number}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{order.user?.first_name} {order.user?.last_name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-500">{order.order_items?.[0]?.vendor?.name || '—'}</p>
                       </div>
                       <div className="text-right space-y-1">
-                        <p className="font-bold">{formatPrice(order.total_amount)}</p>
+                        <p className="font-bold dark:text-white">{formatPrice(order.total_amount)}</p>
                         <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
                       </div>
                     </div>
@@ -405,14 +398,14 @@ export default function AdminDashboard() {
               {topVendors.length > 0 ? (
                 <div className="space-y-4">
                   {topVendors.map((vendor, index) => (
-                    <div key={vendor.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <div key={vendor.id} className="flex items-center justify-between p-4 border dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                       <div className="flex items-center space-x-3">
                         <div className="w-8 h-8 bg-jomionstore-primary rounded-full flex items-center justify-center">
                           <span className="text-white font-bold text-sm">{index + 1}</span>
                         </div>
                         <div>
-                          <p className="font-medium">{vendor.name}</p>
-                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                          <p className="font-medium dark:text-white">{vendor.name}</p>
+                          <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                             <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                             <span>{vendor.rating}</span>
                             <span>•</span>
@@ -421,7 +414,7 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm text-gray-600">{vendor.commission_rate}% commission</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{vendor.commission_rate}% commission</p>
                       </div>
                     </div>
                   ))}

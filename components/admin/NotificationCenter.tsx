@@ -114,7 +114,7 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b">
           <div className="flex items-center gap-2">
             <Bell className="w-5 h-5" />

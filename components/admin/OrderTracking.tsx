@@ -173,7 +173,7 @@ export default function OrderTracking({ orderId, currentStatus }: OrderTrackingP
               {trackingEvents.map((event, index) => (
                 <div key={event.id} className="relative flex items-start gap-4 pb-6">
                   {/* Icône */}
-                  <div className="relative z-10 flex-shrink-0 w-12 h-12 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center">
+                  <div className="relative z-10 flex-shrink-0 w-12 h-12 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-full flex items-center justify-center">
                     {getStatusIcon(event.status)}
                   </div>
                   

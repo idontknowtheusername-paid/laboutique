@@ -119,7 +119,7 @@ export default function AdminEditOrderPage() {
     return (
       <div className="min-h-screen bg-jomionstore-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Commande introuvable</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Commande introuvable</h1>
           <Button onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Retour
@@ -174,14 +174,14 @@ export default function AdminEditOrderPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Numéro de commande</label>
-                <Input value={order.order_number || order.id} readOnly className="bg-gray-50" />
+                <Input value={order.order_number || order.id} readOnly className="bg-gray-50 dark:bg-gray-800" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Date de commande</label>
                 <Input 
                   value={new Date(order.created_at).toLocaleDateString('fr-FR')} 
                   readOnly 
-                  className="bg-gray-50" 
+                  className="bg-gray-50 dark:bg-gray-800" 
                 />
               </div>
               <div>
@@ -207,7 +207,7 @@ export default function AdminEditOrderPage() {
                 <Input 
                   value={formatPrice(order.total_amount)} 
                   readOnly 
-                  className="bg-gray-50 font-bold" 
+                  className="bg-gray-50 dark:bg-gray-800 font-bold" 
                 />
               </div>
             </div>
@@ -247,11 +247,11 @@ export default function AdminEditOrderPage() {
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Email</label>
-                <Input value={order.user?.email || ''} readOnly className="bg-gray-50" />
+                <Input value={order.user?.email || ''} readOnly className="bg-gray-50 dark:bg-gray-800" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Téléphone</label>
-                <Input value={order.user?.phone || 'Non renseigné'} readOnly className="bg-gray-50" />
+                <Input value={order.user?.phone || 'Non renseigné'} readOnly className="bg-gray-50 dark:bg-gray-800" />
               </div>
             </div>
           </CardContent>

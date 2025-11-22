@@ -370,7 +370,7 @@ L'équipe JomionStore`;
     return (
       <div className="min-h-screen bg-jomionstore-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Commande introuvable</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Commande introuvable</h1>
           <Button onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Retour
@@ -477,7 +477,7 @@ L'équipe JomionStore`;
                   {/* Adresse de livraison uniquement */}
                   <div>
                     {order.shipping_address ? (
-                      <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                         <div className="space-y-2">
                           <div>
                             <span className="font-medium text-gray-700">Client: </span>
@@ -756,7 +756,7 @@ L'équipe JomionStore`;
       {/* Modal de changement de statut */}
       {showStatusModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Changer le statut de la commande</h3>
             <div className="space-y-4">
               <div>

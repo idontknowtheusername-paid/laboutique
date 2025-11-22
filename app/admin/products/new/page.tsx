@@ -267,7 +267,7 @@ export default function AdminNewProductPage() {
             </div>
             <Button 
               variant="secondary"
-              className="flex items-center gap-2 bg-white text-orange-600 hover:bg-gray-100 font-medium h-9 px-4"
+            className="flex items-center gap-2 bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-400 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium h-9 px-4"
               onClick={() => window.location.href = '/admin/products/import'}
             >
               <Download className="w-4 h-4" />
@@ -436,7 +436,7 @@ export default function AdminNewProductPage() {
                     <Input 
                       value={form.slug ? generateProductURL(form.slug) : ''}
                       readOnly
-                      className="bg-gray-50 text-gray-600"
+                    className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
                       placeholder="L'URL sera générée automatiquement"
                     />
                     {form.slug && (

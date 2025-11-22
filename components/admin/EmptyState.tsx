@@ -11,8 +11,8 @@ interface EmptyStateProps {
 
 export default function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <div className="py-12 text-center bg-white border rounded-lg">
-      <div className="mx-auto w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 mb-3">
+    <div className="py-12 text-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+      <div className="mx-auto w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 mb-3">
         {icon || <span>•</span>}
       </div>
       <h3 className="text-lg font-semibold">{title}</h3>

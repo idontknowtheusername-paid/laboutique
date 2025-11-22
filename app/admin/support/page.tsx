@@ -114,7 +114,7 @@ export default function AdminSupportPage() {
   return (
     <div className="container py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Support Jomion</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Support Jomion</h1>
         <p className="text-gray-600">Gestion des tickets et conversations de support</p>
       </div>
 
@@ -126,7 +126,7 @@ export default function AdminSupportPage() {
               <Ticket className="h-8 w-8 text-blue-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Tickets</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalTickets}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalTickets}</p>
               </div>
             </div>
           </CardContent>
@@ -138,7 +138,7 @@ export default function AdminSupportPage() {
               <Clock className="h-8 w-8 text-yellow-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Tickets Ouverts</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.openTickets}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.openTickets}</p>
               </div>
             </div>
           </CardContent>
@@ -150,7 +150,7 @@ export default function AdminSupportPage() {
               <AlertTriangle className="h-8 w-8 text-red-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Urgents</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.urgentTickets}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.urgentTickets}</p>
               </div>
             </div>
           </CardContent>
@@ -162,7 +162,7 @@ export default function AdminSupportPage() {
               <MessageSquare className="h-8 w-8 text-green-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Conversations</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalConversations}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalConversations}</p>
               </div>
             </div>
           </CardContent>
@@ -186,11 +186,11 @@ export default function AdminSupportPage() {
           ) : (
             <div className="space-y-4">
               {tickets.map((ticket) => (
-                <div key={ticket.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                <div key={ticket.id} className="border dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold text-gray-900">{ticket.subject}</h3>
+                        <h3 className="font-semibold text-gray-900 dark:text-white">{ticket.subject}</h3>
                         <Badge className={getPriorityColor(ticket.priority)}>
                           {ticket.priority}
                         </Badge>
