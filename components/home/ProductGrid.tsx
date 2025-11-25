@@ -86,8 +86,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   // Transform backend product data to UI format - Memoized
   const transformedProducts = useMemo(() => {
     return displayedProducts.map(product => {
-      const discountPercentage = product.compare_price && product.compare_price > product.price
-        ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
+      const discountPercentage = product.is_flash_sale && product.flash_price && product.price
+        ? Math.round(((product.price - product.flash_price) / product.price) * 100)
         : undefined;
 
       return {

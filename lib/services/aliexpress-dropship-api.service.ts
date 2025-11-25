@@ -352,8 +352,8 @@ export class AliExpressDropshipApiService {
 
       if (isNaN(price) || price <= 0) return 0;
 
-      // USD to XOF conversion (~655 XOF = 1 USD)
-      return Math.round(price * 655);
+      // USD to XOF conversion (~580 XOF = 1 USD)
+      return Math.round(price * 580);
     };
 
 

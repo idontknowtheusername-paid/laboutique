@@ -40,7 +40,7 @@ const mapToPersonalized = (p: Product, reason: string): PersonalizedProduct => (
   comparePrice: p.compare_price,
   rating: generateConsistentRating(p.id, p.average_rating),
   reviews: generateConsistentReviews(p.id, p.reviews_count),
-  discount: p.compare_price && p.compare_price > p.price ? Math.round(((p.compare_price - p.price) / p.compare_price) * 100) : undefined,
+  discount: p.is_flash_sale && p.flash_price && p.price ? Math.round(((p.price - p.flash_price) / p.price) * 100) : undefined,
   vendor: p.vendor?.name || '',
   category: p.category?.name || '',
   personalizationReason: reason,

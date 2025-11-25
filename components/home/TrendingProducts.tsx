@@ -337,9 +337,9 @@ function TrendingProductsContent() {
                     </div>
                   </Link>
 
-                  {product.compare_price && product.compare_price > product.price && (
+                    {product.is_flash_sale && product.flash_price && product.price && (
                       <Badge className="absolute top-0.5 left-0.5 bg-red-500 text-white font-bold text-[10px] px-1 py-0">
-                      -{Math.round(((product.compare_price - product.price) / product.compare_price) * 100)}%
+                        -{Math.round(((product.price - product.flash_price) / product.price) * 100)}%
                     </Badge>
                   )}
 

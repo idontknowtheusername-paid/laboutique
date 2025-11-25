@@ -356,13 +356,12 @@ export default function FlashSalesConnected() {
                       {slideProducts.map((flashSaleProduct) => {
                         const product = flashSaleProduct.product || flashSaleProduct;
 
-                        // Calculer la réduction (nouveau système ou fallback)
+                        // Calculer la réduction UNIQUEMENT si vente flash activée manuellement
                         let discount = 0;
                         if (product.is_flash_sale && product.flash_price && product.price) {
                           discount = Math.round(((product.price - product.flash_price) / product.price) * 100);
-                        } else if (product.compare_price && product.compare_price > product.price) {
-                          discount = calculateDiscount(product.price, product.compare_price);
                         }
+                        // Ne plus calculer automatiquement depuis compare_price
 
                         const stockData = stockInfo.find(s => s.product_id === product.id);
 

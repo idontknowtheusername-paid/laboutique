@@ -24,7 +24,7 @@ import Link from 'next/link';
 const stats = [
   { label: 'Clients satisfaits', value: '500+', icon: Users },
   { label: 'Produits disponibles', value: '10K+', icon: Target },
-  { label: 'Vendeurs partenaires', value: '200+', icon: Award },
+  { label: 'Vendeurs partenaires', value: '20+', icon: Award },
   { label: 'Villes desservies', value: '03', icon: Globe }
 ];
 

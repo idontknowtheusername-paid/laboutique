@@ -1,0 +1,246 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// 1. Nettoyage réponse Mistral\nlet raw = $input.all()[0].json.output || $input.all()[0].json.text || '';\nraw = raw.replace(/```json|```/gi, '').trim();\nconst search = JSON.parse(raw);\n\n// 2. Credentials\nconst APP_KEY = \"520312\";\nconst APP_SECRET = \"vfuE366X5RPk9BghoOcGTk3nGfcncvOe\";\nconst ACCESS_TOKEN = \"50000200a38OmG7gApzuUDh3kUCjQZvSCckgUeoSVEJDypxEVU16567057PwKYy65YY2\";\n\n// 3. Timestamp\nconst now = new Date();\nconst timestamp = now.toISOString().slice(0,19).replace(/-/g,'').replace('T','').replace(/:/g,'').slice(0,14);\n\n// 4. Params API (MÉTHODE CORRIGÉE)\nconst params = {\n  method: \"aliexpress.ds.recommend.feed.get\",\n  app_key: APP_KEY,\n  timestamp: timestamp,\n  format: \"json\",\n  v: \"2.0\",\n  sign_method: \"md5\",\n  feed_name: \"ds-bestselling\",\n  page_size: \"50\",\n  page_no: \"1\",\n  ship_to_country: \"BJ\",\n  target_currency: \"USD\",\n  target_language: \"EN\"\n};\n\n// 5. String de signature\nlet signString = APP_SECRET;\nObject.keys(params).sort().forEach(key => {\n  const val = params[key];\n  if (val !== undefined && val !== null && val !== '') {\n    signString += key + val;\n  }\n});\nsignString += APP_SECRET;\n\nreturn [{ \n  json: { \n    signString, \n    params, \n    access_token: ACCESS_TOKEN,\n    search \n  } \n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        400
+      ],
+      "id": "67b92fae-0148-4dcb-9395-960b4c33d202",
+      "name": "Build Sign String"
+    },
+    {
+      "parameters": {
+        "value": "={{ $json.signString }}",
+        "dataPropertyName": "signature"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 1,
+      "position": [
+        940,
+        400
+      ],
+      "id": "1351dd6b-8d6d-4d66-8dc0-2838c3877d8f",
+      "name": "Generate Signature"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Récupérer du Crypto\nconst input = $input.all()[0].json;\nconst { signString, params, access_token, search } = input;\nconst signature = input.signature.toUpperCase(); // UPPERCASE pour AliExpress\n\n// Params finaux\nconst finalParams = { ...params, sign: signature, access_token };\n\n// URL\nconst query = Object.keys(finalParams)\n  .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(finalParams[k])}`)\n  .join('&');\n\nconst finalUrl = `https://api-sg.aliexpress.com/sync?${query}`;\n\n\nreturn [{ json: { url: finalUrl, search: search } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1140,
+        400
+      ],
+      "id": "19f65ab5-5bc0-4793-9a07-55ca9cdf3bfe",
+      "name": "Build Final URL"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        280,
+        400
+      ],
+      "id": "dc175a16-8f87-4c06-afa3-2d904a1e945c",
+      "name": "Toutes les 12h1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Tu es un expert curation AliExpress pour un site e-commerce au Bénin.\n\nRègles strictes :\n- Choisis UNE SEULE catégorie parmi : Électronique, Téléphones & Accessoires, Vêtements Femme, Vêtements Homme, Chaussures, Maison & Jardin, Cuisine & Salle de Bain, Sport & Loisirs, Cosmétiques & Soins, Bébé & Enfant, Montres & Bijoux\n- Varie à chaque fois\n- Prix entre 8 et 60 USD max\n- Produits très demandés au Bénin : écouteurs bluetooth, coques téléphone, chargeurs, robes d’été, sandales, ventilateurs USB, lampes solaires, jouets enfants, organisateurs cuisine, etc.\n\nRéponds UNIQUEMENT avec ce JSON (rien d’autre, pas de ```json) :\n\n{\n  \"keywords\": \"mots-clés en anglais, 2-4 mots\",\n  \"category\": \"nom exact de la catégorie\"\n}",
+        "options": {}
+      },
+      "id": "f4fb1c9c-29bc-49c9-b66e-cd12f527b974",
+      "name": "Mistral AI Agent2",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        440,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "mistral-large-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        540,
+        600
+      ],
+      "id": "cc1e0ba1-d6d2-4bc7-8855-6fabc4539d15",
+      "name": "Mistral Model1",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "BKzjfBrLCSzgwhVD",
+          "name": "Mistral latest"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1340,
+        400
+      ],
+      "id": "2aba0e9e-b6d2-4f57-8ed1-ebd0866270e3",
+      "name": "Call AliExpress API1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\n// Si maintenance ou erreur → on renvoie un message clair mais toujours avec URLs vides\nif (typeof data === 'string' || data.error_response) {\n  return [{ json: { message: \"API AliExpress HS ou en maintenance — nouvelle tentative dans 12h\" }}];\n}\n\nconst products = data.aliexpress_ds_product_search_response?.resp_result?.result?.products?.product || [];\n\nconst goodOnes = products\n  .filter(p => {\n    const rating = parseFloat(p.evaluate_rate || 0);\n    const orders = parseInt(p.order_num || p.volume || 0);\n    const price = parseFloat(p.product_price || 0);\n    const shippingOk = p.logistics_service?.toLowerCase().includes('cainiao') || p.free_shipping === 'true';\n    return rating >= 4.5 && orders >= 500 && price >= 8 && price <= 60 && shippingOk;\n  })\n  .slice(0, 40);  // max 40 URLs par exécution\n\nif (goodOnes.length === 0) {\n  return [{ json: { message: \"Aucune URL valide trouvée cette fois\" }}];\n}\n\n// ONLY URLs, one per line\nconst urls = goodOnes.map(p => `https://www.aliexpress.com/item/${p.product_id}.html`);\n\nreturn [{ json: { message: urls.join('\\n') } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        400
+      ],
+      "id": "264bfd93-ee13-4d97-9ba2-e786d8f0d182",
+      "name": "Filter & Format1"
+    },
+    {
+      "parameters": {
+        "chatId": "=8198321174",
+        "text": "=Liste de {{ $input.all().length }} nouveaux produits à importer\n\nCatégorie : {{ $('Build Final URL').item.json.search.category }}\nMots-clés : {{ $('Build Final URL').item.json.search.keywords }}\n\n\n{{ $json.message }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1740,
+        400
+      ],
+      "id": "eb0d8846-520e-46c1-ac4b-79bf79ca28a0",
+      "name": "Send to Telegram2",
+      "webhookId": "66350354-24cf-466c-8ae8-27fa8e364811",
+      "credentials": {
+        "telegramApi": {
+          "id": "bbSpMaDhGhtQ0NsS",
+          "name": "vloggs"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Build Sign String": {
+      "main": [
+        [
+          {
+            "node": "Generate Signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Signature": {
+      "main": [
+        [
+          {
+            "node": "Build Final URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Final URL": {
+      "main": [
+        [
+          {
+            "node": "Call AliExpress API1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Toutes les 12h1": {
+      "main": [
+        [
+          {
+            "node": "Mistral AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Build Sign String",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Mistral AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call AliExpress API1": {
+      "main": [
+        [
+          {
+            "node": "Filter & Format1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter & Format1": {
+      "main": [
+        [
+          {
+            "node": "Send to Telegram2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1248ff57bfd92ecd35d6e909ff9bf32c5b6af424a815fb8b88da4e7cf5a5aea5"
+  }
+}

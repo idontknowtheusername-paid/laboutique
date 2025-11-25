@@ -59,7 +59,7 @@ export default function CouponsPage() {
                   <span>{result.message}{result.discount ? ` (-${result.discount} FCFA)` : ''}</span>
                 </div>
               )}
-              <div className="text-xs text-gray-500">La réduction sera appliquée lors du checkout si le coupon est valide.</div>
+              <div className="text-xs text-gray-500">La réduction sera appliquée lors du paiement si le coupon est valide.</div>
             </CardContent>
           </Card>
         </div>

@@ -69,7 +69,7 @@ const blogPosts = [
     title: 'Paiements digitaux au Bénin : État des lieux',
     excerpt: 'Mobile Money, cartes bancaires, crypto... Découvrez l\'évolution des moyens de paiement au Bénin.',
     content: 'Contenu complet de l\'article...',
-    author: 'Koffi A.',
+    author: 'Bilal A.',
     date: '2024-01-08',
     readTime: '7 min',
     category: 'Finance',
