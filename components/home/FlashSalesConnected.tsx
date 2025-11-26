@@ -62,16 +62,16 @@ export default function FlashSalesConnected() {
         const data = await response.json();
         
         if (data.data && Array.isArray(data.data)) {
-          // Filtrer les produits en vente flash (nouveau système + fallback)
+          // Filtrer UNIQUEMENT les produits marqués manuellement en vente flash
           const flashProducts = data.data.filter((product: any) => {
-            // Nouveau système : is_flash_sale = true
+            // Seulement les produits avec is_flash_sale = true (contrôle manuel)
             if (product.is_flash_sale) {
               const now = new Date();
               const endDate = product.flash_end_date ? new Date(product.flash_end_date) : null;
               return !endDate || endDate > now; // Actif si pas de date de fin ou pas encore expiré
             }
-            // Fallback : compare_price > price
-            return product.compare_price && product.compare_price > product.price;
+            // ❌ Pas de fallback automatique - contrôle total via l'admin
+            return false;
           });
 
           setProducts(flashProducts.slice(0, 30));

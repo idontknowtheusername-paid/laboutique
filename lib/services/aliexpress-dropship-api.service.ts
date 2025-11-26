@@ -50,6 +50,7 @@ interface AliExpressProduct {
   product_detail_url: string;
   evaluate_rate?: string;
   lastest_volume?: number;
+  currency_code?: string;
 }
 
 // Interface pour les filtres de recherche
@@ -113,7 +114,7 @@ export class AliExpressDropshipApiService {
 
     const requestParams: Record<string, any> = {
       app_key: this.config.appKey,
-      access_token: accessToken, // ← OAuth token
+      access_token: accessToken,
       method,
       timestamp,
       sign_method: 'md5',
@@ -129,7 +130,8 @@ export class AliExpressDropshipApiService {
     const queryString = new URLSearchParams(requestParams).toString();
     const url = `${this.baseUrl}?${queryString}`;
 
-
+    console.log('[API] 📡 Requête API:', method);
+    console.log('[API] 📋 Paramètres:', JSON.stringify(params, null, 2));
 
     try {
       const response = await fetch(url, {
@@ -147,7 +149,7 @@ export class AliExpressDropshipApiService {
 
       const data = await response.json();
 
-
+      console.log('[API] 📥 Réponse brute complète:', JSON.stringify(data, null, 2));
 
       // Vérifier les erreurs de l'API
       if (data.error_response) {
@@ -188,6 +190,19 @@ export class AliExpressDropshipApiService {
   }
 
   /**
+   * Obtenir le taux de conversion pour une devise donnée
+   */
+  private getConversionRate(currency: string): number {
+    const rates: Record<string, number> = {
+      'USD': 605,  // 1 USD ≈ 605 XOF (taux actuel nov 2024)
+      'CNY': 83,   // 1 Yuan ≈ 83 XOF (605 ÷ 7.25)
+      'EUR': 635,  // 1 Euro ≈ 635 XOF (605 × 1.05)
+      'GBP': 768,  // 1 Livre ≈ 768 XOF (605 × 1.27)
+    };
+    return rates[currency.toUpperCase()] || 605; // USD par défaut
+  }
+
+  /**
    * Obtenir les détails d'un produit par son ID
    * Méthode: aliexpress.ds.product.get
    */
@@ -206,41 +221,97 @@ export class AliExpressDropshipApiService {
       if (response.aliexpress_ds_product_get_response) {
         const result = response.aliexpress_ds_product_get_response.result;
 
-
+        console.log('[PRIX] 🔍 Extraction des prix depuis result...');
+        console.log('[PRIX] 📦 result complet:', JSON.stringify(result, null, 2));
 
         if (result && result.ae_item_base_info_dto) {
           const baseInfo = result.ae_item_base_info_dto;
           const multimediaInfo = result.ae_multimedia_info_dto || {};
 
+          console.log('[PRIX] 📊 baseInfo:', JSON.stringify(baseInfo, null, 2));
+          console.log('[PRIX] 💰 currency_code:', baseInfo.currency_code);
+          console.log('[PRIX] 💵 product_min_price:', baseInfo.product_min_price);
+          console.log('[PRIX] 💵 product_max_price:', baseInfo.product_max_price);
+
           // Chercher les prix dans plusieurs endroits possibles
           let salePrice = baseInfo.product_min_price;
           let originalPrice = baseInfo.product_max_price;
+          let currencyCode = baseInfo.currency_code || 'USD';
 
-          // Fallback 1: Chercher dans ae_item_sku_info_dtos (prix des variantes)
+          console.log('[PRIX] 1️⃣ Après baseInfo - salePrice:', salePrice, 'originalPrice:', originalPrice);
+
+          // Fallback 1: Chercher dans ae_item_sku_info_dtos (prix des variantes) - CORRIGÉ
           if (!salePrice && result.ae_item_sku_info_dtos?.ae_item_sku_info_d_t_o) {
             const skus = result.ae_item_sku_info_dtos.ae_item_sku_info_d_t_o;
             const firstSku = Array.isArray(skus) ? skus[0] : skus;
-            if (firstSku) {
-              salePrice = firstSku.sku_price || firstSku.offer_sale_price || firstSku.s_k_u_price;
-              originalPrice = firstSku.offer_bulk_sale_price || firstSku.sku_bulk_order_price;
+            console.log('[PRIX] 📦 Premier SKU:', JSON.stringify(firstSku, null, 2));
 
+            if (firstSku) {
+              // ✅ CORRECTION PRINCIPALE :
+              // offer_sale_price = prix promotionnel (LE MOINS CHER) → salePrice
+              // sku_price = prix catalogue normal (LE PLUS CHER) → originalPrice
+              salePrice = firstSku.offer_sale_price
+                || firstSku.offer_bulk_sale_price
+                || firstSku.sku_price;
+
+              originalPrice = firstSku.sku_price; // Prix normal avant promo
+
+              // Récupérer la devise du SKU si disponible
+              if (firstSku.currency_code) {
+                currencyCode = firstSku.currency_code;
+              }
+
+              console.log('[PRIX] 2️⃣ Après SKU - salePrice:', salePrice, 'originalPrice:', originalPrice);
+
+              // Validation : le prix promo doit être <= prix normal
+              if (originalPrice) {
+                const salePriceNum = parseFloat(salePrice);
+                const originalPriceNum = parseFloat(originalPrice);
+
+                if (!isNaN(salePriceNum) && !isNaN(originalPriceNum)) {
+                  if (salePriceNum >= originalPriceNum) {
+                    console.warn('[PRIX] ⚠️ Incohérence détectée: prix promo >= prix normal');
+                    // Pas de prix barré si pas de vraie réduction
+                    originalPrice = undefined;
+                  } else {
+                    console.log('[PRIX] ✅ Validation OK: prix promo < prix normal');
+                  }
+                }
+              }
             }
           }
 
           // Fallback 2: Chercher dans ae_item_properties (prix global)
           if (!salePrice && result.ae_item_properties) {
+            console.log('[PRIX] 📋 ae_item_properties:', JSON.stringify(result.ae_item_properties, null, 2));
             salePrice = result.ae_item_properties.product_price;
-
+            console.log('[PRIX] 3️⃣ Après properties - salePrice:', salePrice);
           }
 
           // Fallback 3: Chercher directement dans result
           if (!salePrice) {
+            console.log('[PRIX] 🔍 Recherche directe dans result:');
+            console.log('[PRIX]   - target_sale_price:', result.target_sale_price);
+            console.log('[PRIX]   - target_app_sale_price:', result.target_app_sale_price);
+            console.log('[PRIX]   - discount_price:', result.discount_price);
+            console.log('[PRIX]   - target_original_price:', result.target_original_price);
+            console.log('[PRIX]   - original_price:', result.original_price);
+
             salePrice = result.target_sale_price || result.target_app_sale_price || result.discount_price;
             originalPrice = result.target_original_price || result.original_price;
-
+            console.log('[PRIX] 4️⃣ Après fallback final - salePrice:', salePrice, 'originalPrice:', originalPrice);
           }
 
+          // Validation finale : rejeter le produit si pas de prix valide
+          if (!salePrice || parseFloat(salePrice) <= 0) {
+            console.error('[PRIX] ❌ Prix de vente invalide ou manquant:', salePrice);
+            return null;
+          }
 
+          console.log('[PRIX] ✅ VALEURS FINALES BRUTES:');
+          console.log('[PRIX]   📌 salePrice:', salePrice, `(type: ${typeof salePrice})`);
+          console.log('[PRIX]   📌 originalPrice:', originalPrice, `(type: ${typeof originalPrice})`);
+          console.log('[PRIX]   📌 currency_code:', currencyCode);
 
           // Convertir au format unifié
           const product: AliExpressProduct = {
@@ -249,12 +320,15 @@ export class AliExpressDropshipApiService {
             product_main_image_url: multimediaInfo.image_urls?.split(';')[0] || '',
             product_video_url: multimediaInfo.video_url,
             product_small_image_urls: multimediaInfo.image_urls?.split(';').slice(1, 5) || [],
-            sale_price: salePrice || '0',
+            sale_price: salePrice,
             original_price: originalPrice,
             product_detail_url: `https://www.aliexpress.com/item/${productId}.html`,
-            evaluate_rate: '4.5', // Default, API dropship ne retourne pas toujours ce champ
+            evaluate_rate: '4.5',
             lastest_volume: 0,
+            currency_code: currencyCode,
           };
+
+          console.log('[PRIX] 🎯 Produit final avant conversion:', JSON.stringify(product, null, 2));
 
           return product;
         }
@@ -336,10 +410,10 @@ export class AliExpressDropshipApiService {
       const smallImages = typeof smallImagesRaw === 'string'
         ? smallImagesRaw.split(',')
         : smallImagesRaw;
-      images.push(...smallImages.slice(0, 4)); // Max 5 images au total
+      images.push(...smallImages.slice(0, 7)); // Max 7 images au total
     }
 
-    // Parser les prix - ROBUSTE pour string ET number
+    // Parser les prix - ROBUSTE pour string ET number avec gestion multi-devises
     const parsePrice = (priceStr: string | number | undefined): number => {
       if (!priceStr) return 0;
 
@@ -350,18 +424,45 @@ export class AliExpressDropshipApiService {
       const cleaned = priceAsString.replace(/[^\d.]/g, '');
       const price = parseFloat(cleaned);
 
+      console.log('[CONVERSION] 🔢 parsePrice:', {
+        input: priceStr,
+        inputType: typeof priceStr,
+        cleaned,
+        parsed: price
+      });
+
       if (isNaN(price) || price <= 0) return 0;
 
-      // USD to XOF conversion (~580 XOF = 1 USD)
-      return Math.round(price * 580);
+      // Conversion multi-devises vers XOF
+      const currencyCode = product.currency_code || 'USD';
+      const conversionRate = this.getConversionRate(currencyCode);
+      const converted = Math.round(price * conversionRate);
+
+      console.log('[CONVERSION] 💱 Conversion:', {
+        price,
+        currency: currencyCode,
+        rate: conversionRate,
+        result: converted,
+        formula: `${price} ${currencyCode} × ${conversionRate} = ${converted} XOF`
+      });
+
+      return converted;
     };
 
-
+    console.log('[CONVERSION] 🎯 Début conversion produit:', product.product_id);
+    console.log('[CONVERSION] 💰 Prix bruts du produit:', {
+      sale_price: product.sale_price,
+      original_price: product.original_price,
+      currency_code: product.currency_code
+    });
 
     const salePrice = parsePrice(product.sale_price);
     const originalPrice = parsePrice(product.original_price);
 
-
+    console.log('[CONVERSION] ✅ Prix après parsePrice:', {
+      salePrice,
+      originalPrice
+    });
 
     // Prix final avec fallback
     const finalPrice = salePrice || 15000; // Prix par défaut: 15000 XOF
@@ -373,6 +474,14 @@ export class AliExpressDropshipApiService {
     } else if (finalPrice > 0) {
       finalOriginalPrice = Math.round(finalPrice * 1.3);
     }
+
+    console.log('[CONVERSION] 🏁 Prix finaux XOF:', {
+      finalPrice,
+      finalOriginalPrice,
+      reductionPercent: finalOriginalPrice
+        ? Math.round(((finalOriginalPrice - finalPrice) / finalOriginalPrice) * 100)
+        : 0
+    });
 
     return {
       name: product.product_title.slice(0, 200),
@@ -390,6 +499,7 @@ export class AliExpressDropshipApiService {
         'Évaluation': product.evaluate_rate || 'N/A',
         'Ventes': product.lastest_volume?.toString() || '0',
         'API': 'Dropship OAuth',
+        'Devise API': product.currency_code || 'USD',
         'Importé le': new Date().toLocaleDateString('fr-FR'),
       },
     };
@@ -403,15 +513,13 @@ export class AliExpressDropshipApiService {
     const feeds = ['ds-bestselling', 'ds-new-arrival', 'ds-promotion', 'ds-choice'];
     const productsPerFeed = Math.ceil(count / feeds.length);
 
-
-
     const feedPromises = feeds.map(async (feedName) => {
       try {
         const params: Record<string, any> = {
           feed_name: feedName,
           target_currency: 'USD',
-          target_language: 'FR',
-          ship_to_country: 'CI',
+          target_language: 'EN',
+          ship_to_country: 'US',
           page_no: page,
           page_size: Math.min(productsPerFeed, 50),
         };
@@ -422,7 +530,6 @@ export class AliExpressDropshipApiService {
 
           if (result && result.products && result.products.product) {
             const products = result.products.product;
-
 
             return products.map((item: any) => {
               const product: AliExpressProduct = {
@@ -440,6 +547,7 @@ export class AliExpressDropshipApiService {
                 product_detail_url: item.product_detail_url || item.productDetailUrl || `https://www.aliexpress.com/item/${item.product_id}.html`,
                 evaluate_rate: item.evaluate_rate || item.evaluateRate || '4.5',
                 lastest_volume: item.lastest_volume || item.volume || 0,
+                currency_code: item.currency_code || 'USD',
               };
 
               return product;
@@ -453,6 +561,7 @@ export class AliExpressDropshipApiService {
         return [];
       }
     });
+
     const results = await Promise.all(feedPromises);
     const allProducts = results.flat();
 
@@ -460,7 +569,6 @@ export class AliExpressDropshipApiService {
     const uniqueProducts = allProducts.filter((product, index, self) =>
       index === self.findIndex(p => p.product_id === product.product_id)
     );
-
 
     return uniqueProducts.slice(0, count);
   }
