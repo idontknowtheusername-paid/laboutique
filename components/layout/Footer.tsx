@@ -207,7 +207,7 @@ const Footer = () => {
                   Recherche avancée
                 </Link>
                   <Link href="/products?sale=true" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
-                  Ventes flash
+                    Giga Promotions
                 </Link>
                 <Link href="/#trending-products" className="block text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm">
                   Nouveautés

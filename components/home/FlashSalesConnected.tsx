@@ -300,7 +300,7 @@ export default function FlashSalesConnected() {
           <div className="flex items-center justify-between mb-2">
             {/* Titre à gauche */}
             <h2 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
-              ⚡ Ventes Flash
+              🔥 Giga Promotion du moment
             </h2>
 
             {/* Countdown Timer au centre */}
@@ -326,7 +326,7 @@ export default function FlashSalesConnected() {
                 variant="outline"
                 size="sm"
                 className="bg-white text-red-600 border-white hover:bg-red-50 hover:border-red-100 whitespace-nowrap text-xs"
-                onClick={() => trackButtonClick('Voir toutes les offres flash', 'Flash Sales Header')}
+                onClick={() => trackButtonClick('Voir toutes les promotions', 'Flash Sales Header')}
               >
                 Voir tout
               </Button>
