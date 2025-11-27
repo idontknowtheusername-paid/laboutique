@@ -23,18 +23,26 @@ export default function LoginPage() {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
-  const { signIn, user, error: authError, clearError, retry } = useAuth();
+  const { signIn, user, loading: authLoading, error: authError, clearError, retry, profile } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
   const successMessage = searchParams.get('message');
 
-  // Redirect if already authenticated
+  // Redirect if already authenticated (only on initial load, not after login)
+  const [hasAttemptedLogin, setHasAttemptedLogin] = useState(false);
+
   useEffect(() => {
-    if (user) {
-      router.push(redirectTo);
+    // Ne pas rediriger si on vient de se connecter (handleLogin gère la redirection)
+    // Attendre que le profil soit chargé pour savoir où rediriger
+    if (user && !hasAttemptedLogin && !authLoading && profile) {
+      if (profile.role === 'admin') {
+        router.push('/admin/dashboard');
+      } else {
+        router.push(redirectTo);
+      }
     }
-  }, [user, router, redirectTo]);
+  }, [user, router, redirectTo, hasAttemptedLogin, authLoading, profile]);
 
   // Clear errors when inputs change
   useEffect(() => {
@@ -84,28 +92,35 @@ export default function LoginPage() {
 
     setLoading(true);
     setError('');
+    setHasAttemptedLogin(true);
 
     try {
       const result = await signIn(email, password);
 
       if (result.success) {
         showSuccessToast('Connexion réussie !');
-        try {
-          const current = await AuthService.getCurrentUser();
-          const role = current?.data?.profile?.role;
-          if (role === 'admin') {
-            router.push('/admin/dashboard');
-          } else {
+        // Attendre un peu que le profil soit chargé dans le contexte
+        // puis laisser le useEffect gérer la redirection
+        setTimeout(async () => {
+          try {
+            const current = await AuthService.getCurrentUser();
+            const role = current?.data?.profile?.role;
+            if (role === 'admin') {
+              router.push('/admin/dashboard');
+            } else {
+              router.push(redirectTo);
+            }
+          } catch (_) {
             router.push(redirectTo);
           }
-        } catch (_) {
-          router.push(redirectTo);
-        }
+        }, 100);
       } else {
         setError(result.error || 'Erreur lors de la connexion');
+        setHasAttemptedLogin(false);
       }
     } catch (error) {
       setError('Une erreur inattendue est survenue');
+      setHasAttemptedLogin(false);
     } finally {
       setLoading(false);
     }

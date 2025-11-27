@@ -1,11 +1,52 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 
-// Cache policy configuration
+// Cache policy configuration + Admin protection
 export async function proxy(req: NextRequest) {
   const res = NextResponse.next();
   const { pathname } = req.nextUrl;
   
+  // ============================================
+  // 🔒 PROTECTION DES ROUTES ADMIN
+  // ============================================
+
+  // Protection des routes API admin
+  if (pathname.startsWith('/api/admin')) {
+    const supabase = createMiddlewareClient({ req, res });
+    const { data: { session } } = await supabase.auth.getSession();
+
+    // Pas de session = non autorisé
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Non autorisé - Authentification requise' },
+        { status: 401 }
+      );
+    }
+
+    // Vérifier le rôle admin dans la base de données
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', session.user.id)
+      .single();
+
+    if (error || !profile || profile.role !== 'admin') {
+      return NextResponse.json(
+        { success: false, error: 'Accès refusé - Droits administrateur requis' },
+        { status: 403 }
+      );
+    }
+  }
+
+  // NOTE: La protection des pages admin (/admin/*) est gérée côté client
+  // par app/admin/layout.tsx pour éviter les problèmes de synchronisation
+  // de session après connexion. Seules les API sont protégées ici.
+
+  // ============================================
+  // 📦 CACHE POLICY CONFIGURATION
+  // ============================================
+
   // Helper to set cache headers
   const setCache = (value: string) => {
     res.headers.set('Cache-Control', value);

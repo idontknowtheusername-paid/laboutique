@@ -26,25 +26,76 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const [adminName, setAdminName] = useState<string>('Admin');
   const [showNotifications, setShowNotifications] = useState<boolean>(false);
   const [notificationCount, setNotificationCount] = useState<number>(0);
+
+  // OPTIMISATION: Vérifier le cache du profil pour autorisation instantanée
   const [hasChecked, setHasChecked] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       try {
-        return window.sessionStorage.getItem('adminAuthorized') === '1';
-      } catch {}
-    }
-    return false;
-  });
-  const [isAuthorized, setIsAuthorized] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        return window.sessionStorage.getItem('adminAuthorized') === '1';
+        // Vérifier d'abord le flag simple
+        if (window.sessionStorage.getItem('adminAuthorized') === '1') {
+          return true;
+        }
+        // OPTIMISATION: Vérifier aussi le cache du profil
+        const cachedProfile = window.sessionStorage.getItem('user-profile-cache');
+        if (cachedProfile) {
+          const parsed = JSON.parse(cachedProfile);
+          if (parsed?.role === 'admin') {
+            window.sessionStorage.setItem('adminAuthorized', '1');
+            return true;
+          }
+        }
       } catch {}
     }
     return false;
   });
 
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        // Vérifier d'abord le flag simple
+        if (window.sessionStorage.getItem('adminAuthorized') === '1') {
+          return true;
+        }
+        // OPTIMISATION: Vérifier aussi le cache du profil
+        const cachedProfile = window.sessionStorage.getItem('user-profile-cache');
+        if (cachedProfile) {
+          const parsed = JSON.parse(cachedProfile);
+          if (parsed?.role === 'admin') {
+            return true;
+          }
+        }
+      } catch {}
+    }
+    return false;
+  });
+
+  // OPTIMISATION: Charger les infos admin depuis le cache immédiatement
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cachedProfile = window.sessionStorage.getItem('user-profile-cache');
+        if (cachedProfile) {
+          const parsed = JSON.parse(cachedProfile);
+          if (parsed?.role === 'admin') {
+            const first = parsed.first_name?.trim();
+            const last = parsed.last_name?.trim();
+            const email = parsed.email?.trim();
+            const initial = (first || email || 'A').charAt(0).toUpperCase();
+            setAvatarInitial(initial);
+            setAdminName(first && last ? `${first} ${last}` : (first || 'Admin'));
+          }
+        }
+      } catch { }
+    }
+  }, []);
+
   // Check authorization on mount and when user/profile changes
   useEffect(() => {
+    // OPTIMISATION: Si déjà autorisé via cache, ne pas bloquer
+    if (isAuthorized && hasChecked && !loading) {
+      return;
+    }
+
     if (loading) return;
 
     // No user -> redirect once
@@ -52,7 +103,10 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       setHasChecked(true);
       setIsAuthorized(false);
       if (typeof window !== 'undefined') {
-        try { window.sessionStorage.removeItem('adminAuthorized'); } catch {}
+        try {
+          window.sessionStorage.removeItem('adminAuthorized');
+          window.sessionStorage.removeItem('user-profile-cache');
+        } catch { }
       }
       router.replace('/auth/login?redirect=/admin/dashboard');
       return;
@@ -84,15 +138,28 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       setAdminName(first && last ? `${first} ${last}` : (first || 'Admin'));
     }
 
-    // If user exists but profile not yet loaded, allow rendering to avoid blocking navigation
+    // If user exists but profile not yet loaded, check cache first
     if (user && !profile) {
+      // OPTIMISATION: Vérifier le cache avant d'autoriser
+      if (typeof window !== 'undefined') {
+        try {
+          const cachedProfile = window.sessionStorage.getItem('user-profile-cache');
+          if (cachedProfile) {
+            const parsed = JSON.parse(cachedProfile);
+            if (parsed?.role === 'admin') {
+              setIsAuthorized(true);
+              setHasChecked(true);
+              window.sessionStorage.setItem('adminAuthorized', '1');
+              return;
+            }
+          }
+        } catch { }
+      }
+      // Fallback: autoriser temporairement en attendant le profil
       setIsAuthorized(true);
       setHasChecked(true);
-      if (typeof window !== 'undefined') {
-        try { window.sessionStorage.setItem('adminAuthorized', '1'); } catch {}
-      }
     }
-  }, [user, profile, loading, router]);
+  }, [user, profile, loading, router, isAuthorized, hasChecked]);
 
   // Show loading while checking auth
   if (loading || !hasChecked) {

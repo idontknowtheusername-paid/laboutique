@@ -198,17 +198,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           return;
         }
 
-        // First, try to get session from in-memory or sessionStorage cache to avoid flicker
+        // OPTIMISATION: Charger le cache immédiatement pour éviter le flicker
         if (typeof window !== 'undefined') {
-          const cached = window.sessionStorage.getItem('sb-session');
-          if (cached) {
+          // Cache session
+          const cachedSession = window.sessionStorage.getItem('sb-session');
+          if (cachedSession) {
             try {
-              const parsed = JSON.parse(cached);
+              const parsed = JSON.parse(cachedSession);
               if (parsed?.access_token && parsed?.user) {
                 setUser(parsed.user);
                 setSession(parsed);
               }
             } catch {}
+          }
+
+          // OPTIMISATION: Cache profil admin pour affichage instantané
+          const cachedProfile = window.sessionStorage.getItem('user-profile-cache');
+          if (cachedProfile) {
+            try {
+              const parsed = JSON.parse(cachedProfile);
+              if (parsed?.id && parsed?.role) {
+                setProfile(parsed);
+              }
+            } catch { }
           }
         }
 
@@ -216,32 +228,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const { data: { session: localSession } } = await supabase.auth.getSession();
         
         if (localSession) {
-
           setUser(localSession.user);
           setSession(localSession);
+
           try {
             if (typeof window !== 'undefined') {
               window.sessionStorage.setItem('sb-session', JSON.stringify(localSession));
             }
           } catch {}
           
-          // Get profile
+          // OPTIMISATION: Charger profil et stats EN PARALLÈLE
           try {
-            const profileResult = await AuthService.getProfile(localSession.user.id);
+            const [profileResult, statsResult] = await Promise.all([
+              AuthService.getProfile(localSession.user.id),
+              AuthService.getUserStats(localSession.user.id)
+            ]);
+
             if (profileResult.success && profileResult.data) {
               setProfile(profileResult.data);
+              // OPTIMISATION: Mettre en cache le profil
+              if (typeof window !== 'undefined') {
+                try {
+                  window.sessionStorage.setItem('user-profile-cache', JSON.stringify(profileResult.data));
+                } catch { }
+              }
             }
             
-            // Load user stats
-            await loadUserStats(localSession.user.id);
+            if (statsResult.success && statsResult.data) {
+              setUserStats(statsResult.data);
+            }
           } catch (profileError) {
             console.warn('Error loading profile after session restore:', profileError);
           }
         } else {
-
-          // Try the service method as fallback
+          // Try the service method as fallback (réduit les retries pour plus de rapidité)
           const result = await withRetry(() => AuthService.getCurrentUser(), {
-            maxRetries: 3,
+            maxRetries: 1, // Réduit de 3 à 1 pour plus de rapidité
             retryCondition: (error) => getErrorType(error) === "network",
           });
 
@@ -252,9 +274,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             setSession(session);
             setProfile(profile ?? null);
 
-            // Load user stats if user is authenticated
+            // Cache le profil
+            if (profile && typeof window !== 'undefined') {
+              try {
+                window.sessionStorage.setItem('user-profile-cache', JSON.stringify(profile));
+              } catch { }
+            }
+
+            // Load user stats if user is authenticated (en parallèle, non bloquant)
             if (user) {
-              await loadUserStats(user.id);
+              loadUserStats(user.id); // Sans await pour ne pas bloquer
             }
           } else if (result.error) {
             console.warn('Failed to restore session via service:', result.error);
@@ -291,11 +320,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       } catch {}
 
       if (session?.user) {
-        // Récupérer le profil utilisateur et les stats
+        // OPTIMISATION: Récupérer le profil et stats EN PARALLÈLE
         try {
-          const [profileResponse] = await Promise.allSettled([
+          const [profileResponse, statsResponse] = await Promise.allSettled([
             AuthService.getProfile(session.user.id),
-            loadUserStats(session.user.id),
+            AuthService.getUserStats(session.user.id),
           ]);
 
           if (
@@ -303,6 +332,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             profileResponse.value.success
           ) {
             setProfile(profileResponse.value.data);
+            // OPTIMISATION: Mettre en cache le profil
+            if (typeof window !== 'undefined' && profileResponse.value.data) {
+              try {
+                window.sessionStorage.setItem('user-profile-cache', JSON.stringify(profileResponse.value.data));
+              } catch { }
+            }
+          }
+
+          if (
+            statsResponse.status === "fulfilled" &&
+            statsResponse.value.success
+          ) {
+            setUserStats(statsResponse.value.data);
           }
         } catch (error) {
           console.warn("Error loading user data on auth change:", error);
@@ -310,6 +352,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       } else {
         setProfile(null);
         setUserStats(null);
+        // Nettoyer le cache
+        if (typeof window !== 'undefined') {
+          try {
+            window.sessionStorage.removeItem('user-profile-cache');
+          } catch { }
+        }
       }
 
       // Clear error on successful auth change
