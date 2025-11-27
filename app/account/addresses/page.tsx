@@ -5,155 +5,338 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MapPin, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { MapPin, Plus, Pencil, Trash2, Phone, User, Home, X, Check, Star } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { AccountService, AddressRecord } from '@/lib/services/account.service';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
+
+interface ExtendedAddress extends AddressRecord {
+  delivery_method?: 'standard' | 'express';
+  delivery_instructions?: string;
+}
+
+interface FormData {
+  full_name: string;
+  phone: string;
+  address_line: string;
+  city: string;
+  country: string;
+  delivery_method: 'standard' | 'express';
+  delivery_instructions: string;
+}
 
 export default function AddressesPage() {
   const { user } = useAuth();
   const [adding, setAdding] = React.useState(false);
-  const [addresses, setAddresses] = React.useState<AddressRecord[]>([]);
-  const [form, setForm] = React.useState({ full_name: '', phone: '', address_line: '', city: '', country: 'Bénin' });
-  const [deliveryPrefs, setDeliveryPrefs] = React.useState<{ method: 'standard' | 'express'; instructions: string }>({ method: 'standard', instructions: '' });
+  const [addresses, setAddresses] = React.useState<ExtendedAddress[]>([]);
   const [editingId, setEditingId] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const emptyForm: FormData = { full_name: '', phone: '', address_line: '', city: '', country: 'Bénin', delivery_method: 'standard', delivery_instructions: '' };
+  const [form, setForm] = React.useState(emptyForm);
+
+  const loadAddresses = React.useCallback(async () => {
+    if (!user?.id) return;
+    const res = await AccountService.getAddresses(user.id);
+    if (res.success && res.data) setAddresses(res.data as ExtendedAddress[]);
+  }, [user?.id]);
 
   React.useEffect(() => {
-    (async () => {
-      if (!user?.id) return;
-      const res = await AccountService.getAddresses(user.id);
-      if (res.success && res.data) setAddresses(res.data);
-    })();
-  }, [user?.id]);
+    loadAddresses();
+  }, [loadAddresses]);
+
+  const handleSave = async () => {
+    if (!user?.id) return;
+    if (!form.full_name.trim() || !form.address_line.trim()) {
+      setError('Nom et adresse sont obligatoires');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (editingId) {
+        // Update existing
+        console.log('Updating address:', editingId, form);
+        const res = await AccountService.updateAddress(editingId, form);
+        console.log('Update result:', res);
+        if (res.success) {
+          await loadAddresses();
+          setEditingId(null);
+          setForm(emptyForm);
+        } else {
+          setError(res.error || 'Erreur lors de la mise à jour');
+        }
+      } else {
+        // Create new
+        console.log('Creating address:', form);
+        const res = await AccountService.addAddress(user.id, form);
+        console.log('Create result:', res);
+        if (res.success && res.data) {
+          setAddresses(a => [res.data as ExtendedAddress, ...a]);
+          setAdding(false);
+          setForm(emptyForm);
+        } else {
+          setError(res.error || 'Erreur lors de l\'enregistrement');
+        }
+      }
+    } catch (err) {
+      console.error('Error saving address:', err);
+      setError('Une erreur est survenue');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (addr: ExtendedAddress) => {
+    setForm({
+      full_name: addr.full_name || '',
+      phone: addr.phone || '',
+      address_line: addr.address_line || '',
+      city: addr.city || '',
+      country: addr.country || 'Bénin',
+      delivery_method: addr.delivery_method || 'standard',
+      delivery_instructions: addr.delivery_instructions || ''
+    });
+    setEditingId(addr.id);
+    setAdding(false);
+  };
+
+  const handleCancel = () => {
+    setAdding(false);
+    setEditingId(null);
+    setForm(emptyForm);
+    setError(null);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Supprimer cette adresse ?')) return;
+    const res = await AccountService.deleteAddress(id);
+    if (res.success) setAddresses(a => a.filter(x => x.id !== id));
+  };
+
+  const handleSetDefault = async (id: string) => {
+    if (!user?.id) return;
+    const res = await AccountService.setDefaultAddress(user.id, id);
+    if (res.success) await loadAddresses();
+  };
+
+  const isFormOpen = adding || editingId !== null;
+
   return (
     <ProtectedRoute>
       <div>
-        <div className="py-2">
-          <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-            <a href="/" className="hover:text-jomionstore-primary">Accueil</a>
-            <span>/</span>
-            <a href="/account" className="hover:text-jomionstore-primary">Mon compte</a>
-            <span>/</span>
-            <span className="text-gray-900 font-medium">Adresses</span>
-          </nav>
+        <Breadcrumb items={[{ label: 'Adresses' }]} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-              <Card>
-                <CardHeader className="flex items-center justify-between">
-                  <CardTitle>Mes adresses</CardTitle>
-                  <Button onClick={() => setAdding(v => !v)} className="bg-jomionstore-primary hover:bg-orange-700">
-                    <Plus className="w-4 h-4 mr-2" /> Ajouter une adresse
-                  </Button>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {adding && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg">
-                      <div>
-                        <label className="block text-sm mb-2">Nom complet</label>
-                        <Input placeholder="Prénom NOM" value={form.full_name} onChange={(e)=>setForm(f=>({...f, full_name: e.target.value}))} />
-                      </div>
-                      <div>
-                        <label className="block text-sm mb-2">Téléphone</label>
-                        <Input placeholder="+229 ..." value={form.phone} onChange={(e)=>setForm(f=>({...f, phone: e.target.value}))} />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-sm mb-2">Adresse</label>
-                        <Input placeholder="Rue, quartier..." value={form.address_line} onChange={(e)=>setForm(f=>({...f, address_line: e.target.value}))} />
-                      </div>
-                      <div>
-                        <label className="block text-sm mb-2">Ville</label>
-                        <Input placeholder="Cotonou" value={form.city} onChange={(e)=>setForm(f=>({...f, city: e.target.value}))} />
-                      </div>
-                      <div>
-                        <label className="block text-sm mb-2">Pays</label>
-                        <Input placeholder="Bénin" value={form.country} onChange={(e)=>setForm(f=>({...f, country: e.target.value}))} />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-sm mb-2">Préférences de livraison</label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="flex items-center gap-3">
-                            <input type="radio" id="m-standard" name="delivery-method" checked={deliveryPrefs.method==='standard'} onChange={()=>setDeliveryPrefs(p=>({...p, method:'standard'}))} />
-                            <label htmlFor="m-standard" className="text-sm">Standard (2-5 jours)</label>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <input type="radio" id="m-express" name="delivery-method" checked={deliveryPrefs.method==='express'} onChange={()=>setDeliveryPrefs(p=>({...p, method:'express'}))} />
-                            <label htmlFor="m-express" className="text-sm">Express (1-2 jours)</label>
-                          </div>
-                        </div>
-                        <div className="mt-3">
-                          <label className="block text-sm mb-2">Instructions</label>
-                          <Input placeholder="Ex: Sonner à gauche, laisser au gardien..." value={deliveryPrefs.instructions} onChange={(e)=>setDeliveryPrefs(p=>({...p, instructions: e.target.value}))} />
-                        </div>
-                      </div>
-                      <div className="md:col-span-2 flex gap-3">
-                        <Button className="bg-jomionstore-primary hover:bg-orange-700" onClick={async ()=>{
-                          if (!user?.id) return;
-                          const res = await AccountService.addAddress(user.id, { ...form, delivery_method: deliveryPrefs.method, delivery_instructions: deliveryPrefs.instructions } as any);
-                          if (res.success && res.data) {
-                            setAddresses(a => [res.data as AddressRecord, ...a]);
-                            setAdding(false);
-                            setForm({ full_name: '', phone: '', address_line: '', city: '', country: 'Bénin' });
-                            setDeliveryPrefs({ method: 'standard', instructions: '' });
-                          }
-                        }}>Enregistrer</Button>
-                        <Button variant="outline" onClick={() => setAdding(false)}>Annuler</Button>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {addresses.map(addr => (
-                      <div key={addr.id} className="p-4 border rounded-lg">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded bg-jomionstore-primary text-white flex items-center justify-center"><MapPin className="w-5 h-5"/></div>
-                            <div>
-                              <div className="font-medium">{addr.full_name}</div>
-                              <div className="text-xs text-gray-600">{addr.address_line}, {addr.city}, {addr.country}</div>
-                              {'delivery_method' in addr && (
-                                <div className="text-xs text-gray-500 mt-1">Préférence: {(addr as any).delivery_method === 'express' ? 'Express' : 'Standard'}</div>
-                              )}
-                              {'delivery_instructions' in addr && (addr as any).delivery_instructions && (
-                                <div className="text-xs text-gray-500 mt-1">Instructions: {(addr as any).delivery_instructions}</div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {!addr.is_default && <Button variant="outline" onClick={async ()=>{
-                              if (!user?.id) return;
-                              const res = await AccountService.setDefaultAddress(user.id, addr.id);
-                              if (res.success) {
-                                const reload = await AccountService.getAddresses(user.id);
-                                if (reload.success && reload.data) setAddresses(reload.data);
-                              }
-                            }}>Définir par défaut</Button>}
-                            <Button variant="outline"><Pencil className="w-4 h-4"/></Button>
-                            <Button variant="outline" className="text-red-600" onClick={async ()=>{
-                              const res = await AccountService.deleteAddress(addr.id);
-                              if (res.success) setAddresses(a => a.filter(x => x.id !== addr.id));
-                            }}><Trash2 className="w-4 h-4"/></Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Conseils</CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-gray-600 space-y-2">
-                  <p>Ajoutez plusieurs adresses pour faciliter vos livraisons.</p>
-                </CardContent>
-              </Card>
+              <h1 className="text-xl sm:text-2xl font-bold">Mes adresses</h1>
+              <p className="text-sm text-gray-600 mt-1">{addresses.length} adresse(s) enregistrée(s)</p>
             </div>
+            {!isFormOpen && (
+              <Button onClick={() => setAdding(true)} className="bg-jomionstore-primary hover:bg-orange-700">
+                <Plus className="w-4 h-4 mr-2" /> Nouvelle adresse
+              </Button>
+            )}
           </div>
+
+          {/* Form */}
+          {isFormOpen && (
+            <Card className="border-jomionstore-primary border-2">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center justify-between">
+                  <span>{editingId ? 'Modifier l\'adresse' : 'Nouvelle adresse'}</span>
+                  <Button variant="ghost" size="sm" onClick={handleCancel}><X className="w-4 h-4" /></Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {error && (
+                  <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">{error}</div>
+                )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Nom complet *</label>
+                    <Input
+                      placeholder="Jean DUPONT"
+                      value={form.full_name}
+                      onChange={(e) => setForm(f => ({ ...f, full_name: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Téléphone</label>
+                    <Input
+                      placeholder="+229 97 00 00 00"
+                      value={form.phone}
+                      onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Adresse complète *</label>
+                  <Input
+                    placeholder="Rue, quartier, repère..."
+                    value={form.address_line}
+                    onChange={(e) => setForm(f => ({ ...f, address_line: e.target.value }))}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Ville</label>
+                    <Input
+                      placeholder="Cotonou"
+                      value={form.city}
+                      onChange={(e) => setForm(f => ({ ...f, city: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Pays</label>
+                    <select
+                      className="w-full p-2 border rounded-md text-sm"
+                      value={form.country}
+                      onChange={(e) => setForm(f => ({ ...f, country: e.target.value }))}
+                    >
+                      <option value="Bénin">Bénin</option>
+                      <option value="Côte d'Ivoire">Côte d'Ivoire</option>
+                      <option value="Togo">Togo</option>
+                      <option value="Sénégal">Sénégal</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Mode de livraison préféré</label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        checked={form.delivery_method === 'standard'}
+                        onChange={() => setForm(f => ({ ...f, delivery_method: 'standard' }))}
+                      />
+                      <span className="text-sm">Standard (2-5 jours)</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        checked={form.delivery_method === 'express'}
+                        onChange={() => setForm(f => ({ ...f, delivery_method: 'express' }))}
+                      />
+                      <span className="text-sm">Express (1-2 jours)</span>
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Instructions de livraison</label>
+                  <Input
+                    placeholder="Ex: Sonner 2 fois, laisser au gardien..."
+                    value={form.delivery_instructions}
+                    onChange={(e) => setForm(f => ({ ...f, delivery_instructions: e.target.value }))}
+                  />
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    onClick={handleSave}
+                    disabled={loading}
+                    className="bg-jomionstore-primary hover:bg-orange-700"
+                  >
+                    {loading ? 'Enregistrement...' : (editingId ? 'Mettre à jour' : 'Enregistrer')}
+                  </Button>
+                  <Button variant="outline" onClick={handleCancel}>Annuler</Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Addresses List */}
+          {addresses.length === 0 && !isFormOpen ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="font-medium text-gray-900 mb-2">Aucune adresse enregistrée</h3>
+                <p className="text-sm text-gray-600 mb-4">Ajoutez une adresse pour faciliter vos livraisons</p>
+                <Button onClick={() => setAdding(true)} className="bg-jomionstore-primary hover:bg-orange-700">
+                  <Plus className="w-4 h-4 mr-2" /> Ajouter une adresse
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {addresses.map(addr => (
+                  <Card key={addr.id} className={`relative ${addr.is_default ? 'border-jomionstore-primary border-2' : ''}`}>
+                    {addr.is_default && (
+                      <Badge className="absolute -top-2 -right-2 bg-jomionstore-primary">
+                        <Star className="w-3 h-3 mr-1" /> Par défaut
+                      </Badge>
+                    )}
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-jomionstore-primary/10 flex items-center justify-center flex-shrink-0">
+                          <MapPin className="w-5 h-5 text-jomionstore-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <User className="w-4 h-4 text-gray-400" />
+                            <span className="font-semibold truncate">{addr.full_name}</span>
+                          </div>
+                          {addr.phone && (
+                            <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                              <Phone className="w-4 h-4 text-gray-400" />
+                              <span>{addr.phone}</span>
+                          </div>
+                          )}
+                          <div className="flex items-start gap-2 text-sm text-gray-600">
+                            <Home className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                            <span>{addr.address_line}, {addr.city}, {addr.country}</span>
+                        </div>
+                          {addr.delivery_method && (
+                            <Badge variant="outline" className="mt-2 text-xs">
+                              {addr.delivery_method === 'express' ? '🚀 Express' : '📦 Standard'}
+                            </Badge>
+                          )}
+                          {addr.delivery_instructions && (
+                            <p className="text-xs text-gray-500 mt-2 italic">"{addr.delivery_instructions}"</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2 mt-4 pt-3 border-t">
+                        {!addr.is_default && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 text-xs"
+                            onClick={() => handleSetDefault(addr.id)}
+                          >
+                            <Check className="w-3 h-3 mr-1" /> Par défaut
+                          </Button>
+                        )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(addr)}
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-red-600 hover:bg-red-50"
+                          onClick={() => handleDelete(addr.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
+          )}
         </div>
       </div>
     </ProtectedRoute>
   );
 }
-

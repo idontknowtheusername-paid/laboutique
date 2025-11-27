@@ -103,7 +103,8 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
                       </div>
                     </Link>
 
-                    {product.discount && (
+                    {/* Ne pas afficher le badge si la réduction est exactement 23% (imports AliExpress) */}
+                    {product.discount && product.discount !== 23 && (
                       <Badge className="absolute top-0.5 left-0.5 bg-red-500 text-white font-bold text-[10px] px-1 py-0">
                         -{product.discount}%
                       </Badge>

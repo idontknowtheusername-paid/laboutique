@@ -230,11 +230,16 @@ export default function CategoryProductsCarousel({
                       </div>
                     </Link>
 
-                    {product.compare_price && product.compare_price > product.price && (
-                      <Badge className="absolute top-0.5 left-0.5 bg-red-500 text-white font-bold text-[10px] px-1 py-0">
-                        -{Math.round(((product.compare_price - product.price) / product.compare_price) * 100)}%
-                      </Badge>
-                    )}
+                    {product.compare_price && product.compare_price > product.price && (() => {
+                      const discount = Math.round(((product.compare_price - product.price) / product.compare_price) * 100);
+                      // Ne pas afficher le badge si la réduction est exactement 23% (imports AliExpress)
+                      if (discount === 23) return null;
+                      return (
+                        <Badge className="absolute top-0.5 left-0.5 bg-red-500 text-white font-bold text-[10px] px-1 py-0">
+                          -{discount}%
+                        </Badge>
+                      );
+                    })()}
 
                     <WishlistButton
                       productId={product.id}

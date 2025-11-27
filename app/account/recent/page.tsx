@@ -54,15 +54,15 @@ export default function RecentPage() {
               {products.length === 0 ? (
                 <div className="text-sm text-gray-500">Aucun produit consulté récemment.</div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
                   {products.map((p) => (
                     <Link key={p.id} href={`/product/${p.slug}`} className="group">
                       <div className="border rounded-lg overflow-hidden">
-                        <div className="relative w-full h-36 bg-gray-50">
-                          <Image src={p.images?.[0] || '/placeholder-product.jpg'} alt={p.name} fill className="object-cover" />
+                        <div className="relative w-full aspect-square bg-gray-50">
+                          <Image src={p.images?.[0] || '/placeholder-product.jpg'} alt={p.name} fill className="object-cover" sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw" />
                         </div>
-                        <div className="p-3">
-                          <div className="text-sm font-medium line-clamp-2 group-hover:text-jomionstore-primary">{p.name}</div>
+                        <div className="p-2 sm:p-3">
+                          <div className="text-xs sm:text-sm font-medium line-clamp-2 group-hover:text-jomionstore-primary">{p.name}</div>
                         </div>
                       </div>
                     </Link>

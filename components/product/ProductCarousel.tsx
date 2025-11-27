@@ -210,8 +210,8 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
                       loading="lazy"
                     />
                     
-                    {/* Badges */}
-                    {product.discount && (
+                    {/* Badges - Ne pas afficher si réduction = 23% (imports AliExpress) */}
+                    {product.discount && product.discount !== 23 && (
                       <Badge className="absolute top-2 left-2 bg-red-500 text-white text-xs">
                         -{product.discount}%
                       </Badge>

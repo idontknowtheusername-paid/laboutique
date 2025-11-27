@@ -142,8 +142,8 @@ export default function OrdersPage() {
       <div>
         <Breadcrumb items={[{ label: 'Commandes' }]} />
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Sidebar */}
-        <div className="lg:col-span-1">
+          {/* Sidebar - Hidden on mobile */}
+          <div className="hidden lg:block lg:col-span-1">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -178,7 +178,7 @@ export default function OrdersPage() {
         </div>
 
         {/* Main Content */}
-        <div className="lg:col-span-3">
+          <div className="col-span-1 lg:col-span-3">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -187,12 +187,13 @@ export default function OrdersPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {/* Filtres de statut */}
-            <div className="mb-4 flex flex-wrap gap-2">
+                {/* Filtres de statut - Scrollable sur mobile */}
+                <div className="mb-4 flex gap-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide">
                 <Button
                   variant={statusFilter === undefined ? "default" : "outline"}
                   size="sm"
                   onClick={() => handleStatusFilter(undefined)}
+                    className="flex-shrink-0"
                 >
                   Toutes
                 </Button>
@@ -200,6 +201,7 @@ export default function OrdersPage() {
                   variant={statusFilter === "pending" ? "default" : "outline"}
                   size="sm"
                   onClick={() => handleStatusFilter("pending")}
+                    className="flex-shrink-0"
                 >
                   En attente
                 </Button>
@@ -207,6 +209,7 @@ export default function OrdersPage() {
                   variant={statusFilter === "confirmed" ? "default" : "outline"}
                   size="sm"
                   onClick={() => handleStatusFilter("confirmed")}
+                    className="flex-shrink-0"
                 >
                   Confirmées
                 </Button>
@@ -216,6 +219,7 @@ export default function OrdersPage() {
                   }
                   size="sm"
                   onClick={() => handleStatusFilter("processing")}
+                    className="flex-shrink-0"
                 >
                   En préparation
                 </Button>
@@ -223,6 +227,7 @@ export default function OrdersPage() {
                   variant={statusFilter === "shipped" ? "default" : "outline"}
                   size="sm"
                   onClick={() => handleStatusFilter("shipped")}
+                    className="flex-shrink-0"
                 >
                   Expédiées
                 </Button>
@@ -230,6 +235,7 @@ export default function OrdersPage() {
                   variant={statusFilter === "delivered" ? "default" : "outline"}
                   size="sm"
                   onClick={() => handleStatusFilter("delivered")}
+                    className="flex-shrink-0"
                 >
                   Livrées
                 </Button>
@@ -237,6 +243,7 @@ export default function OrdersPage() {
                   variant={statusFilter === "cancelled" ? "default" : "outline"}
                   size="sm"
                   onClick={() => handleStatusFilter("cancelled")}
+                    className="flex-shrink-0"
                 >
                   Annulées
                 </Button>
@@ -345,37 +352,37 @@ export default function OrdersPage() {
                             </span>
                           </div>
 
-                          {/* Order Actions */}
-                          <div className="flex items-center justify-between pt-4 border-t">
-                            <div className="flex space-x-3">
+                          {/* Order Actions - Stacked on mobile */}
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t">
+                            <div className="flex flex-wrap gap-2">
                               <Link href={`/account/orders/${order.id}`}>
-                                <Button variant="outline" size="sm">
+                                <Button variant="outline" size="sm" className="w-full sm:w-auto">
                                 <Eye className="w-4 h-4 mr-2" />
-                                Voir les détails
+                                  Détails
                                 </Button>
                               </Link>
                               {order.status === "delivered" && (
                                 <>
-                                  <Button variant="outline" size="sm">
+                                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
                                     <Star className="w-4 h-4 mr-2" />
                                     Noter
                                   </Button>
-                                  <Link href={`/account/returns?order=${order.id}`}>
-                                    <Button variant="outline" size="sm">
+                                  <Link href={`/account/returns?order=${order.id}`} className="flex-1 sm:flex-none">
+                                    <Button variant="outline" size="sm" className="w-full">
                                       <RotateCcw className="w-4 h-4 mr-2" />
-                                      Ouvrir un retour
+                                      Retour
                                     </Button>
                                   </Link>
                                 </>
                               )}
                               {order.status === "shipped" && (
-                                <Button variant="outline" size="sm">
+                                <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
                                   <Truck className="w-4 h-4 mr-2" />
                                   Suivre
                                 </Button>
                               )}
                             </div>
-                            <Button className="bg-orange-600 hover:bg-orange-700" onClick={() => handleReorder(order)}>
+                            <Button className="bg-orange-600 hover:bg-orange-700 w-full sm:w-auto" onClick={() => handleReorder(order)}>
                               Commander à nouveau
                             </Button>
                           </div>
@@ -416,12 +423,12 @@ export default function OrdersPage() {
           <Card className="mt-8">
             <CardContent className="p-6">
               <Tabs defaultValue="all" className="w-full">
-                <TabsList className="grid w-full grid-cols-5">
-                  <TabsTrigger value="all">Toutes</TabsTrigger>
-                  <TabsTrigger value="delivered">Livrées</TabsTrigger>
-                  <TabsTrigger value="shipped">Expédiées</TabsTrigger>
-                  <TabsTrigger value="processing">En cours</TabsTrigger>
-                  <TabsTrigger value="cancelled">Annulées</TabsTrigger>
+                  <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5">
+                    <TabsTrigger value="all" className="text-xs sm:text-sm">Toutes</TabsTrigger>
+                    <TabsTrigger value="delivered" className="text-xs sm:text-sm">Livrées</TabsTrigger>
+                    <TabsTrigger value="shipped" className="text-xs sm:text-sm hidden sm:flex">Expédiées</TabsTrigger>
+                    <TabsTrigger value="processing" className="text-xs sm:text-sm">En cours</TabsTrigger>
+                    <TabsTrigger value="cancelled" className="text-xs sm:text-sm hidden sm:flex">Annulées</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="all">

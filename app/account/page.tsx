@@ -329,37 +329,40 @@ export default function AccountPage() {
               </div>
 
               {/* Quick Actions */}
-              <Card className="mt-8">
+            <Card className="mt-6 sm:mt-8">
                 <CardHeader>
-                  <CardTitle className="text-lg">Actions rapides</CardTitle>
+                <CardTitle className="text-base sm:text-lg">Actions rapides</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-2 sm:gap-4">
                     <Link href="/order-tracking">
                       <Button
                         variant="outline"
-                        className="w-full h-16 flex-col"
+                      className="w-full h-12 sm:h-16 flex-col text-xs sm:text-sm"
                       >
-                        <Package className="w-5 h-5 mb-2" />
-                        Suivre une commande
+                      <Package className="w-4 h-4 sm:w-5 sm:h-5 mb-1 sm:mb-2" />
+                      <span className="hidden sm:inline">Suivre commande</span>
+                      <span className="sm:hidden">Suivi</span>
                       </Button>
                     </Link>
                     <Link href="/contact">
                       <Button
                         variant="outline"
-                        className="w-full h-16 flex-col"
+                      className="w-full h-12 sm:h-16 flex-col text-xs sm:text-sm"
                       >
-                        <Shield className="w-5 h-5 mb-2" />
-                        Support client
+                      <Shield className="w-4 h-4 sm:w-5 sm:h-5 mb-1 sm:mb-2" />
+                      <span className="hidden sm:inline">Support client</span>
+                      <span className="sm:hidden">Support</span>
                       </Button>
                     </Link>
                     <Link href="/help">
                       <Button
                         variant="outline"
-                        className="w-full h-16 flex-col"
+                      className="w-full h-12 sm:h-16 flex-col text-xs sm:text-sm"
                       >
-                        <Settings className="w-5 h-5 mb-2" />
-                        Centre d'aide
+                      <Settings className="w-4 h-4 sm:w-5 sm:h-5 mb-1 sm:mb-2" />
+                      <span className="hidden sm:inline">Centre d'aide</span>
+                      <span className="sm:hidden">Aide</span>
                       </Button>
                     </Link>
                   </div>
@@ -367,43 +370,43 @@ export default function AccountPage() {
               </Card>
 
               {/* KPIs */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mt-6 sm:mt-8">
                 <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-gray-600">Dépenses totales</CardTitle>
+                <CardHeader className="pb-1 sm:pb-2">
+                  <CardTitle className="text-xs sm:text-sm text-gray-600">Dépenses</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{formatPrice(userStats?.totalSpent || 0)}</div>
+                <CardContent className="pt-0">
+                  <div className="text-lg sm:text-2xl font-bold">{formatPrice(userStats?.totalSpent || 0)}</div>
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-gray-600">Commandes</CardTitle>
+                <CardHeader className="pb-1 sm:pb-2">
+                  <CardTitle className="text-xs sm:text-sm text-gray-600">Commandes</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{userStats?.totalOrders || 0}</div>
+                <CardContent className="pt-0">
+                  <div className="text-lg sm:text-2xl font-bold">{userStats?.totalOrders || 0}</div>
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-gray-600">Avis donnés</CardTitle>
+                <CardHeader className="pb-1 sm:pb-2">
+                  <CardTitle className="text-xs sm:text-sm text-gray-600">Avis</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{userStats?.reviewsCount || 0}</div>
+                <CardContent className="pt-0">
+                  <div className="text-lg sm:text-2xl font-bold">{userStats?.reviewsCount || 0}</div>
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-gray-600">Wishlist</CardTitle>
+                <CardHeader className="pb-1 sm:pb-2">
+                  <CardTitle className="text-xs sm:text-sm text-gray-600">Wishlist</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{userStats?.wishlistItems || 0}</div>
+                <CardContent className="pt-0">
+                  <div className="text-lg sm:text-2xl font-bold">{userStats?.wishlistItems || 0}</div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Charts */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            {/* Charts - Hidden on mobile */}
+            <div className="hidden sm:grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
                 <Card>
                   <CardHeader>
                     <CardTitle>Évolution des dépenses</CardTitle>
@@ -446,22 +449,22 @@ export default function AccountPage() {
               {/* Activity Timeline */}
               <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle>Activité récente</CardTitle>
+                <CardTitle className="text-base sm:text-lg">Activité récente</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {recentOrders.length === 0 ? (
                     <div className="text-sm text-gray-500">Aucune activité récente</div>
                   ) : (
-                    <div className="space-y-3">
-                      {recentOrders.slice(0, 6).map(o => (
-                        <div key={o.id} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div className="space-y-2 sm:space-y-3">
+                      {recentOrders.slice(0, 4).map(o => (
+                        <div key={o.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-3 rounded-lg border gap-2">
                           <div>
-                            <div className="font-medium">Commande #{o.order_number}</div>
-                            <div className="text-xs text-gray-600">{new Date(o.created_at).toLocaleString('fr-FR')}</div>
+                            <div className="font-medium text-sm">#{o.order_number}</div>
+                            <div className="text-xs text-gray-600">{new Date(o.created_at).toLocaleDateString('fr-FR')}</div>
                           </div>
-                          <div className="flex items-center gap-4">
-                            <Badge className="bg-gray-100 text-gray-800">{o.status}</Badge>
-                            <div className="font-semibold">{formatPrice(o.total_amount)}</div>
+                          <div className="flex items-center gap-2 sm:gap-4">
+                            <Badge className="bg-gray-100 text-gray-800 text-xs">{o.status}</Badge>
+                            <div className="font-semibold text-sm">{formatPrice(o.total_amount)}</div>
                           </div>
                         </div>
                       ))}
@@ -473,22 +476,22 @@ export default function AccountPage() {
               {/* Recommendations */}
               <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle>Recommandations pour vous</CardTitle>
+                <CardTitle className="text-base sm:text-lg">Recommandations</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {recommendations.length === 0 ? (
                     <div className="text-sm text-gray-500">Aucune recommandation pour le moment</div>
                   ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {recommendations.map((p) => (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4">
+                      {recommendations.slice(0, 4).map((p) => (
                         <Link key={p.id} href={`/product/${p.slug}`} className="group">
                           <div className="border rounded-lg overflow-hidden">
-                            <div className="relative w-full h-36 bg-gray-50">
-                              <NextImage src={p.images?.[0] || '/placeholder-product.jpg'} alt={p.name} fill className="object-cover" sizes="(min-width: 768px) 25vw, 50vw" />
+                            <div className="relative w-full aspect-square bg-gray-50">
+                              <NextImage src={p.images?.[0] || '/placeholder-product.jpg'} alt={p.name} fill className="object-cover" sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw" />
                             </div>
-                            <div className="p-3">
-                              <div className="text-sm font-medium line-clamp-2 group-hover:text-jomionstore-primary">{p.name}</div>
-                              <div className="text-sm text-gray-700 mt-1">{formatPrice(p.price)}</div>
+                            <div className="p-2 sm:p-3">
+                              <div className="text-xs sm:text-sm font-medium line-clamp-2 group-hover:text-jomionstore-primary">{p.name}</div>
+                              <div className="text-xs sm:text-sm text-gray-700 mt-1">{formatPrice(p.price)}</div>
                             </div>
                           </div>
                         </Link>

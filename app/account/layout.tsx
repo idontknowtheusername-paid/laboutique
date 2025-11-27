@@ -9,11 +9,14 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
       <Header />
       <CategoryMenu />
 
-      <div className="container py-8">
+      <div className="container py-8 pb-24 lg:pb-8">
         {children}
       </div>
 
-      <Footer />
+      {/* Footer masqué sur mobile/tablette, visible sur desktop uniquement */}
+      <div className="hidden lg:block">
+        <Footer />
+      </div>
     </div>
   );
 }

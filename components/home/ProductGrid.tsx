@@ -178,7 +178,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
                   {/* Badges - Uniformisé */}
                   <div className="absolute top-0.5 left-0.5 space-y-0.5">
-                      {transformedProduct.discount && (
+                    {/* Ne pas afficher le badge si la réduction est exactement 23% (imports AliExpress) */}
+                    {transformedProduct.discount && transformedProduct.discount !== 23 && (
                       <Badge className="bg-red-500 text-white font-bold text-[10px] px-1 py-0">
                           -{transformedProduct.discount}%
                         </Badge>

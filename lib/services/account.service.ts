@@ -20,8 +20,12 @@ export interface AddressRecord {
   address_line: string;
   city?: string;
   country?: string;
+  postal_code?: string;
   is_default?: boolean;
+  delivery_method?: 'standard' | 'express';
+  delivery_instructions?: string;
   created_at?: string;
+  updated_at?: string;
 }
 
 export interface NotificationPrefs {
@@ -132,14 +136,22 @@ export class AccountService extends BaseService {
 
   static async addAddress(userId: string, payload: Partial<AddressRecord>): Promise<ServiceResponse<AddressRecord | null>> {
     try {
+      console.log('[AccountService] Adding address for user:', userId, payload);
       const { data, error } = await (this.getSupabaseClient() as any)
         .from('addresses')
         .insert([{ user_id: userId, ...payload }])
         .select()
         .single();
-      if (error) throw error;
+
+      console.log('[AccountService] Insert result:', { data, error });
+
+      if (error) {
+        console.error('[AccountService] Insert error:', error);
+        throw error;
+      }
       return this.createResponse(data as AddressRecord);
     } catch (error) {
+      console.error('[AccountService] addAddress exception:', error);
       return this.createResponse(null, this.handleError(error));
     }
   }

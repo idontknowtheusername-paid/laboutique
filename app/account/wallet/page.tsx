@@ -47,14 +47,14 @@ export default function WalletPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
               <Card>
-                <CardHeader className="flex items-center justify-between">
+                <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <CardTitle className="flex items-center"><WalletIcon className="w-5 h-5 mr-2"/>Solde</CardTitle>
-                  <Badge variant="secondary">{loading ? '...' : formatPrice(balance)}</Badge>
+                  <Badge variant="secondary" className="text-lg w-fit">{loading ? '...' : formatPrice(balance)}</Badge>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm"><ArrowDownToLine className="w-4 h-4 mr-2"/>Recharger</Button>
-                    <Button variant="outline" size="sm"><ArrowUpFromLine className="w-4 h-4 mr-2"/>Retirer</Button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button variant="outline" size="sm" className="w-full"><ArrowDownToLine className="w-4 h-4 mr-1 sm:mr-2" /><span className="text-xs sm:text-sm">Recharger</span></Button>
+                    <Button variant="outline" size="sm" className="w-full"><ArrowUpFromLine className="w-4 h-4 mr-1 sm:mr-2" /><span className="text-xs sm:text-sm">Retirer</span></Button>
                   </div>
                 </CardContent>
               </Card>
@@ -69,12 +69,12 @@ export default function WalletPage() {
                   ) : (
                     <div className="space-y-3">
                       {transactions.map((t) => (
-                        <div key={t.id} className="flex items-center justify-between p-3 border rounded-md">
+                        <div key={t.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border rounded-md gap-2">
                           <div>
-                            <div className="font-medium">{t.type === 'topup' ? 'Rechargement' : t.type === 'refund' ? 'Remboursement' : 'Achat'}</div>
+                            <div className="font-medium text-sm">{t.type === 'topup' ? 'Rechargement' : t.type === 'refund' ? 'Remboursement' : 'Achat'}</div>
                             <div className="text-xs text-gray-600">{t.reference || ''} • {t.created_at ? new Date(t.created_at).toLocaleString('fr-FR') : ''}</div>
                           </div>
-                          <div className={`font-semibold ${t.type === 'purchase' ? 'text-red-600' : 'text-green-600'}`}>
+                          <div className={`font-semibold text-sm ${t.type === 'purchase' ? 'text-red-600' : 'text-green-600'}`}>
                             {t.type === 'purchase' ? '-' : '+'}{formatPrice(t.amount)}
                           </div>
                         </div>

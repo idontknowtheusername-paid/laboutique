@@ -2,9 +2,6 @@
 
 import React from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import Header from '@/components/layout/Header';
-import CategoryMenu from '@/components/layout/CategoryMenu';
-import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -27,10 +24,7 @@ export default function NotificationsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-jomionstore-background">
-        <Header />
-        <CategoryMenu />
-        <div className="container py-8">
+      <div>
           <Breadcrumb items={[{ label: 'Notifications' }]} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -108,9 +102,7 @@ export default function NotificationsPage() {
                 <CardContent className="text-sm text-gray-600">Vous pouvez gérer vos consentements à tout moment.</CardContent>
               </Card>
             </div>
-          </div>
         </div>
-        <Footer />
       </div>
     </ProtectedRoute>
   );

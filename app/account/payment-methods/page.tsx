@@ -2,15 +2,13 @@
 
 import React from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import Header from '@/components/layout/Header';
-import CategoryMenu from '@/components/layout/CategoryMenu';
-import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CreditCard, Plus, Trash2, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { AccountService, PaymentMethod } from '@/lib/services/account.service';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 
 export default function PaymentMethodsPage() {
   const { user } = useAuth();
@@ -28,17 +26,8 @@ export default function PaymentMethodsPage() {
   }, [user?.id]);
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-jomionstore-background">
-        <Header />
-        <CategoryMenu />
-        <div className="container py-8">
-          <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-            <a href="/" className="hover:text-jomionstore-primary">Accueil</a>
-            <span>/</span>
-            <a href="/account" className="hover:text-jomionstore-primary">Mon compte</a>
-            <span>/</span>
-            <span className="text-gray-900 font-medium">Moyens de paiement</span>
-          </nav>
+      <div>
+        <Breadcrumb items={[{ label: 'Moyens de paiement' }]} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
@@ -86,27 +75,29 @@ export default function PaymentMethodsPage() {
 
                   <div className="space-y-3">
                     {methods.map(pm => (
-                      <div key={pm.id} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded bg-jomionstore-primary text-white flex items-center justify-center"><CreditCard className="w-5 h-5"/></div>
-                          <div>
-                            <div className="font-medium">{pm.brand || 'Carte'} se terminant par {pm.last4 || '****'}</div>
-                            <div className="text-xs text-gray-600">Expire {pm.exp_month}/{pm.exp_year} • Titulaire: {pm.holder_name || '—'}</div>
+                      <div key={pm.id} className="p-4 border rounded-lg">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded bg-jomionstore-primary text-white flex items-center justify-center flex-shrink-0"><CreditCard className="w-5 h-5" /></div>
+                            <div>
+                              <div className="font-medium text-sm">{pm.brand || 'Carte'} •••• {pm.last4 || '****'}</div>
+                              <div className="text-xs text-gray-600">Expire {pm.exp_month}/{pm.exp_year}</div>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {!pm.is_default && <Button variant="outline" onClick={async () => {
-                            if (!user?.id) return;
-                            const res = await AccountService.setDefaultPaymentMethod(user.id, pm.id);
-                            if (res.success) {
-                              const reload = await AccountService.getPaymentMethods(user.id);
-                              if (reload.success && reload.data) setMethods(reload.data);
-                            }
-                          }}>Définir par défaut</Button>}
-                          <Button variant="outline" className="text-red-600" onClick={async () => {
-                            const res = await AccountService.deletePaymentMethod(pm.id);
-                            if (res.success) setMethods(m => m.filter(x => x.id !== pm.id));
-                          }}><Trash2 className="w-4 h-4"/></Button>
+                          <div className="flex items-center gap-2">
+                            {!pm.is_default && <Button variant="outline" size="sm" className="flex-1 sm:flex-none text-xs" onClick={async () => {
+                              if (!user?.id) return;
+                              const res = await AccountService.setDefaultPaymentMethod(user.id, pm.id);
+                              if (res.success) {
+                                const reload = await AccountService.getPaymentMethods(user.id);
+                                if (reload.success && reload.data) setMethods(reload.data);
+                              }
+                            }}>Par défaut</Button>}
+                            <Button variant="outline" size="sm" className="text-red-600" onClick={async () => {
+                              const res = await AccountService.deletePaymentMethod(pm.id);
+                              if (res.success) setMethods(m => m.filter(x => x.id !== pm.id));
+                            }}><Trash2 className="w-4 h-4" /></Button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -125,11 +116,9 @@ export default function PaymentMethodsPage() {
                   <div className="flex items-center gap-2"><Shield className="w-4 h-4"/> 3D Secure</div>
                   <div className="flex items-center gap-2"><Shield className="w-4 h-4"/> Cartes et Mobile Money</div>
                 </CardContent>
-              </Card>
-            </div>
+            </Card>
           </div>
         </div>
-        <Footer />
       </div>
     </ProtectedRoute>
   );
