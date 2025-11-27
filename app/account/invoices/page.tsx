@@ -212,7 +212,7 @@ export default function InvoicesPage() {
                                 <div className="w-full sm:w-48 space-y-1 text-sm">
                                   <div className="flex justify-between">
                                     <span className="text-gray-600">Sous-total</span>
-                                    <span>{formatPrice(order.subtotal_amount || order.total_amount)}</span>
+                                    <span>{formatPrice(order.total_amount)}</span>
                                   </div>
                                   {order.shipping_amount && order.shipping_amount > 0 && (
                                     <div className="flex justify-between">
