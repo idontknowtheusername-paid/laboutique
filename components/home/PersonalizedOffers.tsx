@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import Image from 'next/image';
 import { Sparkles, Gift, Crown, Star, Heart, Eye, Zap } from 'lucide-react';
+import ProductImageSwiper from '@/components/product/ProductImageSwiper';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,7 +16,7 @@ interface PersonalizedProduct {
   id: string;
   name: string;
   slug: string;
-  image: string;
+  images: string[];
   price: number;
   comparePrice?: number;
   rating: number;
@@ -35,7 +35,7 @@ const mapToPersonalized = (p: Product, reason: string): PersonalizedProduct => (
   id: p.id,
   name: p.name,
   slug: p.slug,
-  image: p.images?.[0] || '/placeholder-product.jpg',
+  images: p.images || [],
   price: p.price,
   comparePrice: p.compare_price,
   rating: generateConsistentRating(p.id, p.average_rating),
@@ -241,20 +241,14 @@ const PersonalizedOffers = () => {
           {items.map((product) => (
             <Card key={product.id} className="group hover:shadow-lg transition-all duration-300 border border-orange-200 h-full flex flex-col bg-white snap-start shrink-0 w-[180px]">
               <Link href={`/product/${product.slug}`} className="relative overflow-hidden block">
-                {/* Product Image - uniformisé */}
+                {/* Product Image - avec défilement automatique au survol */}
                 <div className="aspect-square bg-gray-100 relative rounded">
-                  <Image
-                    src={product.image}
+                  <ProductImageSwiper
+                    images={product.images}
                     alt={product.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                     sizes="180px"
-                    loading="lazy"
                     quality={85}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/images/placeholder-product.jpg';
-                    }}
+                    interval={800}
                   />
                 </div>
 

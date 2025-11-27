@@ -6,13 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, ShoppingCart, Heart, RefreshCw, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ProductsService, Product } from '@/lib/services';
 import { useCart } from '@/contexts/CartContext';
 import { WishlistButton } from '@/components/ui/wishlist-button';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { ErrorState } from '@/components/ui/error-state';
 import { generateConsistentRating, generateConsistentReviews } from '@/lib/utils/rating';
+import ProductImageSwiper from '@/components/product/ProductImageSwiper';
 
 // Cache for trending products with TTL
 const CACHE_KEY = 'trending_products';
@@ -200,7 +200,7 @@ function TrendingProductsContent() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-3 lg:grid-cols-6 gap-6">
             {[...Array(4)].map((_, index) => (
               <Card key={index} className="animate-pulse">
                 <CardContent className="p-4">
@@ -311,29 +311,13 @@ function TrendingProductsContent() {
                   <div className="relative mb-1">
                   <Link href={`/product/${product.slug}`}>
                       <div className="aspect-square relative overflow-hidden rounded bg-gray-100">
-                      {product.images?.[0] ? (
-                        <Image
-                          src={product.images[0]}
+                        <ProductImageSwiper
+                          images={product.images || []}
                           alt={product.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                            sizes="180px"
-                            loading="lazy"
-                            quality={85}
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              const parent = target.parentElement;
-                              if (parent) {
-                                parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">Pas d\'image</div>';
-                              }
-                            }}
+                          sizes="180px"
+                          quality={85}
+                          interval={800}
                         />
-                      ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">
-                              Pas d'image
-                          </div>
-                      )}
                     </div>
                   </Link>
 

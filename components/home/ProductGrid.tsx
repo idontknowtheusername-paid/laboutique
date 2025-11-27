@@ -13,8 +13,8 @@ import { ErrorState } from '@/components/ui/error-state';
 import { WishlistButton } from '@/components/ui/wishlist-button';
 import { useHydration } from '@/hooks/useHydration';
 import { Product } from '@/lib/services/products.service';
-import Image from 'next/image';
 import InteractiveFeedback from '@/components/ui/InteractiveFeedback';
+import ProductImageSwiper from '@/components/product/ProductImageSwiper';
 import { useFeedback } from '@/components/ui/FeedbackProvider';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { generateConsistentRating, generateConsistentReviews } from '@/lib/utils/rating';
@@ -71,8 +71,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
   // Responsive grid columns - uniformisé avec FlashSales
   const getGridCols = () => {
-    // Grille adaptative : 4 colonnes sur mobile/tablette, 6 sur desktop
-    return 'grid-cols-4 lg:grid-cols-6';
+    // Grille adaptative : 3 colonnes sur mobile/tablette, 6 sur desktop
+    return 'grid-cols-3 lg:grid-cols-6';
   };
 
   // Enhanced retry function with exponential backoff
@@ -92,6 +92,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
       return {
         ...product,
+        images: product.images || [],
         image: product.images?.[0] || '/images/placeholder-product.jpg',
         comparePrice: product.compare_price,
         rating: generateConsistentRating(product.id, product.average_rating),
@@ -157,22 +158,14 @@ const ProductGrid: React.FC<ProductGridProps> = ({
             {transformedProducts.map((transformedProduct) => (
               <Card key={transformedProduct.id} className="group hover:shadow-lg transition-all duration-300 border border-gray-200 h-full flex flex-col">
                   <Link href={`/product/${transformedProduct.slug}`} className="relative overflow-hidden block">
-                  {/* Product Image - Uniformisé */}
+                  {/* Product Image - Avec défilement automatique au survol */}
                   <div className="aspect-square bg-gray-100 relative rounded">
-                      <Image
-                        src={transformedProduct.image}
-                        alt={transformedProduct.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        sizes="(max-width: 480px) 100vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-                        loading="lazy"
+                    <ProductImageSwiper
+                      images={transformedProduct.images || [transformedProduct.image]}
+                      alt={transformedProduct.name}
+                      sizes="(max-width: 480px) 100vw, (max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                         quality={85}
-                        placeholder="blur"
-                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = '/images/placeholder-product.jpg';
-                        }}
+                      interval={800}
                       />
                     </div>
 

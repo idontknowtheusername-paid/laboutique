@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
+import { getUserDisplayName } from '@/lib/utils/user-name-helper';
 
 // =============================================
 // GET /api/reviews?product_id=xxx
@@ -43,17 +44,37 @@ export async function GET(request: NextRequest) {
 
     // Get user profiles for the reviews (name, avatar, etc.)
     const userIds = reviews && reviews.length > 0 ? [...new Set(reviews.map((r: any) => r.user_id))] : [];
+
+    // Get profiles (using first_name and last_name, not full_name)
     const { data: profiles } = await supabaseAdmin
       .from('profiles')
-      .select('id, full_name, avatar_url')
+      .select('id, first_name, last_name, avatar_url')
       .in('id', userIds);
+
+    // Get user emails from auth.users as fallback
+    const { data: authUsers } = await supabaseAdmin.auth.admin.listUsers();
+    const userEmailMap = new Map(
+      authUsers.users.map(u => [u.id, u.email])
+    );
 
     // Merge user data with reviews
     const reviewsWithUsers = reviews?.map((review: any) => {
       const profile: any = profiles?.find((p: any) => p.id === review.user_id);
+      const email = userEmailMap.get(review.user_id);
+
+      // Build full name from first_name and last_name
+      let fullName = null;
+      if (profile?.first_name || profile?.last_name) {
+        const parts = [profile?.first_name, profile?.last_name].filter(Boolean);
+        fullName = parts.join(' ');
+      }
+
+      // Use helper function to get display name with smart fallback
+      const userName = getUserDisplayName(fullName, email, 'Client');
+
       return {
         ...review,
-        user_name: profile?.full_name || 'Utilisateur',
+        user_name: userName,
         user_avatar: profile?.avatar_url || null,
       };
     });

@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { WishlistButton } from '@/components/ui/wishlist-button';
+import { WhatsAppButton } from '@/components/ui/whatsapp-button';
 import { ProductsService, Product as ProductType } from '@/lib/services/products.service';
 import { ErrorState } from '@/components/ui/error-state';
 import { generateConsistentRating, generateConsistentReviews } from '@/lib/utils/rating';
@@ -116,6 +117,7 @@ export default function ProductDetailPage() {
                 id: p.id,
                 name: p.name,
                 slug: p.slug,
+                images: p.images || [],
                 image: p.images?.[0] || '/placeholder-product.jpg',
                 price: p.price,
                 comparePrice: p.compare_price,
@@ -132,6 +134,7 @@ export default function ProductDetailPage() {
                 id: p.id,
                 name: p.name,
                 slug: p.slug,
+                images: p.images || [],
                 image: p.images?.[0] || '/placeholder-product.jpg',
                 price: p.price,
                 comparePrice: p.compare_price,
@@ -191,6 +194,7 @@ export default function ProductDetailPage() {
           id: p.id,
           name: p.name,
           slug: p.slug,
+          images: p.images || [],
           image: p.images?.[0] || '/placeholder-product.jpg',
           price: p.price,
           rating: 0,
@@ -403,6 +407,41 @@ export default function ProductDetailPage() {
                 <p className="text-green-600 font-medium">
                   Vous économisez {formatPrice(product.compare_price - product.price)}
                 </p>
+              )}
+            </div>
+
+            {/* Stock faible & Délai de livraison */}
+            <div className="space-y-2">
+              {/* Indicateur de stock faible */}
+              {product?.track_quantity && product.quantity > 0 && product.quantity <= 5 && (
+                <div className="flex items-center gap-2 text-orange-600 bg-orange-50 px-3 py-2 rounded-lg">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                  </span>
+                  <span className="font-medium text-sm">
+                    Plus que {product.quantity} en stock !
+                  </span>
+                </div>
+              )}
+
+              {/* Délai de livraison estimé - 1 à 3 jours */}
+              {product && (
+                <div className="flex items-center gap-2 text-green-700 bg-green-50 px-3 py-2 rounded-lg">
+                  <Truck className="w-4 h-4" />
+                  <span className="text-sm">
+                    Livré entre{' '}
+                    <span className="font-semibold">demain</span>
+                    {' '}et le{' '}
+                    <span className="font-semibold">
+                      {(() => {
+                        const deliveryDate = new Date();
+                        deliveryDate.setDate(deliveryDate.getDate() + 3);
+                        return deliveryDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+                      })()}
+                    </span>
+                  </span>
+                </div>
               )}
             </div>
 
@@ -621,23 +660,28 @@ export default function ProductDetailPage() {
           </Tabs>
         </Card>
 
+        {/* Carousels de produits - pleine largeur */}
+      </div>
+
+      {/* Carousels en pleine largeur sans container */}
+      <div className="bg-gray-50 py-4">
         {/* Similar Products */}
         {similarProducts.length > 0 && (
           <ProductSlider
             title="Produits similaires"
-            subtitle="Découvrez d'autres produits qui pourraient vous intéresser"
             products={similarProducts}
-            backgroundColor="bg-white"
+            backgroundColor="bg-transparent"
+            compact
           />
         )}
 
-        {/* Recently Viewed - NEW */}
+        {/* Recently Viewed */}
         {recentlyViewedProducts.length > 0 && (
           <ProductSlider
-            title="Vous avez récemment consulté"
-            subtitle="Retrouvez les produits que vous avez vus"
+            title="Récemment consultés"
             products={recentlyViewedProducts}
-            backgroundColor="bg-gradient-to-br from-gray-50 to-gray-100"
+            backgroundColor="bg-transparent"
+            compact
           />
         )}
 
@@ -645,16 +689,25 @@ export default function ProductDetailPage() {
         {newProducts.length > 0 && (
           <ProductSlider
             title="Nouveautés"
-            subtitle="Les derniers produits ajoutés"
             products={newProducts}
-            backgroundColor="bg-white"
+            backgroundColor="bg-transparent"
+            compact
           />
         )}
+      </div>
+
+      <div className="container">
 
         {/* Removed 'also viewed' mock slider */}
       </div>
 
       <Footer />
+
+      {/* Bouton WhatsApp flottant */}
+      <WhatsAppButton
+        productName={product?.name}
+        phoneNumber="+22901643540"
+      />
     </div>
   );
 }

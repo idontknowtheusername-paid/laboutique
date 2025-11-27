@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, ShoppingCart, RefreshCw, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useCart } from '@/contexts/CartContext';
 import { WishlistButton } from '@/components/ui/wishlist-button';
 import { ErrorState } from '@/components/ui/error-state';
 import { generateConsistentRating, generateConsistentReviews } from '@/lib/utils/rating';
+import ProductImageSwiper from '@/components/product/ProductImageSwiper';
 
 interface CategoryProductsCarouselProps {
   categorySlug: string;
@@ -121,7 +121,7 @@ export default function CategoryProductsCarousel({
             <h2 className="text-xl md:text-2xl font-bold text-white">{title}</h2>
             {subtitle && <p className="text-orange-200 mt-1 text-sm truncate">{subtitle}</p>}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-3 lg:grid-cols-6 gap-6">
             {[...Array(4)].map((_, index) => (
               <Card key={index} className="animate-pulse">
                 <CardContent className="p-4">
@@ -212,21 +212,13 @@ export default function CategoryProductsCarousel({
                   <div className="relative mb-1">
                     <Link href={`/product/${product.slug}`}>
                       <div className="aspect-square relative overflow-hidden rounded bg-gray-100">
-                        {product.images?.[0] ? (
-                          <Image
-                            src={product.images[0]}
-                            alt={product.name}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                            sizes="180px"
-                            loading="lazy"
-                            quality={85}
-                          />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">
-                              Pas d'image
-                          </div>
-                        )}
+                        <ProductImageSwiper
+                          images={product.images || []}
+                          alt={product.name}
+                          sizes="180px"
+                          quality={85}
+                          interval={800}
+                        />
                       </div>
                     </Link>
 

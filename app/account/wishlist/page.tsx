@@ -20,8 +20,8 @@ import {
   Square,
 } from "lucide-react";
 import Link from 'next/link';
-import Image from 'next/image';
 import { useCart } from '@/contexts/CartContext';
+import ProductImageSwiper from '@/components/product/ProductImageSwiper';
 import { ErrorState } from "@/components/ui/error-state";
 import { WishlistSkeleton } from "@/components/ui/loading-skeleton";
 import { useToast } from "@/components/ui/toast";
@@ -345,7 +345,7 @@ export default function WishlistPage() {
 
             {/* Products Grid */}
             {wishlistItems.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
                 {wishlistItems.map((item) => {
                   const product = item.product ?? null;
 
@@ -373,13 +373,12 @@ export default function WishlistPage() {
                             }
                           >
                             <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
-                              {product?.images?.[0] ? (
-                                <Image
-                                  src={product?.images?.[0] ?? ""}
+                              {product?.images && product.images.length > 0 ? (
+                                <ProductImageSwiper
+                                  images={product.images}
                                   alt={product?.name ?? "Product image"}
-                                  fill
-                                  className="object-cover group-hover:scale-105 transition-transform"
                                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                  interval={800}
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-gray-400">

@@ -1,15 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
-import Image from 'next/image';
+import React from 'react';
 import { Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
-import { SliderSkeleton, HeaderSkeleton } from '@/components/ui/loading-skeleton';
-import { ErrorState } from '@/components/ui/error-state';
+import ProductImageSwiper from '@/components/product/ProductImageSwiper';
 
 
 interface Product {
@@ -17,6 +15,7 @@ interface Product {
   name: string;
   slug: string;
   image: string;
+  images?: string[]; // Support pour plusieurs images
   price: number;
   comparePrice?: number;
   rating: number;
@@ -37,6 +36,7 @@ interface ProductSliderProps {
   isLoading?: boolean;
   error?: string;
   onRetry?: () => void;
+  compact?: boolean; // Mode compact sans description et espacement réduit
 }
 
 const ProductSlider: React.FC<ProductSliderProps> = ({
@@ -45,12 +45,9 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
   products,
   viewAllLink,
   backgroundColor = 'bg-white',
-  isLoading = false,
-  error,
-  onRetry
+  compact = false
 }) => {
   const { addToCart } = useCart();
-  const [isHovering, setIsHovering] = useState(false);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("fr-BJ", {
@@ -69,20 +66,18 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
   }
 
   return (
-    <section className={`py-6 md:py-8 ${backgroundColor}`}>
+    <section className={`${compact ? 'py-2' : 'py-6 md:py-8'} ${backgroundColor}`}>
       <div className="container">
         {/* Header */}
-        <div className="text-center mb-6 md:mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">{title}</h2>
-          {subtitle && <p className="text-gray-600 max-w-2xl mx-auto">{subtitle}</p>}
+        <div className={`${compact ? 'mb-2' : 'text-center mb-6 md:mb-8'}`}>
+          <h2 className={`${compact ? 'text-base font-semibold' : 'text-3xl font-bold'} text-gray-900 ${compact ? '' : 'mb-4'}`}>{title}</h2>
+          {subtitle && !compact && <p className="text-gray-600 max-w-2xl mx-auto">{subtitle}</p>}
         </div>
 
         {/* Products Carousel */}
         <div className="relative">
           <div
-            className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none]"
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
+            className={`flex ${compact ? 'gap-3' : 'gap-6'} overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none]`}
             style={{ scrollbarWidth: 'none' as any }}
           >
             {displayedProducts.map((product, index) => (
@@ -91,14 +86,12 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
                   <div className="relative mb-1">
                     <Link href={`/product/${product.slug}`}>
                       <div className="aspect-square relative overflow-hidden rounded bg-gray-100">
-                        <Image
-                          src={product.image}
+                        <ProductImageSwiper
+                          images={product.images || [product.image]}
                           alt={product.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
                           sizes="180px"
-                          loading="lazy"
                           quality={85}
+                          interval={800}
                         />
                       </div>
                     </Link>
@@ -158,15 +151,15 @@ const ProductSlider: React.FC<ProductSliderProps> = ({
           </div>
         </div>
 
-        <div className="text-center mt-12">
-          {viewAllLink && (
+        {viewAllLink && !compact && (
+          <div className="text-center mt-12">
             <Link href={viewAllLink}>
               <Button variant="outline" size="lg">
                 Voir tous les produits
               </Button>
             </Link>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );

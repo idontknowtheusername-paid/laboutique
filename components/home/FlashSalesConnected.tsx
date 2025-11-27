@@ -7,9 +7,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
-import { ProductsService, Product } from '@/lib/services';
-import Image from 'next/image';
 import InteractiveFeedback from '@/components/ui/InteractiveFeedback';
+import ProductImageSwiper from '@/components/product/ProductImageSwiper';
 import { useFeedback } from '@/components/ui/FeedbackProvider';
 import { useAnalytics } from '@/hooks/useAnalytics';
 
@@ -363,7 +362,7 @@ export default function FlashSalesConnected() {
 
                 return (
                   <div key={slideIndex} className="w-full flex-shrink-0">
-                    <div className="grid grid-cols-4 lg:grid-cols-6 gap-2">
+                    <div className="grid grid-cols-3 lg:grid-cols-6 gap-2">
                       {slideProducts.map((flashSaleProduct) => {
                         const product = flashSaleProduct.product || flashSaleProduct;
 
@@ -382,23 +381,13 @@ export default function FlashSalesConnected() {
                               <div className="relative mb-1">
                                 <Link href={`/product/${product.slug}`}>
                                   <div className="aspect-square relative overflow-hidden rounded bg-gray-100">
-                                    {product.images?.[0] ? (
-                                      <Image
-                                        src={product.images[0]}
-                                        alt={product.name}
-                                        fill
-                                        className="object-cover hover:scale-105 transition-transform duration-300"
-                                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-                                        loading="lazy"
-                                        quality={85}
-                                        placeholder="blur"
-                                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                                      />
-                                    ) : (
-                                      <div className="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">
-                                        Pas d'image
-                                      </div>
-                                    )}
+                                    <ProductImageSwiper
+                                      images={product.images || []}
+                                      alt={product.name}
+                                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                                      quality={85}
+                                      interval={800}
+                                    />
                                   </div>
                                 </Link>
 
