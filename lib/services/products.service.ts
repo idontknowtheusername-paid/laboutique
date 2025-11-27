@@ -116,26 +116,12 @@ export class ProductsService extends BaseService {
   /**
    * Vérifier si les colonnes flash sale existent
    */
-  private static flashSaleColumnsExist: boolean | null = null;
+  // Les colonnes flash sale existent toujours maintenant
+  private static flashSaleColumnsExist: boolean | null = true;
 
   private static async checkFlashSaleColumns(): Promise<boolean> {
-    if (this.flashSaleColumnsExist !== null) {
-      return this.flashSaleColumnsExist;
-    }
-
-    try {
-      // Test simple pour vérifier si les colonnes existent
-      await this.getSupabaseClient()
-        .from('products')
-        .select('is_flash_sale')
-        .limit(1);
-
-      this.flashSaleColumnsExist = true;
-      return true;
-    } catch (error) {
-      this.flashSaleColumnsExist = false;
-      return false;
-    }
+    // Les colonnes flash sale sont maintenant standard, toujours retourner true
+    return true;
   }
 
   private static getProductSelectFields(includeFlashSale: boolean = false): string {

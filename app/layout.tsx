@@ -9,8 +9,7 @@ import { WebVitals } from "@/components/analytics/WebVitals";
 import PageTracker from '@/components/analytics/PageTracker';
 import GlobalCartAnimation from '@/components/ui/GlobalCartAnimation';
 import CookieBanner from '@/components/layout/CookieBanner';
-import NewsletterPopupManager from '@/components/layout/NewsletterPopupManager';
-import PopupManager from '@/components/layout/PopupManager';
+import PopupManagerWrapper from '@/components/layout/PopupManagerWrapper';
 import ServiceWorkerUpdater from '@/components/ServiceWorkerUpdater';
 
 // Optimize font loading
@@ -113,13 +112,10 @@ export default function RootLayout({
         {/* Preconnect to critical domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://qdagyxqkqgbzqrqzjvzz.supabase.co" />
+        <link rel="preconnect" href="https://gfhuotmjoiyhtllsmnwy.supabase.co" />
 
         {/* DNS prefetch for non-critical domains */}
         <link rel="dns-prefetch" href="https://images.pexels.com" />
-
-        {/* Preload critical assets */}
-        <link rel="preload" as="image" href="/images/latestlogo.jpg" fetchPriority="high" />
 
         <meta name="format-detection" content="telephone=no" />
       </head>
@@ -132,8 +128,7 @@ export default function RootLayout({
           {children}
           <GlobalCartAnimation />
           <CookieBanner />
-          <NewsletterPopupManager />
-          <PopupManager />
+          <PopupManagerWrapper />
           <ServiceWorkerUpdater />
         </AppProviders>
         <SpeedInsights />

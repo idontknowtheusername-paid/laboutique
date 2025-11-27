@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ShoppingCart, DollarSign, TrendingUp, Star, AlertTriangle, Clock, CheckCircle } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -13,8 +15,6 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { ShoppingCart, DollarSign, TrendingUp, Star, AlertTriangle, Clock, CheckCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { VendorsService, Vendor } from '@/lib/services/vendors.service';
 import { OrdersService, Order } from '@/lib/services/orders.service';
@@ -239,6 +239,61 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
+        {/* Commandes en attente et annulées */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Commandes en attente (Pending) */}
+          <Card className="hover:shadow-lg transition-shadow border-l-4 border-l-yellow-500 dark:border-l-yellow-400">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">Commandes en attente (ce mois)</CardTitle>
+              <div className="h-10 w-10 rounded-lg bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center">
+                <Clock className="h-5 w-5 text-yellow-700 dark:text-yellow-300" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-baseline gap-4">
+                <div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                    {dashboardStats?.pending?.count || 0}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">commandes</p>
+                </div>
+                <div>
+                  <div className="text-lg font-semibold text-yellow-600 dark:text-yellow-400" title={dashboardStats ? formatPriceFull(dashboardStats.pending?.amount || 0) : '0'}>
+                    {dashboardStats ? formatPrice(dashboardStats.pending?.amount || 0) : '0 FCFA'}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">CA potentiel</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Commandes annulées (Cancelled) */}
+          <Card className="hover:shadow-lg transition-shadow border-l-4 border-l-red-500 dark:border-l-red-400">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">Commandes annulées (ce mois)</CardTitle>
+              <div className="h-10 w-10 rounded-lg bg-red-100 dark:bg-red-900 flex items-center justify-center">
+                <AlertTriangle className="h-5 w-5 text-red-700 dark:text-red-300" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-baseline gap-4">
+                <div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                    {dashboardStats?.cancelled?.count || 0}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">commandes</p>
+                </div>
+                <div>
+                  <div className="text-lg font-semibold text-red-600 dark:text-red-400" title={dashboardStats ? formatPriceFull(dashboardStats.cancelled?.amount || 0) : '0'}>
+                    {dashboardStats ? formatPrice(dashboardStats.cancelled?.amount || 0) : '0 FCFA'}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">CA perdu</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Alertes et tâches en attente */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
@@ -312,15 +367,17 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               {salesData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={salesData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip formatter={(value: any) => formatPrice(Number(value))} />
-                    <Area type="monotone" dataKey="revenue" stroke="#1E40AF" fill="#1E40AF" fillOpacity={0.1} />
-                  </AreaChart>
-                </ResponsiveContainer>
+                <div className="min-h-[300px]">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={salesData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip formatter={(value: any) => formatPrice(Number(value))} />
+                      <Area type="monotone" dataKey="revenue" stroke="#1E40AF" fill="#1E40AF" fillOpacity={0.1} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
               ) : (
                   <div className="flex flex-col items-center justify-center h-[300px] text-gray-500 gap-3">
                     <div className="text-5xl">📈</div>
@@ -337,16 +394,18 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               {categoryData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie data={categoryData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                      {categoryData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div className="min-h-[300px]">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie data={categoryData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                        {categoryData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
               ) : (
                   <div className="flex flex-col items-center justify-center h-[300px] text-gray-500 gap-3">
                     <div className="text-5xl">📊</div>

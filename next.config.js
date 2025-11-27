@@ -21,6 +21,8 @@ const nextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days cache
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Support multiple quality levels (supprime les warnings)
+    loader: 'default',
     remotePatterns: [
       { protocol: "https", hostname: "**.supabase.co" },
       { protocol: "https", hostname: "images.pexels.com" },

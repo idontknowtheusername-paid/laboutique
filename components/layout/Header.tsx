@@ -372,10 +372,11 @@ const Header = () => {
     },
   ], []);
 
-  // Combine les annonces par défaut + saisonnières
+  // Combine les annonces par défaut + saisonnières (limit to 6 for performance)
   const announcements = useMemo(() => {
     const seasonal = getSeasonalAnnouncements();
-    return [...defaultAnnouncements, ...seasonal];
+    // Limit to 6 total announcements to reduce INP
+    return [...defaultAnnouncements.slice(0, 3), ...seasonal.slice(0, 3)];
   }, [defaultAnnouncements, getSeasonalAnnouncements]);
 
   // Suggestions de recherche populaires
@@ -386,9 +387,10 @@ const Header = () => {
 
   useEffect(() => {
     if (!annApi) return;
+    // Increase interval to 10s to reduce INP
     const intervalId = setInterval(() => {
       annApi.scrollNext();
-    }, 6000);
+    }, 10000);
     return () => clearInterval(intervalId);
   }, [annApi]);
 
@@ -437,8 +439,8 @@ const Header = () => {
       }
     };
 
-    // Debounce pour éviter trop de requêtes
-    const timeoutId = setTimeout(fetchSuggestions, 300);
+    // Debounce pour éviter trop de requêtes (increased to 500ms for better INP)
+    const timeoutId = setTimeout(fetchSuggestions, 500);
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 
@@ -477,14 +479,14 @@ const Header = () => {
       className={`fixed top-0 left-0 right-0 z-50 bg-gray-200 transition-all duration-300 ${isScrolled ? "shadow-lg" : "shadow-sm"
       }`}
     >
-      {/* Announcement Bar - Pleine largeur */}
-      <div className="text-white overflow-hidden w-full">
+      {/* Announcement Bar - Pleine largeur - Fixed height to prevent CLS */}
+      <div className="text-white overflow-hidden w-full h-10">
         <Carousel setApi={setAnnApi} opts={{ align: "start", loop: true }}>
           <CarouselContent>
             {announcements.map((a) => (
               <CarouselItem key={a.id} className="basis-full">
                 <Link href={a.href} className="block">
-                  <div className={`bg-gradient-to-r ${a.bg} flex items-center justify-center text-center px-4 py-1.5 hover:opacity-90 transition-opacity`}>
+                  <div className={`bg-gradient-to-r ${a.bg} flex items-center justify-center text-center px-4 py-1.5 hover:opacity-90 transition-opacity h-10`}>
                     <div className="text-sm md:text-base font-medium text-white">
                       <span className={`inline-block mr-2 ${a.animation}`}>{a.emoji}</span>
                       <span className="font-bold">{a.title}</span>
@@ -503,16 +505,17 @@ const Header = () => {
       {/* Main Header */}
       <div className="container py-3 md:py-4">
         <div className="flex items-center justify-between gap-1.5 md:gap-6">
-          {/* Logo - Plus petit sur mobile */}
+          {/* Logo - Plus petit sur mobile - Fixed dimensions to prevent CLS */}
           <Link href="/" className="flex items-center header-logo flex-shrink-0 -mr-3 md:mr-0">
             <div className="relative w-32 h-20 sm:w-36 sm:h-24 md:w-52 md:h-18 lg:w-100 lg:h-35 rounded-lg overflow-hidden">
               <Image
                 src="/images/latestlogo.jpg"
                 alt="JomionStore"
-                fill
-                className="object-contain"
+                width={224}
+                height={140}
+                className="object-contain w-full h-full"
                 priority
-                sizes="(max-width: 640px) 80px, (max-width: 768px) 96px, (max-width: 1024px) 192px, 224px"
+                sizes="(max-width: 640px) 128px, (max-width: 768px) 144px, (max-width: 1024px) 208px, 224px"
               />
             </div>
           </Link>

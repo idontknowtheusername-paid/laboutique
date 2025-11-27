@@ -15,6 +15,16 @@ export interface DashboardStats {
     yearly: number;
     yearly_growth_percentage: number;
   };
+  // Stats pour commandes en attente (pending)
+  pending: {
+    count: number;
+    amount: number;
+  };
+  // Stats pour commandes annulées (cancelled)
+  cancelled: {
+    count: number;
+    amount: number;
+  };
   users: {
     current: number;
     previous: number;
@@ -62,38 +72,45 @@ export class StatsService extends BaseService {
       const previousYearStart = new Date(currentMonth.getFullYear() - 1, 0, 1);
       const previousYearEnd = new Date(currentMonth.getFullYear() - 1, 11, 31);
 
-      // Récupérer les commandes du mois actuel
+      // Status valides pour le CA (uniquement commandes confirmées/payées)
+      const validStatuses = ['processing', 'shipped', 'delivered', 'completed'];
+
+      // Récupérer les commandes du mois actuel (uniquement status valides)
       const { data: currentOrders, error: currentOrdersError } = await this.getSupabaseClient()
         .from('orders')
-        .select('total_amount, created_at')
+        .select('total_amount, created_at, status')
         .gte('created_at', currentMonthStart.toISOString())
-        .lt('created_at', new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1).toISOString());
+        .lt('created_at', new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1).toISOString())
+        .in('status', validStatuses);
 
       if (currentOrdersError) throw currentOrdersError;
 
       // Récupérer les commandes du mois précédent
       const { data: previousOrders, error: previousOrdersError } = await this.getSupabaseClient()
         .from('orders')
-        .select('total_amount, created_at')
+        .select('total_amount, created_at, status')
         .gte('created_at', previousMonthStart.toISOString())
-        .lte('created_at', previousMonthEnd.toISOString());
+        .lte('created_at', previousMonthEnd.toISOString())
+        .in('status', validStatuses);
 
       if (previousOrdersError) throw previousOrdersError;
 
       // Récupérer les commandes de l'année en cours
       const { data: currentYearOrders, error: currentYearOrdersError } = await this.getSupabaseClient()
         .from('orders')
-        .select('total_amount, created_at')
-        .gte('created_at', currentYearStart.toISOString());
+        .select('total_amount, created_at, status')
+        .gte('created_at', currentYearStart.toISOString())
+        .in('status', validStatuses);
 
       if (currentYearOrdersError) throw currentYearOrdersError;
 
       // Récupérer les commandes de l'année précédente
       const { data: previousYearOrders, error: previousYearOrdersError } = await this.getSupabaseClient()
         .from('orders')
-        .select('total_amount, created_at')
+        .select('total_amount, created_at, status')
         .gte('created_at', previousYearStart.toISOString())
-        .lte('created_at', previousYearEnd.toISOString());
+        .lte('created_at', previousYearEnd.toISOString())
+        .in('status', validStatuses);
 
       if (previousYearOrdersError) throw previousYearOrdersError;
 
@@ -116,6 +133,32 @@ export class StatsService extends BaseService {
       const currentYearOrdersCount = (currentYearOrders || []).length;
       const previousYearOrdersCount = (previousYearOrders || []).length;
       const yearlyOrdersGrowth = previousYearOrdersCount > 0 ? ((currentYearOrdersCount - previousYearOrdersCount) / previousYearOrdersCount) * 100 : 0;
+
+      // Récupérer les commandes pending du mois
+      const { data: pendingOrders, error: pendingOrdersError } = await this.getSupabaseClient()
+        .from('orders')
+        .select('total_amount')
+        .gte('created_at', currentMonthStart.toISOString())
+        .lt('created_at', new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1).toISOString())
+        .eq('status', 'pending');
+
+      if (pendingOrdersError) throw pendingOrdersError;
+
+      const pendingCount = (pendingOrders || []).length;
+      const pendingAmount = (pendingOrders || []).reduce((sum: number, order: any) => sum + (order.total_amount || 0), 0);
+
+      // Récupérer les commandes cancelled du mois
+      const { data: cancelledOrders, error: cancelledOrdersError } = await this.getSupabaseClient()
+        .from('orders')
+        .select('total_amount')
+        .gte('created_at', currentMonthStart.toISOString())
+        .lt('created_at', new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1).toISOString())
+        .eq('status', 'cancelled');
+
+      if (cancelledOrdersError) throw cancelledOrdersError;
+
+      const cancelledCount = (cancelledOrders || []).length;
+      const cancelledAmount = (cancelledOrders || []).reduce((sum: number, order: any) => sum + (order.total_amount || 0), 0);
 
       // Récupérer les utilisateurs actifs (créés ce mois)
       const { data: currentUsers, error: currentUsersError } = await this.getSupabaseClient()
@@ -178,6 +221,14 @@ export class StatsService extends BaseService {
           yearly: currentYearOrdersCount,
           yearly_growth_percentage: Math.round(yearlyOrdersGrowth * 10) / 10
         },
+        pending: {
+          count: pendingCount,
+          amount: pendingAmount
+        },
+        cancelled: {
+          count: cancelledCount,
+          amount: cancelledAmount
+        },
         users: {
           current: currentUsersCount,
           previous: previousUsersCount,
@@ -195,6 +246,8 @@ export class StatsService extends BaseService {
       return this.createResponse({
         revenue: { current: 0, previous: 0, growth_percentage: 0, yearly: 0, yearly_growth_percentage: 0 },
         orders: { current: 0, previous: 0, growth_percentage: 0, yearly: 0, yearly_growth_percentage: 0 },
+        pending: { count: 0, amount: 0 },
+        cancelled: { count: 0, amount: 0 },
         users: { current: 0, previous: 0, growth_percentage: 0 },
         vendors: { current: 0, previous: 0, growth_percentage: 0 }
       }, this.handleError(error));

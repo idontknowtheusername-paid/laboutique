@@ -7,19 +7,70 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { AuthService, UserProfile } from '@/lib/services/auth.service';
-import { Download, Search, Shield, Trash2, RefreshCw } from 'lucide-react';
+import { Download, Search, Shield, Trash2, RefreshCw, Users, UserPlus, Crown, Store, TrendingUp } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import AdminToolbar from '@/components/admin/AdminToolbar';
 import { useToast } from '@/components/admin/Toast';
 
+interface UserStats {
+  total: number;
+  newThisMonth: number;
+  newLastMonth: number;
+  customers: number;
+  vendors: number;
+  admins: number;
+}
+
 export default function AdminUsersPage() {
   const [loading, setLoading] = React.useState(true);
   const [users, setUsers] = React.useState<UserProfile[]>([]);
+  const [userStats, setUserStats] = React.useState<UserStats>({ total: 0, newThisMonth: 0, newLastMonth: 0, customers: 0, vendors: 0, admins: 0 });
   const [search, setSearch] = React.useState('');
   const [roleFilter, setRoleFilter] = React.useState<'all' | 'customer' | 'vendor' | 'admin'>('all');
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const { success, error, info } = useToast();
+
+  // Charger les stats utilisateurs
+  const loadStats = React.useCallback(async () => {
+    try {
+      const client = (AuthService as any).getSupabaseClient();
+      const now = new Date();
+      const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+
+      // Total utilisateurs
+      const { count: total } = await client.from('profiles').select('*', { count: 'exact', head: true });
+
+      // Nouveaux ce mois
+      const { count: newThisMonth } = await client.from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', currentMonthStart.toISOString());
+
+      // Nouveaux mois dernier
+      const { count: newLastMonth } = await client.from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', lastMonthStart.toISOString())
+        .lte('created_at', lastMonthEnd.toISOString());
+
+      // Par rôle
+      const { count: customers } = await client.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'customer');
+      const { count: vendors } = await client.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'vendor');
+      const { count: admins } = await client.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'admin');
+
+      setUserStats({
+        total: total || 0,
+        newThisMonth: newThisMonth || 0,
+        newLastMonth: newLastMonth || 0,
+        customers: customers || 0,
+        vendors: vendors || 0,
+        admins: admins || 0
+      });
+    } catch (err) {
+      console.error('Erreur chargement stats:', err);
+    }
+  }, []);
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -65,7 +116,7 @@ export default function AdminUsersPage() {
     }
   }, [search, roleFilter, page, success, error, info]);
 
-  React.useEffect(() => { load(); }, [load]);
+  React.useEffect(() => { load(); loadStats(); }, [load, loadStats]);
 
   async function handleChangeRole(userId: string, newRole: UserProfile['role']) {
     const res = await AuthService.updateProfile(userId, {} as any);
@@ -140,31 +191,93 @@ export default function AdminUsersPage() {
     success("Export CSV", "Le fichier CSV a été téléchargé.");
   }
 
+  // Calcul croissance
+  const growthPercentage = userStats.newLastMonth > 0
+    ? Math.round(((userStats.newThisMonth - userStats.newLastMonth) / userStats.newLastMonth) * 100)
+    : userStats.newThisMonth > 0 ? 100 : 0;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 overflow-x-hidden">
       <AdminPageHeader
         title="Utilisateurs"
         subtitle="Gestion des comptes et rôles"
         actions={
-          <>
-            <Button variant="outline" onClick={load} disabled={loading}>
-              <RefreshCw className="w-4 h-4 mr-2" /> Rafraîchir
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" onClick={() => { load(); loadStats(); }} disabled={loading}>
+              <RefreshCw className="w-4 h-4 mr-1" /> Rafraîchir
             </Button>
-            <Button variant="outline" onClick={handleExportCSV}>
-              <Download className="w-4 h-4 mr-2" /> Exporter
+            <Button variant="outline" size="sm" onClick={handleExportCSV}>
+              <Download className="w-4 h-4 mr-1" /> Export
             </Button>
-          </>
+          </div>
         }
       />
 
-      <Card>
-        <CardContent className="p-0">
-          <AdminToolbar>
-            <div className="relative w-full md:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+      {/* Stats utilisateurs - Compact */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <Card className="border-l-3 border-l-blue-600">
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] text-gray-500">Total</p>
+                <div className="text-lg font-bold">{userStats.total}</div>
+              </div>
+              <Users className="h-4 w-4 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-l-3 border-l-emerald-600">
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] text-gray-500">Nouveaux</p>
+                <div className="text-lg font-bold">{userStats.newThisMonth}</div>
+                <p className={`text-[9px] ${growthPercentage >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                  {growthPercentage >= 0 ? '+' : ''}{growthPercentage}%
+                </p>
+              </div>
+              <UserPlus className="h-4 w-4 text-emerald-600" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-l-3 border-l-gray-500">
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] text-gray-500">Clients</p>
+                <div className="text-lg font-bold">{userStats.customers}</div>
+              </div>
+              <Users className="h-4 w-4 text-gray-500" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-l-3 border-l-purple-600">
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex gap-2">
+                <div>
+                  <p className="text-[10px] text-gray-500">Vend.</p>
+                  <div className="text-lg font-bold">{userStats.vendors}</div>
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-500">Admin</p>
+                  <div className="text-lg font-bold text-purple-600">{userStats.admins}</div>
+                </div>
+              </div>
+              <Crown className="h-4 w-4 text-purple-600" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="overflow-hidden">
+        <CardContent className="p-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 min-w-[150px] max-w-xs">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
-                className="pl-10"
-                placeholder="Rechercher (email, prénom, nom)"
+                className="pl-8 h-9 text-sm"
+                placeholder="Rechercher..."
                 value={search}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setSearch(e.target.value);
@@ -179,29 +292,29 @@ export default function AdminUsersPage() {
                 setPage(1);
               }}
             >
-              <SelectTrigger className="w-56">
+              <SelectTrigger className="w-32 h-9 text-sm">
                 <SelectValue placeholder="Rôle" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tous les rôles</SelectItem>
+                <SelectItem value="all">Tous</SelectItem>
                 <SelectItem value="customer">Client</SelectItem>
                 <SelectItem value="vendor">Vendeur</SelectItem>
                 <SelectItem value="admin">Admin</SelectItem>
               </SelectContent>
             </Select>
-            <div className="ml-auto flex items-center gap-2">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSearch("");
-                  setRoleFilter("all");
-                  setPage(1);
-                }}
-              >
-                Réinitialiser
-              </Button>
-            </div>
-          </AdminToolbar>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9"
+              onClick={() => {
+                setSearch("");
+                setRoleFilter("all");
+                setPage(1);
+              }}
+            >
+              Reset
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

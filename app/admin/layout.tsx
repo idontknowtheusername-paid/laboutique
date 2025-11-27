@@ -269,9 +269,9 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         </aside>
 
         {/* Main Content */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0 overflow-x-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <main id="main-content" role="main">
+            <main id="main-content" role="main" className="overflow-x-hidden">
               {children}
             </main>
           </div>

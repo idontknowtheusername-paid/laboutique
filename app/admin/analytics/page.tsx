@@ -1,24 +1,34 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend
-} from 'recharts';
+import React, { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+// Lazy load Recharts pour améliorer l'INP
+const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
+const LineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false });
+const Line = dynamic(() => import('recharts').then(mod => mod.Line), { ssr: false });
+const AreaChart = dynamic(() => import('recharts').then(mod => mod.AreaChart), { ssr: false });
+const Area = dynamic(() => import('recharts').then(mod => mod.Area), { ssr: false });
+const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const PieChart = dynamic(() => import('recharts').then(mod => mod.PieChart), { ssr: false });
+const Pie = dynamic(() => import('recharts').then(mod => mod.Pie), { ssr: false });
+const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const Legend = dynamic(() => import('recharts').then(mod => mod.Legend), { ssr: false });
+
+// Skeleton pour les charts
+const ChartSkeleton = () => (
+  <div className="min-h-[300px] flex items-center justify-center">
+    <div className="w-full h-[280px] bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse flex items-center justify-center">
+      <span className="text-gray-400">Chargement...</span>
+    </div>
+  </div>
+);
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -317,17 +327,21 @@ export default function AdminAnalyticsPage() {
                 <CardTitle>Évolution des visiteurs</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={trafficData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Area type="monotone" dataKey="visitors" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.2} name="Visiteurs" />
-                    <Area type="monotone" dataKey="pageviews" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.1} name="Pages vues" />
-                  </AreaChart>
-                </ResponsiveContainer>
+                <Suspense fallback={<ChartSkeleton />}>
+                  <div className="min-h-[300px]">
+                    <ResponsiveContainer width="100%" height={300}>
+                      <AreaChart data={trafficData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Area type="monotone" dataKey="visitors" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.2} name="Visiteurs" />
+                        <Area type="monotone" dataKey="pageviews" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.1} name="Pages vues" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </Suspense>
               </CardContent>
             </Card>
 
@@ -336,23 +350,27 @@ export default function AdminAnalyticsPage() {
                 <CardTitle>Trafic par appareil</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={deviceData}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      dataKey="value"
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {deviceData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                <Suspense fallback={<ChartSkeleton />}>
+                  <div className="min-h-[300px]">
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={deviceData}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={80}
+                          dataKey="value"
+                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {deviceData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </Suspense>
               </CardContent>
             </Card>
           </div>
@@ -368,17 +386,21 @@ export default function AdminAnalyticsPage() {
                   <CardTitle>Visiteurs et pages vues</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={trafficData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Line type="monotone" dataKey="visitors" stroke="#8B5CF6" name="Visiteurs" strokeWidth={2} />
-                      <Line type="monotone" dataKey="pageviews" stroke="#3B82F6" name="Pages vues" strokeWidth={2} />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  <Suspense fallback={<ChartSkeleton />}>
+                    <div className="min-h-[300px]">
+                      <ResponsiveContainer width="100%" height={300}>
+                        <LineChart data={trafficData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="date" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Line type="monotone" dataKey="visitors" stroke="#8B5CF6" name="Visiteurs" strokeWidth={2} />
+                          <Line type="monotone" dataKey="pageviews" stroke="#3B82F6" name="Pages vues" strokeWidth={2} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </Suspense>
                 </CardContent>
               </Card>
 

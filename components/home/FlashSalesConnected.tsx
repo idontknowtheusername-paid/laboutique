@@ -53,26 +53,36 @@ export default function FlashSalesConnected() {
 
   // Charger les flash sales depuis l'API
   useEffect(() => {
+    console.log('🔥 [FlashSales] useEffect déclenché - début chargement');
     const loadFlashSales = async () => {
       try {
         setLoading(true);
+        console.log('🔥 [FlashSales] Appel API...');
         
-        // Utiliser l'API REST directement pour éviter les problèmes de ProductsService
-        const response = await fetch('/api/products?limit=30');
+        // Charger plus de produits pour avoir une meilleure chance de trouver les flash sales
+        // TODO: Idéalement créer un endpoint /api/products?flash_sale=true
+        const response = await fetch('/api/products?limit=200');
         const data = await response.json();
+        console.log('🔥 [FlashSales] Réponse API reçue:', data);
         
         if (data.data && Array.isArray(data.data)) {
+          console.log('🔥 [FlashSales] Total produits chargés:', data.data.length);
+
           // Filtrer UNIQUEMENT les produits marqués manuellement en vente flash
           const flashProducts = data.data.filter((product: any) => {
             // Seulement les produits avec is_flash_sale = true (contrôle manuel)
             if (product.is_flash_sale) {
               const now = new Date();
               const endDate = product.flash_end_date ? new Date(product.flash_end_date) : null;
-              return !endDate || endDate > now; // Actif si pas de date de fin ou pas encore expiré
+              const isValid = !endDate || endDate > now; // Actif si pas de date de fin ou pas encore expiré
+              console.log('🔥 [FlashSales] Produit flash trouvé:', product.name, '| endDate:', endDate, '| valid:', isValid);
+              return isValid;
             }
             // ❌ Pas de fallback automatique - contrôle total via l'admin
             return false;
           });
+
+          console.log('🔥 [FlashSales] Produits flash valides:', flashProducts.length);
 
           setProducts(flashProducts.slice(0, 30));
 
@@ -145,8 +155,9 @@ export default function FlashSalesConnected() {
           setStockInfo(mockStockInfo);
         }
       } catch (error) {
-        console.error('Erreur lors du chargement des Flash Sales:', error);
+        console.error('🔥 [FlashSales] ERREUR:', error);
       } finally {
+        console.log('🔥 [FlashSales] Chargement terminé');
         setLoading(false);
       }
     };

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,14 +9,19 @@ import { Download, ArrowLeft, ExternalLink, CheckCircle, AlertCircle } from 'luc
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-export default function AdminImportProductPage() {
+function AdminImportProductPage() {
   const router = useRouter();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [previewData, setPreviewData] = useState<any>(null);
 
-  const handleImport = async () => {
+  // Memoize validation to reduce re-computation
+  const isValidUrl = useMemo(() => {
+    return url.trim().length > 0 && (url.includes('aliexpress.com') || url.includes('alibaba.com'));
+  }, [url]);
+
+  const handleImport = useCallback(async () => {
     if (!url.trim()) {
       setMessage({ type: 'error', text: 'Veuillez entrer une URL' });
       return;
@@ -57,9 +62,9 @@ export default function AdminImportProductPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [url, router]);
 
-  const handlePreview = async () => {
+  const handlePreview = useCallback(async () => {
     if (!url.trim()) {
       setMessage({ type: 'error', text: 'Veuillez entrer une URL' });
       return;
@@ -96,9 +101,9 @@ export default function AdminImportProductPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [url]);
 
-  const handleImportFromPreview = async () => {
+  const handleImportFromPreview = useCallback(async () => {
     if (!previewData) return;
 
     try {
@@ -130,7 +135,7 @@ export default function AdminImportProductPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [url, router]);
 
   return (
     <div className="space-y-6">
@@ -230,7 +235,7 @@ export default function AdminImportProductPage() {
             <div className="flex gap-2">
               <Button 
                 onClick={handleImport}
-                disabled={loading || !url.trim()}
+                disabled={loading || !isValidUrl}
                 className="flex-1 bg-jomionstore-primary hover:bg-orange-700"
               >
                 {loading ? 'Import en cours...' : 'Importer directement'}
@@ -238,7 +243,7 @@ export default function AdminImportProductPage() {
               <Button 
                 variant="outline"
                 onClick={handlePreview}
-                disabled={loading || !url.trim()}
+                disabled={loading || !isValidUrl}
               >
                 Prévisualiser
               </Button>
@@ -354,3 +359,6 @@ export default function AdminImportProductPage() {
     </div>
   );
 }
+
+// Memoize component to prevent unnecessary re-renders
+export default React.memo(AdminImportProductPage);

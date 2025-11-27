@@ -572,53 +572,88 @@ L'équipe JomionStore`;
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Button 
-                    className="w-full justify-start" 
-                    variant="outline"
-                    onClick={() => {
-                      setNewStatus('processing');
-                      setShowStatusModal(true);
-                    }}
-                    disabled={updating || order.status === 'processing' || order.status === 'delivered' || order.status === 'cancelled'}
-                  >
-                    <Clock className="w-4 h-4 mr-2" />
-                    Marquer en cours
-                  </Button>
-                  <Button 
-                    className="w-full justify-start" 
-                    variant="outline"
-                    onClick={() => {
-                      setNewStatus('shipped');
-                      setShowStatusModal(true);
-                    }}
-                    disabled={updating || order.status === 'shipped' || order.status === 'delivered' || order.status === 'cancelled' || order.status === 'pending'}
-                  >
-                    <Truck className="w-4 h-4 mr-2" />
-                    Marquer expédiée
-                  </Button>
-                  <Button 
-                    className="w-full justify-start" 
-                    variant="outline"
-                    onClick={() => {
-                      setNewStatus('delivered');
-                      setShowStatusModal(true);
-                    }}
-                    disabled={updating || order.status === 'delivered' || order.status === 'cancelled' || order.status === 'pending'}
-                  >
-                    <Package className="w-4 h-4 mr-2" />
-                    Marquer livrée
-                  </Button>
-                  <Button 
-                    className="w-full justify-start text-red-600 border-red-200 hover:bg-red-50" 
-                    variant="outline"
-                    onClick={() => {
-                      setNewStatus('cancelled');
-                      setShowStatusModal(true);
-                    }}
-                    disabled={updating || order.status === 'cancelled' || order.status === 'delivered'}
-                  >
-                    Annuler la commande
-                  </Button>
+                  {/* Sélecteur de statut libre */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Changer le statut</label>
+                    <Select
+                      value={order.status}
+                      onValueChange={(value) => {
+                        setNewStatus(value);
+                        setShowStatusModal(true);
+                      }}
+                      disabled={updating}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">⏳ En attente</SelectItem>
+                        <SelectItem value="confirmed">✅ Confirmée</SelectItem>
+                        <SelectItem value="preparing">📦 En préparation</SelectItem>
+                        <SelectItem value="processing">🔄 En cours</SelectItem>
+                        <SelectItem value="shipped">🚚 Expédiée</SelectItem>
+                        <SelectItem value="out_for_delivery">🛵 En livraison</SelectItem>
+                        <SelectItem value="delivered">✅ Livrée</SelectItem>
+                        <SelectItem value="cancelled">❌ Annulée</SelectItem>
+                        <SelectItem value="returned">↩️ Retournée</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="border-t pt-3 space-y-2">
+                    <p className="text-xs text-gray-500 mb-2">Raccourcis rapides :</p>
+                    <Button
+                      className="w-full justify-start"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setNewStatus('processing');
+                        setShowStatusModal(true);
+                      }}
+                      disabled={updating || order.status === 'processing'}
+                    >
+                      <Clock className="w-4 h-4 mr-2" />
+                      En cours
+                    </Button>
+                    <Button
+                      className="w-full justify-start"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setNewStatus('shipped');
+                        setShowStatusModal(true);
+                      }}
+                      disabled={updating || order.status === 'shipped'}
+                    >
+                      <Truck className="w-4 h-4 mr-2" />
+                      Expédiée
+                    </Button>
+                    <Button
+                      className="w-full justify-start"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setNewStatus('delivered');
+                        setShowStatusModal(true);
+                      }}
+                      disabled={updating || order.status === 'delivered'}
+                    >
+                      <Package className="w-4 h-4 mr-2" />
+                      Livrée
+                    </Button>
+                    <Button
+                      className="w-full justify-start text-red-600 border-red-200 hover:bg-red-50"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setNewStatus('cancelled');
+                        setShowStatusModal(true);
+                      }}
+                      disabled={updating || order.status === 'cancelled'}
+                    >
+                      Annuler
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -766,11 +801,15 @@ L'équipe JomionStore`;
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">En attente</SelectItem>
-                    <SelectItem value="processing">En cours</SelectItem>
-                    <SelectItem value="shipped">Expédiée</SelectItem>
-                    <SelectItem value="delivered">Livrée</SelectItem>
-                    <SelectItem value="cancelled">Annulée</SelectItem>
+                    <SelectItem value="pending">⏳ En attente</SelectItem>
+                    <SelectItem value="confirmed">✅ Confirmée</SelectItem>
+                    <SelectItem value="preparing">📦 En préparation</SelectItem>
+                    <SelectItem value="processing">🔄 En cours</SelectItem>
+                    <SelectItem value="shipped">🚚 Expédiée</SelectItem>
+                    <SelectItem value="out_for_delivery">🛵 En livraison</SelectItem>
+                    <SelectItem value="delivered">✅ Livrée</SelectItem>
+                    <SelectItem value="cancelled">❌ Annulée</SelectItem>
+                    <SelectItem value="returned">↩️ Retournée</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
