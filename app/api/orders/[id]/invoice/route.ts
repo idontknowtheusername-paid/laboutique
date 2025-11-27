@@ -354,7 +354,7 @@ export async function GET(
         <div class="totals-box">
           <div class="totals-row">
             <span>Sous-total</span>
-            <span>${formatPrice(o.subtotal_amount || o.subtotal || 0)}</span>
+            <span>${formatPrice(o.total_amount || 0)}</span>
           </div>
           ${(o.tax_amount && o.tax_amount > 0) ? `
           <div class="totals-row">
