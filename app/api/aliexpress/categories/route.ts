@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAliExpressDropshipApiService } from '@/lib/services/aliexpress-dropship-api.service';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 // Cache des catégories (1 heure)
 let categoriesCache: {
@@ -70,6 +71,33 @@ export async function GET(request: NextRequest) {
       ...topLevelCategories,
       ...childCategories
     ];
+
+    // Sauvegarder dans la base de données pour le filtrage côté serveur
+    try {
+      const categoriesToInsert = organizedCategories.map((cat: any) => ({
+        category_id: cat.id,
+        category_name: cat.name,
+        parent_category_id: cat.parent_id,
+        has_children: cat.has_children
+      }));
+
+      // Upsert (insert ou update si existe déjà)
+      const { error: upsertError } = await supabaseAdmin
+        .from('aliexpress_categories')
+        .upsert(categoriesToInsert, {
+          onConflict: 'category_id',
+          ignoreDuplicates: false
+        });
+
+      if (upsertError) {
+        console.error('[AliExpress Categories] Error saving to database:', upsertError);
+      } else {
+        console.log(`[AliExpress Categories] Saved ${categoriesToInsert.length} categories to database`);
+      }
+    } catch (dbError) {
+      console.error('[AliExpress Categories] Database error:', dbError);
+      // Ne pas faire échouer la requête si la sauvegarde échoue
+    }
 
     // Mettre en cache
     categoriesCache = {

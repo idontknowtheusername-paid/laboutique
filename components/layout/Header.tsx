@@ -843,7 +843,7 @@ const MobileMenu = () => {
             </div>
             <div className="flex-1 min-w-0">
               <div className="font-semibold text-lg">
-                Bonjour, {user?.user_metadata?.first_name || 'Visiteur'} 👋
+                Bonjour, {user?.user_metadata?.first_name || 'Champion'} 👋
               </div>
               <div className="text-sm text-white/80 truncate">
                 {user ? user.email : 'Accédez à votre compte'}

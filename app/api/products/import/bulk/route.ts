@@ -42,21 +42,18 @@ export async function POST(request: NextRequest) {
       // Utiliser les feeds multiples pour récupérer des produits variés
       products = await apiService.getProductsFromMultipleFeeds(limit, 1);
     } else {
-      // Utiliser un feed spécifique avec catégorie optionnelle
+      // Utiliser un feed spécifique SANS catégorie (non supporté par l'API)
       const apiParams: any = {
         feed_name: body.feed_type,
         target_currency: 'USD',
         target_language: 'FR',
         ship_to_country: 'BJ',
         page_no: 1,
-        page_size: limit,
+        page_size: Math.min(limit * 3, 100), // Récupérer plus pour filtrer ensuite
       };
 
-      // Ajouter la catégorie si fournie
-      if (categoryId) {
-        apiParams.category_id = categoryId;
-        console.log(`[Bulk Import] Filtering by category: ${categoryId}`);
-      }
+      // NOTE: category_id n'est PAS supporté par l'API Dropship pour les feeds
+      // Le filtrage par catégorie se fera côté serveur après récupération
 
       const response = await (apiService as any).callApi('aliexpress.ds.recommend.feed.get', apiParams);
 
@@ -85,6 +82,36 @@ export async function POST(request: NextRequest) {
         }
       } else {
         products = [];
+      }
+    }
+
+    // Filtrage côté serveur par catégorie si demandé
+    if (categoryId && products.length > 0) {
+      console.log(`[Bulk Import] Filtering ${products.length} products by category: ${categoryId}`);
+
+      // Récupérer les mots-clés de la catégorie AliExpress
+      const { data: aliCategory } = await supabaseAdmin
+        .from('aliexpress_categories')
+        .select('category_name')
+        .eq('category_id', categoryId)
+        .single();
+
+      if (aliCategory && aliCategory.category_name) {
+        const categoryKeywords = aliCategory.category_name.toLowerCase().split(/[\s&]+/);
+        console.log(`[Bulk Import] Category keywords:`, categoryKeywords);
+
+        // Filtrer les produits qui contiennent au moins un mot-clé de la catégorie
+        const filteredProducts = products.filter((p: any) => {
+          const title = p.product_title.toLowerCase();
+          return categoryKeywords.some((keyword: string) =>
+            keyword.length > 2 && title.includes(keyword)
+          );
+        });
+
+        console.log(`[Bulk Import] Filtered from ${products.length} to ${filteredProducts.length} products`);
+        products = filteredProducts.slice(0, limit);
+      } else {
+        console.log(`[Bulk Import] Category ${categoryId} not found, skipping filter`);
       }
     }
 
