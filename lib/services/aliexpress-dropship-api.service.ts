@@ -488,12 +488,14 @@ export class AliExpressDropshipApiService {
       price: finalPrice,
       original_price: finalOriginalPrice,
       images: images.filter(img => img && img.startsWith('http')),
-      description: `${product.product_title}\n\nProduit importé depuis AliExpress via Dropship API.\n\nCaractéristiques:\n- Note: ${product.evaluate_rate || 'N/A'}\n- Ventes récentes: ${product.lastest_volume || 0}`,
+      // ✅ DESCRIPTION NETTOYÉE : Ne plus inclure les infos techniques visibles
+      description: product.product_title,
       short_description: product.product_title.slice(0, 150),
       sku: `AE-DS-${product.product_id}`,
       stock_quantity: 100,
       source_url: product.product_detail_url || sourceUrl,
       source_platform: 'aliexpress' as const,
+      // ✅ Les infos techniques restent dans specifications (usage interne uniquement)
       specifications: {
         'Product ID': product.product_id,
         'Évaluation': product.evaluate_rate || 'N/A',

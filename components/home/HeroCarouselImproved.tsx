@@ -245,8 +245,8 @@ const HeroCarouselImproved: React.FC<HeroCarouselImprovedProps> = ({
                 <span className="text-xs sm:text-sm md:text-lg mr-1 sm:mr-2">📞</span>
                 <h3 className="text-[10px] sm:text-xs md:text-sm font-bold leading-tight">Appelez pour commander</h3>
               </div>
-              <a href="tel:+22997123456" className="text-[9px] sm:text-xs md:text-xs font-semibold hover:underline ml-3 sm:ml-4 md:ml-6 block">
-                +229 97 12 34 56
+              <a href="tel:+22901643540889" className="text-[9px] sm:text-xs md:text-xs font-semibold hover:underline ml-3 sm:ml-4 md:ml-6 block">
+                +229 01 64 35 40 89
               </a>
             </div>
 

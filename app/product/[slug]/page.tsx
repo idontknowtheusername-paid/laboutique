@@ -39,6 +39,7 @@ import { ProductsService, Product as ProductType } from '@/lib/services/products
 import { ErrorState } from '@/components/ui/error-state';
 import { generateConsistentRating, generateConsistentReviews } from '@/lib/utils/rating';
 import { generateProductSchema, generateBreadcrumbSchema } from '@/lib/utils/seo-helpers';
+import { cleanProductDescription } from '@/lib/utils/clean-description';
 
 // Slider product type for mapping
 type SliderProduct = {
@@ -567,8 +568,8 @@ export default function ProductDetailPage() {
             
             <TabsContent value="description" className="p-6">
               <div className="space-y-4">
-                <p className="text-gray-700 leading-relaxed">
-                  {product?.description || product?.short_description || ''}
+                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                  {cleanProductDescription(product?.description || product?.short_description || '')}
                 </p>
                 <div>
                   <h3 className="font-semibold mb-3">Caractéristiques principales:</h3>
@@ -706,7 +707,7 @@ export default function ProductDetailPage() {
       {/* Bouton WhatsApp flottant */}
       <WhatsAppButton
         productName={product?.name}
-        phoneNumber="+22901643540"
+        phoneNumber="+22901643540889"
       />
     </div>
   );

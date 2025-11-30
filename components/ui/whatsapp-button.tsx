@@ -10,7 +10,7 @@ interface WhatsAppButtonProps {
 }
 
 export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
-  phoneNumber = '+2290164554089',
+  phoneNumber = '+2290164354089',
   message,
   productName
 }) => {

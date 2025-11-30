@@ -223,44 +223,56 @@ export function generateSEOKeywords(tags: ProductTag[]): string[] {
 
 /**
  * Génère une description enrichie basée sur les tags
+ * NETTOIE les informations techniques qui ne doivent pas être visibles par les clients
  */
 export function enrichProductDescription(
   originalDescription: string, 
   tags: ProductTag[], 
   feedType?: string
 ): string {
+  // 🧹 NETTOYAGE : Supprimer les informations techniques d'import
+  let cleanedDescription = originalDescription || '';
+
+  // Supprimer les mentions d'import AliExpress
+  cleanedDescription = cleanedDescription.replace(/Produit importé depuis AliExpress.*?API\./gi, '');
+  cleanedDescription = cleanedDescription.replace(/Imported from AliExpress.*?API\./gi, '');
+
+  // Supprimer les métadonnées techniques (Note, Ventes récentes, etc.)
+  cleanedDescription = cleanedDescription.replace(/Caractéristiques:\s*-\s*Note:.*?-\s*Ventes récentes:.*?\d+/gi, '');
+  cleanedDescription = cleanedDescription.replace(/Features:\s*-\s*Rating:.*?-\s*Recent sales:.*?\d+/gi, '');
+
+  // Supprimer les lignes vides multiples
+  cleanedDescription = cleanedDescription.replace(/\n\s*\n\s*\n/g, '\n\n');
+
+  // Supprimer les espaces en début et fin
+  cleanedDescription = cleanedDescription.trim();
+
+  // Si la description est vide après nettoyage, créer une description basique
+  if (!cleanedDescription) {
+    cleanedDescription = 'Produit de qualité disponible sur JomionStore.';
+  }
+
   const categoryTags = tags.filter(tag => tag.category === 'product_category' && tag.confidence > 0.5);
   const materialTags = tags.filter(tag => tag.category === 'material');
   const colorTags = tags.filter(tag => tag.category === 'color');
 
-  let enrichedDescription = originalDescription;
+  let enrichedDescription = cleanedDescription;
 
-  // Ajouter des informations basées sur les tags
-  if (categoryTags.length > 0) {
-    enrichedDescription += `\n\nCatégorie: ${categoryTags[0].name}`;
-  }
+  // Ajouter des informations basées sur les tags (optionnel, commenté pour garder propre)
+  // if (categoryTags.length > 0) {
+  //   enrichedDescription += `\n\nCatégorie: ${categoryTags[0].name}`;
+  // }
 
-  if (materialTags.length > 0) {
-    enrichedDescription += `\nMatériau: ${materialTags.map(t => t.name).join(', ')}`;
-  }
+  // if (materialTags.length > 0) {
+  //   enrichedDescription += `\nMatériau: ${materialTags.map(t => t.name).join(', ')}`;
+  // }
 
-  if (colorTags.length > 0) {
-    enrichedDescription += `\nCouleurs disponibles: ${colorTags.map(t => t.name).join(', ')}`;
-  }
+  // if (colorTags.length > 0) {
+  //   enrichedDescription += `\nCouleurs disponibles: ${colorTags.map(t => t.name).join(', ')}`;
+  // }
 
-  // Ajouter info sur le feed
-  if (feedType) {
-    const feedInfo = {
-      'ds-bestselling': 'Produit populaire - Meilleures ventes',
-      'ds-new-arrival': 'Nouveauté - Dernièrement ajouté',
-      'ds-promotion': 'En promotion - Offre spéciale',
-      'ds-choice': 'Sélection premium - Choix éditorial'
-    };
-    
-    if (feedInfo[feedType as keyof typeof feedInfo]) {
-      enrichedDescription += `\n\n🏷️ ${feedInfo[feedType as keyof typeof feedInfo]}`;
-    }
-  }
+  // NE PLUS ajouter les infos de feed dans la description visible
+  // Ces infos sont pour usage interne uniquement
 
   return enrichedDescription;
 }
